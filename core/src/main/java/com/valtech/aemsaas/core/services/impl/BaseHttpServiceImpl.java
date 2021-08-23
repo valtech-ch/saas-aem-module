@@ -3,9 +3,10 @@ package com.valtech.aemsaas.core.services.impl;
 import com.valtech.aemsaas.core.models.commons.SearchHeaders;
 import com.valtech.aemsaas.core.models.responses.BaseResponse;
 import com.valtech.aemsaas.core.services.BaseHttpService;
-import com.valtech.aemsaas.core.services.configuration.BaseHttpServiceConfiguration;
+import com.valtech.aemsaas.core.services.configuration.HttpServiceConfiguration;
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -24,13 +25,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.TrustStrategy;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,21 +36,19 @@ import java.io.InputStreamReader;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component(name = "SAAS 01 BaseSearchService", immediate = true, service = BaseHttpService.class, configurationPid = "com.valtech.aemsaas.core.services.impl.BaseHttpServiceImpl")
-@Designate(ocd = BaseHttpServiceConfiguration.class)
+@Component(name = "Search as a Service - HTTP Service",
+        immediate = true,
+        service = BaseHttpService.class,
+        configurationPid = "com.valtech.aemsaas.core.services.impl.BaseHttpServiceImpl")
+@Designate(ocd = HttpServiceConfiguration.class)
+@Slf4j
 public class BaseHttpServiceImpl implements BaseHttpService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseHttpServiceImpl.class);
 
     @Getter
     private String webserviceURL;
-    @Getter
-    private String queryParam;
     @Getter
     private CredentialsProvider defaultCredentialsProvider;
     @Reference
@@ -64,22 +60,21 @@ public class BaseHttpServiceImpl implements BaseHttpService {
     private RequestConfig requestConfig;
 
     @Activate
-    protected void activate(BaseHttpServiceConfiguration config) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+    protected void activate(HttpServiceConfiguration config) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         webserviceURL = config.search_webservice_baseurl();
         String username = config.search_webservice_auth_user();
         String password = config.search_webservice_auth_password();
         useAuth = config.search_webservice_auth();
         ignoreSSL = config.search_webservice_ignoreSSL();
-        queryParam = config.search_webservice_queryParam();
         if (useAuth) {
-            LOGGER.debug("Initializing HttpService with authentication parameters");
+            log.debug("Initializing HttpService with authentication parameters");
             defaultCredentialsProvider = new BasicCredentialsProvider();
             defaultCredentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         }
 
         httpClientBuilder = httpClientBuilderFactory.newBuilder().setDefaultCredentialsProvider(defaultCredentialsProvider);
         if (ignoreSSL) {
-            LOGGER.info("!!!!Initializing HttpService with ignoring SSL Certificate");
+            log.warn("Initializing HttpService with ignoring SSL Certificate");
             httpClientBuilder = setIgnoredSSLHttpClientBuilder(httpClientBuilder);
         }
 
@@ -101,17 +96,17 @@ public class BaseHttpServiceImpl implements BaseHttpService {
         CloseableHttpResponse response = null;
         HttpGet request = new HttpGet(url);
         if (headers != null) {
-            LOGGER.debug("Adding Headers to search");
+            log.debug("Adding Search Headers to search");
             headers.createHeaders(request);
         }
         try {
-            LOGGER.info("Executing GET to Search : {}", url);
+            log.info("Executing GET to Search : {}", url);
             response = client.execute(request);
             String responseString = parseResponse(response);
-            LOGGER.debug("{} : {}", url, responseString);
+            log.debug("{} : {}", url, responseString);
             return new BaseResponse(response.getStatusLine().getStatusCode(), responseString);
         } catch (Exception e) {
-            LOGGER.error("{} ERROR GET", url, e);
+            log.error("{} ERROR GET", url, e);
             return new BaseResponse(0, e.getLocalizedMessage());
         } finally {
             if (response != null) {
@@ -130,16 +125,16 @@ public class BaseHttpServiceImpl implements BaseHttpService {
         CloseableHttpResponse response = null;
         HttpPost httpPost = new HttpPost(url);
         if (headers != null) {
-            LOGGER.debug("Adding Headers to search");
+            log.debug("Adding Headers to search");
             headers.createHeaders(httpPost);
         }
         try {
-            LOGGER.debug("Adding post parameters to search : {}", postParameters.stream().map(NameValuePair::toString).collect(Collectors.joining(",")));
+            log.debug("Adding post parameters to search : {}", postParameters.stream().map(NameValuePair::toString).collect(Collectors.joining(",")));
             httpPost.setEntity(new UrlEncodedFormEntity(postParameters, Charsets.UTF_8.name()));
-            LOGGER.info("Executing POST to Search : {}", url);
+            log.info("Executing POST to Search : {}", url);
             response = client.execute(httpPost);
             String responseString = parseResponse(response);
-            LOGGER.debug("{} : {}", url, responseString);
+            log.debug("{} : {}", url, responseString);
             return new BaseResponse(response.getStatusLine().getStatusCode(), responseString);
         } finally {
             if (response != null) {
@@ -171,18 +166,15 @@ public class BaseHttpServiceImpl implements BaseHttpService {
 
             return result.toString();
         } catch (IOException e) {
+            log.error("IOException occurred while trying to parse the response {}", response);
             return StringUtils.EMPTY;
         }
     }
 
-    private HttpClientBuilder setIgnoredSSLHttpClientBuilder(HttpClientBuilder httpClientBuilder) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+    private HttpClientBuilder setIgnoredSSLHttpClientBuilder(HttpClientBuilder httpClientBuilder)
+            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
         SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustStrategy() {
-            public boolean isTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
-                return true;
-            }
-        });
+        builder.loadTrustMaterial(null, (chain, authType) -> true);
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
                 builder.build());
         return httpClientBuilder.setSSLSocketFactory(sslsf);
