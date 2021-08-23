@@ -33,7 +33,5 @@ public interface BaseHttpService {
 
     public String getWebserviceURL();
 
-    public String getQueryParam();
-
     public CredentialsProvider getDefaultCredentialsProvider();
 }
