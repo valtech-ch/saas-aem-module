@@ -13,13 +13,10 @@
  |  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  |  See the License for the specific language governing permissions and
  |  limitations under the License.
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-    <artifactId>aemsaas</artifactId>
-    <groupId>com.valtech.aemsaas</groupId>
-    <version>1.0.0-SNAPSHOT</version>
-  </parent>
     <groupId>com.valtech.aemsaas</groupId>
     <artifactId>saas-aem-module</artifactId>
     <packaging>pom</packaging>
@@ -108,8 +105,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>11</release>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -172,16 +170,18 @@
                             <configuration>
                                 <bnd>Bundle-Category: ${componentGroupName}
 
-# export all versioned packages except for conditional ones (https://github.com/bndtools/bnd/issues/3721#issuecomment-579026778)
--exportcontents: ${removeall;${packages;VERSIONED};${packages;CONDITIONAL}}
+                                    # export all versioned packages except for conditional ones
+                                    (https://github.com/bndtools/bnd/issues/3721#issuecomment-579026778)
+                                    -exportcontents: ${removeall;${packages;VERSIONED};${packages;CONDITIONAL}}
 
-# reproducible builds (https://github.com/bndtools/bnd/issues/3521)
--noextraheaders: true
--snapshot: SNAPSHOT
+                                    # reproducible builds (https://github.com/bndtools/bnd/issues/3521)
+                                    -noextraheaders: true
+                                    -snapshot: SNAPSHOT
 
-Bundle-DocURL:
--plugin org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin
--plugin org.apache.sling.bnd.models.ModelsScannerPlugin</bnd>
+                                    Bundle-DocURL:
+                                    -plugin org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin
+                                    -plugin org.apache.sling.bnd.models.ModelsScannerPlugin
+                                </bnd>
                             </configuration>
                         </execution>
                     </executions>
@@ -342,7 +342,7 @@ Bundle-DocURL:
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -356,7 +356,7 @@ Bundle-DocURL:
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -369,7 +369,7 @@ Bundle-DocURL:
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -528,7 +528,9 @@ Bundle-DocURL:
                                         <goal>install</goal>
                                     </goals>
                                     <configuration>
-                                        <targetURL>http://${aem.publish.host}:${aem.publish.port}/crx/packmgr/service.jsp</targetURL>
+                                        <targetURL>
+                                            http://${aem.publish.host}:${aem.publish.port}/crx/packmgr/service.jsp
+                                        </targetURL>
                                     </configuration>
                                 </execution>
                             </executions>
