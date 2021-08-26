@@ -45,7 +45,8 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
   private HttpClientBuilder httpClientBuilder;
 
   @Override
-  public <R> R execute(@NonNull SearchRequest searchRequest, @NonNull HttpResponseConsumer<R> httpResponseConsumer) {
+  public <R> Optional<R> execute(@NonNull SearchRequest searchRequest,
+      @NonNull HttpResponseConsumer<R> httpResponseConsumer) {
     HttpUriRequest request = searchRequest.getRequest();
     try (CloseableHttpClient httpClient = httpClientBuilder.build();
         CloseableHttpResponse response = httpClient.execute(request)) {
@@ -54,14 +55,14 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
       log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
       if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
         if (log.isDebugEnabled()) {
-          log.info("Response content: {}", new HttpResponseParser(response).getContentString());
+          log.debug("Response content: {}", new HttpResponseParser(response).getContentString());
         }
-        return httpResponseConsumer.apply(response);
+        return Optional.ofNullable(httpResponseConsumer.apply(response));
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);
     }
-    return null;
+    return Optional.empty();
   }
 
   @Activate
