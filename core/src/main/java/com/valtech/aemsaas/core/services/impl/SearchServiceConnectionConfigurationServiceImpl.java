@@ -61,10 +61,11 @@ public class SearchServiceConnectionConfigurationServiceImpl implements SearchSe
     this.configuration = configuration;
   }
 
-  @ObjectClassDefinition(name = "Search as a Service - Search Service HTTP Connection Configuration", description = "URL and credentials to connect to Search as a Service (SAAS).")
+  @ObjectClassDefinition(name = "Search as a Service - Search Service HTTP Connection Configuration",
+      description = "URL and credentials to connect to Search as a Service (SAAS).")
   public @interface Configuration {
 
-    String DEFAULT_WEB_SERVICE_URL = "https://test-search-admin.infocentric.swiss"; //this value needs to be updated
+    String DEFAULT_WEB_SERVICE_URL = "https://test-search-admin.infocentric.swiss";
     int DEFAULT_TIMEOUT = 10;
     boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
     boolean DEFAULT_IGNORE_SSL = false;
