@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 public class SearchRequestPost implements SearchRequest {
 
   private final String url;
+
   @Singular
   private final List<NameValuePair> postParameters;
 

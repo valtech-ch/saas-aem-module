@@ -7,6 +7,7 @@ import lombok.Getter;
 public final class BaseResponse {
     @Getter
     private int code;
+
     @Getter
     private String responseData;
 }

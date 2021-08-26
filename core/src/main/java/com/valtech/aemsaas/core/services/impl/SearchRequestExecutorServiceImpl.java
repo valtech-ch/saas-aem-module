@@ -5,6 +5,7 @@ import com.valtech.aemsaas.core.models.request.SearchRequest;
 import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
 import com.valtech.aemsaas.core.utils.HttpHostResolver;
+import com.valtech.aemsaas.core.utils.HttpResponseParser;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -31,7 +32,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 @Slf4j
-@Component(name = "VALTECH - Search Request Executor Service",
+@Component(name = "Search as a Service - Search Request Executor Service",
     service = SearchRequestExecutorService.class)
 public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorService {
 
@@ -52,10 +53,10 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
       log.info("Status Code: {}", response.getStatusLine().getStatusCode());
       log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
       if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
+        if (log.isDebugEnabled()) {
+          log.info("Response content: {}", new HttpResponseParser(response).getContentString());
+        }
         return httpResponseConsumer.apply(response);
-      } else {
-        log.error("Unable to consume response {}, status code is {}", request.getURI(),
-            response.getStatusLine().getStatusCode());
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);
@@ -73,8 +74,10 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
         .setDefaultRequestConfig(requestConfig);
     if (searchServiceConnectionConfigurationService.isBasicAuthenticationEnabled()) {
       log.debug("Basic Authentication is enabled.");
-      getCredentialsProvider().ifPresentOrElse(httpClientBuilder::setDefaultCredentialsProvider,
-          () -> log.error("Failed to set credentials provider"));
+      getCredentialsProvider().ifPresent(credentialsProvider -> {
+        log.debug("Setting basic authentication details for the http client.");
+        httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+      });
     }
     if (searchServiceConnectionConfigurationService.isIgnoreSslEnabled()) {
       log.warn("Initializing HttpService with ignoring SSL Certificate");
@@ -94,9 +97,14 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
     return new HttpHostResolver(searchServiceConnectionConfigurationService.getBaseUrl()).getHost()
         .map(httpHost -> {
           BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
-          basicCredentialsProvider.setCredentials(new AuthScope(httpHost),
-              new UsernamePasswordCredentials(searchServiceConnectionConfigurationService.getBasicAuthenticationUser(),
-                  searchServiceConnectionConfigurationService.getBasicAuthenticationPassword()));
+          AuthScope authScope = new AuthScope(httpHost);
+          UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
+              searchServiceConnectionConfigurationService.getBasicAuthenticationUser(),
+              searchServiceConnectionConfigurationService.getBasicAuthenticationPassword());
+          log.debug("Creating basic credentials provider with authScope: {}, user: {}", authScope,
+              usernamePasswordCredentials);
+          basicCredentialsProvider.setCredentials(authScope, usernamePasswordCredentials
+          );
           return basicCredentialsProvider;
         });
   }
