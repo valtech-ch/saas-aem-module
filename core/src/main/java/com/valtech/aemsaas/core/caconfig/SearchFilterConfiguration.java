@@ -3,6 +3,9 @@ package com.valtech.aemsaas.core.caconfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.caconfig.annotation.Property;
 
+/**
+ * CA Configuration for search filter entries. Nested in {@link SearchConfiguration}
+ */
 public @interface SearchFilterConfiguration {
 
     @Property(label = "Search Field Name", description = "Saas Field Name")
