@@ -1,6 +1,11 @@
 package com.valtech.aemsaas.core.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,5 +26,26 @@ public final class HttpResponseParser {
       log.error("IOException occurred while trying to parse the response {}", response);
     }
     return StringUtils.EMPTY;
+  }
+
+  public <T> T toGsonModel(Class<T> gsonModel) {
+    InputStream in = getContentInputStream();
+    if (in != null) {
+      try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8.name())) {
+        return new Gson().fromJson(reader, gsonModel);
+      } catch (IOException | IllegalStateException | JsonSyntaxException e) {
+        log.error("Cannot serialize JSON", e);
+      }
+    }
+    return null;
+  }
+
+  private InputStream getContentInputStream() {
+    try {
+      return response.getEntity().getContent();
+    } catch (IOException e) {
+      log.error("Error while fetching content input stream.", e);
+    }
+    return null;
   }
 }
