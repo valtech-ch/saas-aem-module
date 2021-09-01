@@ -14,12 +14,4 @@ public class SearchResponse {
     return strategy.getResponse(response);
   }
 
-//  ResponseHeader responseHeader;
-//
-//  ResponseBody response;
-//
-//  FacetCounts facetCounts;
-//
-//  Map<String, Map<String, List<String>>> highlighting;
-
 }

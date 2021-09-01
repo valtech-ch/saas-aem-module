@@ -1,7 +1,7 @@
 package com.valtech.aemsaas.core.models.response.parse;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.models.response.search.ResponseHeader;
 import java.util.Optional;
 
@@ -13,8 +13,8 @@ public class ResponseHeaderParseStrategy implements SearchResponseParseStrategy<
   }
 
   @Override
-  public Optional<ResponseHeader> getResponse(JsonElement response) {
-    return Optional.ofNullable(response.getAsJsonObject().get(propertyName()))
-        .map(jsonElement -> new Gson().fromJson(jsonElement, ResponseHeader.class));
+  public Optional<ResponseHeader> getResponse(JsonObject response) {
+    return Optional.ofNullable(response.getAsJsonObject(propertyName()))
+        .map(jsonObject -> new Gson().fromJson(jsonObject, ResponseHeader.class));
   }
 }

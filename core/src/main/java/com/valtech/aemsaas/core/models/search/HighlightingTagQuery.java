@@ -10,7 +10,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 @RequiredArgsConstructor
-public class HighlightingTagQuery implements FulltextSearchGetQuery {
+public class HighlightingTagQuery implements FulltextSearchOptionalGetQuery {
 
   static final String HIGHLIGHT_PRE_TAG = "hlpre";
   static final String HIGHLIGHT_POST_TAG = "hlpost";

@@ -13,7 +13,7 @@ public final class HighlightedDescriptionResolver {
   private final SearchResult searchResult;
   private final Map<String, Map<String, List<String>>> highlighting;
 
-  public String getMetaDescription() {
+  public String getDescription() {
     if (StringUtils.isBlank(searchResult.getId())) {
       return searchResult.getMetaDescription();
     }
@@ -22,7 +22,7 @@ public final class HighlightedDescriptionResolver {
             stringListMap.get("content_" + searchResult.getLanguage())))
         .map(list -> String.join(" ", list))
         .filter(StringUtils::isNotBlank)
-        .orElse(searchResult.getTitle());
+        .orElse(searchResult.getMetaDescription());
   }
 
 }

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-public final class SortQuery implements FulltextSearchGetQuery {
+public final class SortQuery implements FulltextSearchOptionalGetQuery {
 
   static final String PARAMETER = "sort";
 

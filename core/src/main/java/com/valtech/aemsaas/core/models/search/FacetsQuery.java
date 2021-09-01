@@ -6,11 +6,10 @@ import lombok.Builder;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 @Builder
-public class FacetsQuery implements FulltextSearchGetQuery {
+public class FacetsQuery implements FulltextSearchOptionalGetQuery {
 
   static final String FACETFIELD = "facetfield";
 

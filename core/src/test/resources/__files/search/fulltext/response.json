@@ -1,0 +1,86 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 2,
+    "params": {
+      "q": "prod_lpln:six*^20 OR all_content_en:\"six\"^12 OR (url_en:six )^10 OR (title_en:six )^6 OR (meta_keywords_en:six )^4 OR (meta_description_en:six )^2 OR content_en:(six)^1",
+      "spellcheck.q": "six",
+      "facet.field": "domain",
+      "spellcheck.dictionary": "spell_dict_en",
+      "hl": "true",
+      "hl.simple.post": "</em>",
+      "hl.q": "_en:(six)",
+      "start": "0",
+      "hl.fl": "title_en,meta_description_en,content_en",
+      "fq": "language:en",
+      "rows": "10",
+      "hl.simple.pre": "<em>"
+    }
+  },
+  "response": {
+    "numFound": 4865,
+    "start": 0,
+    "docs": [
+      {
+        "meta_description": "He arrived at the start of 2018 and personally drove the transformation at SIX, a process that is now completed. In his second year at SIX, CEO Jos Dijsselhof is striving to steadfastly pursue the path that the company has embarked on. ",
+        "domain": "www.six-group.com",
+        "language": "en",
+        "title": "The Next Level of SIX | SIX",
+        "url": "https://www.six-group.com/en/blog/2019/next-level-of-six.html",
+        "id": "https://www.six-group.com/en/blog/2019/next-level-of-six.html",
+        "[elevated]": false
+      },
+      {
+        "meta_description": "SIX understands clients’ challenges and monitors what is happening in other industries. This allows us to drive the transformation of financial markets.",
+        "domain": "www.six-group.com",
+        "language": "en",
+        "title": "How SIX Innovates",
+        "url": "https://www.six-group.com/en/company/innovation/how-six-innovates.html",
+        "id": "https://www.six-group.com/en/company/innovation/how-six-innovates.html",
+        "[elevated]": false
+      }
+    ]
+  },
+  "facet_counts": {
+    "facet_queries": {},
+    "facet_fields": {
+      "domain": [
+        "www.six-group.com",
+        4756,
+        "www.sbb.ch",
+        61,
+        "www.sdx.com",
+        48
+      ]
+    },
+    "facet_ranges": {},
+    "facet_intervals": {},
+    "facet_heatmaps": {}
+  },
+  "highlighting": {
+    "https://www.six-group.com/en/blog/2019/next-level-of-six.html": {
+      "title_en": [
+        "The Next Level of <em>SIX</em> | <em>SIX</em>"
+      ],
+      "meta_description_en": [
+        "He arrived at the start of 2018 and personally drove the transformation at <em>SIX</em>, a process that is now completed. In his second year at <em>SIX</em>, CEO Jos Dijsselhof is striving to steadfastly pursue"
+      ]
+    },
+    "https://www.six-group.com/en/company/innovation/how-six-innovates.html": {
+      "title_en": [
+        "How <em>SIX</em> Innovates"
+      ],
+      "meta_description_en": [
+        "<em>SIX</em> understands clients’ challenges and monitors what is happening in other industries. This allows us to drive the transformation of financial markets."
+      ],
+      "content_en": [
+        "How <em>SIX</em> Innovates How Innovation Gets Done For <em>SIX</em>, innovation is not just a buzzword, it is an elementary component of our corporate culture. We not only operate the infrastructure of the Swiss"
+      ]
+    }
+  },
+  "spellcheck": {
+    "suggestions": [],
+    "correctlySpelled": true,
+    "collations": []
+  }
+}

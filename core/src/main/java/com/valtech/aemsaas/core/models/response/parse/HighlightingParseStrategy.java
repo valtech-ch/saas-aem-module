@@ -1,7 +1,7 @@
 package com.valtech.aemsaas.core.models.response.parse;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -16,10 +16,10 @@ public class HighlightingParseStrategy implements SearchResponseParseStrategy<Ma
   }
 
   @Override
-  public Optional<Map<String, Map<String, List<String>>>> getResponse(JsonElement response) {
+  public Optional<Map<String, Map<String, List<String>>>> getResponse(JsonObject response) {
     Type highlightingMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
     }.getType();
-    return Optional.ofNullable(response.getAsJsonObject().get(propertyName()))
-        .map(jsonElement -> new Gson().fromJson(jsonElement, highlightingMapType));
+    return Optional.ofNullable(response.getAsJsonObject(propertyName()))
+        .map(jsonObject -> new Gson().fromJson(jsonObject, highlightingMapType));
   }
 }
