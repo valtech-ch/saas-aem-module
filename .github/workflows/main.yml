@@ -16,10 +16,10 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'zul'
+          distribution: 'zulu'
       - name: Build with Maven
         run: mvn clean install
-      - name: Upload core package artifact
-        uses: actions/upload-artifact@v2
-        with:
-          path: coretarget/*.jar
+#      - name: Upload core package artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          path: coretarget/*.jar
