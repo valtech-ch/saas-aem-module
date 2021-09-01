@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'zulu'
+          distribution: 'zul'
       - name: Build with Maven
         run: mvn clean install
       - name: Upload core package artifact
