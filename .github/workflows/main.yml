@@ -19,7 +19,7 @@ jobs:
           distribution: 'zulu'
       - name: Build with Maven
         run: mvn clean install
-      - name: Core package
+      - name: Upload core package artifact
         uses: actions/upload-artifact@v2
         with:
-          path: core/target/*.jar
+          path: coretarget/*.jar
