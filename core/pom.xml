@@ -95,6 +95,10 @@ Import-Package: javax.annotation;version=0.0.0,*
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <artifactId>gson</artifactId>
+            <groupId>com.google.code.gson</groupId>
+        </dependency>
 
 
         <!-- Testing -->

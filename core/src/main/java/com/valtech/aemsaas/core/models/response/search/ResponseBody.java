@@ -1,4 +1,4 @@
-package com.valtech.aemsaas.core.models.responses.search;
+package com.valtech.aemsaas.core.models.response.search;
 
 import java.util.List;
 import lombok.Value;

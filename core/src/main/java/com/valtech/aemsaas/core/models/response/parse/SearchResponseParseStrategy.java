@@ -1,7 +1,6 @@
-package com.valtech.aemsaas.core.models.responses.search;
+package com.valtech.aemsaas.core.models.response.parse;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.util.Optional;
 
 public interface SearchResponseParseStrategy<T> {

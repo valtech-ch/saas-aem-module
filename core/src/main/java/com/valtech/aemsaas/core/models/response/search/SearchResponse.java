@@ -1,7 +1,7 @@
-package com.valtech.aemsaas.core.models.responses.search;
+package com.valtech.aemsaas.core.models.response.search;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.valtech.aemsaas.core.models.response.parse.SearchResponseParseStrategy;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 

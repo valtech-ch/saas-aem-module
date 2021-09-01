@@ -1,8 +1,7 @@
 package com.valtech.aemsaas.core.services;
 
-import com.valtech.aemsaas.core.function.HttpResponseConsumer;
 import com.valtech.aemsaas.core.models.request.SearchRequest;
-import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
+import com.valtech.aemsaas.core.models.response.search.SearchResponse;
 import java.util.Optional;
 import lombok.NonNull;
 

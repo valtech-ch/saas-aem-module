@@ -1,7 +1,5 @@
 package com.valtech.aemsaas.core.services;
 
-import com.google.gson.JsonObject;
-import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
 import com.valtech.aemsaas.core.models.search.FulltextSearchGetQuery;
 import com.valtech.aemsaas.core.models.search.results.FulltextSearchResults;
 import java.util.Arrays;

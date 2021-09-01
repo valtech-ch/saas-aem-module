@@ -11,6 +11,9 @@ public @interface SearchConfiguration {
   String index() default StringUtils.EMPTY;
 
   @Property(label = "Search Field Name - Values", description = "Base Filters (Optional)")
-  SearchFilterConfiguration[] searchFilters();
+  SearchFilterConfiguration[] searchFilters() default {};
+
+  @Property(label = "Search Templates", description = "List of custom query templates' names, for specialized/different field boosting strategies. (Optional)")
+  String[] templates() default {};
 
 }

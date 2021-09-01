@@ -1,7 +1,8 @@
-package com.valtech.aemsaas.core.models.responses.search;
+package com.valtech.aemsaas.core.models.response.parse;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.valtech.aemsaas.core.models.response.search.ResponseBody;
 import java.util.Optional;
 
 public class ResponseBodyParseStrategy implements SearchResponseParseStrategy<ResponseBody> {

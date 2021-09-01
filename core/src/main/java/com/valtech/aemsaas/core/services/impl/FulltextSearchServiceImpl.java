@@ -1,22 +1,28 @@
 package com.valtech.aemsaas.core.services.impl;
 
-import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.models.request.SearchRequestGet;
-import com.valtech.aemsaas.core.models.responses.search.ResponseBody;
-import com.valtech.aemsaas.core.models.responses.search.ResponseBodyParseStrategy;
-import com.valtech.aemsaas.core.models.responses.search.ResponseHeader;
-import com.valtech.aemsaas.core.models.responses.search.ResponseHeaderParseStrategy;
-import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
+import com.valtech.aemsaas.core.models.response.parse.HighlightingParseStrategy;
+import com.valtech.aemsaas.core.models.response.search.ResponseBody;
+import com.valtech.aemsaas.core.models.response.parse.ResponseBodyParseStrategy;
+import com.valtech.aemsaas.core.models.response.search.ResponseHeader;
+import com.valtech.aemsaas.core.models.response.parse.ResponseHeaderParseStrategy;
+import com.valtech.aemsaas.core.models.response.search.SearchResponse;
+import com.valtech.aemsaas.core.models.response.search.SearchResult;
 import com.valtech.aemsaas.core.models.search.FulltextSearchGetQuery;
 import com.valtech.aemsaas.core.models.search.results.FulltextSearchResults;
+import com.valtech.aemsaas.core.models.search.results.Result;
 import com.valtech.aemsaas.core.services.FulltextSearchService;
 import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
 import com.valtech.aemsaas.core.services.impl.SearchServiceConnectionConfigurationServiceImpl.Configuration;
-import com.valtech.aemsaas.core.utils.HttpResponseParser;
 import com.valtech.aemsaas.core.utils.search.FulltextSearchGetQueryStringConstructor;
+import com.valtech.aemsaas.core.utils.search.results.HighlightedDescriptionResolver;
+import com.valtech.aemsaas.core.utils.search.results.HighlightedTitleResolver;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -53,11 +59,30 @@ public class FulltextSearchServiceImpl implements FulltextSearchService {
         configuration.fulltextSearchService_apiAction(),
         queryString);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
-    ResponseHeader responseHeader = searchResponse.flatMap(sR -> sR.get(new ResponseHeaderParseStrategy()))
-        .orElse(null);
-    ResponseBody responseBody = searchResponse.flatMap(sR -> sR.get(new ResponseBodyParseStrategy())).orElse(null);
-    return Optional.of(FulltextSearchResults.builder().totalResultsFound(responseBody.getNumFound())
-        .currentResultPage(responseBody.getStart()).build());
+    Optional<ResponseHeader> responseHeader = searchResponse.flatMap(sR -> sR.get(new ResponseHeaderParseStrategy()));
+    responseHeader.ifPresent(header -> log.debug("Response Header: {}", header));
+    Optional<ResponseBody> responseBody = searchResponse.flatMap(sR -> sR.get(new ResponseBodyParseStrategy()));
+    Map<String, Map<String, List<String>>> highlighting = searchResponse.flatMap(
+        sR -> sR.get(new HighlightingParseStrategy())).orElse(Collections.emptyMap());
+    return Optional.of(FulltextSearchResults.builder()
+        .totalResultsFound(responseBody.map(ResponseBody::getNumFound).orElse(0))
+        .currentResultPage(responseBody.map(ResponseBody::getStart).orElse(-1))
+        .results(getProcessedResults(responseBody.get(), highlighting))
+        .build());
+  }
+
+  private List<Result> getProcessedResults(ResponseBody responseBody,
+      Map<String, Map<String, List<String>>> highlighting) {
+    return responseBody.getDocs().stream()
+        .map(searchResult -> getResult(searchResult, highlighting)).collect(Collectors.toList());
+  }
+
+  private Result getResult(SearchResult searchResult, Map<String, Map<String, List<String>>> highlighting) {
+    return Result.builder()
+        .url(searchResult.getUrl())
+        .title(new HighlightedTitleResolver(searchResult, highlighting).getTitle())
+        .description(new HighlightedDescriptionResolver(searchResult, highlighting).getMetaDescription())
+        .build();
   }
 
   @Activate

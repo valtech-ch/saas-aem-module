@@ -1,9 +1,8 @@
 package com.valtech.aemsaas.core.services.impl;
 
 import com.google.gson.JsonObject;
-import com.valtech.aemsaas.core.function.HttpResponseConsumer;
 import com.valtech.aemsaas.core.models.request.SearchRequest;
-import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
+import com.valtech.aemsaas.core.models.response.search.SearchResponse;
 import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
 import com.valtech.aemsaas.core.utils.HttpHostResolver;

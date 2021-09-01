@@ -1,4 +1,4 @@
-package com.valtech.aemsaas.core.models.responses;
+package com.valtech.aemsaas.core.models.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

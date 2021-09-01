@@ -1,4 +1,4 @@
-package com.valtech.aemsaas.core.models.responses.search;
+package com.valtech.aemsaas.core.models.response.search;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
