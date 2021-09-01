@@ -1,10 +1,13 @@
 package com.valtech.aemsaas.core.models.search;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 @Builder
 public class FiltersQuery implements FulltextSearchGetQuery {
@@ -16,14 +19,11 @@ public class FiltersQuery implements FulltextSearchGetQuery {
   private final Map<String, String> filterEntries;
 
   @Override
-  public String getString() {
+  public List<NameValuePair> getEntries() {
     return filterEntries.entrySet().stream()
-        .filter(e -> StringUtils.isNoneBlank(e.getKey(), e.getValue()))
-        .map(e -> getFilterEntry(e.getKey(), e.getValue()))
-        .collect(Collectors.joining(DELIMITER));
-  }
-
-  private String getFilterEntry(String field, String value) {
-    return StringUtils.join(FILTER, EQUALS, field, FILTER_FIELD_VALUE_DELIMITER, value);
+        .filter(entry -> StringUtils.isNoneBlank(entry.getKey(), entry.getValue()))
+        .map(entry -> new BasicNameValuePair(FILTER,
+            String.join(FILTER_FIELD_VALUE_DELIMITER, entry.getKey(), entry.getValue())))
+        .collect(Collectors.toList());
   }
 }

@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 @Builder
 public class FacetsQuery implements FulltextSearchGetQuery {
@@ -15,14 +18,9 @@ public class FacetsQuery implements FulltextSearchGetQuery {
   private final List<String> fields;
 
   @Override
-  public String getString() {
-    return fields.stream()
-        .filter(StringUtils::isNotBlank)
-        .map(this::getFacetEntry)
-        .collect(Collectors.joining(DELIMITER));
+  public List<NameValuePair> getEntries() {
+    return fields.stream().filter(StringUtils::isNotBlank).map(field -> new BasicNameValuePair(FACETFIELD, field))
+        .collect(Collectors.toList());
   }
 
-  private String getFacetEntry(String field) {
-    return StringUtils.join(FACETFIELD, EQUALS, field);
-  }
 }

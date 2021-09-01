@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 class HighlightingDisableQueryTest {
 
   @Test
-  void getString() {
-    assertThat(new HighlightingDisableQuery().getString(),
-        is(String.format("%s=false", HighlightingDisableQuery.HIGHLIGHT_SWITCH)));
+  void testQuery() {
+    assertThat(new HighlightingDisableQuery().getEntries().size(),
+        is(1));
   }
 }

@@ -2,6 +2,7 @@ package com.valtech.aemsaas.core.services;
 
 import com.valtech.aemsaas.core.function.HttpResponseConsumer;
 import com.valtech.aemsaas.core.models.request.SearchRequest;
+import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
 import java.util.Optional;
 import lombok.NonNull;
 
@@ -11,13 +12,9 @@ import lombok.NonNull;
 public interface SearchRequestExecutorService {
 
   /**
-   * Executes a prepared search requests.
-   *
-   * @param searchRequest        http request.
-   * @param httpResponseConsumer lambda function containing response consume logic.
-   * @param <R>                  resulting object type.
-   * @return response consume result optional.
+   * @param searchRequest http request.
+   * @return optional SearchResponse object.
    */
-  <R> Optional<R> execute(@NonNull SearchRequest searchRequest, @NonNull HttpResponseConsumer<R> httpResponseConsumer);
+  Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest);
 
 }

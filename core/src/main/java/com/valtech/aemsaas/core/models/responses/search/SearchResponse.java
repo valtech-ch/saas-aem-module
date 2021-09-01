@@ -1,18 +1,25 @@
 package com.valtech.aemsaas.core.models.responses.search;
 
-import java.util.List;
-import java.util.Map;
-import lombok.Value;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
-@Value
+@RequiredArgsConstructor
 public class SearchResponse {
 
-  ResponseHeader responseHeader;
+  private final JsonObject response;
 
-  ResponseBody response;
+  public <T> Optional<T> get(SearchResponseParseStrategy<T> strategy) {
+    return strategy.getResponse(response);
+  }
 
-  FacetCounts facetCounts;
-
-  Map<String, Map<String, List<String>>> highlighting;
+//  ResponseHeader responseHeader;
+//
+//  ResponseBody response;
+//
+//  FacetCounts facetCounts;
+//
+//  Map<String, Map<String, List<String>>> highlighting;
 
 }

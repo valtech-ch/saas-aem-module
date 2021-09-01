@@ -1,18 +1,22 @@
 package com.valtech.aemsaas.core.models.search;
 
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 public final class SortQuery implements FulltextSearchGetQuery {
 
   static final String PARAMETER = "sort";
-  private static final String SORT_DELIMITER = " ";
 
-  private final Sort sort;
-  private final SimpleGetQuery sortBy;
+  private final NameValuePair sortBy;
 
   public SortQuery(String field, Sort sort) {
-    this.sortBy = new SimpleGetQuery(PARAMETER, field);
-    this.sort = sort;
+    if (StringUtils.isBlank(field)) {
+      throw new IllegalArgumentException("Sort field must not be blank.");
+    }
+    this.sortBy = new BasicNameValuePair(PARAMETER, String.format("%s %s", field, sort.name().toLowerCase()));
   }
 
   public SortQuery(String field) {
@@ -20,11 +24,7 @@ public final class SortQuery implements FulltextSearchGetQuery {
   }
 
   @Override
-  public String getString() {
-    String sortByString = sortBy.getString();
-    if (StringUtils.isNotEmpty(sortByString)) {
-      return StringUtils.join(sortBy.getString(), SORT_DELIMITER, sort.name().toLowerCase());
-    }
-    return StringUtils.EMPTY;
+  public List<NameValuePair> getEntries() {
+    return Collections.singletonList(sortBy);
   }
 }

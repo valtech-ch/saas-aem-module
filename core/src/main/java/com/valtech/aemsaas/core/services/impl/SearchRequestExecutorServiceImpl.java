@@ -1,7 +1,9 @@
 package com.valtech.aemsaas.core.services.impl;
 
+import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.function.HttpResponseConsumer;
 import com.valtech.aemsaas.core.models.request.SearchRequest;
+import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
 import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
 import com.valtech.aemsaas.core.utils.HttpHostResolver;
@@ -45,8 +47,7 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
   private HttpClientBuilder httpClientBuilder;
 
   @Override
-  public <R> Optional<R> execute(@NonNull SearchRequest searchRequest,
-      @NonNull HttpResponseConsumer<R> httpResponseConsumer) {
+  public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
     HttpUriRequest request = searchRequest.getRequest();
     try (CloseableHttpClient httpClient = httpClientBuilder.build();
         CloseableHttpResponse response = httpClient.execute(request)) {
@@ -54,10 +55,12 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
       log.info("Status Code: {}", response.getStatusLine().getStatusCode());
       log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
       if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
+        HttpResponseParser httpResponseParser = new HttpResponseParser(response);
         if (log.isDebugEnabled()) {
-          log.debug("Response content: {}", new HttpResponseParser(response).getContentString());
+          log.debug("Response content: {}", httpResponseParser.getContentString());
         }
-        return Optional.ofNullable(httpResponseConsumer.apply(response));
+        return Optional.ofNullable(new HttpResponseParser(response).toGsonModel(JsonObject.class))
+            .map(SearchResponse::new);
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);

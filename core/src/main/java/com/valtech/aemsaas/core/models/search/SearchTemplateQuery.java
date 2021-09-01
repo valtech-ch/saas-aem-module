@@ -1,20 +1,27 @@
 package com.valtech.aemsaas.core.models.search;
 
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
-@RequiredArgsConstructor
 public final class SearchTemplateQuery implements FulltextSearchGetQuery, TypeaheadGetQuery {
 
   private static final String DEFAULT_NAME = "tmpl";
 
-  private final SimpleGetQuery searchTemplateQuery;
+  private final NameValuePair searchTemplateQuery;
 
-  public SearchTemplateQuery(SearchTemplate searchTemplate) {
-    this.searchTemplateQuery = new SimpleGetQuery(DEFAULT_NAME, searchTemplate.getTmplName());
+  public SearchTemplateQuery(String searchTemplate) {
+    if (StringUtils.isBlank(searchTemplate)) {
+      throw new IllegalArgumentException("Must specify template value.");
+    }
+    this.searchTemplateQuery = new BasicNameValuePair(DEFAULT_NAME, searchTemplate);
   }
 
   @Override
-  public String getString() {
-    return searchTemplateQuery.getString();
+  public List<NameValuePair> getEntries() {
+    return Collections.singletonList(searchTemplateQuery);
   }
 }

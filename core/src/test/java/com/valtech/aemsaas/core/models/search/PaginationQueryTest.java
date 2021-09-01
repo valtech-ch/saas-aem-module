@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 class PaginationQueryTest {
 
   @Test
-  void getString() {
-    assertThat(new PaginationQuery(0, 10).getString(),
-        is(String.format("%s=0&%s=10", PaginationQuery.START, PaginationQuery.ROWS)));
-    assertThrows(IllegalArgumentException.class, () -> new PaginationQuery(-1, 10).getString());
-    assertThrows(IllegalArgumentException.class, () -> new PaginationQuery(0, 10000).getString());
+  void testQuery() {
+    assertThat(new PaginationQuery(0, 10, 100).getEntries().size(),
+        is(2));
+    assertThrows(IllegalArgumentException.class, () -> new PaginationQuery(-1, 10, 100));
+    assertThrows(IllegalArgumentException.class, () -> new PaginationQuery(0, 10000, 9999));
   }
 }

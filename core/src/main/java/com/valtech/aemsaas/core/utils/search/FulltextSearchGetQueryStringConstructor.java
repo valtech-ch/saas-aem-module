@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Singular;
 
 @Builder
-public class FulltextSearchGetQueryStringConstructor extends GetQueryStringConstructor {
+public class FulltextSearchGetQueryStringConstructor extends GetQueryStringConstructor<FulltextSearchGetQuery> {
 
   @Getter(AccessLevel.PROTECTED)
   @Singular

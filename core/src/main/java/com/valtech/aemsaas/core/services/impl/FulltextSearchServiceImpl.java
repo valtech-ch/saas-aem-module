@@ -1,8 +1,14 @@
 package com.valtech.aemsaas.core.services.impl;
 
+import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.models.request.SearchRequestGet;
+import com.valtech.aemsaas.core.models.responses.search.ResponseBody;
+import com.valtech.aemsaas.core.models.responses.search.ResponseBodyParseStrategy;
+import com.valtech.aemsaas.core.models.responses.search.ResponseHeader;
+import com.valtech.aemsaas.core.models.responses.search.ResponseHeaderParseStrategy;
 import com.valtech.aemsaas.core.models.responses.search.SearchResponse;
 import com.valtech.aemsaas.core.models.search.FulltextSearchGetQuery;
+import com.valtech.aemsaas.core.models.search.results.FulltextSearchResults;
 import com.valtech.aemsaas.core.services.FulltextSearchService;
 import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
@@ -17,6 +23,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
@@ -35,7 +42,7 @@ public class FulltextSearchServiceImpl implements FulltextSearchService {
   private Configuration configuration;
 
   @Override
-  public Optional<SearchResponse> getResults(String index, List<FulltextSearchGetQuery> queries) {
+  public Optional<FulltextSearchResults> getResults(String index, List<FulltextSearchGetQuery> queries) {
     String queryString = FulltextSearchGetQueryStringConstructor.builder()
         .queries(queries)
         .build()
@@ -45,8 +52,12 @@ public class FulltextSearchServiceImpl implements FulltextSearchService {
         configuration.fulltextSearchService_apiBaseUrl(), index,
         configuration.fulltextSearchService_apiAction(),
         queryString);
-    return searchRequestExecutorService.execute(new SearchRequestGet(requestUrl),
-        closeableHttpResponse -> new HttpResponseParser(closeableHttpResponse).toGsonModel(SearchResponse.class));
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
+    ResponseHeader responseHeader = searchResponse.flatMap(sR -> sR.get(new ResponseHeaderParseStrategy()))
+        .orElse(null);
+    ResponseBody responseBody = searchResponse.flatMap(sR -> sR.get(new ResponseBodyParseStrategy())).orElse(null);
+    return Optional.of(FulltextSearchResults.builder().totalResultsFound(responseBody.getNumFound())
+        .currentResultPage(responseBody.getStart()).build());
   }
 
   @Activate
@@ -60,11 +71,19 @@ public class FulltextSearchServiceImpl implements FulltextSearchService {
   public @interface Configuration {
 
     @AttributeDefinition(name = "Api base path",
-        description = "Api base path")
+        description = "Api base path",
+        type = AttributeType.STRING)
     String fulltextSearchService_apiBaseUrl() default "/api/v3";
 
-    @AttributeDefinition(name = "Api action", description = "What kind of action should be defined")
+    @AttributeDefinition(name = "Api action",
+        description = "What kind of action should be defined",
+        type = AttributeType.STRING)
     String fulltextSearchService_apiAction() default "/search";
+
+    @AttributeDefinition(name = "Rows max limit.",
+        description = "Maximum number of results per page allowed.",
+        type = AttributeType.INTEGER)
+    int fulltextSearchService_rowsMasLimit() default 9999;
 
   }
 }
