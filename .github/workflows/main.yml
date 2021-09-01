@@ -22,5 +22,4 @@ jobs:
       - name: Core package
         uses: actions/upload-artifact@v2
         with:
-          name: core-package
           path: core/target/*.jar
