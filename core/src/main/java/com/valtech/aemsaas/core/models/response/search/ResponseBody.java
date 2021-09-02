@@ -5,6 +5,7 @@ import lombok.Value;
 
 @Value
 public class ResponseBody {
+  public static final String PN_RESPONSE = "response";
 
   int numFound;
 

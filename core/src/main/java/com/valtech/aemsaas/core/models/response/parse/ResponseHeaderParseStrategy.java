@@ -9,12 +9,13 @@ public class ResponseHeaderParseStrategy implements SearchResponseParseStrategy<
 
   @Override
   public String propertyName() {
-    return "responseHeader";
+    return ResponseHeader.PN_RESPONSE_HEADER;
   }
 
   @Override
   public Optional<ResponseHeader> getResponse(JsonObject response) {
-    return Optional.ofNullable(response).map(r -> r.getAsJsonObject(propertyName()))
+    return Optional.ofNullable(response)
+        .map(r -> r.getAsJsonObject(propertyName()))
         .map(jsonObject -> new Gson().fromJson(jsonObject, ResponseHeader.class));
   }
 }

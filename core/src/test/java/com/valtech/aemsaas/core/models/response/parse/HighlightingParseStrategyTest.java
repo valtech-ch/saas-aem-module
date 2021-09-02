@@ -6,8 +6,9 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import java.io.InputStreamReader;
-import java.util.Map;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class HighlightingParseStrategyTest {
@@ -15,13 +16,13 @@ class HighlightingParseStrategyTest {
   @Test
   void getResponse() {
     HighlightingParseStrategy strategy = new HighlightingParseStrategy();
-    assertThat(strategy.propertyName(), is("highlighting"));
-    assertThat(strategy.getResponse(new JsonObject()).isPresent(), is(false));
+    Assertions.assertThrows(UnsupportedOperationException.class, strategy::propertyName);
+    assertThat(strategy.getResponse(new JsonObject()).isPresent(), is(true));
     assertThat(strategy.getResponse(new JsonParser().parse(
             new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
         .getAsJsonObject()).isPresent(), is(true));
     assertThat(strategy.getResponse(new JsonParser().parse(
             new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
-        .getAsJsonObject()).get(), instanceOf(Map.class));
+        .getAsJsonObject()).get(), instanceOf(Highlighting.class));
   }
 }

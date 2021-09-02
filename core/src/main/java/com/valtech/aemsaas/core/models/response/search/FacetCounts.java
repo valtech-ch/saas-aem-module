@@ -8,6 +8,8 @@ import lombok.Value;
 @Value
 public class FacetCounts {
 
-  @SerializedName("facet_fields")
+  private static final String PN_FACET_FIELDS = "facet_fields";
+
+  @SerializedName(PN_FACET_FIELDS)
   HashMap<String, List<Object>> facetFields;
 }

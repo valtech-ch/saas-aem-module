@@ -9,9 +9,12 @@ import lombok.Value;
 @Value
 public class ResponseHeader {
 
+  public static final String PN_RESPONSE_HEADER = "responseHeader";
+  public static final String PN_QUERY_TIME = "QTime";
+
   int status;
 
-  @SerializedName("QTime")
+  @SerializedName(PN_QUERY_TIME)
   int queryTime;
 
   Map<String, String> params;

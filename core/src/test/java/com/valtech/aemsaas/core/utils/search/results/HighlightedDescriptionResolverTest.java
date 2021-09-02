@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
+import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import com.valtech.aemsaas.core.models.response.search.SearchResult;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +28,8 @@ class HighlightedDescriptionResolverTest {
   @Mock
   SearchResult searchResult;
 
-  Map<String, Map<String, List<String>>> highlighting;
+  @Mock
+  Highlighting highlighting;
 
   @Test
   void getMetaDescription_noHighlightEntryAvailable() {
@@ -72,7 +74,7 @@ class HighlightedDescriptionResolverTest {
   private void setupInput_noHighlightEntryAvailable() {
     when(searchResult.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
+    when(highlighting.getItems()).thenReturn(Collections.emptyMap());
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("meta_description_en", Collections.singletonList(HIGHLIGHTED_META_DESCRIPTION));
   }
@@ -84,25 +86,22 @@ class HighlightedDescriptionResolverTest {
 
   private void setupInput_noMetaDescriptionInHighlightingEntryAvailable() {
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("meta_description_en", Collections.emptyList());
-    highlighting.put(SEARCH_RESULT_ID, highlightingEntry);
+    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 
   private void setupInput_contentInHighlightingEntryAvailable() {
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("content_en", Collections.singletonList(HIGHLIGHTED_CONTENT));
-    highlighting.put(SEARCH_RESULT_ID, highlightingEntry);
+    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 
   private void setupInput_metaDescriptionInHighlightingEntryAvailable() {
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("meta_description_en", Collections.singletonList(HIGHLIGHTED_META_DESCRIPTION));
-    highlighting.put(SEARCH_RESULT_ID, highlightingEntry);
+    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 }

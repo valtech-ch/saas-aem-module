@@ -9,12 +9,13 @@ public class ResponseBodyParseStrategy implements SearchResponseParseStrategy<Re
 
   @Override
   public String propertyName() {
-    return "response";
+    return ResponseBody.PN_RESPONSE;
   }
 
   @Override
   public Optional<ResponseBody> getResponse(JsonObject response) {
-    return Optional.ofNullable(response).map(r -> r.getAsJsonObject(propertyName()))
+    return Optional.ofNullable(response)
+        .map(r -> r.getAsJsonObject(propertyName()))
         .map(jsonObject -> new Gson().fromJson(jsonObject, ResponseBody.class));
   }
 }

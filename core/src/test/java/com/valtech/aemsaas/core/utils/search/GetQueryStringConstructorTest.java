@@ -2,9 +2,9 @@ package com.valtech.aemsaas.core.utils.search;
 
 import static org.hamcrest.core.Is.is;
 
-import com.valtech.aemsaas.core.models.search.FiltersQuery;
-import com.valtech.aemsaas.core.models.search.PaginationQuery;
-import com.valtech.aemsaas.core.models.search.DefaultTermQuery;
+import com.valtech.aemsaas.core.models.search.query.FiltersQuery;
+import com.valtech.aemsaas.core.models.search.query.PaginationQuery;
+import com.valtech.aemsaas.core.models.search.query.DefaultTermQuery;
 import java.util.Arrays;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;

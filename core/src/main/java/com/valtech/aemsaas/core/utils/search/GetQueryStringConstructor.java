@@ -1,6 +1,6 @@
 package com.valtech.aemsaas.core.utils.search;
 
-import com.valtech.aemsaas.core.models.search.GetQuery;
+import com.valtech.aemsaas.core.models.search.query.GetQuery;
 import java.util.List;
 import lombok.Builder;
 import lombok.Singular;

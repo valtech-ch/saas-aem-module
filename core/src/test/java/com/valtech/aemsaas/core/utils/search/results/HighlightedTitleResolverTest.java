@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
+import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import com.valtech.aemsaas.core.models.response.search.SearchResult;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +28,8 @@ class HighlightedTitleResolverTest {
   @Mock
   SearchResult searchResult;
 
-  Map<String, Map<String, List<String>>> highlighting;
+  @Mock
+  Highlighting highlighting;
 
   @BeforeEach
   void setUp() {
@@ -62,9 +64,7 @@ class HighlightedTitleResolverTest {
 
   private void setupInput_noHighlightEntryAvailable() {
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
-    Map<String, List<String>> highlightingEntry = new HashMap<>();
-    highlightingEntry.put("title_en", Collections.singletonList(HIGHLIGHTED_TITLE));
+    when(highlighting.getItems()).thenReturn(Collections.emptyMap());
   }
 
   private void setupInput_noResultIdAvailable() {
@@ -73,17 +73,15 @@ class HighlightedTitleResolverTest {
 
   private void setupInput_noTitleInHighlightingEntryAvailable() {
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("title_en", Collections.emptyList());
-    highlighting.put(SEARCH_RESULT_ID, highlightingEntry);
+    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 
   private void setupInput_titleInHighlightingEntryAvailable() {
     when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    highlighting = new HashMap<>();
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("title_en", Collections.singletonList(HIGHLIGHTED_TITLE));
-    highlighting.put(SEARCH_RESULT_ID, highlightingEntry);
+    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 }

@@ -6,7 +6,11 @@ import lombok.Getter;
 @Getter
 public class SearchResult {
 
-  @SerializedName("meta_description")
+  private static final String PN_META_DESCRIPTION = "meta_description";
+  private static final String PN_REPOSITORY_PATH_URL = "repository_path_url";
+  private static final String PN_ELEVATED = "[elevated]";
+
+  @SerializedName(PN_META_DESCRIPTION)
   private String metaDescription;
 
   private String domain;
@@ -15,14 +19,14 @@ public class SearchResult {
 
   private String title;
 
-  @SerializedName("repository_path_url")
+  @SerializedName(PN_REPOSITORY_PATH_URL)
   private String repositoryPathUrl;
 
   private String url;
 
   private String id;
 
-  @SerializedName("[elevated]")
+  @SerializedName(PN_ELEVATED)
   private boolean elevated;
 
 }
