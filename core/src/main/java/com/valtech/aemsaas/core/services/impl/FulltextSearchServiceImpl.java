@@ -8,9 +8,7 @@ import com.valtech.aemsaas.core.models.response.search.ResponseBody;
 import com.valtech.aemsaas.core.models.response.search.ResponseHeader;
 import com.valtech.aemsaas.core.models.response.search.SearchResponse;
 import com.valtech.aemsaas.core.models.response.search.SearchResult;
-import com.valtech.aemsaas.core.models.search.FulltextSearchOptionalGetQuery;
-import com.valtech.aemsaas.core.models.search.LanguageQuery;
-import com.valtech.aemsaas.core.models.search.TermQuery;
+import com.valtech.aemsaas.core.models.search.FulltextSearchGetRequestPayload;
 import com.valtech.aemsaas.core.models.search.results.FulltextSearchResults;
 import com.valtech.aemsaas.core.models.search.results.Result;
 import com.valtech.aemsaas.core.services.FulltextSearchConfigurationService;
@@ -18,7 +16,6 @@ import com.valtech.aemsaas.core.services.FulltextSearchService;
 import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
 import com.valtech.aemsaas.core.services.impl.SearchServiceConnectionConfigurationServiceImpl.Configuration;
-import com.valtech.aemsaas.core.utils.search.FulltextSearchGetQueryStringConstructor;
 import com.valtech.aemsaas.core.utils.search.results.HighlightedDescriptionResolver;
 import com.valtech.aemsaas.core.utils.search.results.HighlightedTitleResolver;
 import java.util.Collections;
@@ -43,8 +40,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = Configuration.class)
 public class FulltextSearchServiceImpl implements FulltextSearchService, FulltextSearchConfigurationService {
 
-  private static final String SEARCH_TERM_ALL = "*";
-
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
 
@@ -59,26 +54,17 @@ public class FulltextSearchServiceImpl implements FulltextSearchService, Fulltex
   }
 
   @Override
-  public Optional<FulltextSearchResults> getResults(String index, String term, String language,
-      List<FulltextSearchOptionalGetQuery> optionalQueries) {
+  public Optional<FulltextSearchResults> getResults(String index,
+      FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload) {
     if (StringUtils.isBlank(index)) {
       throw new IllegalArgumentException("Index type is missing.");
     }
-    if (StringUtils.isBlank(language)) {
-      throw new IllegalArgumentException("Language parameter is missing.");
-    }
-    String queryString = FulltextSearchGetQueryStringConstructor.builder()
-        .query(new TermQuery(getSafeTerm(term)))
-        .query(new LanguageQuery(language))
-        .queries(optionalQueries)
-        .build()
-        .getQueryString();
     String requestUrl = String.format("%s%s%s%s%s",
         searchServiceConnectionConfigurationService.getBaseUrl(),
         configuration.fulltextSearchService_apiBaseUrl(),
         index,
         configuration.fulltextSearchService_apiAction(),
-        queryString);
+        fulltextSearchGetRequestPayload.getPayload());
     log.debug("Search GET Request: {}", requestUrl);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
     if (searchResponse.isPresent()) {
@@ -101,12 +87,7 @@ public class FulltextSearchServiceImpl implements FulltextSearchService, Fulltex
     } else {
       log.debug("No Search Response received");
     }
-
     return Optional.empty();
-  }
-
-  private String getSafeTerm(String term) {
-    return StringUtils.isNotBlank(term) ? term : SEARCH_TERM_ALL;
   }
 
   private List<Result> getProcessedResults(List<SearchResult> searchResults,

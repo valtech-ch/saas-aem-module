@@ -19,10 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class HighlightedDescriptionResolverTest {
 
   private static final String SEARCH_RESULT_ID = "foo";
-  private static final String SEARCH_RESULT_META_DESCRIPTION = "SIX understands clients’ challenges and monitors what is happening in other industries. This allows us to drive the transformation of financial markets.";
+  private static final String SEARCH_RESULT_META_DESCRIPTION = "Valtech Group organization chart";
   private static final String SEARCH_RESULT_LANGUAGE = "en";
-  private static final String HIGHLIGHTED_META_DESCRIPTION = "<em>SIX</em> understands clients’ challenges and monitors what is happening in other industries. This allows us to drive the transformation of financial markets.";
-  private static final String HIGHLIGHTED_CONTENT = "How <em>SIX</em> Innovates How Innovation Gets Done For <em>SIX</em>, innovation is not just a buzzword, it is an elementary component of our corporate culture. We not only operate the infrastructure of the Swiss";
+  private static final String HIGHLIGHTED_META_DESCRIPTION = "<em>Valtech</em> Group organization chart";
+  private static final String HIGHLIGHTED_CONTENT = "<em>Valtech</em> <em>Valtech</em> Group Luxembourg (HQ) <em>Valtech</em> SE UK <em>Valtech</em> Ltd. 100% True Clarity* * 100% El Chalten 100% <em>Valtech</em> LLC. (Ukraine) 100% Argentina <em>Valtech</em> Digital SA 95% Brazil <em>Valtech</em> Brasil";
 
   @Mock
   SearchResult searchResult;

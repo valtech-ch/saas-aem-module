@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-public final class SearchTemplateQuery implements FulltextSearchOptionalGetQuery, TypeaheadGetQuery {
+public final class SearchTemplateQuery implements FulltextSearchOptionalGetQuery {
 
   private static final String DEFAULT_NAME = "tmpl";
 

@@ -1,19 +1,21 @@
 package com.valtech.aemsaas.core.utils.search;
 
-import com.valtech.aemsaas.core.models.search.FulltextSearchGetQuery;
 import com.valtech.aemsaas.core.models.search.GetQuery;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Builder;
+import lombok.Singular;
 import org.apache.http.client.utils.URIBuilder;
 
-public abstract class GetQueryStringConstructor<T extends GetQuery> {
+@Builder
+public class GetQueryStringConstructor {
 
-  protected abstract List<T> getQueries();
+  @Singular
+  private List<GetQuery> queries;
+
 
   public String getQueryString() {
     URIBuilder uriBuilder = new URIBuilder();
-    getQueries().stream()
+    queries.stream()
         .map(GetQuery::getEntries)
         .forEach(uriBuilder::addParameters);
     return uriBuilder.toString();

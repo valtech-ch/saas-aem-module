@@ -19,7 +19,7 @@ public class HighlightingParseStrategy implements SearchResponseParseStrategy<Ma
   public Optional<Map<String, Map<String, List<String>>>> getResponse(JsonObject response) {
     Type highlightingMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
     }.getType();
-    return Optional.ofNullable(response.getAsJsonObject(propertyName()))
+    return Optional.ofNullable(response).map(r -> r.getAsJsonObject(propertyName()))
         .map(jsonObject -> new Gson().fromJson(jsonObject, highlightingMapType));
   }
 }

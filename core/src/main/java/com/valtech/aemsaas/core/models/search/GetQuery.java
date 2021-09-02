@@ -6,5 +6,4 @@ import org.apache.http.NameValuePair;
 public interface GetQuery {
 
   List<NameValuePair> getEntries();
-
 }

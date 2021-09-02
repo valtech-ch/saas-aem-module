@@ -4,22 +4,22 @@ import static org.hamcrest.core.Is.is;
 
 import com.valtech.aemsaas.core.models.search.FiltersQuery;
 import com.valtech.aemsaas.core.models.search.PaginationQuery;
-import com.valtech.aemsaas.core.models.search.TermQuery;
+import com.valtech.aemsaas.core.models.search.DefaultTermQuery;
 import java.util.Arrays;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
-class FulltextSearchGetQueryStringConstructorTest {
+class GetQueryStringConstructorTest {
 
   @Test
   void testGetQueryString() {
-    MatcherAssert.assertThat(FulltextSearchGetQueryStringConstructor.builder()
-            .query(new TermQuery("foo"))
+    MatcherAssert.assertThat(GetQueryStringConstructor.builder()
+            .query(new DefaultTermQuery("foo"))
             .build().getQueryString(),
         is("?term=foo"));
 
-    MatcherAssert.assertThat(FulltextSearchGetQueryStringConstructor.builder()
-            .query(new TermQuery("foo"))
+    MatcherAssert.assertThat(GetQueryStringConstructor.builder()
+            .query(new DefaultTermQuery("foo"))
             .queries(Arrays.asList(new PaginationQuery(1, 100, 1000),
                 FiltersQuery.builder().filterEntry("bar", "/foo/baz").build()))
             .build().getQueryString(),

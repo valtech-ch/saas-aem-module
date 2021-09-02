@@ -14,7 +14,7 @@ public class ResponseBodyParseStrategy implements SearchResponseParseStrategy<Re
 
   @Override
   public Optional<ResponseBody> getResponse(JsonObject response) {
-    return Optional.ofNullable(response.getAsJsonObject(propertyName()))
+    return Optional.ofNullable(response).map(r -> r.getAsJsonObject(propertyName()))
         .map(jsonObject -> new Gson().fromJson(jsonObject, ResponseBody.class));
   }
 }

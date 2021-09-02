@@ -49,5 +49,4 @@ public final class PaginationQuery implements FulltextSearchOptionalGetQuery {
     return rows > ROWS_MIN_VALUE && rows <= maxLimit;
   }
 
-
 }
