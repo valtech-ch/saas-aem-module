@@ -49,11 +49,10 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
   @Override
   public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
     HttpUriRequest request = searchRequest.getRequest();
-    CloseableHttpClient client = httpClientBuilder.build();
+    CloseableHttpClient httpClient = httpClientBuilder.build();
     CloseableHttpResponse response = null;
     SearchResponse searchResponse = null;
     try {
-      CloseableHttpClient httpClient = httpClientBuilder.build();
       response = httpClient.execute(request);
       log.info("Executing {} request on search api {}", request.getMethod(), request.getURI());
       log.info("Status Code: {}", response.getStatusLine().getStatusCode());
@@ -63,17 +62,19 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
         if (log.isDebugEnabled()) {
           log.debug("Response content: {}", httpResponseParser.getContentString());
         }
-        searchResponse = new SearchResponse(new HttpResponseParser(response).toGsonModel(JsonObject.class));
+        JsonObject jsonResponse = new HttpResponseParser(response).toGsonModel(JsonObject.class);
+        if (jsonResponse != null) {
+          searchResponse = new SearchResponse(jsonResponse);
+        }
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);
     } finally {
       if (response != null) {
         IOUtils.closeQuietly(response, e -> log.error("Could not close response.", e));
-        IOUtils.closeQuietly(client, e -> log.error("Could not close client.", e));
+        IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
       }
     }
-
     return Optional.ofNullable(searchResponse);
   }
 
