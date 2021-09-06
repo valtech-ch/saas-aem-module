@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -23,7 +24,7 @@ public class SearchRequestPost implements SearchRequest {
   private final List<NameValuePair> postParameters;
 
   @Override
-  public HttpUriRequest getRequest() {
+  public @NonNull HttpUriRequest getRequest() {
     HttpPost httpPost = new HttpPost(url);
     createRequestPayload().ifPresent(httpPost::setEntity);
     return httpPost;

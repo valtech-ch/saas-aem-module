@@ -1,5 +1,6 @@
 package com.valtech.aemsaas.core.models.request;
 
+import lombok.NonNull;
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**
@@ -12,5 +13,5 @@ public interface SearchRequest {
    *
    * @return http request.
    */
-  HttpUriRequest getRequest();
+  @NonNull HttpUriRequest getRequest();
 }

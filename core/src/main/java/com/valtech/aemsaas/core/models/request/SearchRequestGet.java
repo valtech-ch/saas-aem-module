@@ -1,5 +1,6 @@
 package com.valtech.aemsaas.core.models.request;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -10,7 +11,7 @@ public class SearchRequestGet implements SearchRequest {
   private final String url;
 
   @Override
-  public HttpUriRequest getRequest() {
+  public @NonNull HttpUriRequest getRequest() {
     return new HttpGet(url);
   }
 }
