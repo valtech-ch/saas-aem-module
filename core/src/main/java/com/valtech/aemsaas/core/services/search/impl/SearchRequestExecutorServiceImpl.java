@@ -15,6 +15,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -48,8 +49,12 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
   @Override
   public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
     HttpUriRequest request = searchRequest.getRequest();
-    try (CloseableHttpClient httpClient = httpClientBuilder.build();
-        CloseableHttpResponse response = httpClient.execute(request)) {
+    CloseableHttpClient client = httpClientBuilder.build();
+    CloseableHttpResponse response = null;
+    SearchResponse searchResponse = null;
+    try {
+      CloseableHttpClient httpClient = httpClientBuilder.build();
+      response = httpClient.execute(request);
       log.info("Executing {} request on search api {}", request.getMethod(), request.getURI());
       log.info("Status Code: {}", response.getStatusLine().getStatusCode());
       log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
@@ -58,13 +63,18 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
         if (log.isDebugEnabled()) {
           log.debug("Response content: {}", httpResponseParser.getContentString());
         }
-        return Optional.ofNullable(new HttpResponseParser(response).toGsonModel(JsonObject.class))
-            .map(SearchResponse::new);
+        searchResponse = new SearchResponse(new HttpResponseParser(response).toGsonModel(JsonObject.class));
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);
+    } finally {
+      if (response != null) {
+        IOUtils.closeQuietly(response, e -> log.error("Could not close response.", e));
+        IOUtils.closeQuietly(client, e -> log.error("Could not close client.", e));
+      }
     }
-    return Optional.empty();
+
+    return Optional.ofNullable(searchResponse);
   }
 
   @Activate

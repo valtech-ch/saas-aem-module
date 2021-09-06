@@ -21,8 +21,8 @@ public class HighlightingTagQuery implements FulltextSearchOptionalGetQuery {
   public List<NameValuePair> getEntries() {
     return Optional.ofNullable(tagName).filter(StringUtils::isNotEmpty).map(tag -> {
       List<NameValuePair> entries = new ArrayList<>();
-      entries.add(new BasicNameValuePair(HIGHLIGHT_PRE_TAG, tag));
-      entries.add(new BasicNameValuePair(HIGHLIGHT_POST_TAG, tag));
+      entries.add(new BasicNameValuePair(HIGHLIGHT_PRE_TAG, String.format("<%s>", tag)));
+      entries.add(new BasicNameValuePair(HIGHLIGHT_POST_TAG, String.format("</%s>", tag)));
       return entries;
     }).orElse(
         Collections.emptyList());

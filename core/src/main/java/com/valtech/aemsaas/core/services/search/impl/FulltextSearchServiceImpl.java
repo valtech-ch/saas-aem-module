@@ -16,7 +16,7 @@ import com.valtech.aemsaas.core.services.search.FulltextSearchConfigurationServi
 import com.valtech.aemsaas.core.services.search.FulltextSearchService;
 import com.valtech.aemsaas.core.services.search.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.search.SearchServiceConnectionConfigurationService;
-import com.valtech.aemsaas.core.services.search.impl.SearchServiceConnectionConfigurationServiceImpl.Configuration;
+import com.valtech.aemsaas.core.services.search.impl.FulltextSearchServiceImpl.Configuration;
 import com.valtech.aemsaas.core.utils.search.results.HighlightedDescriptionResolver;
 import com.valtech.aemsaas.core.utils.search.results.HighlightedTitleResolver;
 import java.util.List;
