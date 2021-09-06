@@ -5,7 +5,10 @@ import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import java.util.Optional;
 
-public class HighlightingParseStrategy implements SearchResponseParseStrategy<Highlighting> {
+/**
+ * A strategy for extracting highlighting data.
+ */
+public class HighlightingDataExtractionStrategy implements SearchResponseDataExtractionStrategy<Highlighting> {
 
   @Override
   public String propertyName() {
@@ -13,7 +16,7 @@ public class HighlightingParseStrategy implements SearchResponseParseStrategy<Hi
   }
 
   @Override
-  public Optional<Highlighting> getResponse(JsonObject response) {
+  public Optional<Highlighting> getData(JsonObject response) {
     return Optional.ofNullable(response)
         .map(jsonObject -> new Gson().fromJson(jsonObject, Highlighting.class));
   }

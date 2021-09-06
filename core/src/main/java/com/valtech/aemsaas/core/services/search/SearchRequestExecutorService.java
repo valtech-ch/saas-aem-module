@@ -6,11 +6,13 @@ import java.util.Optional;
 import lombok.NonNull;
 
 /**
- * Provides a method for execution of search requests.
+ * Represents a service for executing search requests on SaaS.
  */
 public interface SearchRequestExecutorService {
 
   /**
+   * Returns the response from SaaS.
+   *
    * @param searchRequest http request.
    * @return optional SearchResponse object.
    */

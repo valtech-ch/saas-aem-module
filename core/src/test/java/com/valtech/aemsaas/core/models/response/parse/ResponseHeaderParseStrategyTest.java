@@ -14,12 +14,12 @@ class ResponseHeaderParseStrategyTest {
 
   @Test
   void getResponse() {
-    ResponseHeaderParseStrategy strategy = new ResponseHeaderParseStrategy();
+    ResponseHeaderDataExtractionStrategy strategy = new ResponseHeaderDataExtractionStrategy();
     assertThat(strategy.propertyName(), is("responseHeader"));
-    assertThat(strategy.getResponse(new JsonObject()).isPresent(), is(false));
-    assertThat(strategy.getResponse(new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
+    assertThat(strategy.getData(new JsonObject()).isPresent(), is(false));
+    assertThat(strategy.getData(new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
         "/__files/search/fulltext/response.json"))).getAsJsonObject()).isPresent(), is(true));
-    assertThat(strategy.getResponse(new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
+    assertThat(strategy.getData(new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
         "/__files/search/fulltext/response.json"))).getAsJsonObject()).get(), instanceOf(
         ResponseHeader.class));
   }

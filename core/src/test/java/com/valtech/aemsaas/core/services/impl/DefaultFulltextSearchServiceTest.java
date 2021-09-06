@@ -14,8 +14,8 @@ import com.valtech.aemsaas.core.models.search.query.DefaultLanguageQuery;
 import com.valtech.aemsaas.core.models.search.query.DefaultTermQuery;
 import com.valtech.aemsaas.core.models.search.payload.FulltextSearchGetRequestPayload;
 import com.valtech.aemsaas.core.services.search.SearchRequestExecutorService;
-import com.valtech.aemsaas.core.services.search.impl.FulltextSearchServiceImpl;
-import com.valtech.aemsaas.core.services.search.impl.SearchServiceConnectionConfigurationServiceImpl;
+import com.valtech.aemsaas.core.services.search.impl.DefaultFulltextSearchService;
+import com.valtech.aemsaas.core.services.search.impl.DefaultSearchServiceConnectionConfigurationService;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.io.InputStreamReader;
@@ -28,18 +28,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
-class FulltextSearchServiceImplTest {
+class DefaultFulltextSearchServiceTest {
 
   @Mock
   SearchRequestExecutorService searchRequestExecutorService;
 
-  FulltextSearchServiceImpl testee;
+  DefaultFulltextSearchService testee;
 
   @BeforeEach
   void setUp(AemContext context) {
     context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
-    context.registerInjectActivateService(new SearchServiceConnectionConfigurationServiceImpl());
-    testee = context.registerInjectActivateService(new FulltextSearchServiceImpl());
+    context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
+    testee = context.registerInjectActivateService(new DefaultFulltextSearchService());
   }
 
   @Test

@@ -1,9 +1,9 @@
 package com.valtech.aemsaas.core.services.search.impl;
 
 import com.valtech.aemsaas.core.models.request.SearchRequestGet;
-import com.valtech.aemsaas.core.models.response.parse.HighlightingParseStrategy;
-import com.valtech.aemsaas.core.models.response.parse.ResponseBodyParseStrategy;
-import com.valtech.aemsaas.core.models.response.parse.ResponseHeaderParseStrategy;
+import com.valtech.aemsaas.core.models.response.parse.HighlightingDataExtractionStrategy;
+import com.valtech.aemsaas.core.models.response.parse.ResponseBodyDataExtractionStrategy;
+import com.valtech.aemsaas.core.models.response.parse.ResponseHeaderDataExtractionStrategy;
 import com.valtech.aemsaas.core.models.response.search.FallbackHighlighting;
 import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import com.valtech.aemsaas.core.models.response.search.ResponseBody;
@@ -16,7 +16,7 @@ import com.valtech.aemsaas.core.services.search.FulltextSearchConfigurationServi
 import com.valtech.aemsaas.core.services.search.FulltextSearchService;
 import com.valtech.aemsaas.core.services.search.SearchRequestExecutorService;
 import com.valtech.aemsaas.core.services.search.SearchServiceConnectionConfigurationService;
-import com.valtech.aemsaas.core.services.search.impl.FulltextSearchServiceImpl.Configuration;
+import com.valtech.aemsaas.core.services.search.impl.DefaultFulltextSearchService.Configuration;
 import com.valtech.aemsaas.core.utils.search.results.HighlightedDescriptionResolver;
 import com.valtech.aemsaas.core.utils.search.results.HighlightedTitleResolver;
 import java.util.List;
@@ -37,7 +37,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(name = "Search as a Service - Fulltext Search Service",
     service = {FulltextSearchService.class, FulltextSearchConfigurationService.class})
 @Designate(ocd = Configuration.class)
-public class FulltextSearchServiceImpl implements FulltextSearchService, FulltextSearchConfigurationService {
+public class DefaultFulltextSearchService implements FulltextSearchService, FulltextSearchConfigurationService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -75,9 +75,9 @@ public class FulltextSearchServiceImpl implements FulltextSearchService, Fulltex
   }
 
   private Optional<FulltextSearchResults> getFulltextSearchResults(SearchResponse searchResponse) {
-    Optional<ResponseBody> responseBody = searchResponse.get(new ResponseBodyParseStrategy());
+    Optional<ResponseBody> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
     if (responseBody.isPresent()) {
-      Highlighting highlighting = searchResponse.get(new HighlightingParseStrategy())
+      Highlighting highlighting = searchResponse.get(new HighlightingDataExtractionStrategy())
           .orElse(FallbackHighlighting.getInstance());
       return Optional.of(FulltextSearchResults.builder()
           .totalResultsFound(responseBody.get().getNumFound())
@@ -91,7 +91,8 @@ public class FulltextSearchServiceImpl implements FulltextSearchService, Fulltex
   }
 
   private void printResponseHeaderInLog(SearchResponse searchResponse) {
-    searchResponse.get(new ResponseHeaderParseStrategy()).ifPresent(header -> log.debug("Response Header: {}", header));
+    searchResponse.get(new ResponseHeaderDataExtractionStrategy())
+        .ifPresent(header -> log.debug("Response Header: {}", header));
   }
 
   private String getRequestUrl(String index, FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload) {

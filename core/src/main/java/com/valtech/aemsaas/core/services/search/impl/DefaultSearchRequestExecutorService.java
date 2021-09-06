@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 @Slf4j
 @Component(name = "Search as a Service - Search Request Executor Service",
     service = SearchRequestExecutorService.class)
-public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorService {
+public class DefaultSearchRequestExecutorService implements SearchRequestExecutorService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;

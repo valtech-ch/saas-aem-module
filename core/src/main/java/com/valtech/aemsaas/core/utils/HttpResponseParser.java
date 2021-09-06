@@ -13,12 +13,20 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 
+/**
+ * Helper class for parsing http response.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public final class HttpResponseParser {
 
   private final HttpResponse response;
 
+  /**
+   * Gets the response content.
+   *
+   * @return response content string.
+   */
   public String getContentString() {
     try {
       return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8.name());
@@ -28,6 +36,13 @@ public final class HttpResponseParser {
     return StringUtils.EMPTY;
   }
 
+  /**
+   * Returns the response content serialized in a POJO.
+   *
+   * @param gsonModel the POJO type class.
+   * @param <T>       the POJO type.
+   * @return POJO of specified type.
+   */
   public <T> T toGsonModel(Class<T> gsonModel) {
     InputStream in = getContentInputStream();
     if (in != null) {

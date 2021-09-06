@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Singular;
 import org.apache.http.client.utils.URIBuilder;
 
+/**
+ * Helper class that constructs a query string from a list of {@link GetQuery} objects. It uses {@link URIBuilder} to
+ * take advantage of the query params escaping feature.
+ */
 @Builder
 public class GetQueryStringConstructor {
 
@@ -13,6 +17,11 @@ public class GetQueryStringConstructor {
   private List<GetQuery> queries;
 
 
+  /**
+   * Returns the query string.
+   *
+   * @return query string.
+   */
   public String getQueryString() {
     URIBuilder uriBuilder = new URIBuilder();
     queries.stream()

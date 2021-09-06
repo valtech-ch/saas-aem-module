@@ -5,7 +5,10 @@ import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.models.response.search.ResponseHeader;
 import java.util.Optional;
 
-public class ResponseHeaderParseStrategy implements SearchResponseParseStrategy<ResponseHeader> {
+/**
+ * A strategy for extracting response header data.
+ */
+public class ResponseHeaderDataExtractionStrategy implements SearchResponseDataExtractionStrategy<ResponseHeader> {
 
   @Override
   public String propertyName() {
@@ -13,7 +16,7 @@ public class ResponseHeaderParseStrategy implements SearchResponseParseStrategy<
   }
 
   @Override
-  public Optional<ResponseHeader> getResponse(JsonObject response) {
+  public Optional<ResponseHeader> getData(JsonObject response) {
     return Optional.ofNullable(response)
         .map(r -> r.getAsJsonObject(propertyName()))
         .map(jsonObject -> new Gson().fromJson(jsonObject, ResponseHeader.class));

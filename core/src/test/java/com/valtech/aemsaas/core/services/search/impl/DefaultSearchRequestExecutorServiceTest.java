@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith({MockitoExtension.class, AemContextExtension.class})
-class SearchRequestExecutorServiceImplTest {
+class DefaultSearchRequestExecutorServiceTest {
 
   @Mock
   SearchRequest searchRequest;
@@ -56,8 +56,8 @@ class SearchRequestExecutorServiceImplTest {
     when(httpClientBuilderFactory.newBuilder()).thenReturn(httpClientBuilder);
     when(httpClientBuilder.build()).thenReturn(httpClient);
     context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
-    context.registerInjectActivateService(new SearchServiceConnectionConfigurationServiceImpl());
-    testee = context.registerInjectActivateService(new SearchRequestExecutorServiceImpl());
+    context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
+    testee = context.registerInjectActivateService(new DefaultSearchRequestExecutorService());
   }
 
   @Test

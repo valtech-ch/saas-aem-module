@@ -13,18 +13,22 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 
+/**
+ * Represents a POST search request. It requires the request uri and the payload parameters in form of {@link
+ * NameValuePair}.
+ */
 @Slf4j
 @Builder
 public class SearchRequestPost implements SearchRequest {
 
-  private final String url;
+  private final String uri;
 
   @Singular
   private final List<NameValuePair> postParameters;
 
   @Override
   public HttpUriRequest getRequest() {
-    HttpPost httpPost = new HttpPost(url);
+    HttpPost httpPost = new HttpPost(uri);
     createRequestPayload().ifPresent(httpPost::setEntity);
     return httpPost;
   }

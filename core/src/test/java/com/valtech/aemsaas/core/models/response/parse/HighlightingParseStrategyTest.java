@@ -15,13 +15,13 @@ class HighlightingParseStrategyTest {
 
   @Test
   void getResponse() {
-    HighlightingParseStrategy strategy = new HighlightingParseStrategy();
+    HighlightingDataExtractionStrategy strategy = new HighlightingDataExtractionStrategy();
     Assertions.assertThrows(UnsupportedOperationException.class, strategy::propertyName);
-    assertThat(strategy.getResponse(new JsonObject()).isPresent(), is(true));
-    assertThat(strategy.getResponse(new JsonParser().parse(
+    assertThat(strategy.getData(new JsonObject()).isPresent(), is(true));
+    assertThat(strategy.getData(new JsonParser().parse(
             new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
         .getAsJsonObject()).isPresent(), is(true));
-    assertThat(strategy.getResponse(new JsonParser().parse(
+    assertThat(strategy.getData(new JsonParser().parse(
             new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
         .getAsJsonObject()).get(), instanceOf(Highlighting.class));
   }
