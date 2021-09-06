@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+/**
+ * Implementation of {@link GetQuery} that, when used, disables the highlighting feature.
+ */
 public final class HighlightingDisableQuery implements FulltextSearchOptionalGetQuery {
 
   private static final String HIGHLIGHT_SWITCH = "hl";

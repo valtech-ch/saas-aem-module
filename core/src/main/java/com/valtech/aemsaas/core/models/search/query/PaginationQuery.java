@@ -7,6 +7,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+/**
+ * Implementation of {@link GetQuery} that specifies pagination parameters: "start" and "rows".
+ */
 @Slf4j
 public final class PaginationQuery implements FulltextSearchOptionalGetQuery {
 
@@ -18,6 +21,13 @@ public final class PaginationQuery implements FulltextSearchOptionalGetQuery {
   private final NameValuePair start;
   private final NameValuePair rows;
 
+  /**
+   * Constructs a pagination query with current page, results per page/request and the maximum limit.
+   *
+   * @param start        the current result page.
+   * @param rows         the number of results per page/request.
+   * @param rowsMaxLimit the maximum limit of allowed results per page/request.
+   */
   public PaginationQuery(int start, int rows, int rowsMaxLimit) {
     if (isValidStartParameter(start)) {
       this.start = new BasicNameValuePair(START, String.valueOf(start));

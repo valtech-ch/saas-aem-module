@@ -7,7 +7,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 /**
- * A default implementation for term query.
+ * A default implementation for term query. It uses "term" as parameter key.
  */
 public final class DefaultTermQuery implements TermQuery {
 
@@ -16,6 +16,10 @@ public final class DefaultTermQuery implements TermQuery {
 
   private final NameValuePair termQuery;
 
+  /**
+   * Constructs a search term query.
+   * @param value the search term.
+   */
   public DefaultTermQuery(String value) {
     termQuery = new BasicNameValuePair(KEY, getSafeTerm(value));
   }

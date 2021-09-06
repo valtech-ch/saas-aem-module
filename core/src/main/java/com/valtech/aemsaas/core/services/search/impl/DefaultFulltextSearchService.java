@@ -62,15 +62,14 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
     if (searchResponse.isPresent()) {
       printResponseHeaderInLog(searchResponse.get());
       return getFulltextSearchResults(searchResponse.get());
-    } else {
-      log.debug("No Search Response received");
     }
     return Optional.empty();
   }
 
   private void validateIndex(String index) {
     if (StringUtils.isBlank(index)) {
-      throw new IllegalArgumentException("Index type is missing.");
+      throw new IllegalArgumentException(
+          "SaaS index name is missing. Please configure index name in Context Aware configuration.");
     }
   }
 
@@ -131,16 +130,18 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
   public @interface Configuration {
 
     int DEFAULT_ROWS_MAX_LIMIT = 9999;
+    String DEFAULT_API_ACTION = "/search";
+    String DEFAULT_API_BASE_PATH = "/api/v3";
 
     @AttributeDefinition(name = "Api base path",
         description = "Api base path",
         type = AttributeType.STRING)
-    String fulltextSearchService_apiBaseUrl() default "/api/v3";
+    String fulltextSearchService_apiBaseUrl() default DEFAULT_API_BASE_PATH;
 
     @AttributeDefinition(name = "Api action",
         description = "What kind of action should be defined",
         type = AttributeType.STRING)
-    String fulltextSearchService_apiAction() default "/search";
+    String fulltextSearchService_apiAction() default DEFAULT_API_ACTION;
 
     @AttributeDefinition(name = "Rows max limit.",
         description = "Maximum number of results per page allowed.",
