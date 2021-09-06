@@ -1,0 +1,5 @@
+<sly data-sly-use.search="com.valtech.aemsaas.core.models.sling.search.Search"></sly>
+<sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
+     data-sly-call="${template.placeholder @ isEmpty=true}"></sly>
+<div
+    data-sly-resource="${'searchresults-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>

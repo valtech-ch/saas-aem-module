@@ -1,5 +1,6 @@
 package com.valtech.aemsaas.core.utils.search.results;
 
+import com.day.cq.commons.LanguageUtil;
 import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import com.valtech.aemsaas.core.models.response.search.SearchResult;
 import java.util.Optional;
@@ -19,7 +20,8 @@ public final class HighlightedDescriptionResolver {
       return searchResult.getMetaDescription();
     }
     return Optional.ofNullable(highlighting.getItems().get(searchResult.getId()))
-        .map(stringListMap -> stringListMap.getOrDefault(META_DESCRIPTION_PREFIX + searchResult.getLanguage(),
+        .map(stringListMap -> stringListMap.getOrDefault(
+            META_DESCRIPTION_PREFIX + LanguageUtil.getLanguage(searchResult.getLanguage()).getLanguageCode(),
             stringListMap.get(CONTENT_PREFIX + searchResult.getLanguage())))
         .map(list -> String.join(" ", list))
         .filter(StringUtils::isNotBlank)

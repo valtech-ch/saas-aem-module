@@ -1,5 +1,6 @@
 package com.valtech.aemsaas.core.utils.search.results;
 
+import com.day.cq.commons.LanguageUtil;
 import com.valtech.aemsaas.core.models.response.search.Highlighting;
 import com.valtech.aemsaas.core.models.response.search.SearchResult;
 import java.util.Optional;
@@ -19,7 +20,8 @@ public final class HighlightedTitleResolver {
       return searchResult.getTitle();
     }
     return Optional.ofNullable(highlighting.getItems().get(searchResult.getId()))
-        .map(stringListMap -> stringListMap.get(TITLE_PREFIX + searchResult.getLanguage()))
+        .map(stringListMap -> stringListMap.get(TITLE_PREFIX + LanguageUtil.getLanguage(searchResult.getLanguage())
+            .getLanguageCode()))
         .map(list -> String.join(HIGHLIGHTED_ITEMS_DELIMITER, list))
         .filter(StringUtils::isNotBlank)
         .orElse(searchResult.getTitle());
