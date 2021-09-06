@@ -1,7 +1,7 @@
-package com.valtech.aemsaas.core.services;
+package com.valtech.aemsaas.core.services.search;
 
 /**
- * Provides methods for retrieving configuration for the search service details
+ * Provides methods for retrieving configuration for the search service connection details.
  */
 public interface SearchServiceConnectionConfigurationService {
 

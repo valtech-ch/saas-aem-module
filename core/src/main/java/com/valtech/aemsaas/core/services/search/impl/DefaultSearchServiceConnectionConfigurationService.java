@@ -1,7 +1,7 @@
-package com.valtech.aemsaas.core.services.impl;
+package com.valtech.aemsaas.core.services.search.impl;
 
-import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
-import com.valtech.aemsaas.core.services.impl.SearchServiceConnectionConfigurationServiceImpl.Configuration;
+import com.valtech.aemsaas.core.services.search.SearchServiceConnectionConfigurationService;
+import com.valtech.aemsaas.core.services.search.impl.DefaultSearchServiceConnectionConfigurationService.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -16,7 +16,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     service = SearchServiceConnectionConfigurationService.class)
 @Designate(ocd = Configuration.class)
 @Slf4j
-public class SearchServiceConnectionConfigurationServiceImpl implements SearchServiceConnectionConfigurationService {
+public class DefaultSearchServiceConnectionConfigurationService implements SearchServiceConnectionConfigurationService {
 
   private Configuration configuration;
 

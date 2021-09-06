@@ -1,9 +1,10 @@
-package com.valtech.aemsaas.core.services.impl;
+package com.valtech.aemsaas.core.services.search.impl;
 
-import com.valtech.aemsaas.core.function.HttpResponseConsumer;
+import com.google.gson.JsonObject;
 import com.valtech.aemsaas.core.models.request.SearchRequest;
-import com.valtech.aemsaas.core.services.SearchRequestExecutorService;
-import com.valtech.aemsaas.core.services.SearchServiceConnectionConfigurationService;
+import com.valtech.aemsaas.core.models.response.search.SearchResponse;
+import com.valtech.aemsaas.core.services.search.SearchRequestExecutorService;
+import com.valtech.aemsaas.core.services.search.SearchServiceConnectionConfigurationService;
 import com.valtech.aemsaas.core.utils.HttpHostResolver;
 import com.valtech.aemsaas.core.utils.HttpResponseParser;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -34,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 @Slf4j
 @Component(name = "Search as a Service - Search Request Executor Service",
     service = SearchRequestExecutorService.class)
-public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorService {
+public class DefaultSearchRequestExecutorService implements SearchRequestExecutorService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -45,24 +47,35 @@ public class SearchRequestExecutorServiceImpl implements SearchRequestExecutorSe
   private HttpClientBuilder httpClientBuilder;
 
   @Override
-  public <R> Optional<R> execute(@NonNull SearchRequest searchRequest,
-      @NonNull HttpResponseConsumer<R> httpResponseConsumer) {
+  public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
     HttpUriRequest request = searchRequest.getRequest();
-    try (CloseableHttpClient httpClient = httpClientBuilder.build();
-        CloseableHttpResponse response = httpClient.execute(request)) {
+    CloseableHttpClient httpClient = httpClientBuilder.build();
+    CloseableHttpResponse response = null;
+    SearchResponse searchResponse = null;
+    try {
+      response = httpClient.execute(request);
       log.info("Executing {} request on search api {}", request.getMethod(), request.getURI());
       log.info("Status Code: {}", response.getStatusLine().getStatusCode());
       log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
       if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
+        HttpResponseParser httpResponseParser = new HttpResponseParser(response);
         if (log.isDebugEnabled()) {
-          log.debug("Response content: {}", new HttpResponseParser(response).getContentString());
+          log.debug("Response content: {}", httpResponseParser.getContentString());
         }
-        return Optional.ofNullable(httpResponseConsumer.apply(response));
+        JsonObject jsonResponse = new HttpResponseParser(response).toGsonModel(JsonObject.class);
+        if (jsonResponse != null) {
+          searchResponse = new SearchResponse(jsonResponse);
+        }
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);
+    } finally {
+      if (response != null) {
+        IOUtils.closeQuietly(response, e -> log.error("Could not close response.", e));
+        IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
+      }
     }
-    return Optional.empty();
+    return Optional.ofNullable(searchResponse);
   }
 
   @Activate

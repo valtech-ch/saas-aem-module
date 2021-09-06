@@ -1,0 +1,85 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 8,
+    "params": {
+      "q": "prod_lpln:valtech*^20 OR all_content_en:\"valtech\"^12 OR (url_en:valtech )^10 OR (title_en:valtech )^6 OR (meta_keywords_en:valtech )^4 OR (meta_description_en:valtech )^2 OR content_en:(valtech)^1",
+      "facet.field": "domain",
+      "spellcheck.q": "valtech",
+      "spellcheck.dictionary": "spell_dict_en",
+      "hl": "true",
+      "hl.simple.post": "</em>",
+      "hl.q": "_en:(valtech)",
+      "start": "0",
+      "fq": "language:en",
+      "hl.fl": "title_en,meta_description_en,content_en",
+      "rows": "10",
+      "hl.simple.pre": "<em>"
+    }
+  },
+  "response": {
+    "numFound": 1591,
+    "start": 0,
+    "docs": [
+      {
+        "meta_description": "Valtech Group organization chart",
+        "domain": "www.valtech.com",
+        "language": "en",
+        "title": "Valtech Group | Valtech",
+        "url": "https://www.valtech.com/about/valtech-group/",
+        "id": "https://www.valtech.com/about/valtech-group/",
+        "[elevated]": false
+      },
+      {
+        "meta_description": "Even in the early days, Valtech’s goals were well beyond its years. Our passion for innovation and technology helped ignite the long-term vision of the company. Now 25, Valtech is a digital consulting agency unlike any other. Discover the evolution of Valtech from the perspective of two employees who have been here since the beginning.",
+        "domain": "www.valtech.com",
+        "language": "en",
+        "title": "Valtech Then & Now\n\nThe evolution of Valtech as told by two Valtechers  | Valtech",
+        "url": "https://www.valtech.com/insights/valtech-then--now/",
+        "id": "https://www.valtech.com/insights/valtech-then--now/",
+        "[elevated]": false
+      }
+    ]
+  },
+  "facet_counts": {
+    "facet_queries": {},
+    "facet_fields": {
+      "domain": [
+        "www.valtech.com",
+        1584
+      ]
+    },
+    "facet_ranges": {},
+    "facet_intervals": {},
+    "facet_heatmaps": {}
+  },
+  "highlighting": {
+    "https://www.valtech.com/about/valtech-group/": {
+      "title_en": [
+        "<em>Valtech</em> Group | <em>Valtech</em>"
+      ],
+      "meta_description_en": [
+        "<em>Valtech</em> Group organization chart"
+      ],
+      "content_en": [
+        "<em>Valtech</em> <em>Valtech</em> Group Luxembourg (HQ) <em>Valtech</em> SE UK <em>Valtech</em> Ltd. 100% True Clarity* * 100% El Chalten 100% <em>Valtech</em> LLC. (Ukraine) 100% Argentina <em>Valtech</em> Digital SA 95% Brazil <em>Valtech</em> Brasil"
+      ]
+    },
+    "https://www.valtech.com/insights/valtech-then--now/": {
+      "title_en": [
+        "<em>Valtech</em> Then & Now\n\nThe evolution of <em>Valtech</em> as told by two <em>Valtechers</em>  | <em>Valtech</em>"
+      ],
+      "meta_description_en": [
+        "Even in the early days, <em>Valtech</em>’s goals were well beyond its years. Our passion for innovation and technology helped ignite the long-term vision of the company. Now 25, <em>Valtech</em> is a digital"
+      ],
+      "content_en": [
+        "<em>Valtech</em> <em>Valtech</em> Insight <em>Valtech</em> Then & Now: The Evolution of <em>Valtech</em> Told by Two <em>Valtechers</em> Share Global Content Strategist <em>Valtech</em> kirah.bradley@<em>valtech</em>.com August 29, 2018 Even in the early days,"
+      ]
+    }
+  },
+  "spellcheck": {
+    "suggestions": [],
+    "correctlySpelled": true,
+    "collations": []
+  }
+}
