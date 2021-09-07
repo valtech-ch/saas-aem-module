@@ -7,10 +7,9 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.fulltextsearch.DefaultFulltextSearchGetRequestPayload;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
-import com.valtech.aem.saas.api.getquery.DefaultLanguageQuery;
-import com.valtech.aem.saas.api.getquery.DefaultTermQuery;
+import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
+import com.valtech.aem.saas.core.query.DefaultTermQuery;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
@@ -43,7 +42,7 @@ class DefaultFulltextSearchServiceTest {
 
   @Test
   void testGetResults_illegalIndexValue() {
-    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchGetRequestPayload.builder(
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
         new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
     assertThrows(IllegalArgumentException.class, () -> testee.getResults(null, payload));
     assertThrows(IllegalArgumentException.class, () -> testee.getResults("", payload));
@@ -52,7 +51,7 @@ class DefaultFulltextSearchServiceTest {
   @Test
   void testGetResults_failedRequestExecution() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(Optional.empty());
-    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchGetRequestPayload.builder(
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
         new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
     MatcherAssert.assertThat(testee.getResults("foo", payload).isPresent(), is(false));
   }
@@ -61,7 +60,7 @@ class DefaultFulltextSearchServiceTest {
   void testGetResults_responseBodyMissing() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject())));
-    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchGetRequestPayload.builder(
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
         new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
     MatcherAssert.assertThat(testee.getResults("foo", payload).isPresent(), is(false));
   }
@@ -72,7 +71,7 @@ class DefaultFulltextSearchServiceTest {
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
             .getAsJsonObject())));
-    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchGetRequestPayload.builder(
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
         new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
     MatcherAssert.assertThat(testee.getResults("foo", payload).isPresent(), is(true));
   }

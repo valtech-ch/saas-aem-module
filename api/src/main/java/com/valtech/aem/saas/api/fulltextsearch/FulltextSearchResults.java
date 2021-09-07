@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 
+/**
+ * POJO class representing the fulltext search results data. Actual results of type {@link Result} and results metadata:
+ * current result page and the total number of results found.
+ */
 @Builder
 @Value
 public class FulltextSearchResults {

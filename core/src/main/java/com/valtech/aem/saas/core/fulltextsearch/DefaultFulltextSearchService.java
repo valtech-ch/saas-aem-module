@@ -92,13 +92,12 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
   }
 
   private String getRequestUrl(String index, FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload) {
-    String requestUrl = String.format("%s%s%s%s%s",
+    return String.format("%s%s%s%s%s",
         searchServiceConnectionConfigurationService.getBaseUrl(),
         configuration.fulltextSearchService_apiBaseUrl(),
         index,
         configuration.fulltextSearchService_apiAction(),
         fulltextSearchGetRequestPayload.getPayload());
-    return requestUrl;
   }
 
   private List<Result> getProcessedResults(List<SearchResult> searchResults,
