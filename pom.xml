@@ -53,6 +53,9 @@
         <aem.sdk.api>2021.8.5705.20210810T082946Z-210700</aem.sdk.api>
         <aemanalyser.version>1.1.2</aemanalyser.version>
         <componentGroupName>Valtech AEM SAAS</componentGroupName>
+
+        <sonar.organization>valtech-ch</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <build>
