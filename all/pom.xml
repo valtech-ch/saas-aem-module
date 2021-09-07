@@ -62,6 +62,11 @@
                         </embedded>
                         <embedded>
                             <groupId>com.valtech.aemsaas</groupId>
+                            <artifactId>saas-aem-module.api</artifactId>
+                            <target>/apps/saas-aem-module-packages/application/install</target>
+                        </embedded>
+                        <embedded>
+                            <groupId>com.valtech.aemsaas</groupId>
                             <artifactId>saas-aem-module.core</artifactId>
                             <target>/apps/saas-aem-module-packages/application/install</target>
                         </embedded>
