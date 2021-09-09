@@ -334,8 +334,8 @@
                     jcr:primaryType="nt:unstructured"
                     jcr:title="Generic Page"
                     sling:resourceType="wcm/core/components/policy/policy"
-                    clientlibs="[saas-aem-module.dependencies,saas-aem-module.site]"
-                    clientlibsJsHead="saas-aem-module.dependencies">
+                    clientlibs="[saas.dependencies,saas.site]"
+                    clientlibsJsHead="saas.dependencies">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy>
             </page>

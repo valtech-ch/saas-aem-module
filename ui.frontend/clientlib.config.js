@@ -45,7 +45,7 @@ module.exports = {
     {
       ...libsBaseConfig,
       name: 'clientlib-dependencies',
-      categories: ['saas-aem-module.dependencies'],
+      categories: ['saas.dependencies'],
       assets: {
         // Copy entrypoint scripts and stylesheets into the respective ClientLib
         // directories
@@ -64,8 +64,8 @@ module.exports = {
     {
       ...libsBaseConfig,
       name: 'clientlib-site',
-      categories: ['saas-aem-module.site'],
-      dependencies: ['saas-aem-module.dependencies'],
+      categories: ['saas.site'],
+      dependencies: ['saas.dependencies'],
       assets: {
         // Copy entrypoint scripts and stylesheets into the respective ClientLib
         // directories
