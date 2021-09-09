@@ -1,4 +1,4 @@
-# Search as a Service AEM module
+# AEM Module to integrates Valtech's Search as a Service
 
 This is a project template for AEM-based applications. It is intended as a best-practice set of examples as well as a potential starting point to develop your own functionality.
 
