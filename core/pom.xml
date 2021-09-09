@@ -43,7 +43,8 @@
                         </goals>
                         <configuration>
                             <bnd><![CDATA[
-Import-Package: javax.annotation;version=0.0.0,*
+                            Import-Package: javax.annotation;version=0.0.0,*
+                            Export-Package: com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchRequestPayload;com.valtech.aem.saas.core.query;!com.valtech.aem.saas.core.query.GetQueryStringConstructor;
                                 ]]></bnd>
                         </configuration>
                     </execution>
