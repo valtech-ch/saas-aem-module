@@ -1,5 +1,35 @@
-<sly data-sly-use.search="com.valtech.aemsaas.core.models.sling.search.Search"></sly>
+<sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.Search"></sly>
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
-     data-sly-call="${template.placeholder @ isEmpty=true}"></sly>
-<div
-    data-sly-resource="${'searchresults-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>
+     data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
+
+<div class="saas-search-results-wrapper ${wcmmode.edit? 'edit-component-wrapper':''}">
+  <div class="search-result-header" data-sly-test="${!wcmmode.edit}">
+    <div class="search-input-detail">
+      <div class="typeahead__container search-row">
+        <div class="search-input-wrapper typeahead__field">
+          <form id="searchForm" action="${currentPage.path @ extension='html'}">
+            <input data-sly-test="${wcmmode.disabled}" type="hidden" name="wcmmode" value="disabled">
+            <input type="search"
+                   name="term"
+                   value="${model.term}"
+                   placeholder="${model.searchFieldPlaceholderText}"
+                   autocomplete="off"/>
+            <button type="submit">${model.searchButtonText}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="saas-tabs">
+    <div
+        data-sly-resource="${'searchresults-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>
+
+  </div>
+</div>
+
+
+
+
+
+

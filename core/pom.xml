@@ -18,12 +18,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.valtech.aemsaas</groupId>
-        <artifactId>saas-aem-module</artifactId>
+        <groupId>com.valtech.aem</groupId>
+        <artifactId>saas</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>saas-aem-module.core</artifactId>
+    <artifactId>saas.core</artifactId>
     <name>Valtech AEM SAAS - Core</name>
     <description>Core bundle for Valtech AEM SAAS</description>
     <build>
@@ -43,7 +43,8 @@
                         </goals>
                         <configuration>
                             <bnd><![CDATA[
-Import-Package: javax.annotation;version=0.0.0,*
+                            Import-Package: javax.annotation;version=0.0.0,*
+                            Export-Package: com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchRequestPayload;com.valtech.aem.saas.core.query;!com.valtech.aem.saas.core.query.GetQueryStringConstructor;
                                 ]]></bnd>
                         </configuration>
                     </execution>
@@ -81,6 +82,11 @@ Import-Package: javax.annotation;version=0.0.0,*
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.valtech.aem</groupId>
+            <artifactId>saas.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Other Dependencies -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -94,6 +100,10 @@ Import-Package: javax.annotation;version=0.0.0,*
         <dependency>
             <groupId>com.adobe.aem</groupId>
             <artifactId>aem-sdk-api</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>gson</artifactId>
+            <groupId>com.google.code.gson</groupId>
         </dependency>
 
         <!-- Testing -->

@@ -6,8 +6,8 @@
     <!-- P A R E N T  P R O J E C T  D E S C R I P T I O N                      -->
     <!-- ====================================================================== -->
     <parent>
-        <groupId>com.valtech.aemsaas</groupId>
-        <artifactId>saas-aem-module</artifactId>
+        <groupId>com.valtech.aem</groupId>
+        <artifactId>saas</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -15,7 +15,7 @@
     <!-- ====================================================================== -->
     <!-- P R O J E C T  D E S C R I P T I O N                                   -->
     <!-- ====================================================================== -->
-    <artifactId>saas-aem-module.ui.apps.structure</artifactId>
+    <artifactId>saas.ui.apps.structure</artifactId>
     <packaging>content-package</packaging>
     <name>Valtech AEM SAAS - Repository Structure Package</name>
     <description>

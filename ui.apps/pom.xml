@@ -21,8 +21,8 @@
     <!-- P A R E N T  P R O J E C T  D E S C R I P T I O N                      -->
     <!-- ====================================================================== -->
     <parent>
-        <groupId>com.valtech.aemsaas</groupId>
-        <artifactId>saas-aem-module</artifactId>
+        <groupId>com.valtech.aem</groupId>
+        <artifactId>saas</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -30,7 +30,7 @@
     <!-- ====================================================================== -->
     <!-- P R O J E C T  D E S C R I P T I O N                                   -->
     <!-- ====================================================================== -->
-    <artifactId>saas-aem-module.ui.apps</artifactId>
+    <artifactId>saas.ui.apps</artifactId>
     <packaging>content-package</packaging>
     <name>Valtech AEM SAAS - UI apps</name>
     <description>UI apps package for Valtech AEM SAAS</description>
@@ -51,13 +51,13 @@
                     <properties>
                         <cloudManagerTarget>none</cloudManagerTarget>
                     </properties>
-                    <group>com.valtech.aemsaas</group>
-                    <name>saas-aem-module.ui.apps</name>
+                    <group>com.valtech.aem</group>
+                    <name>saas.ui.apps</name>
                     <packageType>application</packageType>
                     <repositoryStructurePackages>
                         <repositoryStructurePackage>
-                            <groupId>com.valtech.aemsaas</groupId>
-                            <artifactId>saas-aem-module.ui.apps.structure</artifactId>
+                            <groupId>com.valtech.aem</groupId>
+                            <artifactId>saas.ui.apps.structure</artifactId>
                         </repositoryStructurePackage>
                     </repositoryStructurePackages>
                     <dependencies>
@@ -106,21 +106,21 @@
     <!-- ====================================================================== -->
     <dependencies>
         <dependency>
-            <groupId>com.valtech.aemsaas</groupId>
-            <artifactId>saas-aem-module.core</artifactId>
+            <groupId>com.valtech.aem</groupId>
+            <artifactId>saas.core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.valtech.aemsaas</groupId>
-            <artifactId>saas-aem-module.ui.frontend</artifactId>
+            <groupId>com.valtech.aem</groupId>
+            <artifactId>saas.ui.frontend</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
 
         <dependency>
-            <groupId>com.valtech.aemsaas</groupId>
-            <artifactId>saas-aem-module.ui.apps.structure</artifactId>
+            <groupId>com.valtech.aem</groupId>
+            <artifactId>saas.ui.apps.structure</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
