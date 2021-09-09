@@ -34,7 +34,7 @@ services:
     volumes:
       - ./target/reports:/tmp/reports
       - 'shared:/tmp/shared'
-    image: 'com.valtech.aemsaas-saas-aem-module.ui.tests/ui.tests:latest'
+    image: 'com.valtech.aem-saas.ui.tests/ui.tests:latest'
   selenium-firefox:
     image: 'selenium/standalone-firefox-debug'
     ports:

@@ -17,8 +17,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.valtech.aemsaas</groupId>
-    <artifactId>saas-aem-module</artifactId>
+    <groupId>com.valtech.aem</groupId>
+    <artifactId>saas</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <name>Valtech AEM SAAS</name>
@@ -26,6 +26,7 @@
 
     <modules>
         <module>all</module>
+        <module>api</module>
         <module>core</module>
         <module>ui.frontend</module>
         <module>ui.apps</module>
