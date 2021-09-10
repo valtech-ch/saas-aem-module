@@ -2,6 +2,7 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import static com.valtech.aem.saas.api.fulltextsearch.Search.DEFAULT_RESULTS_PER_PAGE;
 import static com.valtech.aem.saas.api.fulltextsearch.Search.DEFAULT_START_PAGE;
+import static com.valtech.aem.saas.api.fulltextsearch.Search.SEARCH_TERM;
 import static com.valtech.aem.saas.core.fulltextsearch.SearchImpl.RESOURCE_TYPE;
 
 import com.adobe.cq.export.json.ComponentExporter;
@@ -84,7 +85,7 @@ public class SearchResultsImpl implements SearchResults {
   private void init() {
     configuredResultsPerPage = getConfiguredResultsPerPage();
     RequestParameters requestParametrs = new RequestParameters(request);
-    term = requestParametrs.getParameter("term");
+    term = requestParametrs.getParameter(SEARCH_TERM);
     if (StringUtils.isNotBlank(term)) {
       startPage = new StringToInteger(requestParametrs.getParameter("start")).asInt().orElse(DEFAULT_START_PAGE);
       resultsPerPage = resolveResultsPerPage();

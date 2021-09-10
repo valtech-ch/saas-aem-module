@@ -113,7 +113,7 @@ public class SearchImpl implements Search {
   private void init() {
     if (request != null) {
       RequestParameters requestParametrs = new RequestParameters(request);
-      term = requestParametrs.getParameter("term");
+      term = requestParametrs.getParameter(SEARCH_TERM);
     }
   }
 }
