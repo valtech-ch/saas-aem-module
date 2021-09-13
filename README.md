@@ -124,3 +124,12 @@ A ClientLib will consist of the following files and directories:
 The project comes with the auto-public repository configured. To setup the repository in your Maven settings, refer to:
 
     http://helpx.adobe.com/experience-manager/kb/SetUpTheAdobeMavenRepository.html
+
+
+## SonarCloud integration
+
+In order to scan code to detect bugs, vulnerabilities and code smells we integrated this project with SonarCloud. The GitHub action for Sonarcloud analysis runs each time when there is a Pull Request created or commit to main branch.
+
+### Example of pull request analysis
+
+<img src="./images/SonarCloud-analysis-in-Checks.png">
