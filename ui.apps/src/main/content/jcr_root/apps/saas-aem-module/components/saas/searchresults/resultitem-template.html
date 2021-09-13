@@ -1,11 +1,15 @@
 <sly data-sly-template.resultItem="${@ model, count}">
-  <div class="result-item" result-item>
-    <a href="${model.url}">
-      <div class="result-meta">
-        <h3>${'{0}. {1}' @ format=[count,model.title], context='unsafe'}</h3>
-        <div class="result-info"><cite class="result-path">${model.url}</cite></div>
-        <div class="result-outline"><span class="" meta-description>${model.description @ context='unsafe'}</span></div>
+  <a class="saas-aem-module-search__results-item"
+     href="${model.url}">
+    <div class="saas-aem-module-search__results-item-content">
+      <h3 class="saas-aem-module-search__results-item-title">${'{0}. {1}' @ format=[count,model.title],
+        context='unsafe'}</h3>
+      <div class="saas-aem-module-search__results-item-url">
+        <cite>${model.url}</cite>
       </div>
-    </a>
-  </div>
+      <div class="saas-aem-module-search__results-item-description">
+        <span>${model.description @ context='unsafe'}</span>
+      </div>
+    </div>
+  </a>
 </sly>

@@ -5,13 +5,15 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchImpl.RESOURCE_TYPE;
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ContainerExporter;
 import com.adobe.cq.export.json.ExporterConstants;
+import com.day.cq.i18n.I18n;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
-import com.valtech.aem.saas.core.util.request.RequestParameters;
-import com.valtech.aem.saas.core.util.resource.ResourceChildren;
+import com.valtech.aem.saas.core.common.request.RequestParameters;
+import com.valtech.aem.saas.core.common.resource.ResourceChildren;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,7 +48,8 @@ import org.apache.sling.models.factory.ModelFactory;
 public class SearchImpl implements Search {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/saas/search";
-  public static final String NN_SEARCHRESULTS_TABS_CONTAINER = "searchresults-tabs";
+  public static final String NN_SEARCH_RESULTS_TABS_CONTAINER = "searchresults-tabs";
+  public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
 
   @Self
   private SlingHttpServletRequest request;
@@ -54,9 +57,12 @@ public class SearchImpl implements Search {
   @OSGiService
   protected ModelFactory modelFactory;
 
+  @OSGiService
+  private I18nProvider i18nProvider;
+
   @Getter
   @ValueMapValue
-  @Default(intValues = DEFAULT_RESULTS_PER_PAGE)
+  @Default(intValues = SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE)
   private int resultsPerPage;
 
   @Getter
@@ -64,14 +70,10 @@ public class SearchImpl implements Search {
   @ValueMapValue
   private String searchFieldPlaceholderText;
 
-  @Getter
   @JsonInclude(Include.NON_EMPTY)
-  @ValueMapValue
   private String searchButtonText;
 
-  @Getter
   @JsonInclude(Include.NON_EMPTY)
-  @ValueMapValue
   private String loadMoreButtonText;
 
   @JsonInclude(Include.NON_NULL)
@@ -83,10 +85,12 @@ public class SearchImpl implements Search {
   @JsonInclude(Include.NON_EMPTY)
   private String term;
 
+  private I18n i18n;
+
   @NonNull
   @Override
   public Map<String, ? extends ComponentExporter> getExportedItems() {
-    return Optional.ofNullable(request.getResource().getChild(NN_SEARCHRESULTS_TABS_CONTAINER))
+    return Optional.ofNullable(request.getResource().getChild(NN_SEARCH_RESULTS_TABS_CONTAINER))
         .map(ResourceChildren::new)
         .map(ResourceChildren::getDirectChildren)
         .orElse(Stream.empty())
@@ -112,8 +116,19 @@ public class SearchImpl implements Search {
   @PostConstruct
   private void init() {
     if (request != null) {
+      i18n = i18nProvider.getI18n(request);
       RequestParameters requestParametrs = new RequestParameters(request);
-      term = requestParametrs.getParameter(SEARCH_TERM);
+      term = requestParametrs.getParameter(SearchResultsImpl.SEARCH_TERM);
     }
+  }
+
+  @Override
+  public String getSearchButtonText() {
+    return i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
+  }
+
+  @Override
+  public String getLoadMoreButtonText() {
+    return i18n.get(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
   }
 }

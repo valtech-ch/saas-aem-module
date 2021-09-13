@@ -1,4 +1,4 @@
-package com.valtech.aem.saas.core.util.stream;
+package com.valtech.aem.saas.core.util;
 
 import java.util.Iterator;
 import java.util.stream.Stream;

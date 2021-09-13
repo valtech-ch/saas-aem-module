@@ -1,4 +1,4 @@
-package com.valtech.aem.saas.core.util.page;
+package com.valtech.aem.saas.core.common.page;
 
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
@@ -22,6 +22,6 @@ public final class ContainingPage {
 
   private Optional<PageManager> getPageManager() {
     return LoggedOptional.of(resourceResolver.adaptTo(PageManager.class),
-        logger -> logger.error("Can not obrain page manager object."));
+        logger -> logger.error("Can not obtain page manager object."));
   }
 }

@@ -1,9 +1,9 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.day.cq.wcm.api.Page;
-import com.valtech.aem.saas.core.util.page.ContainingPage;
-import com.valtech.aem.saas.core.util.request.GetRequestWrapper;
-import com.valtech.aem.saas.core.util.resource.ResourceChildren;
+import com.valtech.aem.saas.core.common.page.ContainingPage;
+import com.valtech.aem.saas.core.common.request.GetRequestWrapper;
+import com.valtech.aem.saas.core.common.resource.ResourceChildren;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;

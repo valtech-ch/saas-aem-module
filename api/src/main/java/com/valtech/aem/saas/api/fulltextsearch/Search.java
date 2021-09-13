@@ -3,23 +3,50 @@ package com.valtech.aem.saas.api.fulltextsearch;
 import com.adobe.cq.export.json.ContainerExporter;
 import java.util.List;
 
-
+/**
+ * Represents a model of the aem search component.
+ */
 public interface Search extends ContainerExporter {
 
-  int DEFAULT_START_PAGE = 0;
-  int DEFAULT_RESULTS_PER_PAGE = 10;
-  String SEARCH_TERM = "q";
-
-
+  /**
+   * Retrieves the search term present in the adapted request.
+   *
+   * @return search term.
+   */
   String getTerm();
 
+  /**
+   * Retrieves a list of author configured search filter items.
+   *
+   * @return list of filter details.
+   */
   List<Filter> getFilters();
 
+  /**
+   * Retrieves an author configured value for the max limit of results per request/page
+   *
+   * @return max number of results per request.
+   */
   int getResultsPerPage();
 
+  /**
+   * Gets an author configured value for search input field's placeholder.
+   *
+   * @return placeholder text.
+   */
   String getSearchFieldPlaceholderText();
 
+  /**
+   * Gets the label for the search button.
+   *
+   * @return search button text.
+   */
   String getSearchButtonText();
 
+  /**
+   * Gets the label for the load more results button
+   *
+   * @return load more button text.
+   */
   String getLoadMoreButtonText();
 }

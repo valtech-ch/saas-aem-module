@@ -1,5 +1,6 @@
-package com.valtech.aem.saas.core.util.request;
+package com.valtech.aem.saas.core.common.request;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -7,6 +8,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 @RequiredArgsConstructor
 public final class RequestParameters {
 
+  @NonNull
   private final SlingHttpServletRequest request;
 
   public String getParameter(String name) {

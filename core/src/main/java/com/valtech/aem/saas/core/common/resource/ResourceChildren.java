@@ -1,13 +1,15 @@
-package com.valtech.aem.saas.core.util.resource;
+package com.valtech.aem.saas.core.common.resource;
 
-import com.valtech.aem.saas.core.util.stream.StreamUtils;
+import com.valtech.aem.saas.core.util.StreamUtils;
 import java.util.stream.Stream;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.sling.api.resource.Resource;
 
 @RequiredArgsConstructor
 public final class ResourceChildren {
 
+  @NonNull
   private final Resource resource;
 
   public Stream<Resource> getDirectChildren() {
