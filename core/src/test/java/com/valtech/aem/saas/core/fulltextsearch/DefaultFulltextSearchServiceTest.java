@@ -59,7 +59,7 @@ class DefaultFulltextSearchServiceTest {
   @Test
   void testGetResults_responseBodyMissing() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
-        Optional.of(new SearchResponse(new JsonObject())));
+        Optional.of(new SearchResponse(new JsonObject(), true)));
     FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
         new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
     MatcherAssert.assertThat(testee.getResults("foo", payload).isPresent(), is(false));
@@ -70,7 +70,7 @@ class DefaultFulltextSearchServiceTest {
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
-            .getAsJsonObject())));
+            .getAsJsonObject(), true)));
     FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
         new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
     MatcherAssert.assertThat(testee.getResults("foo", payload).isPresent(), is(true));
