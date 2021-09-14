@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import java.util.Optional;
 
 /**
@@ -15,8 +15,10 @@ public class ResponseBodyDataExtractionStrategy implements SearchResponseDataExt
   }
 
   @Override
-  public Optional<ResponseBody> getData(JsonObject response) {
+  public Optional<ResponseBody> getData(JsonElement response) {
     return Optional.ofNullable(response)
+        .filter(JsonElement::isJsonObject)
+        .map(JsonElement::getAsJsonObject)
         .map(r -> r.getAsJsonObject(propertyName()))
         .map(jsonObject -> new Gson().fromJson(jsonObject, ResponseBody.class));
   }

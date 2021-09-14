@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "identifier": 1,
+    "language": "en",
+    "project_id": 1,
+    "term": "foo",
+    "url": "foo/bar"
+  },
+  {
+    "id": 4,
+    "identifier": 1,
+    "language": "de",
+    "project_id": 1,
+    "term": "baz",
+    "url": "foo/baz"
+  },
+  {
+    "id": 5,
+    "identifier": 1,
+    "language": "test123",
+    "project_id": 1,
+    "term": "qux",
+    "url": "baz/qux"
+  }
+]

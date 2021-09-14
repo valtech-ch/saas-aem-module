@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class ResponseHeaderDataExtractionStrategyTest {
 
   @Test
-  void getResponse() {
+  void testGetData() {
     ResponseHeaderDataExtractionStrategy strategy = new ResponseHeaderDataExtractionStrategy();
     assertThat(strategy.propertyName(), is("responseHeader"));
     assertThat(strategy.getData(new JsonObject()).isPresent(), is(false));
