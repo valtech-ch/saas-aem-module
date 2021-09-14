@@ -1,21 +1,21 @@
 package com.valtech.aem.saas.core.query;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import java.util.Arrays;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 class QueryStringConstructorTest {
 
   @Test
   void testGetQueryString() {
-    MatcherAssert.assertThat(GetQueryStringConstructor.builder()
+    assertThat(GetQueryStringConstructor.builder()
             .query(new DefaultTermQuery("foo"))
             .build().getQueryString(),
         is("?term=foo"));
 
-    MatcherAssert.assertThat(GetQueryStringConstructor.builder()
+    assertThat(GetQueryStringConstructor.builder()
             .query(new DefaultTermQuery("foo"))
             .queries(Arrays.asList(new PaginationQuery(1, 100, 1000),
                 FiltersQuery.builder().filterEntry("bar", "/foo/baz").build()))

@@ -16,6 +16,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicNameValuePair;
@@ -58,10 +59,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
 
     SearchRequest searchRequest = SearchRequestPost.builder()
         .uri(getRequestUri(client, configuration.indexUpdateService_apiIndexTriggerAction()))
-        .httpEntity(EntityBuilder.create().setParameters(new BasicNameValuePair(REQUEST_PARAMETER_URL, url),
-                new BasicNameValuePair(REQUEST_PARAMETER_REPOSITORY_PATH, repositoryPath))
-            .setContentEncoding(StandardCharsets.UTF_8.name())
-            .build())
+        .httpEntity(createIndexUpdatePayloadEntity(url, repositoryPath))
         .build();
 
     return searchRequestExecutorService.execute(searchRequest)
@@ -74,10 +72,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     validateInput(client, url, repositoryPath);
     SearchRequest searchRequest = SearchRequestDelete.builder()
         .uri(getRequestUri(client, configuration.indexUpdateService_apiIndexTriggerAction()))
-        .httpEntity(EntityBuilder.create().setParameters(new BasicNameValuePair(REQUEST_PARAMETER_URL, url),
-                new BasicNameValuePair(REQUEST_PARAMETER_REPOSITORY_PATH, repositoryPath))
-            .setContentEncoding(StandardCharsets.UTF_8.name())
-            .build())
+        .httpEntity(createIndexUpdatePayloadEntity(url, repositoryPath))
         .build();
     return searchRequestExecutorService.execute(searchRequest)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
@@ -89,14 +84,27 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     validateInputClient(client);
     SearchRequest searchRequest = SearchRequestPost.builder()
         .uri(getRequestUri(client, configuration.indexUpdateService_apiPushContentAction()))
-        .httpEntity(EntityBuilder.create().setText(new Gson().toJson(indexContentPayload))
-            .setContentType(ContentType.APPLICATION_JSON)
-            .setContentEncoding(StandardCharsets.UTF_8.name())
-            .build())
+        .httpEntity(createIndexContentPayloadEntity(indexContentPayload))
         .build();
 
     return searchRequestExecutorService.execute(searchRequest)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
+  }
+
+  private HttpEntity createIndexUpdatePayloadEntity(@NonNull String url, @NonNull String repositoryPath) {
+    return EntityBuilder.create()
+        .setParameters(new BasicNameValuePair(REQUEST_PARAMETER_URL, url),
+            new BasicNameValuePair(REQUEST_PARAMETER_REPOSITORY_PATH, repositoryPath))
+        .setContentEncoding(StandardCharsets.UTF_8.name())
+        .build();
+  }
+
+  private HttpEntity createIndexContentPayloadEntity(IndexContentPayload indexContentPayload) {
+    return EntityBuilder.create()
+        .setText(new Gson().toJson(indexContentPayload))
+        .setContentType(ContentType.APPLICATION_JSON)
+        .setContentEncoding(StandardCharsets.UTF_8.name())
+        .build();
   }
 
   private String getRequestUri(String client, String action) {
@@ -131,22 +139,22 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     String DEFAULT_API_VERSION_PATH = "/api/v3";
 
     @AttributeDefinition(name = "Api base path",
-        description = "Api base path",
+        description = "Base path of the api",
         type = AttributeType.STRING)
     String indexUpdateService_apiBasePath() default DEFAULT_API_BASE_PATH;
 
     @AttributeDefinition(name = "Api version path",
-        description = "Api base path",
+        description = "Path designating the api version",
         type = AttributeType.STRING)
     String indexUpdateService_apiVersionPath() default DEFAULT_API_VERSION_PATH;
 
     @AttributeDefinition(name = "Api index trigger action",
-        description = "What kind of action should be defined",
+        description = "Path designating the index trigger action",
         type = AttributeType.STRING)
     String indexUpdateService_apiIndexTriggerAction() default DEFAULT_API_INDEX_TRIGGER_ACTION;
 
-    @AttributeDefinition(name = "Api action",
-        description = "What kind of action should be defined",
+    @AttributeDefinition(name = "Api push content action",
+        description = "Path designating the push content action",
         type = AttributeType.STRING)
     String indexUpdateService_apiPushContentAction() default DEFAULT_API_PUSH_CONTENT_ACTION;
 
