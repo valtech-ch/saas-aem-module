@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * A strategy for extracting response body data.
  */
-public class ResponseBodyDataExtractionStrategy implements SearchResponseDataExtractionStrategy<ResponseBody> {
+public final class ResponseBodyDataExtractionStrategy implements SearchResponseDataExtractionStrategy<ResponseBody> {
 
   @Override
   public String propertyName() {
