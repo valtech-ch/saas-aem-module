@@ -12,11 +12,10 @@ import com.valtech.aem.saas.core.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.core.query.TypeaheadTextQuery;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.Singular;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +25,7 @@ public final class IndexTypeaheadConsumerService implements TypeaheadConsumerSer
 
   private final SearchRequestExecutorService searchRequestExecutorService;
   private final String apiUrl;
+  @Singular
   private final List<String> allowedFilterFields;
 
   @Override
@@ -37,6 +37,7 @@ public final class IndexTypeaheadConsumerService implements TypeaheadConsumerSer
     if (StringUtils.isBlank(typeaheadPayload.getLanguage())) {
       throw new IllegalArgumentException("Typeahead payload should contain a language.");
     }
+    validateFilterFields(typeaheadPayload);
 
     SearchRequestGet searchRequestGet = new SearchRequestGet(apiUrl + getQueryString(typeaheadPayload));
     return searchRequestExecutorService.execute(searchRequestGet)
@@ -52,19 +53,10 @@ public final class IndexTypeaheadConsumerService implements TypeaheadConsumerSer
             .query(new DefaultLanguageQuery(typeaheadPayload.getLanguage()));
     if (MapUtils.isNotEmpty(typeaheadPayload.getFilterEntries())) {
       FiltersQuery.FiltersQueryBuilder filtersQueryBuilder = FiltersQuery.builder();
-      getAllowedOnlyFilterEntries(typeaheadPayload.getFilterEntries()).forEach(filtersQueryBuilder::filterEntry);
+      typeaheadPayload.getFilterEntries().forEach(filtersQueryBuilder::filterEntry);
       builder.query(filtersQueryBuilder.build());
     }
     return builder.build().getQueryString();
-  }
-
-  private Map<String, String> getAllowedOnlyFilterEntries(Map<String, String> filterEntries) {
-    if (CollectionUtils.isNotEmpty(allowedFilterFields)) {
-      return filterEntries.entrySet().stream().filter(e -> allowedFilterFields.contains(e.getKey()))
-          .collect(Collectors.toMap(Entry::getKey, Entry::getKey
-          ));
-    }
-    return filterEntries;
   }
 
   private void validateCommonConfigs() {
@@ -73,6 +65,18 @@ public final class IndexTypeaheadConsumerService implements TypeaheadConsumerSer
     }
     if (StringUtils.isBlank(apiUrl)) {
       throw new IllegalStateException("Typeahead api base url must be specified.");
+    }
+  }
+
+  private void validateFilterFields(@NonNull TypeaheadPayload typeaheadPayload) {
+    if (CollectionUtils.isNotEmpty(allowedFilterFields)) {
+      List<String> forbiddenFilterFields = typeaheadPayload.getFilterEntries().keySet().stream()
+          .filter(field -> !allowedFilterFields.contains(field)).collect(
+              Collectors.toList());
+      if (CollectionUtils.isNotEmpty(forbiddenFilterFields)) {
+        throw new IllegalArgumentException(
+            String.format("The following filter field names are not allowed: %s", forbiddenFilterFields));
+      }
     }
   }
 }

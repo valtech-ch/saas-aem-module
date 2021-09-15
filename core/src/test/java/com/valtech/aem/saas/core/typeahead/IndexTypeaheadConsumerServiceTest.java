@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class IndexTypeaheadConsumerServiceTest {
 
+  public static final String SAMPLE_ALLOWED_FIELD = "allowedField";
   @Mock
   SearchRequestExecutorService searchRequestExecutorService;
 
@@ -48,6 +49,7 @@ class IndexTypeaheadConsumerServiceTest {
     IndexTypeaheadConsumerService indexTypeaheadConsumerService = IndexTypeaheadConsumerService.builder()
         .apiUrl("foo")
         .searchRequestExecutorService(searchRequestExecutorService)
+        .allowedFilterField(SAMPLE_ALLOWED_FIELD)
         .build();
 
     TypeaheadPayload emptyPayload = getPayloadInstance();
@@ -58,6 +60,10 @@ class IndexTypeaheadConsumerServiceTest {
 
     TypeaheadPayload noLanguagePayload = DefaultTypeaheadPayload.builder().text("foo bar").build();
     testImproperPayload(indexTypeaheadConsumerService, noLanguagePayload);
+
+    TypeaheadPayload forbiddenFilterFieldsPayload = DefaultTypeaheadPayload.builder().text("foo bar")
+        .filterEntry("forbiddenKey", "val").build();
+    testImproperPayload(indexTypeaheadConsumerService, forbiddenFilterFieldsPayload);
 
     TypeaheadPayload properPayload = getProperPayload();
     assertDoesNotThrow(() -> indexTypeaheadConsumerService.getResults(properPayload));
@@ -98,6 +104,7 @@ class IndexTypeaheadConsumerServiceTest {
     return DefaultTypeaheadPayload.builder()
         .text("foo bar")
         .language("de")
+        .filterEntry(SAMPLE_ALLOWED_FIELD, "val")
         .build();
   }
 
