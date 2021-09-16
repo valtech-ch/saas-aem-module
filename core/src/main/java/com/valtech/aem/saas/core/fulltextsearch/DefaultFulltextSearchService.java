@@ -94,7 +94,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
   private String getRequestUrl(String index, FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload) {
     return String.format("%s%s%s%s%s",
         searchServiceConnectionConfigurationService.getBaseUrl(),
-        configuration.fulltextSearchService_apiBaseUrl(),
+        configuration.fulltextSearchService_apiVersion(),
         index,
         configuration.fulltextSearchService_apiAction(),
         fulltextSearchGetRequestPayload.getPayload());
@@ -127,12 +127,12 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
 
     int DEFAULT_ROWS_MAX_LIMIT = 9999;
     String DEFAULT_API_ACTION = "/search";
-    String DEFAULT_API_BASE_PATH = "/api/v3";
+    String DEFAULT_API_VERSION_PATH = "/api/v3";
 
     @AttributeDefinition(name = "Api base path",
         description = "Api base path",
         type = AttributeType.STRING)
-    String fulltextSearchService_apiBaseUrl() default DEFAULT_API_BASE_PATH;
+    String fulltextSearchService_apiVersion() default DEFAULT_API_VERSION_PATH;
 
     @AttributeDefinition(name = "Api action",
         description = "What kind of action should be defined",

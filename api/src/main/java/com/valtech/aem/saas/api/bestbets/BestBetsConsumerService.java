@@ -4,8 +4,8 @@ import java.util.List;
 import lombok.NonNull;
 
 /**
- * Represents a best bets consumer service. Offers the following actions: - add a single best bet - add multiple best
- * bets - update a best bet - delete a best bet - publish best bets for project - get all best bets
+ * Represents the best bets consumer service. Offers the following actions: - add a single best bet - add multiple best
+ * bets - update the best bet - delete a best bet - publish best bets for project - get all best bets
  */
 public interface BestBetsConsumerService {
 
