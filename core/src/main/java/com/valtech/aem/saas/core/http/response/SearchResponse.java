@@ -1,18 +1,19 @@
 package com.valtech.aem.saas.core.http.response;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import java.util.Optional;
-import lombok.NonNull;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class SearchResponse {
 
-  @NonNull
-  private final JsonObject response;
+  private final JsonElement response;
+  @Getter
+  private final boolean success;
 
   public <T> Optional<T> get(SearchResponseDataExtractionStrategy<T> strategy) {
-    return strategy.getData(response);
+    return Optional.ofNullable(response).flatMap(strategy::getData);
   }
 
 }

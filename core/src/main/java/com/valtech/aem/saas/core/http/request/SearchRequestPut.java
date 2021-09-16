@@ -8,15 +8,15 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**
- * Represents a POST search request. It requires the request uri and the payload in form of {@link HttpEntity}.
+ * Represents a PUT search request. It requires the request uri and the payload in form of {@link HttpEntity}.
  */
 @Slf4j
 @Builder
-public class SearchRequestPost implements SearchRequest {
+public class SearchRequestPut implements SearchRequest {
 
   @NonNull
   private final String uri;
@@ -28,15 +28,15 @@ public class SearchRequestPost implements SearchRequest {
     if (StringUtils.isBlank(uri)) {
       throw new IllegalArgumentException("Request uri must not be blank.");
     }
-    HttpPost httpPost = new HttpPost(uri);
+    HttpPut httpPut = new HttpPut(uri);
     if (httpEntity != null) {
-      httpPost.setEntity(httpEntity);
+      httpPut.setEntity(httpEntity);
     }
-    return httpPost;
+    return httpPut;
   }
 
   @Override
   public List<Integer> getSuccessStatusCodes() {
-    return Arrays.asList(HttpServletResponse.SC_OK, HttpServletResponse.SC_CREATED);
+    return Arrays.asList(HttpServletResponse.SC_OK, HttpServletResponse.SC_CREATED, HttpServletResponse.SC_NO_CONTENT);
   }
 }

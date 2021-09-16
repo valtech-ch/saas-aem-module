@@ -2,13 +2,17 @@ package com.valtech.aem.saas.core.http.client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -67,11 +71,30 @@ class DefaultSearchRequestExecutorServiceTest {
 
   @Test
   void testExecute_responsNotOK() throws IOException {
+    when(searchRequest.getSuccessStatusCodes()).thenReturn(Collections.singletonList(HttpServletResponse.SC_OK));
     when(httpClient.execute(request)).thenReturn(response);
     StatusLine statusLine = Mockito.mock(StatusLine.class);
     when(response.getStatusLine()).thenReturn(statusLine);
+    HttpEntity httpEntity = mock(HttpEntity.class);
+    when(response.getEntity()).thenReturn(httpEntity);
     when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     assertThat(testee.execute(searchRequest).isPresent(), is(false));
+  }
+
+  @Test
+  void testExecute_responsNotOK_withResponseBody() throws IOException {
+    when(searchRequest.getSuccessStatusCodes()).thenReturn(Collections.singletonList(HttpServletResponse.SC_OK));
+    when(httpClient.execute(request)).thenReturn(response);
+    StatusLine statusLine = Mockito.mock(StatusLine.class);
+    when(response.getStatusLine()).thenReturn(statusLine);
+    HttpEntity httpEntity = mock(HttpEntity.class);
+    when(response.getEntity()).thenReturn(httpEntity);
+    when(httpEntity.getContent()).thenReturn(
+        IOUtils.toInputStream("{\"message\":\"foo bar\"}", StandardCharsets.UTF_8.name()));
+    when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    Optional<SearchResponse> searchResponse = testee.execute(searchRequest);
+    assertThat(searchResponse.isPresent(), is(true));
+    assertThat(searchResponse.get().isSuccess(), is(false));
   }
 
   @Test

@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.http.client;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import java.io.IOException;
@@ -8,10 +8,10 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import javax.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -47,21 +47,22 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
     HttpUriRequest request = searchRequest.getRequest();
     CloseableHttpClient httpClient = httpClientBuilder.build();
     CloseableHttpResponse response = null;
-    SearchResponse searchResponse = null;
     try {
       response = httpClient.execute(request);
       log.info("Executing {} request on search api {}", request.getMethod(), request.getURI());
+      log.info("Success status codes: {}", searchRequest.getSuccessStatusCodes());
       log.info("Status Code: {}", response.getStatusLine().getStatusCode());
       log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
-      if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
+      boolean isSuccess = isRequestSuccessful(searchRequest, response);
+      if (isSuccess) {
         HttpResponseParser httpResponseParser = new HttpResponseParser(response);
         if (log.isDebugEnabled()) {
           log.debug("Response content: {}", httpResponseParser.getContentString());
         }
-        JsonObject jsonResponse = new HttpResponseParser(response).toGsonModel(JsonObject.class);
-        if (jsonResponse != null) {
-          searchResponse = new SearchResponse(jsonResponse);
-        }
+      }
+      JsonElement jsonResponse = new HttpResponseParser(response).toGsonModel(JsonElement.class);
+      if (jsonResponse != null) {
+        return Optional.of(new SearchResponse(jsonResponse, isSuccess));
       }
     } catch (IOException e) {
       log.error("Error while executing request", e);
@@ -71,7 +72,17 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
         IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
       }
     }
-    return Optional.ofNullable(searchResponse);
+    return Optional.empty();
+  }
+
+  private boolean isRequestSuccessful(SearchRequest searchRequest, HttpResponse httpResponse) {
+    boolean success = searchRequest.getSuccessStatusCodes().contains(httpResponse.getStatusLine().getStatusCode());
+    if (success) {
+      log.debug("Request is successful.");
+    } else {
+      log.debug("Request has failed.");
+    }
+    return success;
   }
 
   @Activate

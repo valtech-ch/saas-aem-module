@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.http.response;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import java.util.Optional;
 
 /**
@@ -23,5 +23,5 @@ public interface SearchResponseDataExtractionStrategy<T> {
    * @param response the response of a search request.
    * @return POJO containing the extracted data.
    */
-  Optional<T> getData(JsonObject response);
+  Optional<T> getData(JsonElement response);
 }
