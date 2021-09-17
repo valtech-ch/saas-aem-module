@@ -14,7 +14,7 @@ public interface SearchRequestExecutorService {
    * Returns the response from SaaS.
    *
    * @param searchRequest http request.
-   * @return optional SearchResponse object.
+   * @return SearchResponse optional, which is empty if an error/exception occured during request execution.
    */
   Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest);
 

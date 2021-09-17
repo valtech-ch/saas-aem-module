@@ -3,27 +3,35 @@ package com.valtech.aem.saas.core.http.request;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import lombok.Builder;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**
- * Represents a GET search request. It requires the request uri, including the query string.
+ * Represents a DELETE search request with request body. It requires the request uri and the payload in form of {@link
+ * HttpEntity}.
  */
-@RequiredArgsConstructor
-public class SearchRequestGet implements SearchRequest {
+@Slf4j
+@Builder
+public class SearchRequestDelete implements SearchRequest {
 
   @NonNull
   private final String uri;
+  private final HttpEntity httpEntity;
 
   @Override
   public HttpUriRequest getRequest() {
     if (StringUtils.isBlank(uri)) {
       throw new IllegalArgumentException("Request uri must not be blank.");
     }
-    return new HttpGet(uri);
+    HttpDeleteWithBody httpDelete = new HttpDeleteWithBody(uri);
+    if (httpEntity != null) {
+      httpDelete.setEntity(httpEntity);
+    }
+    return httpDelete;
   }
 
   @Override
