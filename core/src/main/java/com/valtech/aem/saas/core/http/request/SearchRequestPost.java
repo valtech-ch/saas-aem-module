@@ -1,45 +1,42 @@
 package com.valtech.aem.saas.core.http.request;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import lombok.Builder;
-import lombok.Singular;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**
- * Represents a POST search request. It requires the request uri and the payload parameters in form of {@link
- * NameValuePair}.
+ * Represents a POST search request. It requires the request uri and the payload in form of {@link HttpEntity}.
  */
 @Slf4j
 @Builder
 public class SearchRequestPost implements SearchRequest {
 
+  @NonNull
   private final String uri;
 
-  @Singular
-  private final List<NameValuePair> postParameters;
+  private final HttpEntity httpEntity;
 
   @Override
   public HttpUriRequest getRequest() {
+    if (StringUtils.isBlank(uri)) {
+      throw new IllegalArgumentException("Request uri must not be blank.");
+    }
     HttpPost httpPost = new HttpPost(uri);
-    createRequestPayload().ifPresent(httpPost::setEntity);
+    if (httpEntity != null) {
+      httpPost.setEntity(httpEntity);
+    }
     return httpPost;
   }
 
-  private Optional<HttpEntity> createRequestPayload() {
-    try {
-      log.debug("Creating the payload with the following parameters: {}", postParameters);
-      return Optional.of(new UrlEncodedFormEntity(postParameters, StandardCharsets.UTF_8.name()));
-    } catch (UnsupportedEncodingException e) {
-      log.error("Failed to create POST request payload", e);
-    }
-    return Optional.empty();
+  @Override
+  public List<Integer> getSuccessStatusCodes() {
+    return Arrays.asList(HttpServletResponse.SC_OK, HttpServletResponse.SC_CREATED);
   }
 }
