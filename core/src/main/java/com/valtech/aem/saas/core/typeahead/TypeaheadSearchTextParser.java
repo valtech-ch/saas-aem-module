@@ -1,4 +1,4 @@
-package com.valtech.aem.saas.core.query;
+package com.valtech.aem.saas.core.typeahead;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
