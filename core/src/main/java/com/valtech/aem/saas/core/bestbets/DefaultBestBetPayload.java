@@ -1,6 +1,9 @@
 package com.valtech.aem.saas.core.bestbets;
 
 import com.valtech.aem.saas.api.bestbets.BestBetPayload;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @ToString
 @Value
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultBestBetPayload implements BestBetPayload {
 
   String index;
@@ -18,17 +22,11 @@ public class DefaultBestBetPayload implements BestBetPayload {
   String term;
   String language;
 
-  private DefaultBestBetPayload(String index, String url, String term, String language) {
-    this.index = index;
-    this.url = url;
-    this.term = term;
-    this.language = language;
-  }
-
   public static Builder builder() {
     return new Builder();
   }
 
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
   public static class Builder {
 
     private String index;
@@ -65,9 +63,6 @@ public class DefaultBestBetPayload implements BestBetPayload {
       if (StringUtils.isAnyBlank(index, url, term, language)) {
         throw new IllegalStateException("Set values for all payload properties.");
       }
-    }
-
-    private Builder() {
     }
 
   }
