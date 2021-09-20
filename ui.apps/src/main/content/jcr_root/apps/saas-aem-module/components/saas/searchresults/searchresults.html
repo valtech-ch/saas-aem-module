@@ -12,15 +12,19 @@
   <form data-sly-test.term="${model.term}"
         id="loadMore"
         action="${currentPage.path @ extension='html'}">
+    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
     <input data-sly-test="${wcmmode.disabled}"
            type="hidden"
            name="wcmmode"
            value="disabled">
+    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
     <input type="hidden"
            name="q"
            value="${term}"/>
+    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
     <input type="hidden" name="start" value=0>
     <input type="hidden" name="rows" value="${model.loadMoreRows}">
+    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes*/-->
     <button class="saas-aem-module-search__results-load-more-submit"
             type="submit">${'com.valtech.aem.saas.core.search.loadmore.button.label' @ i18n}
     </button>

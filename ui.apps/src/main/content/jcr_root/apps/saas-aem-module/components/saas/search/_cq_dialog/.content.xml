@@ -65,15 +65,12 @@
                                                 fieldLabel="Number of results per page"
                                                 min="1"
                                                 name="./resultsPerPage"
-                                                step="1"
-                                                value="${not empty cqDesign.resultsPerPage ? cqDesign.resultsPerPage : ''}"/>
+                                                step="1"/>
                                             <searchFieldPlaceholderText
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
                                                 fieldLabel="Search field placeholder text"
-                                                name="./searchFieldPlaceholderText"
-                                                value="${not empty cqDesign.searchFieldPlaceholderText ? cqDesign.searchFieldPlaceholderText : ''}">
-                                            </searchFieldPlaceholderText>
+                                                name="./searchFieldPlaceholderText"/>
                                         </items>
                                     </column>
                                 </items>

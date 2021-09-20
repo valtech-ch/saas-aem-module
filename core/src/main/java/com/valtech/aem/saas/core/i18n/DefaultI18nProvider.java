@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.i18n;
 
 import com.day.cq.i18n.I18n;
-import com.valtech.aem.saas.core.common.page.ContainingPage;
+import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import lombok.NonNull;
@@ -22,7 +22,8 @@ public class DefaultI18nProvider implements I18nProvider {
   }
 
   private Optional<ResourceBundle> getResourceBundle(SlingHttpServletRequest request) {
-    return new ContainingPage(request.getResourceResolver()).get(request.getResource())
+    return Optional.ofNullable(request.adaptTo(RequestWrapper.class))
+        .map(RequestWrapper::getCurrentPage)
         .map(page -> page.getLanguage(false))
         .map(request::getResourceBundle);
   }
