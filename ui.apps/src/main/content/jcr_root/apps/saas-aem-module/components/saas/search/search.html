@@ -1,0 +1,31 @@
+<sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.Search"></sly>
+<sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
+     data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
+<div class="saas-aem-module-search">
+  <form class="saas-aem-module-search__form"
+        id="searchForm"
+        action="${currentPage.path @ extension='html'}">
+    <input data-sly-test="${wcmmode.disabled}"
+           type="hidden"
+           name="wcmmode"
+           value="disabled">
+    <div class="saas-aem-module-search__field">
+      <input class="saas-aem-module-search__input"
+             type="search"
+             name="q"
+             value="${model.term}"
+             placeholder="${model.searchFieldPlaceholderText}"
+             autocomplete="off"/>
+      <button class="saas-aem-module-search__submit"
+              type="submit">${'com.valtech.aem.saas.core.search.submit.button.label' @ i18n}
+      </button>
+    </div>
+  </form>
+  <div class="saas-aem-module-search__results">
+    <!--/*
+        maybe in needs to be div
+    */-->
+    <sly
+        data-sly-resource="${'searchresults-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></sly>
+  </div>
+</div>

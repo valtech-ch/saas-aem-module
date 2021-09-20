@@ -1,0 +1,28 @@
+<sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchResults"></sly>
+<sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
+     data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
+<div class="saas-aem-module-search__results-container">
+  <sly
+      data-sly-use.resultItemTemplate="/apps/saas-aem-module/components/saas/searchresults/resultitem-template.html"
+      data-sly-list.result="${model.results}">
+    <sly data-sly-call="${resultItemTemplate.resultItem @ model=result, count=resultList.count}"></sly>
+  </sly>
+</div>
+<div class="saas-aem-module-search__results-load-more-form">
+  <form data-sly-test.term="${model.term}"
+        id="loadMore"
+        action="${currentPage.path @ extension='html'}">
+    <input data-sly-test="${wcmmode.disabled}"
+           type="hidden"
+           name="wcmmode"
+           value="disabled">
+    <input type="hidden"
+           name="q"
+           value="${term}"/>
+    <input type="hidden" name="start" value=0>
+    <input type="hidden" name="rows" value="${model.loadMoreRows}">
+    <button class="saas-aem-module-search__results-load-more-submit"
+            type="submit">${'com.valtech.aem.saas.core.search.loadmore.button.label' @ i18n}
+    </button>
+  </form>
+</div>

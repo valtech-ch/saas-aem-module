@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        index="/fooweb">
+        <searchFilters
+            jcr:primaryType="nt:unstructured">
+            <item1
+                jcr:primaryType="nt:unstructured"
+                name="language"
+                value="de"/>
+            <item2
+                jcr:primaryType="nt:unstructured"
+                name="language"
+                value="fr"/>
+            <item3
+                jcr:primaryType="nt:unstructured"
+                name="language"
+                value="en"/>
+        </searchFilters>
+    </jcr:content>
+</jcr:root>
