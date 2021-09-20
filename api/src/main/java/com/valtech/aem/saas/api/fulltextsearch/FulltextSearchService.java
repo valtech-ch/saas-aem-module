@@ -1,19 +1,24 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-import java.util.Optional;
+/**
+ *
+ */
 
 /**
  * Represents a service that performs fulltext search queries and retrieves the according results.
+ *
+ * @param <T> the configuration object type
  */
-public interface FulltextSearchService {
+public interface FulltextSearchService<T> {
 
   /**
-   * Executes a fulltext search for a specified index and payload (request parameters).
+   * Returns the fulltext search consumer object that provides actions for executing fulltext search, for a specified
+   * SaaS index.
    *
-   * @param index                           name of the index in SaaS.
-   * @param fulltextSearchGetRequestPayload object containing query parameters
-   * @return search related data.
+   * @param index         name of the index in SaaS.
+   * @param configuration the object that will apply configuration actions.
+   * @return fulltext search consumer object
    */
-  Optional<FulltextSearchResults> getResults(String index,
-      FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload);
+  FulltextSearchConsumerService getFulltextSearchConsumerService(String index, T configuration);
+
 }

@@ -17,8 +17,9 @@ import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
-import com.valtech.aem.saas.core.common.request.RequestParameters;
-import com.valtech.aem.saas.core.common.resource.ParentResource;
+import com.valtech.aem.saas.api.fulltextsearch.Suggestion;
+import com.valtech.aem.saas.core.common.request.RequestConsumer;
+import com.valtech.aem.saas.core.common.resource.ResourceConsumer;
 import com.valtech.aem.saas.core.http.response.Highlighting;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
@@ -30,6 +31,7 @@ import com.valtech.aem.saas.core.util.StringToInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -92,6 +94,17 @@ public class SearchResultsImpl implements SearchResults {
   @Getter
   private List<Result> results;
 
+  @JsonInclude(Include.NON_NULL)
+  @Getter
+  private int resultsTotal;
+
+  @Getter
+  private boolean showLoadMoreButton;
+
+  @JsonInclude(Include.NON_NULL)
+  @Getter
+  private Suggestion suggestion;
+
   private int configuredResultsPerPage;
 
   private I18n i18n;
@@ -99,20 +112,23 @@ public class SearchResultsImpl implements SearchResults {
   @PostConstruct
   private void init() {
     i18n = i18nProvider.getI18n(request);
-    configuredResultsPerPage = getConfiguredResultsPerPage();
-    RequestParameters requestParameters = new RequestParameters(request);
-    requestParameters.getParameter(SEARCH_TERM).ifPresent(t -> {
+    RequestConsumer requestConsumer = new RequestConsumer(request);
+    requestConsumer.getParameter(SEARCH_TERM).ifPresent(t -> {
       term = t;
-      startPage = requestParameters.getParameter(QUERY_PARAM_START)
+      Optional<Search> parentSearch = new ResourceConsumer(request.getResource())
+          .getParentWithResourceType(RESOURCE_TYPE)
+          .map(r -> r.adaptTo(Search.class));
+      configuredResultsPerPage = parentSearch.map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
+      startPage = requestConsumer.getParameter(QUERY_PARAM_START)
           .map(s -> new StringToInteger(s).asInt())
           .map(OptionalInt::getAsInt)
           .orElse(DEFAULT_START_PAGE);
-      resultsPerPage = resolveResultsPerPage();
+      resultsPerPage = resolveResultsPerPage(requestConsumer);
       SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
           .as(SearchConfiguration.class);
       FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
           DefaultFulltextSearchRequestPayload.builder(new DefaultTermQuery(term),
-                  new DefaultLanguageQuery(getLanguage()))
+                  new DefaultLanguageQuery(getLanguage(requestConsumer)))
               .optionalQuery(
                   new PaginationQuery(startPage, resultsPerPage, fulltextSearchConfigurationService.getRowsMaxLimit()))
               .optionalQuery(new HighlightingTagQuery(Highlighting.HIGHLIGHTING_TAG_NAME))
@@ -120,14 +136,22 @@ public class SearchResultsImpl implements SearchResults {
                   .filterEntries(Arrays.stream(searchConfiguration.searchFilters()).collect(Collectors.toMap(
                       SearchFilterConfiguration::name, SearchFilterConfiguration::value))).build())
               .build();
-      results = fulltextSearchService.getResults(searchConfiguration.index(), fulltextSearchGetRequestPayload)
-          .map(FulltextSearchResults::getResults).orElse(
-              Collections.emptyList());
+      Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getFulltextSearchConsumerService(
+              searchConfiguration.index(),
+              FulltextSearchConfigurationFactory.builder()
+                  .enableAutoSuggest(parentSearch.map(Search::isAutoSuggestEnabled).orElse(false))
+                  .enableBestBets(parentSearch.map(Search::isBestBetsEnabled).orElse(false))
+                  .build().getConfiguration())
+          .getResults(fulltextSearchGetRequestPayload);
+
+      results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
+      resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(0);
+      suggestion = fulltextSearchResults.map(FulltextSearchResults::getSuggestion).orElse(null);
     });
   }
 
-  private int resolveResultsPerPage() {
-    return new RequestParameters(request).getParameter(QUERY_PARAM_ROWS)
+  private int resolveResultsPerPage(RequestConsumer requestConsumer) {
+    return requestConsumer.getParameter(QUERY_PARAM_ROWS)
         .map(s -> new StringToInteger(s).asInt())
         .map(OptionalInt::getAsInt)
         .orElse(configuredResultsPerPage);
@@ -150,21 +174,14 @@ public class SearchResultsImpl implements SearchResults {
     return resultsPerPage + configuredResultsPerPage;
   }
 
-  private int getConfiguredResultsPerPage() {
-    return new ParentResource(request.getResource())
-        .getParentWithResourceType(RESOURCE_TYPE)
-        .map(r -> r.adaptTo(Search.class))
-        .map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
-  }
-
   /**
    * Gets the language query value from the request parameter list or as fallback resolves the language from the current
    * page.
    *
-   * @return
+   * @return current language.
    */
-  private String getLanguage() {
-    return new RequestParameters(request).getParameter(QUERY_PARAM_LANGUAGE)
+  private String getLanguage(RequestConsumer requestConsumer) {
+    return requestConsumer.getParameter(QUERY_PARAM_LANGUAGE)
         .orElseGet(() -> currentPage.getLanguage().getLanguage());
   }
 }

@@ -6,8 +6,8 @@ package com.valtech.aem.saas.api.bestbets;
 public interface BestBetsService {
 
   /**
-   * Returns a best bets consumer object that provides actions for consuming/managing best bets, for a specified client
-   * identifier.
+   * Returns the best bets consumer object that provides actions for consuming/managing best bets, for a specified
+   * client identifier.
    *
    * @param client identifying string.
    * @return best bets consumer object

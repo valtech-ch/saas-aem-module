@@ -37,10 +37,26 @@ public interface SearchResults extends ComponentExporter {
    */
   List<Result> getResults();
 
+  Suggestion getSuggestion();
+
   /**
    * Gets the label for the load more results button
    *
    * @return load more button text.
    */
   String getLoadMoreButtonText();
+
+  /**
+   * Get the total number of results found.
+   *
+   * @return number of results.
+   */
+  int getResultsTotal();
+
+  /**
+   * A boolean flag used for displaying the load more button.
+   *
+   * @return true if there are more results to be loaded.
+   */
+  boolean isShowLoadMoreButton();
 }

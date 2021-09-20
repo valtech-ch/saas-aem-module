@@ -49,4 +49,25 @@ public interface Search extends ContainerExporter {
    * @return load more button text.
    */
   String getLoadMoreButtonText();
+
+  /**
+   * Gets the autocomplete trigger threshold.
+   *
+   * @return min number of chars typed before trigerring the autocomplete.
+   */
+  int getAutocompleteTriggerThreshold();
+
+  /**
+   * Checks whether best bets feature is enabled.
+   *
+   * @return true when enabled.
+   */
+  boolean isBestBetsEnabled();
+
+  /**
+   * Checks whether autosuggest feature is enabled.
+   *
+   * @return true when enabled.
+   */
+  boolean isAutoSuggestEnabled();
 }

@@ -7,10 +7,14 @@
       data-sly-list.result="${model.results}">
     <sly data-sly-call="${resultItemTemplate.resultItem @ model=result, count=resultList.count}"></sly>
   </sly>
+  <div data-sly-test.suggestion="${model.suggestion}">
+    ${'com.valtech.aem.saas.core.search.suggestion.text' @ i18n, format=[suggestion.text]}
+  </div>
 </div>
-<div class="saas-aem-module-search__results-load-more-form">
-  <form data-sly-test.term="${model.term}"
-        id="loadMore"
+<div data-sly-set.term="${model.term}"
+     data-sly-test="${model.showLoadMoreButton}"
+     class="saas-aem-module-search__results-load-more-form">
+  <form id="loadMore"
         action="${currentPage.path @ extension='html'}">
     <input data-sly-test="${wcmmode.disabled}"
            type="hidden"

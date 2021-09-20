@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.core.query;
 
-import com.valtech.aem.saas.api.query.Query;
+import com.valtech.aem.saas.api.query.FulltextSearchOptionalQuery;
+import com.valtech.aem.saas.api.query.TypeaheadQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +12,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 @Builder
-public class FiltersQuery implements Query {
+public class FiltersQuery implements FulltextSearchOptionalQuery, TypeaheadQuery {
 
   private static final String FILTER = "filter";
   private static final String FILTER_FIELD_VALUE_DELIMITER = ":";

@@ -46,7 +46,6 @@ class DefaultI18nProviderTest {
   @BeforeEach
   void setUp() {
     when(request.getResourceResolver()).thenReturn(resourceResolver);
-    when(request.getResource()).thenReturn(resource);
   }
 
   @Test
@@ -58,6 +57,7 @@ class DefaultI18nProviderTest {
 
   @Test
   void testGetI18n_fromAemResourceBundle() {
+    when(request.getResource()).thenReturn(resource);
     when(request.getResourceBundle(Locale.ENGLISH)).thenReturn(resourceBundle);
     when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
     when(pageManager.getContainingPage(resource)).thenReturn(page);

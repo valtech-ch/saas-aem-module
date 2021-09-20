@@ -3,16 +3,16 @@ package com.valtech.aem.saas.core.typeahead;
 import com.valtech.aem.saas.api.typeahead.TypeaheadConfigurationService;
 import com.valtech.aem.saas.api.typeahead.TypeaheadConsumerService;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
+import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService.Configuration;
+import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService.Configuration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -38,9 +38,7 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
 
   @Override
   public TypeaheadConsumerService getTypeaheadConsumerService(String index) {
-    if (StringUtils.isBlank(index)) {
-      throw new IllegalArgumentException("Must specify a SaaS client index.");
-    }
+    SaasIndexValidator.getInstance().validate(index);
     return IndexTypeaheadConsumerService.builder()
         .searchRequestExecutorService(searchRequestExecutorService)
         .apiUrl(getApiUrl(index))

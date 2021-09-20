@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
-import com.valtech.aem.saas.core.common.request.RequestParameters;
-import com.valtech.aem.saas.core.common.resource.ResourceChildren;
+import com.valtech.aem.saas.core.common.request.RequestConsumer;
+import com.valtech.aem.saas.core.common.resource.ResourceConsumer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +50,7 @@ public class SearchImpl implements Search {
   public static final String RESOURCE_TYPE = "saas-aem-module/components/saas/search";
   public static final String NN_SEARCH_RESULTS_TABS_CONTAINER = "searchresults-tabs";
   public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
+  public static final int DEFAULT_AUTOCOMPLETE_THRESHOLD = 3;
 
   @Self
   private SlingHttpServletRequest request;
@@ -82,6 +83,19 @@ public class SearchImpl implements Search {
   private List<Filter> filters;
 
   @Getter
+  @ValueMapValue
+  @Default(intValues = DEFAULT_AUTOCOMPLETE_THRESHOLD)
+  private int autocompleteTriggerThreshold;
+
+  @Getter
+  @ValueMapValue
+  private boolean bestBetsEnabled;
+
+  @Getter
+  @ValueMapValue
+  private boolean autoSuggestEnabled;
+
+  @Getter
   @JsonInclude(Include.NON_EMPTY)
   private String term;
 
@@ -90,9 +104,13 @@ public class SearchImpl implements Search {
   @NonNull
   @Override
   public Map<String, ? extends ComponentExporter> getExportedItems() {
+    return getSearchResultsExportedItems();
+  }
+
+  private Map<String, SearchResults> getSearchResultsExportedItems() {
     return Optional.ofNullable(request.getResource().getChild(NN_SEARCH_RESULTS_TABS_CONTAINER))
-        .map(ResourceChildren::new)
-        .map(ResourceChildren::getDirectChildren)
+        .map(ResourceConsumer::new)
+        .map(ResourceConsumer::getDirectChildren)
         .orElse(Stream.empty())
         .collect(Collectors.toMap(Resource::getName,
             resource -> modelFactory.getModelFromWrappedRequest(request, resource, SearchResults.class)));
@@ -117,8 +135,8 @@ public class SearchImpl implements Search {
   private void init() {
     if (request != null) {
       i18n = i18nProvider.getI18n(request);
-      RequestParameters requestParameters = new RequestParameters(request);
-      requestParameters.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
+      RequestConsumer requestConsumer = new RequestConsumer(request);
+      requestConsumer.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
     }
   }
 

@@ -1,8 +1,8 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.day.cq.wcm.api.Page;
-import com.valtech.aem.saas.core.common.page.ContainingPage;
-import com.valtech.aem.saas.core.common.resource.ResourceChildren;
+import com.valtech.aem.saas.core.common.request.RequestConsumer;
+import com.valtech.aem.saas.core.common.resource.ResourceConsumer;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -57,15 +57,15 @@ public class SearchResultsServlet extends SlingSafeMethodsServlet {
   }
 
   private Optional<Resource> getSearchComponentResource(SlingHttpServletRequest request) {
-    return new ContainingPage(request.getResourceResolver())
-        .get(request.getResource())
+    return new RequestConsumer(request)
+        .getCurrentPage()
         .map(page -> findSearchComponentResourceInPage(request.getResourceResolver(), page));
   }
 
   private Resource findSearchComponentResourceInPage(@NonNull ResourceResolver resourceResolver, @NonNull Page page) {
     List<Resource> resources = Optional.ofNullable(page.getContentResource())
-        .map(ResourceChildren::new)
-        .map(ResourceChildren::getDescendents)
+        .map(ResourceConsumer::new)
+        .map(ResourceConsumer::getDescendents)
         .orElse(Stream.empty())
         .filter(resource -> resourceResolver.isResourceType(resource, SearchImpl.RESOURCE_TYPE))
         .collect(Collectors.toList());
