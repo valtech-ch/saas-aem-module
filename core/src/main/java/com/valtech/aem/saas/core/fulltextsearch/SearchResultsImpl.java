@@ -17,7 +17,6 @@ import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
-import com.valtech.aem.saas.core.common.page.ContainingPage;
 import com.valtech.aem.saas.core.common.request.RequestParameters;
 import com.valtech.aem.saas.core.common.resource.ParentResource;
 import com.valtech.aem.saas.core.http.response.Highlighting;
@@ -31,20 +30,18 @@ import com.valtech.aem.saas.core.util.StringToInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
+import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(adaptables = SlingHttpServletRequest.class,
@@ -76,6 +73,9 @@ public class SearchResultsImpl implements SearchResults {
   @OSGiService
   private I18nProvider i18nProvider;
 
+  @ScriptVariable
+  private Page currentPage;
+
   @JsonInclude(Include.NON_EMPTY)
   @Getter
   private String term;
@@ -101,9 +101,11 @@ public class SearchResultsImpl implements SearchResults {
     i18n = i18nProvider.getI18n(request);
     configuredResultsPerPage = getConfiguredResultsPerPage();
     RequestParameters requestParameters = new RequestParameters(request);
-    term = requestParameters.getParameter(SEARCH_TERM);
-    if (StringUtils.isNotBlank(term)) {
-      startPage = new StringToInteger(requestParameters.getParameter(QUERY_PARAM_START)).asInt()
+    requestParameters.getParameter(SEARCH_TERM).ifPresent(t -> {
+      term = t;
+      startPage = requestParameters.getParameter(QUERY_PARAM_START)
+          .map(s -> new StringToInteger(s).asInt())
+          .map(OptionalInt::getAsInt)
           .orElse(DEFAULT_START_PAGE);
       resultsPerPage = resolveResultsPerPage();
       SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
@@ -121,12 +123,11 @@ public class SearchResultsImpl implements SearchResults {
       results = fulltextSearchService.getResults(searchConfiguration.index(), fulltextSearchGetRequestPayload)
           .map(FulltextSearchResults::getResults).orElse(
               Collections.emptyList());
-    }
+    });
   }
 
   private int resolveResultsPerPage() {
-    return Optional.ofNullable(new RequestParameters(request).getParameter(QUERY_PARAM_ROWS))
-        .filter(StringUtils::isNotEmpty)
+    return new RequestParameters(request).getParameter(QUERY_PARAM_ROWS)
         .map(s -> new StringToInteger(s).asInt())
         .map(OptionalInt::getAsInt)
         .orElse(configuredResultsPerPage);
@@ -163,11 +164,7 @@ public class SearchResultsImpl implements SearchResults {
    * @return
    */
   private String getLanguage() {
-    String language = new RequestParameters(request).getParameter(QUERY_PARAM_LANGUAGE);
-    if (StringUtils.isNotBlank(language)) {
-      return language;
-    }
-    return new ContainingPage(request.getResourceResolver()).get(request.getResource()).map(Page::getLanguage).map(
-        Locale::getLanguage).orElse(DEFAULT_LANGUAGE);
+    return new RequestParameters(request).getParameter(QUERY_PARAM_LANGUAGE)
+        .orElseGet(() -> currentPage.getLanguage().getLanguage());
   }
 }

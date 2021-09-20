@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.common.request;
 
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +12,7 @@ public final class RequestParameters {
   @NonNull
   private final SlingHttpServletRequest request;
 
-  public String getParameter(String name) {
-    return StringUtils.defaultString(request.getParameter(name));
+  public Optional<String> getParameter(String name) {
+    return Optional.ofNullable(request.getParameter(name)).filter(StringUtils::isNotBlank);
   }
 }
