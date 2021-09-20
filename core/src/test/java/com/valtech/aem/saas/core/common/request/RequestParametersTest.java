@@ -2,7 +2,6 @@ package com.valtech.aem.saas.core.common.request;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.text.IsEmptyString.isEmptyString;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +26,8 @@ class RequestParametersTest {
   void testGetParameter() {
     Mockito.when(request.getParameter("foo")).thenReturn("bar");
     RequestParameters requestParameters = new RequestParameters(request);
-    assertThat(requestParameters.getParameter("foo"), is("bar"));
-    assertThat(requestParameters.getParameter("baz"), isEmptyString());
+    assertThat(requestParameters.getParameter("foo").isPresent(), is(true));
+    assertThat(requestParameters.getParameter("foo").get(), is("bar"));
+    assertThat(requestParameters.getParameter("baz").isPresent(), is(false));
   }
 }

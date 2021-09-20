@@ -2,7 +2,6 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.day.cq.wcm.api.Page;
 import com.valtech.aem.saas.core.common.page.ContainingPage;
-import com.valtech.aem.saas.core.common.request.GetRequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceChildren;
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +50,7 @@ public class SearchResultsServlet extends SlingSafeMethodsServlet {
       RequestDispatcher requestDispatcher = request.getRequestDispatcher(searchResultsComponentResource.get(),
           requestDispatcherOptions);
       if (requestDispatcher != null) {
-        requestDispatcher.forward(new GetRequestWrapper(request).getRequest(), response);
+        requestDispatcher.forward(request, response);
       }
     }
     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

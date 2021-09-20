@@ -118,7 +118,7 @@ public class SearchImpl implements Search {
     if (request != null) {
       i18n = i18nProvider.getI18n(request);
       RequestParameters requestParameters = new RequestParameters(request);
-      term = requestParameters.getParameter(SearchResultsImpl.SEARCH_TERM);
+      requestParameters.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
     }
   }
 
