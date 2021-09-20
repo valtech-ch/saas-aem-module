@@ -12,17 +12,20 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public final class DefaultTermQuery implements TermQuery {
 
-  private static final String SEARCH_TERM_ALL = "*";
   private static final String KEY = "term";
 
   private final NameValuePair term;
 
   /**
    * Constructs a search term query.
+   *
    * @param value the search term.
    */
   public DefaultTermQuery(String value) {
-    term = new BasicNameValuePair(KEY, getSafeTerm(value));
+    if (StringUtils.isBlank(value)) {
+      throw new IllegalArgumentException("Search term must not be blank.");
+    }
+    term = new BasicNameValuePair(KEY, value);
   }
 
   @Override
@@ -30,7 +33,4 @@ public final class DefaultTermQuery implements TermQuery {
     return Collections.singletonList(term);
   }
 
-  private String getSafeTerm(String term) {
-    return StringUtils.isNotBlank(term) ? term : SEARCH_TERM_ALL;
-  }
 }
