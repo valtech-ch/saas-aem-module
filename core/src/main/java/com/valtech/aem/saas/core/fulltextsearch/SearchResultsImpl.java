@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import static com.valtech.aem.saas.core.fulltextsearch.SearchImpl.RESOURCE_TYPE;
+
+import static com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl.RESOURCE_TYPE;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
