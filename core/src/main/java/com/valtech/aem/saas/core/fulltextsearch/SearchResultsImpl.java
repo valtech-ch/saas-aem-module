@@ -121,10 +121,10 @@ public class SearchResultsImpl implements SearchResults {
   private void init() {
     i18n = i18nProvider.getI18n(request);
     Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
-        .flatMap(r -> r.getParentWithResourceType(RESOURCE_TYPE))
+        .flatMap(r -> r.getParentWithResourceType(SearchImpl.RESOURCE_TYPE))
         .map(r -> r.adaptTo(Search.class))
         .ifPresent(parentSearch -> {
-          configuredResultsPerPage = parentSearch.map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
+          configuredResultsPerPage = parentSearch.getResultsPerPage();
           Optional.ofNullable(request.adaptTo(RequestWrapper.class))
               .ifPresent(requestWrapper -> {
                 requestWrapper.getParameter(SEARCH_TERM).ifPresent(s -> term = s);
@@ -151,8 +151,8 @@ public class SearchResultsImpl implements SearchResults {
                 Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getFulltextSearchConsumerService(
                         searchConfiguration.index(),
                         FulltextSearchConfigurationFactory.builder()
-                            .enableAutoSuggest(parentSearch.map(Search::isAutoSuggestEnabled).orElse(false))
-                            .enableBestBets(parentSearch.map(Search::isBestBetsEnabled).orElse(false))
+                            .enableAutoSuggest(parentSearch.isAutoSuggestEnabled())
+                            .enableBestBets(parentSearch.isBestBetsEnabled())
                             .build().getConfiguration())
                     .getResults(fulltextSearchGetRequestPayload);
                 results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
@@ -173,13 +173,6 @@ public class SearchResultsImpl implements SearchResults {
   @Override
   public String getLoadMoreButtonText() {
     return i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL);
-  }
-
-  private int getConfiguredResultsPerPage() {
-    return Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
-        .flatMap(r -> r.getParentWithResourceType(RESOURCE_TYPE))
-        .map(r -> r.adaptTo(Search.class))
-        .map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
   }
 
   private String getLanguage() {

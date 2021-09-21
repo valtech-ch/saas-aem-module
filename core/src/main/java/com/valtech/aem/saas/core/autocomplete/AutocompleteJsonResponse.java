@@ -9,11 +9,12 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.typeahead.TypeaheadConsumerService;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.common.request.RequestConsumer;
+import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.response.JsonResponseFlusher;
 import com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl;
 import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadPayload;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -49,24 +50,25 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
   @PostConstruct
   private void init() {
     if (!response.isCommitted()) {
-      RequestConsumer requestConsumer = new RequestConsumer(request);
-      requestConsumer.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(text -> {
-        SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
-            .as(SearchConfiguration.class);
-        TypeaheadPayload payload = DefaultTypeaheadPayload.builder()
-            .text(text)
-            .language(getLanguage(requestConsumer))
-            .build();
-        TypeaheadConsumerService typeaheadConsumerService =
-            typeaheadService.getTypeaheadConsumerService(searchConfiguration.index());
-        List<String> results = typeaheadConsumerService.getResults(payload);
-        new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
-      });
+      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
+          .ifPresent(requestWrapper ->
+              requestWrapper.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(text -> {
+                SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
+                    .as(SearchConfiguration.class);
+                TypeaheadPayload payload = DefaultTypeaheadPayload.builder()
+                    .text(text)
+                    .language(getLanguage(requestWrapper))
+                    .build();
+                TypeaheadConsumerService typeaheadConsumerService =
+                    typeaheadService.getTypeaheadConsumerService(searchConfiguration.index());
+                List<String> results = typeaheadConsumerService.getResults(payload);
+                new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
+              }));
     }
   }
 
-  private String getLanguage(RequestConsumer requestConsumer) {
-    return requestConsumer.getParameter(QUERY_PARAM_LANGUAGE)
+  private String getLanguage(RequestWrapper requestWrapper) {
+    return requestWrapper.getParameter(QUERY_PARAM_LANGUAGE)
         .orElseGet(() -> currentPage.getLanguage().getLanguage());
   }
 
