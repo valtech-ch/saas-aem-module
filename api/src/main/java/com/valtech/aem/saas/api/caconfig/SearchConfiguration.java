@@ -10,6 +10,9 @@ public @interface SearchConfiguration {
   @Property(label = "Search Index", description = "SaaS index (Required)")
   String index() default StringUtils.EMPTY;
 
+  @Property(label = "Search Client", description = "SaaS client (Required)")
+  String client() default StringUtils.EMPTY;
+
   @Property(label = "Search Field Name - Values", description = "Base Filters (Optional)")
   SearchFilterConfiguration[] searchFilters() default {};
 
