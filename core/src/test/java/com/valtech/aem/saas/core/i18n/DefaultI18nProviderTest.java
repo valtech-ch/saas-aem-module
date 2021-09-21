@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
+import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -40,29 +41,29 @@ class DefaultI18nProviderTest {
   @Mock
   ResourceBundle resourceBundle;
 
+  @Mock
+  RequestWrapper requestWrapper;
+
   @InjectMocks
   DefaultI18nProvider defaultI18nProvider;
 
   @BeforeEach
   void setUp() {
-    when(request.getResourceResolver()).thenReturn(resourceResolver);
+    when(request.adaptTo(RequestWrapper.class)).thenReturn(requestWrapper);
   }
 
   @Test
   void testGetI18n_fromRequestContext() {
     defaultI18nProvider.getI18n(request);
-    verify(resourceResolver, times(1)).adaptTo(PageManager.class);
-    verify(pageManager, never()).getContainingPage(resource);
+    verify(request, never()).getResourceBundle(Locale.ENGLISH);
   }
 
   @Test
   void testGetI18n_fromAemResourceBundle() {
-    when(request.getResource()).thenReturn(resource);
     when(request.getResourceBundle(Locale.ENGLISH)).thenReturn(resourceBundle);
-    when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
-    when(pageManager.getContainingPage(resource)).thenReturn(page);
+    when(requestWrapper.getCurrentPage()).thenReturn(page);
     when(page.getLanguage(false)).thenReturn(Locale.ENGLISH);
     defaultI18nProvider.getI18n(request);
-    verify(resourceResolver, times(1)).adaptTo(PageManager.class);
+    verify(request, times(1)).getResourceBundle(Locale.ENGLISH);
   }
 }

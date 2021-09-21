@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
-import com.valtech.aem.saas.core.common.request.RequestConsumer;
-import com.valtech.aem.saas.core.common.resource.ResourceConsumer;
+import com.valtech.aem.saas.core.common.request.RequestWrapper;
+import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
@@ -25,6 +25,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
@@ -99,44 +100,42 @@ public class SearchImpl implements Search {
   @JsonInclude(Include.NON_EMPTY)
   private String term;
 
+  @Getter
+  @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+  private String exportedType;
+
   private I18n i18n;
 
   @NonNull
   @Override
   public Map<String, ? extends ComponentExporter> getExportedItems() {
-    return getSearchResultsExportedItems();
-  }
-
-  private Map<String, SearchResults> getSearchResultsExportedItems() {
     return Optional.ofNullable(request.getResource().getChild(NN_SEARCH_RESULTS_TABS_CONTAINER))
-        .map(ResourceConsumer::new)
-        .map(ResourceConsumer::getDirectChildren)
+        .map(r -> r.adaptTo(ResourceWrapper.class))
+        .map(ResourceWrapper::getDirectChildren)
         .orElse(Stream.empty())
-        .collect(Collectors.toMap(Resource::getName,
-            resource -> modelFactory.getModelFromWrappedRequest(request, resource, SearchResults.class)));
+        .collect(HashMap::new, (map, resource) -> {
+          SearchResults searchResults = modelFactory.getModelFromWrappedRequest(request, resource, SearchResults.class);
+          if (searchResults != null) {
+            map.put(resource.getName(), searchResults);
+          }
+        }, HashMap::putAll);
   }
 
-  @NonNull
   @Override
-  public String[] getExportedItemsOrder() {
+  public String @NonNull [] getExportedItemsOrder() {
     Map<String, ? extends ComponentExporter> models = getExportedItems();
     return models.isEmpty()
         ? ArrayUtils.EMPTY_STRING_ARRAY
         : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
   }
 
-  @NonNull
-  @Override
-  public String getExportedType() {
-    return request.getResource().getResourceType();
-  }
-
   @PostConstruct
   private void init() {
     if (request != null) {
       i18n = i18nProvider.getI18n(request);
-      RequestConsumer requestConsumer = new RequestConsumer(request);
-      requestConsumer.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
+      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
+          .flatMap(r -> r.getParameter(SearchResultsImpl.SEARCH_TERM))
+          .ifPresent(t -> term = t);
     }
   }
 
