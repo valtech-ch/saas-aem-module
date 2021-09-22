@@ -2,7 +2,6 @@ package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Builder;
 import lombok.Value;
 
@@ -18,10 +17,8 @@ public class Result {
   String url;
 
   @JsonInclude(Include.NON_EMPTY)
-  @JsonRawValue
   String title;
 
   @JsonInclude(Include.NON_EMPTY)
-  @JsonRawValue
   String description;
 }

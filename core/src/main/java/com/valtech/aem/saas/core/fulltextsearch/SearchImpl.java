@@ -11,20 +11,21 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
-import com.valtech.aem.saas.core.common.request.RequestParameters;
-import com.valtech.aem.saas.core.common.resource.ResourceChildren;
-import com.valtech.aem.saas.core.i18n.I18nProvider;
+import com.valtech.aem.saas.core.common.request.RequestWrapper;
+import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
@@ -57,9 +58,6 @@ public class SearchImpl implements Search {
   @OSGiService
   protected ModelFactory modelFactory;
 
-  @OSGiService
-  private I18nProvider i18nProvider;
-
   @Getter
   @ValueMapValue
   @Default(intValues = SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE)
@@ -85,50 +83,57 @@ public class SearchImpl implements Search {
   @JsonInclude(Include.NON_EMPTY)
   private String term;
 
+  @Getter
+  @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+  private String exportedType;
+
   private I18n i18n;
+
+  @PostConstruct
+  private void init() {
+    if (request != null) {
+      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
+          .ifPresent(requestWrapper -> {
+            requestWrapper.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
+            i18n = requestWrapper.getI18n();
+          });
+    }
+  }
 
   @NonNull
   @Override
   public Map<String, ? extends ComponentExporter> getExportedItems() {
     return Optional.ofNullable(request.getResource().getChild(NN_SEARCH_RESULTS_TABS_CONTAINER))
-        .map(ResourceChildren::new)
-        .map(ResourceChildren::getDirectChildren)
+        .map(r -> r.adaptTo(ResourceWrapper.class))
+        .map(ResourceWrapper::getDirectChildren)
         .orElse(Stream.empty())
-        .collect(Collectors.toMap(Resource::getName,
-            resource -> modelFactory.getModelFromWrappedRequest(request, resource, SearchResults.class)));
+        .collect(HashMap::new, (map, resource) -> {
+          SearchResults searchResults = modelFactory.getModelFromWrappedRequest(request, resource, SearchResults.class);
+          if (searchResults != null) {
+            map.put(resource.getName(), searchResults);
+          }
+        }, HashMap::putAll);
   }
 
-  @NonNull
   @Override
-  public String[] getExportedItemsOrder() {
+  public String @NonNull [] getExportedItemsOrder() {
     Map<String, ? extends ComponentExporter> models = getExportedItems();
     return models.isEmpty()
         ? ArrayUtils.EMPTY_STRING_ARRAY
         : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
   }
 
-  @NonNull
-  @Override
-  public String getExportedType() {
-    return request.getResource().getResourceType();
-  }
-
-  @PostConstruct
-  private void init() {
-    if (request != null) {
-      i18n = i18nProvider.getI18n(request);
-      RequestParameters requestParameters = new RequestParameters(request);
-      requestParameters.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
-    }
-  }
-
   @Override
   public String getSearchButtonText() {
-    return i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
+    return Optional.ofNullable(i18n)
+        .map(t -> t.get(I18N_KEY_SEARCH_BUTTON_LABEL))
+        .orElse(StringUtils.EMPTY);
   }
 
   @Override
   public String getLoadMoreButtonText() {
-    return i18n.get(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
+    return Optional.ofNullable(i18n)
+        .map(t -> t.get(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL))
+        .orElse(StringUtils.EMPTY);
   }
 }
