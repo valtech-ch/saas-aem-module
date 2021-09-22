@@ -101,10 +101,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-        <dependency>
-            <artifactId>gson</artifactId>
-            <groupId>com.google.code.gson</groupId>
-        </dependency>
 
 
         <!-- Testing -->
