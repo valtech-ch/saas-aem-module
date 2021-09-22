@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.valtech.aem.saas.api.indexing.IndexUpdateResponse;
 import java.util.Optional;
 
@@ -17,8 +17,9 @@ public class DefaultIndexUpdateDataExtractionStrategy implements
   }
 
   @Override
-  public Optional<IndexUpdateResponse> getData(JsonObject response) {
+  public Optional<IndexUpdateResponse> getData(JsonElement response) {
     return Optional.ofNullable(response)
+        .filter(JsonElement::isJsonObject)
         .map(jsonObject -> new Gson().fromJson(jsonObject, DefaultIndexUpdateResponse.class));
   }
 }
