@@ -13,7 +13,6 @@ import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
@@ -58,9 +58,6 @@ public class SearchImpl implements Search {
   @OSGiService
   protected ModelFactory modelFactory;
 
-  @OSGiService
-  private I18nProvider i18nProvider;
-
   @Getter
   @ValueMapValue
   @Default(intValues = SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE)
@@ -92,6 +89,17 @@ public class SearchImpl implements Search {
 
   private I18n i18n;
 
+  @PostConstruct
+  private void init() {
+    if (request != null) {
+      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
+          .ifPresent(requestWrapper -> {
+            requestWrapper.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
+            i18n = requestWrapper.getI18n();
+          });
+    }
+  }
+
   @NonNull
   @Override
   public Map<String, ? extends ComponentExporter> getExportedItems() {
@@ -115,23 +123,17 @@ public class SearchImpl implements Search {
         : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
   }
 
-  @PostConstruct
-  private void init() {
-    if (request != null) {
-      i18n = i18nProvider.getI18n(request);
-      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
-          .flatMap(r -> r.getParameter(SearchResultsImpl.SEARCH_TERM))
-          .ifPresent(t -> term = t);
-    }
-  }
-
   @Override
   public String getSearchButtonText() {
-    return i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
+    return Optional.ofNullable(i18n)
+        .map(t -> t.get(I18N_KEY_SEARCH_BUTTON_LABEL))
+        .orElse(StringUtils.EMPTY);
   }
 
   @Override
   public String getLoadMoreButtonText() {
-    return i18n.get(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
+    return Optional.ofNullable(i18n)
+        .map(t -> t.get(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL))
+        .orElse(StringUtils.EMPTY);
   }
 }

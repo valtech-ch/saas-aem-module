@@ -11,14 +11,6 @@
                 jcr:primaryType="nt:unstructured"
                 name="language"
                 value="de"/>
-            <item2
-                jcr:primaryType="nt:unstructured"
-                name="language"
-                value="fr"/>
-            <item3
-                jcr:primaryType="nt:unstructured"
-                name="language"
-                value="en"/>
         </searchFilters>
     </jcr:content>
 </jcr:root>

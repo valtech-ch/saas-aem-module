@@ -21,7 +21,6 @@ import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
 import com.valtech.aem.saas.core.query.DefaultTermQuery;
 import com.valtech.aem.saas.core.query.FiltersQuery;
@@ -36,6 +35,7 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
@@ -71,9 +71,6 @@ public class SearchResultsImpl implements SearchResults {
   @OSGiService
   private FulltextSearchConfigurationService fulltextSearchConfigurationService;
 
-  @OSGiService
-  private I18nProvider i18nProvider;
-
   @ScriptVariable
   private Page currentPage;
 
@@ -107,10 +104,10 @@ public class SearchResultsImpl implements SearchResults {
 
   @PostConstruct
   private void init() {
-    i18n = i18nProvider.getI18n(request);
     configuredResultsPerPage = getConfiguredResultsPerPage();
     Optional.ofNullable(request.adaptTo(RequestWrapper.class))
         .ifPresent(requestWrapper -> {
+          i18n = requestWrapper.getI18n();
           requestWrapper.getParameter(SEARCH_TERM).ifPresent(s -> term = s);
           startPage = requestWrapper.getParameter(QUERY_PARAM_START)
               .map(s -> new StringToInteger(s).asInt())
@@ -148,7 +145,7 @@ public class SearchResultsImpl implements SearchResults {
   @JsonIgnore
   @Override
   public String getLoadMoreButtonText() {
-    return i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL);
+    return Optional.ofNullable(i18n).map(t -> t.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL)).orElse(StringUtils.EMPTY);
   }
 
   private int getConfiguredResultsPerPage() {
