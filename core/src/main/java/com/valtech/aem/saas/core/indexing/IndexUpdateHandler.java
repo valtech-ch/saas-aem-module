@@ -12,10 +12,13 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.core.indexing.IndexUpdateHandler.Configuration;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.caconfig.ConfigurationResolver;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
@@ -43,6 +46,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Slf4j
 public class IndexUpdateHandler implements EventHandler {
 
+  public static final String SAAS_CONTENT_READER = "saas-content-reader";
+
   @Reference
   private JobManager jobManager;
 
@@ -58,50 +63,82 @@ public class IndexUpdateHandler implements EventHandler {
   @Reference
   private PageManagerFactory pageManagerFactory;
 
+  @Reference
+  private PathExternalizerPipeline pathExternalizerPipeline;
+
   private Configuration configuration;
 
   @Override
   public void handleEvent(Event event) {
-    if (!configuration.enable()) {
+    ReplicationAction action = getReplicationAction(event);
+    if (action == null) {
       return;
+    }
+    String actionPath = action.getPath();
+    log.info("Replication action {} occurred on {}", action.getType(), actionPath);
+    resourceResolverProvider.resourceResolverConsumer(SAAS_CONTENT_READER, resourceResolver ->
+        getSaasClient(resourceResolver, actionPath).ifPresent(client -> {
+          Map<String, Object> propertiesProto = getPropertiesPrototype(action, client);
+          if (configuration.indexUpdateHandler_enableAemExternalizer()) {
+            scheduleJobForPath(externalizer.publishLink(resourceResolver, actionPath), propertiesProto);
+          }
+          if (configuration.indexUpdateHandler_enableCustomPathExternalizerPipeline()) {
+            pathExternalizerPipeline.getExternalizedPaths(actionPath)
+                .forEach(s -> scheduleJobForPath(s, propertiesProto));
+          }
+        }));
+  }
+
+  private Optional<String> getSaasClient(ResourceResolver resourceResolver, String pagePath) {
+    return Optional.ofNullable(getContextResource(resourceResolver, pagePath))
+        .map(configurationResolver::get)
+        .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
+        .map(SearchConfiguration::client);
+  }
+
+  private Resource getContextResource(ResourceResolver resourceResolver, String pagePath) {
+    PageManager pageManager = pageManagerFactory.getPageManager(resourceResolver);
+    Page page = pageManager.getPage(pagePath);
+    if (page != null) {
+      return page.adaptTo(Resource.class);
+    } else {
+      log.warn("{} is not a Page", pagePath);
+    }
+    return null;
+  }
+
+  private ReplicationAction getReplicationAction(Event event) {
+    if (!configuration.enable()) {
+      return null;
     }
     ReplicationAction action = getAction(event);
     if (action == null) {
-      return;
+      return null;
     }
     if (ReplicationActionType.ACTIVATE != action.getType()
         && ReplicationActionType.DEACTIVATE != action.getType()
         && ReplicationActionType.DELETE != action.getType()) {
       log.debug("Unknown action type occurred.");
-      return;
+      return null;
     }
+    return action;
+  }
 
-    String pagePath = action.getPath();
-    resourceResolverProvider.resourceResolverConsumer("saas-content-reader", resourceResolver -> {
-      PageManager pageManager = pageManagerFactory.getPageManager(resourceResolver);
-      Page page = pageManager.getPage(pagePath);
-      if (page != null) {
-        Resource pageResource = page.adaptTo(Resource.class);
-        if (pageResource != null) {
-          SearchConfiguration searchConfiguration = configurationResolver.get(pageResource)
-              .as(SearchConfiguration.class);
-          log.info("Replication action {} occurred on {}", action.getType(), pagePath);
-          Map<String, Object> properties = ImmutableMap.<String, Object>builder()
-              .put(IndexUpdateJobConsumer.JOB_PROPERTY_ACTION, resolveIndexUpdateAction(action.getType()).name())
-              .put(IndexUpdateJobConsumer.JOB_PROPERTY_CLIENT, searchConfiguration.client())
-              .put(IndexUpdateJobConsumer.JOB_PROPERTY_URL, externalizer.publishLink(resourceResolver, pagePath))
-              .put(IndexUpdateJobConsumer.JOB_PROPERTY_REPOSITORY_PATH, action.getPath())
-              .build();
-          List<String> errorMessages = new ArrayList<>();
-          Job job = jobManager.createJob(IndexUpdateJobConsumer.INDEX_UPDATE).properties(properties).add(errorMessages);
-          log.info("Job: {}, Errors: {}", job, errorMessages);
-        } else {
-          log.error("Impossible: Page is not a resource");
-        }
-      } else {
-        log.warn("{} is not a Page", pagePath);
-      }
-    });
+  private ImmutableMap<String, Object> getPropertiesPrototype(ReplicationAction action,
+      String client) {
+    return ImmutableMap.<String, Object>builder()
+        .put(IndexUpdateJobConsumer.JOB_PROPERTY_ACTION, resolveIndexUpdateAction(action.getType()).name())
+        .put(IndexUpdateJobConsumer.JOB_PROPERTY_CLIENT, client)
+        .put(IndexUpdateJobConsumer.JOB_PROPERTY_REPOSITORY_PATH, action.getPath())
+        .build();
+  }
+
+  private void scheduleJobForPath(String externalizedPath, Map<String, Object> propertiesPrototype) {
+    Map<String, Object> properties = new HashMap<>(propertiesPrototype);
+    properties.put(IndexUpdateJobConsumer.JOB_PROPERTY_URL, externalizedPath);
+    List<String> errorMessages = new ArrayList<>();
+    Job job = jobManager.createJob(IndexUpdateJobConsumer.INDEX_UPDATE).properties(properties).add(errorMessages);
+    log.info("Job: {}, Errors: {}", job, errorMessages);
   }
 
   private ReplicationAction getAction(Event event) {
@@ -134,5 +171,13 @@ public class IndexUpdateHandler implements EventHandler {
     @AttributeDefinition(name = "Enable",
         description = "If enabled, page replication event will trigger an according index update action.")
     boolean enable() default false;
+
+    @AttributeDefinition(name = "Enable Aem Externalizer",
+        description = "If enabled, an index update job, with page path externalized by the default AEM externalizer, will be scheduled.")
+    boolean indexUpdateHandler_enableAemExternalizer() default false;
+
+    @AttributeDefinition(name = "Enable Custom Path Externalizer Pipeline",
+        description = "If enabled, the page path will be externalize by the pipeline consisted PathExternalizer implementations.")
+    boolean indexUpdateHandler_enableCustomPathExternalizerPipeline() default false;
   }
 }
