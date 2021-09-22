@@ -32,6 +32,7 @@
                             <bnd><![CDATA[
                             Import-Package: javax.annotation;version=0.0.0,*
                             -exportcontents: com.valtech.aem.saas.api.*
+                            -plugin org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin
                                 ]]></bnd>
                         </configuration>
                     </execution>
