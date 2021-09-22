@@ -1,10 +1,11 @@
 package com.valtech.aem.saas.core.query;
 
 import com.valtech.aem.saas.api.query.TypeaheadQuery;
-import com.valtech.aem.saas.core.typeahead.TypeaheadSearchTextParser;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import org.apache.commons.collections4.CollectionUtils;
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -13,24 +14,37 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public class TypeaheadTextQuery implements TypeaheadQuery {
 
+  public static final String SEARCH_TEXT_DELIMITER = " ";
+  public static final String REGEX_MATCHING_CONSECUTIVE_WHITESPACE_CHARS = "\\s{2,}";
+
   public static final String KEY_TERM = "term";
   public static final String KEY_PREFIX = "prefix";
 
-  private NameValuePair term;
+  private final NameValuePair term;
   private NameValuePair prefix;
 
   public TypeaheadTextQuery(String searchText) {
-    TypeaheadSearchTextParser parser = new TypeaheadSearchTextParser(searchText);
-    parser.getTerm().ifPresent(t -> term = new BasicNameValuePair(KEY_TERM, t));
-    parser.getPrefix().ifPresent(p -> prefix = new BasicNameValuePair(KEY_PREFIX, p));
+    term = new BasicNameValuePair(KEY_TERM, "*");
+    Optional.ofNullable(searchText)
+        .filter(StringUtils::isNotBlank)
+        .ifPresent(t -> prefix = new BasicNameValuePair(KEY_PREFIX, sanitizeSearchText(t)));
   }
+
 
   @Override
   public List<NameValuePair> getEntries() {
-    List<NameValuePair> entries = new ArrayList<>();
-    CollectionUtils.addIgnoreNull(entries, term);
-    CollectionUtils.addIgnoreNull(entries, prefix);
-    return entries;
+    if (prefix != null) {
+      return Arrays.asList(term, prefix);
+    }
+    return Collections.emptyList();
+  }
+
+  private String sanitizeSearchText(String searchText) {
+    return StringUtils.trim(trimConsecutiveWhitespaceChars(searchText));
+  }
+
+  private String trimConsecutiveWhitespaceChars(String text) {
+    return text.replaceAll(REGEX_MATCHING_CONSECUTIVE_WHITESPACE_CHARS, SEARCH_TEXT_DELIMITER);
   }
 
 }
