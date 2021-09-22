@@ -51,7 +51,7 @@
         <bnd.version>5.1.2</bnd.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <aem.sdk.api>2021.8.5705.20210810T082946Z-210700</aem.sdk.api>
+        <aem.sdk.api>2021.9.5852.20210917T073206Z-210800</aem.sdk.api>
         <aemanalyser.version>1.1.2</aemanalyser.version>
         <componentGroupName>Valtech AEM SAAS</componentGroupName>
 
