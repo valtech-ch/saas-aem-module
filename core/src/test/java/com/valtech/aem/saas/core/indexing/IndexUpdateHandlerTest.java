@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.day.cq.commons.Externalizer;
 import com.day.cq.replication.ReplicationAction;
+import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
@@ -20,6 +21,7 @@ import com.valtech.aem.saas.core.resource.ResourceResolverProviderService;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.util.Arrays;
+import java.util.Collections;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -135,10 +137,13 @@ class IndexUpdateHandlerTest {
             .put("indexUpdateHandler.enable", true)
             .build());
     Event event = new Event(ReplicationEvent.EVENT_TOPIC,
-        ImmutableMap.<String, String>builder()
-            .put("type", "Activate")
-            .put("userId", "foo")
-            .put("path", "/foo/bar")
+        ImmutableMap.<String, Object>builder()
+            .put("modifications", Collections.singletonList(ImmutableMap.<String, Object>builder()
+                .put("type", ReplicationActionType.ACTIVATE)
+                .put("userId", "foo")
+                .put("time", 0L)
+                .put("paths", new String[]{"/foo/bar"})
+                .build()))
             .build());
     when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenThrow(LoginException.class);
     testee.handleEvent(event);
