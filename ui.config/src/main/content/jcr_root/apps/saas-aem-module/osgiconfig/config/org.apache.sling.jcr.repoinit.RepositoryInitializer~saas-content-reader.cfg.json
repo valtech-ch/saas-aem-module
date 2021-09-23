@@ -1,0 +1,14 @@
+{
+    "scripts": [
+        "create path (rep:AuthorizableFolder) /home/users/system/saas",
+        "create service user saas-content-reader /home/users/system/saas/saas-content-reader",
+        "set properties on /home/users/system/saas/saas-content-reader",
+        "set jcr:uuid{String} to 6a5f9c0a-6eac-3929-8636-a45efa57e04a",
+        "set rep:authorizableId{String} to saas-content-reader",
+        "set rep:principalName{String} to saas-content-reader",
+        "end",
+        "set ACL for saas-content-reader",
+        "allow jcr:read on /content",
+        "end"
+    ]
+}
