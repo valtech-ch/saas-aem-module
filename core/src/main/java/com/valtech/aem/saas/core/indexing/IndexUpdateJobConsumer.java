@@ -1,8 +1,6 @@
 package com.valtech.aem.saas.core.indexing;
 
-import com.valtech.aem.saas.api.indexing.IndexUpdateResponse;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.event.jobs.Job;
@@ -35,23 +33,10 @@ public class IndexUpdateJobConsumer implements JobConsumer {
     validateJobProperty(StringUtils.isNotEmpty(client), "SaaS client identifier is not specified.", job);
     validateJobProperty(StringUtils.isNotEmpty(url), "Url is not specified.", job);
     validateJobProperty(StringUtils.isNotEmpty(repositoryPath), "Repository path is not specified.", job);
-    if (IndexUpdateAction.UPDATE.name().equals(action)) {
-      Optional<IndexUpdateResponse> response = indexUpdateService.indexUrl(client, url, repositoryPath);
-      if (response.isPresent()) {
-        log.debug("Index update successful: {}", response.get());
-        return JobResult.OK;
-      }
-    }
-    if (IndexUpdateAction.DELETE.name().equals(action)) {
-      Optional<IndexUpdateResponse> response = indexUpdateService.deleteIndexedUrl(client, url, repositoryPath);
-      if (response.isPresent()) {
-        log.debug("Index delete successful: {}", response.get());
-        return JobResult.OK;
-      }
-    }
-    return JobResult.FAILED;
+    return new IndexUpdateJobProcessingStrategyFactory(indexUpdateService)
+        .getStrategy(IndexUpdateAction.fromName(action))
+        .process(client, url, repositoryPath);
   }
-
 
   private void validateJobProperty(boolean validation, String failMessage, Job job) {
     if (!validation) {

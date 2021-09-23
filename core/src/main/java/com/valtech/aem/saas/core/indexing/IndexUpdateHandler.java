@@ -6,7 +6,6 @@ import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
-import com.day.cq.wcm.api.PageManagerFactory;
 import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.core.indexing.IndexUpdateHandler.Configuration;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.caconfig.ConfigurationResolver;
@@ -61,9 +61,6 @@ public class IndexUpdateHandler implements EventHandler {
   private ResourceResolverProvider resourceResolverProvider;
 
   @Reference
-  private PageManagerFactory pageManagerFactory;
-
-  @Reference
   private PathExternalizerPipeline pathExternalizerPipeline;
 
   private Configuration configuration;
@@ -93,22 +90,25 @@ public class IndexUpdateHandler implements EventHandler {
     return Optional.ofNullable(getContextResource(resourceResolver, pagePath))
         .map(configurationResolver::get)
         .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
-        .map(SearchConfiguration::client);
+        .map(SearchConfiguration::client)
+        .filter(StringUtils::isNotBlank);
   }
 
   private Resource getContextResource(ResourceResolver resourceResolver, String pagePath) {
-    PageManager pageManager = pageManagerFactory.getPageManager(resourceResolver);
-    Page page = pageManager.getPage(pagePath);
-    if (page != null) {
-      return page.adaptTo(Resource.class);
-    } else {
-      log.warn("{} is not a Page", pagePath);
+    PageManager pageManager = resourceResolver.adaptTo(PageManager.class);
+    if (pageManager != null) {
+      Page page = pageManager.getPage(pagePath);
+      if (page != null) {
+        return page.adaptTo(Resource.class);
+      } else {
+        log.warn("{} is not a Page", pagePath);
+      }
     }
     return null;
   }
 
   private ReplicationAction getReplicationAction(Event event) {
-    if (!configuration.enable()) {
+    if (!configuration.indexUpdateHandler_enable()) {
       return null;
     }
     ReplicationAction action = getAction(event);
@@ -127,7 +127,7 @@ public class IndexUpdateHandler implements EventHandler {
   private ImmutableMap<String, Object> getPropertiesPrototype(ReplicationAction action,
       String client) {
     return ImmutableMap.<String, Object>builder()
-        .put(IndexUpdateJobConsumer.JOB_PROPERTY_ACTION, resolveIndexUpdateAction(action.getType()).name())
+        .put(IndexUpdateJobConsumer.JOB_PROPERTY_ACTION, resolveIndexUpdateAction(action.getType()).getName())
         .put(IndexUpdateJobConsumer.JOB_PROPERTY_CLIENT, client)
         .put(IndexUpdateJobConsumer.JOB_PROPERTY_REPOSITORY_PATH, action.getPath())
         .build();
@@ -143,9 +143,9 @@ public class IndexUpdateHandler implements EventHandler {
 
   private ReplicationAction getAction(Event event) {
     String topic = event.getTopic();
-    if (topic.equals(ReplicationAction.EVENT_TOPIC)) {
+    if (ReplicationAction.EVENT_TOPIC.equals(topic)) {
       return ReplicationAction.fromEvent(event);
-    } else if (topic.equals(ReplicationEvent.EVENT_TOPIC)) {
+    } else if (ReplicationEvent.EVENT_TOPIC.equals(topic)) {
       return ReplicationEvent.fromEvent(event).getReplicationAction();
     }
     return null;
@@ -170,7 +170,7 @@ public class IndexUpdateHandler implements EventHandler {
 
     @AttributeDefinition(name = "Enable",
         description = "If enabled, page replication event will trigger an according index update action.")
-    boolean enable() default false;
+    boolean indexUpdateHandler_enable() default false;
 
     @AttributeDefinition(name = "Enable Aem Externalizer",
         description = "If enabled, an index update job, with page path externalized by the default AEM externalizer, will be scheduled.")
