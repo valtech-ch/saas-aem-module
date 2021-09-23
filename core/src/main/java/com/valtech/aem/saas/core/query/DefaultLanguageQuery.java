@@ -18,6 +18,7 @@ public final class DefaultLanguageQuery implements LanguageQuery {
 
   /**
    * Constructs a language query.
+   *
    * @param value the language in 2 letter format.
    */
   public DefaultLanguageQuery(String value) {

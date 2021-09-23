@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class Highlighting {
+  public static final String HIGHLIGHTING_TAG_NAME = "em";
 
   public static final String PN_HIGHLIGHTING = "highlighting";
 
