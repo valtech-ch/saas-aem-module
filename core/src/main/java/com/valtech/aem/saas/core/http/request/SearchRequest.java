@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.http.request;
 
+import lombok.NonNull;
 import java.util.List;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -13,7 +14,7 @@ public interface SearchRequest {
    *
    * @return http request.
    */
-  HttpUriRequest getRequest();
+  @NonNull HttpUriRequest getRequest();
 
   /**
    * Gets a list of http resoponse status codes that will be considered as response success

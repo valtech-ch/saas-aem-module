@@ -3,6 +3,9 @@ package com.valtech.aem.saas.core.http.response;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 
+/**
+ * Pojo for serializing saas results response.
+ */
 @Getter
 public class SearchResult {
 
