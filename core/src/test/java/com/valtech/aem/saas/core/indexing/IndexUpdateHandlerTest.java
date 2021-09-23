@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.day.cq.commons.Externalizer;
 import com.day.cq.replication.ReplicationAction;
+import com.day.cq.replication.ReplicationEvent;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
@@ -133,7 +134,7 @@ class IndexUpdateHandlerTest {
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
-    Event event = new Event(ReplicationAction.EVENT_TOPIC,
+    Event event = new Event(ReplicationEvent.EVENT_TOPIC,
         ImmutableMap.<String, String>builder()
             .put("type", "Activate")
             .put("userId", "foo")
@@ -236,7 +237,7 @@ class IndexUpdateHandlerTest {
             .build());
     Event event = new Event(ReplicationAction.EVENT_TOPIC,
         ImmutableMap.<String, String>builder()
-            .put("type", "Activate")
+            .put("type", "Delete")
             .put("userId", "foo")
             .put("path", "/foo/bar")
             .build());
@@ -265,7 +266,7 @@ class IndexUpdateHandlerTest {
             .build());
     Event event = new Event(ReplicationAction.EVENT_TOPIC,
         ImmutableMap.<String, String>builder()
-            .put("type", "Activate")
+            .put("type", "Deactivate")
             .put("userId", "foo")
             .put("path", "/foo/bar")
             .build());
