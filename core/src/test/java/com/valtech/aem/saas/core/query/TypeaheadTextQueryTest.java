@@ -12,7 +12,7 @@ class TypeaheadTextQueryTest {
   void testQuery() {
     assertThat(new TypeaheadTextQuery(null).getEntries(), is(empty()));
     assertThat(new TypeaheadTextQuery("").getEntries(), is(empty()));
-    assertThat(new TypeaheadTextQuery("foo  ").getEntries().size(), is(1));
+    assertThat(new TypeaheadTextQuery("foo  ").getEntries().size(), is(2));
     assertThat(new TypeaheadTextQuery(" foo bar").getEntries().size(), is(2));
     assertThat(new TypeaheadTextQuery("foo  bar ").getEntries().size(), is(2));
   }

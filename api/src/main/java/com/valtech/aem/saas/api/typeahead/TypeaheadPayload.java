@@ -2,6 +2,9 @@ package com.valtech.aem.saas.api.typeahead;
 
 import java.util.Map;
 
+/**
+ * Represents type ahead request payload.
+ */
 public interface TypeaheadPayload {
 
   /**
