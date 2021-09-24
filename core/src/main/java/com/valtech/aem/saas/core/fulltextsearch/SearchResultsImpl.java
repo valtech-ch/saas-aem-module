@@ -22,7 +22,6 @@ import com.valtech.aem.saas.api.fulltextsearch.Suggestion;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
 import com.valtech.aem.saas.core.query.DefaultTermQuery;
 import com.valtech.aem.saas.core.query.FiltersQuery;
@@ -37,6 +36,7 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
@@ -71,9 +71,6 @@ public class SearchResultsImpl implements SearchResults {
 
   @OSGiService
   private FulltextSearchConfigurationService fulltextSearchConfigurationService;
-
-  @OSGiService
-  private I18nProvider i18nProvider;
 
   @ScriptVariable
   private Page currentPage;
@@ -119,47 +116,43 @@ public class SearchResultsImpl implements SearchResults {
 
   @PostConstruct
   private void init() {
-    i18n = i18nProvider.getI18n(request);
-    Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
-        .flatMap(r -> r.getParentWithResourceType(SearchImpl.RESOURCE_TYPE))
-        .map(r -> r.adaptTo(Search.class))
-        .ifPresent(parentSearch -> {
-          configuredResultsPerPage = parentSearch.getResultsPerPage();
-          Optional.ofNullable(request.adaptTo(RequestWrapper.class))
-              .ifPresent(requestWrapper -> {
-                requestWrapper.getParameter(SEARCH_TERM).ifPresent(s -> term = s);
-                startPage = requestWrapper.getParameter(QUERY_PARAM_START)
-                    .map(s -> new StringToInteger(s).asInt())
-                    .map(OptionalInt::getAsInt)
-                    .orElse(DEFAULT_START_PAGE);
-                resultsPerPage = resolveResultsPerPage(requestWrapper);
-                //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
-                loadMoreRows = resultsPerPage + configuredResultsPerPage;
-                SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
-                    .as(SearchConfiguration.class);
-                FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
-                    DefaultFulltextSearchRequestPayload.builder(new DefaultTermQuery(term),
-                            new DefaultLanguageQuery(getLanguage()))
-                        .optionalQuery(
-                            new PaginationQuery(startPage, resultsPerPage,
-                                fulltextSearchConfigurationService.getRowsMaxLimit()))
-                        .optionalQuery(new HighlightingTagQuery(Highlighting.HIGHLIGHTING_TAG_NAME))
-                        .optionalQuery(FiltersQuery.builder()
-                            .filterEntries(Arrays.stream(searchConfiguration.searchFilters()).collect(Collectors.toMap(
-                                SearchFilterConfiguration::name, SearchFilterConfiguration::value))).build())
-                        .build();
-                Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getFulltextSearchConsumerService(
-                        searchConfiguration.index(),
-                        FulltextSearchConfigurationFactory.builder()
-                            .enableAutoSuggest(parentSearch.isAutoSuggestEnabled())
-                            .enableBestBets(parentSearch.isBestBetsEnabled())
-                            .build().getConfiguration())
-                    .getResults(fulltextSearchGetRequestPayload);
-                results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
-                resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(0);
-                suggestion = fulltextSearchResults.map(FulltextSearchResults::getSuggestion).orElse(null);
-              });
-        });
+    getParentSearchComponent().ifPresent(parentSearch -> {
+      configuredResultsPerPage = parentSearch.getResultsPerPage();
+      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
+          .ifPresent(requestWrapper -> {
+            requestWrapper.getParameter(SEARCH_TERM).ifPresent(s -> term = s);
+            startPage = requestWrapper.getParameter(QUERY_PARAM_START)
+                .map(s -> new StringToInteger(s).asInt())
+                .map(OptionalInt::getAsInt)
+                .orElse(DEFAULT_START_PAGE);
+            resultsPerPage = resolveResultsPerPage(requestWrapper);
+            //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
+            loadMoreRows = resultsPerPage + configuredResultsPerPage;
+            SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
+                .as(SearchConfiguration.class);
+            FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
+                DefaultFulltextSearchRequestPayload.builder(new DefaultTermQuery(term),
+                        new DefaultLanguageQuery(getLanguage()))
+                    .optionalQuery(
+                        new PaginationQuery(startPage, resultsPerPage,
+                            fulltextSearchConfigurationService.getRowsMaxLimit()))
+                    .optionalQuery(new HighlightingTagQuery(Highlighting.HIGHLIGHTING_TAG_NAME))
+                    .optionalQuery(FiltersQuery.builder()
+                        .filterEntries(Arrays.stream(searchConfiguration.searchFilters()).collect(Collectors.toMap(
+                            SearchFilterConfiguration::name, SearchFilterConfiguration::value))).build())
+                    .build();
+            Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getFulltextSearchConsumerService(
+                    searchConfiguration.index(),
+                    FulltextSearchConfigurationFactory.builder()
+                        .enableAutoSuggest(parentSearch.isAutoSuggestEnabled())
+                        .enableBestBets(parentSearch.isBestBetsEnabled())
+                        .build().getConfiguration())
+                .getResults(fulltextSearchGetRequestPayload);
+            results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
+            resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(0);
+            suggestion = fulltextSearchResults.map(FulltextSearchResults::getSuggestion).orElse(null);
+          });
+    });
   }
 
   private int resolveResultsPerPage(RequestWrapper requestWrapper) {
@@ -172,7 +165,20 @@ public class SearchResultsImpl implements SearchResults {
   @JsonIgnore
   @Override
   public String getLoadMoreButtonText() {
-    return i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL);
+    return Optional.ofNullable(i18n).map(t -> t.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL)).orElse(StringUtils.EMPTY);
+  }
+
+  private Optional<Search> getParentSearchComponent() {
+    Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
+        .flatMap(r -> r.getParentWithResourceType(SearchImpl.RESOURCE_TYPE))
+        .map(r -> r.adaptTo(Search.class));
+  }
+
+  private int getConfiguredResultsPerPage() {
+    return Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
+        .flatMap(r -> r.getParentWithResourceType(RESOURCE_TYPE))
+        .map(r -> r.adaptTo(Search.class))
+        .map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
   }
 
   private String getLanguage() {
