@@ -1,4 +1,5 @@
 {
   "com.valtech.aem.saas.core.search.loadmore.button.label": "Load more",
-  "com.valtech.aem.saas.core.search.submit.button.label": "Search"
+  "com.valtech.aem.saas.core.search.submit.button.label": "Search",
+  "com.valtech.aem.saas.core.search.suggestion.text": "Did you mean: <em>{0}</em>?"
 }

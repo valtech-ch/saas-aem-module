@@ -8,7 +8,7 @@
     <sly data-sly-call="${resultItemTemplate.resultItem @ model=result, count=resultList.count}"></sly>
   </sly>
   <div data-sly-test.suggestion="${model.suggestion}">
-    ${'com.valtech.aem.saas.core.search.suggestion.text' @ i18n, format=[suggestion.text]}
+    ${'com.valtech.aem.saas.core.search.suggestion.text' @ i18n, format=[suggestion.text], context='html'}
   </div>
 </div>
 <div data-sly-set.term="${model.term}"
