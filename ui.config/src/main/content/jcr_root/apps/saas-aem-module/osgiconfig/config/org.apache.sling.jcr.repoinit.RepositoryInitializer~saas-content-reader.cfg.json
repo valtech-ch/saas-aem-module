@@ -1,0 +1,9 @@
+{
+  "scripts": [
+    "create path (rep:AuthorizableFolder) /home/users/system/saas",
+    "create service user saas-content-reader with path /home/users/system/saas",
+    "set ACL for saas-content-reader",
+    "allow jcr:read on /content",
+    "end"
+  ]
+}
