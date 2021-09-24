@@ -44,22 +44,21 @@ class ClientBestBetsConsumerServiceTest {
   @Test
   void testAddBestBet() {
     testClientBestBetsConsumerServiceMissingAction(
-        clientBestBetsConsumerService -> clientBestBetsConsumerService.addBestBet(DefaultBestBetPayload.builder()
-            .build()));
+        clientBestBetsConsumerService -> clientBestBetsConsumerService.addBestBet(
+            new DefaultBestBetPayload("foo", "baz", "bar", "de")));
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().addBestBetAction(
         "/bestbet").build();
     assertDoesNotThrow(() -> properlyConfigured.addBestBet(
-        DefaultBestBetPayload.builder().index("foo").language("de").term("bar").url("baz").build()));
+        new DefaultBestBetPayload("foo", "baz", "bar", "de")));
   }
 
   @Test
   void testAddBestBet_failed() {
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().addBestBetAction(
         "/bestbet").build();
-    DefaultBestBetPayload payload = DefaultBestBetPayload.builder().index("foo").language("de").term("bar").url("baz")
-        .build();
+    DefaultBestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
     assertThrows(BestBetsActionFailedException.class, () -> properlyConfigured.addBestBet(payload));
   }
 
@@ -67,14 +66,13 @@ class ClientBestBetsConsumerServiceTest {
   void testAddBestBets() {
     testClientBestBetsConsumerServiceMissingAction(
         clientBestBetsConsumerService -> clientBestBetsConsumerService.addBestBets(
-            Collections.singletonList(DefaultBestBetPayload.builder()
-                .build())));
+            Collections.singletonList(new DefaultBestBetPayload("foo", "baz", "bar", "de"))));
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().addBestBetsAction(
         "/bestbets").build();
     assertDoesNotThrow(() -> properlyConfigured.addBestBets(Collections.singletonList(
-        DefaultBestBetPayload.builder().index("foo").language("de").term("bar").url("baz").build())));
+        new DefaultBestBetPayload("foo", "baz", "bar", "de"))));
   }
 
   @Test
@@ -82,15 +80,15 @@ class ClientBestBetsConsumerServiceTest {
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().addBestBetsAction(
         "/bestbet").build();
     List<BestBetPayload> payload = Collections.singletonList(
-        DefaultBestBetPayload.builder().index("foo").language("de").term("bar").url("baz").build());
+        new DefaultBestBetPayload("foo", "baz", "bar", "de"));
     assertThrows(BestBetsActionFailedException.class, () -> properlyConfigured.addBestBets(payload));
   }
 
   @Test
   void testUpdateBestBet() {
     testClientBestBetsConsumerServiceMissingAction(
-        clientBestBetsConsumerService -> clientBestBetsConsumerService.updateBestBet(1, DefaultBestBetPayload.builder()
-            .build()));
+        clientBestBetsConsumerService -> clientBestBetsConsumerService.updateBestBet(1,
+            new DefaultBestBetPayload("foo", "baz", "bar", "de")));
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(
@@ -99,14 +97,14 @@ class ClientBestBetsConsumerServiceTest {
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().updateBestBetAction(
         "/bestbets").build();
     assertDoesNotThrow(() -> properlyConfigured.updateBestBet(1,
-        DefaultBestBetPayload.builder().index("foo").language("de").term("bar").url("baz").build()));
+        new DefaultBestBetPayload("foo", "baz", "bar", "de")));
   }
 
   @Test
   void testUpdateBestBet_failed() {
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().updateBestBetAction(
         "/bestbet").build();
-    BestBetPayload payload = DefaultBestBetPayload.builder().index("foo").language("de").term("bar").url("baz").build();
+    BestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
     assertThrows(BestBetsActionFailedException.class, () -> properlyConfigured.updateBestBet(1, payload));
   }
 
@@ -169,7 +167,7 @@ class ClientBestBetsConsumerServiceTest {
   void testGetBestBets_failed() {
     ClientBestBetsConsumerService properlyConfigured = getConClientBestBetsConsumerServiceBuilderWithCommonConfig().getBestBetsAction(
         "/bestbets").build();
-    assertThat(properlyConfigured.getBestBets(), empty());
+    assertThrows(BestBetsActionFailedException.class, properlyConfigured::getBestBets);
   }
 
   private void testClientBestBetsConsumerServiceMissingAction(Consumer<ClientBestBetsConsumerService> consumer) {

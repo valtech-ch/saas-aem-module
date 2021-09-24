@@ -18,57 +18,13 @@ public class DefaultBestBetPayload implements BestBetPayload {
   String term;
   String language;
 
-  private DefaultBestBetPayload(String index, String url, String term, String language) {
+  public DefaultBestBetPayload(String index, String url, String term, String language) {
+    if (StringUtils.isAnyBlank(index, url, term, language)) {
+      throw new IllegalArgumentException("Set values for all payload properties.");
+    }
     this.index = index;
     this.url = url;
     this.term = term;
     this.language = language;
-  }
-
-  public static Builder builder() {
-    return new Builder();
-  }
-
-  public static class Builder {
-
-    private String index;
-    private String url;
-    private String term;
-    private String language;
-
-    public Builder index(String index) {
-      this.index = index;
-      return this;
-    }
-
-    public Builder url(String url) {
-      this.url = url;
-      return this;
-    }
-
-    public Builder term(String term) {
-      this.term = term;
-      return this;
-    }
-
-    public Builder language(String language) {
-      this.language = language;
-      return this;
-    }
-
-    public DefaultBestBetPayload build() {
-      validate();
-      return new DefaultBestBetPayload(index, url, term, language);
-    }
-
-    private void validate() {
-      if (StringUtils.isAnyBlank(index, url, term, language)) {
-        throw new IllegalStateException("Set values for all payload properties.");
-      }
-    }
-
-    private Builder() {
-    }
-
   }
 }
