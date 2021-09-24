@@ -10,34 +10,22 @@ import com.day.cq.wcm.api.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.caconfig.SearchFilterConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchResults;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
+import com.valtech.aem.saas.api.fulltextsearch.SimplifiedSearch;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
-import com.valtech.aem.saas.core.query.DefaultTermQuery;
-import com.valtech.aem.saas.core.query.FiltersQuery;
-import com.valtech.aem.saas.core.query.HighlightingTagQuery;
-import com.valtech.aem.saas.core.query.PaginationQuery;
 import com.valtech.aem.saas.core.util.StringToInteger;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
@@ -66,10 +54,7 @@ public class SearchResultsImpl implements SearchResults {
   private SlingHttpServletRequest request;
 
   @OSGiService
-  private FulltextSearchService fulltextSearchService;
-
-  @OSGiService
-  private FulltextSearchConfigurationService fulltextSearchConfigurationService;
+  private SimplifiedSearch simplifiedSearch;
 
   @ScriptVariable
   private Page currentPage;
@@ -108,30 +93,19 @@ public class SearchResultsImpl implements SearchResults {
     Optional.ofNullable(request.adaptTo(RequestWrapper.class))
         .ifPresent(requestWrapper -> {
           i18n = requestWrapper.getI18n();
-          requestWrapper.getParameter(SEARCH_TERM).ifPresent(s -> term = s);
-          startPage = requestWrapper.getParameter(QUERY_PARAM_START)
-              .map(s -> new StringToInteger(s).asInt())
-              .map(OptionalInt::getAsInt)
-              .orElse(DEFAULT_START_PAGE);
-          resultsPerPage = resolveResultsPerPage(requestWrapper);
-          //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
-          loadMoreRows = resultsPerPage + configuredResultsPerPage;
-          SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
-              .as(SearchConfiguration.class);
-          FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
-              DefaultFulltextSearchRequestPayload.builder(new DefaultTermQuery(term),
-                      new DefaultLanguageQuery(getLanguage()))
-                  .optionalQuery(
-                      new PaginationQuery(startPage, resultsPerPage,
-                          fulltextSearchConfigurationService.getRowsMaxLimit()))
-                  .optionalQuery(new HighlightingTagQuery(Highlighting.HIGHLIGHTING_TAG_NAME))
-                  .optionalQuery(FiltersQuery.builder()
-                      .filterEntries(Arrays.stream(searchConfiguration.searchFilters()).collect(Collectors.toMap(
-                          SearchFilterConfiguration::name, SearchFilterConfiguration::value))).build())
-                  .build();
-          results = fulltextSearchService.getResults(searchConfiguration.index(), fulltextSearchGetRequestPayload)
-              .map(FulltextSearchResults::getResults).orElse(
-                  Collections.emptyList());
+          requestWrapper.getParameter(SEARCH_TERM).ifPresent(s -> {
+            term = s;
+            startPage = requestWrapper.getParameter(QUERY_PARAM_START)
+                .map(start -> new StringToInteger(start).asInt())
+                .map(OptionalInt::getAsInt)
+                .orElse(DEFAULT_START_PAGE);
+            resultsPerPage = resolveResultsPerPage(requestWrapper);
+            //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
+            loadMoreRows = resultsPerPage + configuredResultsPerPage;
+            results = simplifiedSearch.getResults(request.getResource(), s, startPage, resultsPerPage)
+                .map(FulltextSearchResults::getResults)
+                .orElse(Collections.emptyList());
+          });
         });
   }
 
@@ -155,7 +129,4 @@ public class SearchResultsImpl implements SearchResults {
         .map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
   }
 
-  private String getLanguage() {
-    return currentPage.getLanguage().getLanguage();
-  }
 }

@@ -19,4 +19,7 @@ public @interface SearchConfiguration {
   @Property(label = "Search Templates", description = "List of custom query templates' names, for specialized/different field boosting strategies. (Optional)")
   String[] templates() default {};
 
+  @Property(label = "Search Templates", description = "List of custom query templates' names, for specialized/different field boosting strategies. (Optional)")
+  String highlightTagName() default StringUtils.EMPTY;
+
 }

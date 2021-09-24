@@ -74,6 +74,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
     Optional<ResponseBody> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
     if (responseBody.isPresent()) {
       Highlighting highlighting = searchResponse.get(new HighlightingDataExtractionStrategy())
+          .filter(h -> h.getItems() != null)
           .orElse(FallbackHighlighting.getInstance());
       return Optional.of(FulltextSearchResults.builder()
           .totalResultsFound(responseBody.get().getNumFound())

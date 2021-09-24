@@ -12,17 +12,22 @@ class FiltersQueryTest {
   void testQuery() {
     assertThat(FiltersQuery.builder().build().getEntries(), is(empty()));
     assertThat(FiltersQuery.builder()
-        .filterEntry("foo", "")
-        .filterEntry("bar", null).build()
+        .filter(new SimpleFilter("foo", ""))
+        .filter(new SimpleFilter("bar", null)).build()
         .getEntries(), is(empty()));
     assertThat(FiltersQuery.builder()
-        .filterEntry("foo", "FOO")
-        .filterEntry("bar", "BAR").build()
+        .filter(new SimpleFilter("foo", "FOO"))
+        .filter(new SimpleFilter("bar", "BAR")).build()
         .getEntries().size(), is(2));
     assertThat(FiltersQuery.builder()
-        .filterEntry("foo", "")
-        .filterEntry("bar", null)
-        .filterEntry("baz", "BAZ").build()
-        .getEntries().size(), is(1));
+        .filter("foo", "")
+        .filter("bar", null)
+        .filter(CompositeFilter.builder()
+            .filter("foo", "FOO")
+            .filter("bar", "BAR")
+            .joinOperator(FilterJoinOperator.OR)
+            .build())
+        .filter("baz", "BAZ").build()
+        .getEntries().size(), is(2));
   }
 }

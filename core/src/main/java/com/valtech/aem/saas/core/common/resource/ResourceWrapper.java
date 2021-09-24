@@ -27,7 +27,6 @@ public class ResourceWrapper {
     return getDescendents(resource);
   }
 
-
   private Resource getParentWithResourceType(@NonNull Resource resource, String resourceType) {
     if (resource.getParent() != null) {
       if (resource.getParent().isResourceType(resourceType)) {

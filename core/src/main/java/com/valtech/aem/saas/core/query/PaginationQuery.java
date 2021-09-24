@@ -26,18 +26,17 @@ public final class PaginationQuery implements FulltextSearchOptionalQuery {
   /**
    * Constructs a pagination query with current page, results per page/request and the maximum limit.
    *
-   * @param start        the current result page.
-   * @param rows         the number of results per page/request.
-   * @param rowsMaxLimit the maximum limit of allowed results per page/request.
+   * @param start the current result page.
+   * @param rows  the number of results per page/request.
    */
-  public PaginationQuery(int start, int rows, int rowsMaxLimit) {
+  public PaginationQuery(int start, int rows) {
     if (isValidStartParameter(start)) {
       this.start = new BasicNameValuePair(START_PARAMETER_KEY, String.valueOf(start));
     } else {
       this.start = null;
       log.warn("Start value not in acceptable value range.");
     }
-    if (isValidRowParameter(rows, rowsMaxLimit)) {
+    if (isValidRowParameter(rows)) {
       this.rows = new BasicNameValuePair(ROWS_PARAMETER_KEY, String.valueOf(rows));
     } else {
       this.rows = null;
@@ -57,8 +56,8 @@ public final class PaginationQuery implements FulltextSearchOptionalQuery {
     return start >= START_MIN_VALUE;
   }
 
-  private boolean isValidRowParameter(int rows, int maxLimit) {
-    return rows > ROWS_MIN_VALUE && rows <= maxLimit;
+  private boolean isValidRowParameter(int rows) {
+    return rows > ROWS_MIN_VALUE;
   }
 
 }

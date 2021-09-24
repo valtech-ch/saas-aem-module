@@ -4,7 +4,8 @@
     jcr:primaryType="cq:Page">
     <jcr:content
         jcr:primaryType="cq:PageContent"
-        index="/fooweb">
+        index="/fooweb"
+        highlightTagName="em">
         <searchFilters
             jcr:primaryType="nt:unstructured">
             <item1

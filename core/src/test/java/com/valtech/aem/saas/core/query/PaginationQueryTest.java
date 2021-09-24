@@ -10,10 +10,9 @@ class PaginationQueryTest {
 
   @Test
   void testQuery() {
-    assertThat(new PaginationQuery(0, 10, 100).getEntries().size(),
+    assertThat(new PaginationQuery(0, 10).getEntries().size(),
         is(2));
-    assertThat(new PaginationQuery(-1, 10, 100).getEntries().size(), is(1));
-    assertThat(new PaginationQuery(0, 10000, 9999).getEntries().size(), is(1));
-    assertThat(new PaginationQuery(-1, 10000, 9999).getEntries(), is(empty()));
+    assertThat(new PaginationQuery(-1, 10).getEntries().size(), is(1));
+    assertThat(new PaginationQuery(-1, 0).getEntries(), is(empty()));
   }
 }
