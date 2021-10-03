@@ -13,9 +13,6 @@
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="saas-aem-module/components/container"
                 layout="responsiveGrid">
-                <title
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="saas-aem-module/components/title"/>
                 <container
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="saas-aem-module/components/container"
