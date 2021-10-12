@@ -28,25 +28,23 @@ public interface BestBetsConsumerService {
   void addBestBets(@NonNull List<BestBetPayload> bestBetPayloadList);
 
   /**
-   * Updates the best bet entry with the specified betId.
+   * Updates the best bet entry with the specified id.
    *
-   * @param betId          id of the best bet that is updated.
+   * @param bestBetId      id of the best bet that is updated.
    * @param bestBetPayload best bet details to be updated.
-   * @return the id of the best bet entry that is updated.
-   * @throws BestBetsActionFailedException exception thrown when the update action has failed
-   * or request execution has failed
+   * @throws BestBetsActionFailedException exception thrown when the update action has failed or request execution has
+   *                                       failed
    */
-  int updateBestBet(int betId, @NonNull BestBetPayload bestBetPayload);
+  void updateBestBet(int bestBetId, @NonNull BestBetPayload bestBetPayload);
 
   /**
-   * Deletes the best bet entry with the specified betId.
+   * Deletes the best bet entry with the specified id.
    *
-   * @param betId the id of the best bet that should be deleted.
-   * @return the id of the best bet that is deleted
-   * @throws BestBetsActionFailedException exception thrown when the delete action has failed
-   * or request execution has failed.
+   * @param bestBetId the id of the best bet that should be deleted.
+   * @throws BestBetsActionFailedException exception thrown when the delete action has failed or request execution has
+   *                                       failed.
    */
-  int deleteBestBet(int betId);
+  void deleteBestBet(int bestBetId);
 
   /**
    * Published the best bets for the specified project.

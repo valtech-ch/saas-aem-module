@@ -73,43 +73,47 @@ public class ClientBestBetsConsumerService implements BestBetsConsumerService {
   }
 
   @Override
-  public int updateBestBet(int betId, @NonNull BestBetPayload bestBetPayload) {
+  public void updateBestBet(int bestBetId, @NonNull BestBetPayload bestBetPayload) {
     validateCommonConfigs();
     if (StringUtils.isBlank(updateBestBetAction)) {
       throw new IllegalStateException("Update best bet action path is not specified.");
     }
     SearchRequest searchRequest = SearchRequestPut.builder()
-        .uri(commonPath + updateBestBetAction + "/" + betId)
+        .uri(commonPath + updateBestBetAction + "/" + bestBetId)
         .httpEntity(createJsonPayloadEntity(bestBetPayload))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
     searchResponse.ifPresent(r -> handleSearchResponseError(r,
-        String.format("Failed to update best bet with id %s, with %s", betId, bestBetPayload)));
-    return searchResponse
+        String.format("Failed to update best bet with id %s, with %s", bestBetId, bestBetPayload)));
+    if (searchResponse
         .flatMap(response -> response.get(new ModifiedBestBetIdExtractionStrategy()))
-        .orElseThrow(() -> new BestBetsActionFailedException(
-            String.format("Failed to update best bet: %s with the following update details %s", betId,
-                bestBetPayload)));
+        .isPresent()) {
+      throw new BestBetsActionFailedException(
+          String.format("Failed to update best bet: %s with the following update details %s", bestBetId,
+              bestBetPayload));
+    }
   }
 
   @Override
-  public int deleteBestBet(int betId) {
+  public void deleteBestBet(int bestBetId) {
     validateCommonConfigs();
     if (StringUtils.isBlank(deleteBestBetAction)) {
       throw new IllegalStateException("Delete best bet action path is not specified.");
     }
     SearchRequest searchRequest = SearchRequestDelete.builder()
-        .uri(commonPath + deleteBestBetAction + "/" + betId)
+        .uri(commonPath + deleteBestBetAction + "/" + bestBetId)
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
     searchResponse.ifPresent(r -> handleSearchResponseError(r,
-        String.format("Failed to delete best bet with id %s", betId)));
-    return searchResponse
+        String.format("Failed to delete best bet with id %s", bestBetId)));
+    if (!searchResponse
         .filter(SearchResponse::isSuccess)
         .flatMap(response -> response.get(new ModifiedBestBetIdExtractionStrategy()))
-        .orElseThrow(() -> new BestBetsActionFailedException(String.format("Failed to delete best bet: %s", betId)));
+        .isPresent()) {
+      throw new BestBetsActionFailedException(String.format("Failed to delete best bet: %s", bestBetId));
+    }
   }
 
   @Override

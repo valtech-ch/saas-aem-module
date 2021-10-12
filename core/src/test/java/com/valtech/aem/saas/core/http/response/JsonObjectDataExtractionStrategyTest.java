@@ -3,7 +3,6 @@ package com.valtech.aem.saas.core.http.response;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
