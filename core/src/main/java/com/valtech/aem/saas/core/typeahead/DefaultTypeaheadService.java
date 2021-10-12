@@ -77,6 +77,10 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
     String DEFAULT_API_ACTION = "/typeahead";
     String DEFAULT_API_VERSION_PATH = "/api/v3";
 
+    String FF_LANGUAGE = "language";
+    String FF_DOMAIN = "domain";
+    String FF_REPOSITORY_PATH_URL = "repository_path_url";
+
     @AttributeDefinition(name = "Api version path",
         description = "Path designating the api version",
         type = AttributeType.STRING)
@@ -91,22 +95,9 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
         description = "List of field names that can be used in filter queries",
         type = AttributeType.STRING)
     String[] typeaheadService_allowedFilterFields() default {
-        "language",
-        "domain",
-        "scope",
-        "repository_path_url",
-        "page_type_str",
-        "publication_date",
-        "products_mstr",
-        "categories_mstr",
-        "categories_murl",
-        "tags_mstr",
-        "start_date",
-        "end_date",
-        "title_str",
-        "brand_str",
-        "parent_path_url",
-        "product_filter_paths_murl"
+        FF_LANGUAGE,
+        FF_DOMAIN,
+        FF_REPOSITORY_PATH_URL
     };
 
   }
