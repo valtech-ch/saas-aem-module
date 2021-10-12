@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.event.jobs.consumer.JobConsumer.JobResult;
 
+/**
+ * Strategy for updating index content. It is associated with {@link IndexUpdateAction}.UPDATE. It guarantees execution
+ * of the index content update via the apache sling job queue mechanism.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class UpdateStrategy implements IndexUpdateJobProcessingStrategy {

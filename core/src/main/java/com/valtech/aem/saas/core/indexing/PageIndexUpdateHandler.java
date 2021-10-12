@@ -8,7 +8,7 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.core.indexing.IndexUpdateHandler.Configuration;
+import com.valtech.aem.saas.core.indexing.PageIndexUpdateHandler.Configuration;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
@@ -37,6 +38,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(name = "Search as a Service - Page Replication Event Handler",
     immediate = true,
     service = {EventHandler.class},
+    configurationPolicy = ConfigurationPolicy.REQUIRE,
     configurationPid = "com.valtech.aem.saas.core.indexing.IndexUpdateHandler",
     property = {
         EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC,
@@ -44,7 +46,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     })
 @Designate(ocd = Configuration.class)
 @Slf4j
-public class IndexUpdateHandler implements EventHandler {
+public class PageIndexUpdateHandler implements EventHandler {
 
   public static final String SAAS_CONTENT_READER = "saas-content-reader";
 
@@ -67,6 +69,9 @@ public class IndexUpdateHandler implements EventHandler {
 
   @Override
   public void handleEvent(Event event) {
+    if (!configuration.indexUpdateHandler_enable()) {
+      return;
+    }
     ReplicationAction action = getReplicationAction(event);
     if (action == null) {
       return;
@@ -100,19 +105,16 @@ public class IndexUpdateHandler implements EventHandler {
       Page page = pageManager.getPage(pagePath);
       if (page != null) {
         return page.adaptTo(Resource.class);
-      } else {
-        log.warn("{} is not a Page", pagePath);
       }
+      log.warn("{} is not a Page", pagePath);
     }
     return null;
   }
 
   private ReplicationAction getReplicationAction(Event event) {
-    if (!configuration.indexUpdateHandler_enable()) {
-      return null;
-    }
     ReplicationAction action = getAction(event);
     if (action == null) {
+      log.debug("Not able to resolve a replication action from {}", event);
       return null;
     }
     if (ReplicationActionType.ACTIVATE != action.getType()
@@ -121,6 +123,7 @@ public class IndexUpdateHandler implements EventHandler {
       log.debug("Unknown action type occurred.");
       return null;
     }
+    log.debug("Handling replication action of type: {}, for resource on path: {}.", action.getType(), action.getPath());
     return action;
   }
 
@@ -138,7 +141,7 @@ public class IndexUpdateHandler implements EventHandler {
     properties.put(IndexUpdateJobConsumer.JOB_PROPERTY_URL, externalizedPath);
     List<String> errorMessages = new ArrayList<>();
     Job job = jobManager.createJob(IndexUpdateJobConsumer.INDEX_UPDATE).properties(properties).add(errorMessages);
-    log.info("Job: {}, Errors: {}", job, errorMessages);
+    log.info("Added job: {}, Errors: {}", job.getId(), errorMessages);
   }
 
   private ReplicationAction getAction(Event event) {

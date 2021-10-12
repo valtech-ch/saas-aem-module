@@ -40,7 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.osgi.service.event.Event;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
-class IndexUpdateHandlerTest {
+class PageIndexUpdateHandlerTest {
 
   private final AemContext context = new AemContext(ResourceResolverType.NONE);
 
@@ -86,7 +86,7 @@ class IndexUpdateHandlerTest {
   @Mock
   Event event;
 
-  IndexUpdateHandler testee;
+  PageIndexUpdateHandler testee;
 
   @BeforeEach
   void setUp() {
@@ -100,14 +100,14 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_handlerDisabled() {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler());
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler());
     testee.handleEvent(event);
     verify(jobManager, never()).createJob(anyString());
   }
 
   @Test
   void testHandleEvent_eventTopicInvalid() {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -117,7 +117,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_eventActionTypeInvalid() {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -132,7 +132,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_noResourceResolverRetrieved() throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -152,7 +152,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_actionPathNotAPage(AemContext context) throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -170,7 +170,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_noContextResource(AemContext context) throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -189,7 +189,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_noSaasClientConfig(AemContext context) throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -212,7 +212,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_withClient_noExternalizerHookEnabled() throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .build());
@@ -235,7 +235,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_withClient_aemExternalizerEnabled() throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .put("indexUpdateHandler.enableAemExternalizer", true)
@@ -264,7 +264,7 @@ class IndexUpdateHandlerTest {
 
   @Test
   void testHandleEvent_withClient_customPathExternalizerPipelineEnabled() throws LoginException {
-    testee = context.registerInjectActivateService(new IndexUpdateHandler(),
+    testee = context.registerInjectActivateService(new PageIndexUpdateHandler(),
         ImmutableMap.<String, Object>builder()
             .put("indexUpdateHandler.enable", true)
             .put("indexUpdateHandler.enableCustomPathExternalizerPipeline", true)
