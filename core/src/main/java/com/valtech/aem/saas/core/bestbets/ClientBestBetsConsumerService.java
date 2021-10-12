@@ -86,7 +86,7 @@ public class ClientBestBetsConsumerService implements BestBetsConsumerService {
     handleFailedRequestExecution(searchResponse);
     searchResponse.ifPresent(r -> handleSearchResponseError(r,
         String.format("Failed to update best bet with id %s, with %s", bestBetId, bestBetPayload)));
-    if (searchResponse
+    if (!searchResponse
         .flatMap(response -> response.get(new ModifiedBestBetIdExtractionStrategy()))
         .isPresent()) {
       throw new BestBetsActionFailedException(
