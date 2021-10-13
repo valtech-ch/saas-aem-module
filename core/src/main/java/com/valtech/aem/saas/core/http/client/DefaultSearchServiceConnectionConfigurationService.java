@@ -65,7 +65,7 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
   public @interface Configuration {
 
     String DEFAULT_WEB_SERVICE_URL = "https://test-search-admin.infocentric.swiss";
-    int DEFAULT_TIMEOUT = 10;
+    int DEFAULT_TIMEOUT = 10000;
     boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
     boolean DEFAULT_IGNORE_SSL = false;
 
@@ -93,12 +93,12 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
     boolean searchService_ignoreSSL() default DEFAULT_IGNORE_SSL;
 
     @AttributeDefinition(name = "HTTP Connection Timeout",
-        description = "Timeout in seconds until a connection is established. A timeout value of zero is interpreted as an infinite timeout. Default is 10s ",
+        description = "Timeout in milliseconds until a connection is established. A timeout value of zero is interpreted as an infinite timeout. Default is 10000ms ",
         type = AttributeType.INTEGER)
     int searchService_httpConnectionTimeout() default DEFAULT_TIMEOUT;
 
     @AttributeDefinition(name = "HTTP Connection Timeout",
-        description = "Timeout in seconds for waiting for data or a maximum period of inactivity between two consecutive data packets. Default is 10s ",
+        description = "Timeout in milliseconds for waiting for data or a maximum period of inactivity between two consecutive data packets. Default is 10000ms ",
         type = AttributeType.INTEGER)
     int searchService_httpSocketTimeout() default DEFAULT_TIMEOUT;
 
