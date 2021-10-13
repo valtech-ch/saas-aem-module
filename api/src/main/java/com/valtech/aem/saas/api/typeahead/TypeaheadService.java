@@ -1,17 +1,20 @@
 package com.valtech.aem.saas.api.typeahead;
 
+import java.util.List;
+import lombok.NonNull;
+
 /**
  * Represents a service that consumes the SaaS typeahead api.
  */
 public interface TypeaheadService {
 
   /**
-   * Gets a typeahead consumer service for a specific index.
+   * Retrieves typeahead results
    *
-   * @param index SaaS client index.
-   * @return typeahead consumer object.
-   * @throws IllegalArgumentException exception thrown when blank index argument is passed.
+   * @param index            SaaS client index.
+   * @param typeaheadPayload object containing typeahead query values.
+   * @return List of string represented typeahead options. Empty list if no options are found.
    */
-  TypeaheadConsumerService getTypeaheadConsumerService(String index);
+  List<String> getResults(@NonNull String index, @NonNull TypeaheadPayload typeaheadPayload);
 
 }

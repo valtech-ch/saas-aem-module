@@ -3,17 +3,23 @@ package com.valtech.aem.saas.core.typeahead;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
+import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.typeahead.TypeaheadConfigurationService;
-import com.valtech.aem.saas.api.typeahead.TypeaheadConsumerService;
+import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.http.client.DefaultSearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
+import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.io.InputStreamReader;
+import java.util.Optional;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +32,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
 class DefaultTypeaheadServiceTest {
 
+  public static final String SAMPLE_ALLOWED_FIELD = "language";
+
+  @Mock
+  SearchRequestExecutorService searchRequestExecutorService;
+
   @Mock
   HttpClientBuilderFactory httpClientBuilderFactory;
 
@@ -34,23 +45,77 @@ class DefaultTypeaheadServiceTest {
 
   @BeforeEach
   void setUp(AemContext context) {
-    Mockito.when(httpClientBuilderFactory.newBuilder()).thenReturn(HttpClientBuilder.create());
     context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-    context.registerInjectActivateService(new DefaultSearchRequestExecutorService());
+    context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     service = context.registerInjectActivateService(new DefaultTypeaheadService());
     configService = context.registerInjectActivateService(new DefaultTypeaheadService());
   }
 
   @Test
-  void getTypeaheadConsumerService() {
-    assertThrows(IllegalArgumentException.class, () -> service.getTypeaheadConsumerService(null));
-    assertThrows(IllegalArgumentException.class, () -> service.getTypeaheadConsumerService(""));
-    assertThat(service.getTypeaheadConsumerService("foo"), instanceOf(TypeaheadConsumerService.class));
+  void getAllowedFilterFields() {
+    assertThat(configService.getAllowedFilterFields(), Is.is(not(empty())));
   }
 
   @Test
-  void getAllowedFilterFields() {
-    assertThat(configService.getAllowedFilterFields(), Is.is(not(empty())));
+  void testInputValidation() {
+    TypeaheadPayload emptyPayload = getPayloadInstance();
+    testImproperPayload(service, emptyPayload);
+
+    TypeaheadPayload noTermPayload = DefaultTypeaheadPayload.builder().language("de").build();
+    testImproperPayload(service, noTermPayload);
+
+    TypeaheadPayload noLanguagePayload = DefaultTypeaheadPayload.builder().text("foo bar").build();
+    testImproperPayload(service, noLanguagePayload);
+
+    TypeaheadPayload forbiddenFilterFieldsPayload = DefaultTypeaheadPayload.builder().text("foo bar")
+        .filterEntry("forbiddenKey", "val").build();
+    testImproperPayload(service, forbiddenFilterFieldsPayload);
+
+    TypeaheadPayload properPayload = getProperPayload();
+    assertDoesNotThrow(() -> service.getResults("indexfoo", properPayload));
+  }
+
+  @Test
+  void testGetResults() {
+    when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonParser().parse(
+                new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
+            .getAsJsonObject(), true)));
+//    IndexTypeaheadConsumerService indexTypeaheadConsumerService = IndexTypeaheadConsumerService.builder()
+//        .apiUrl("foo")
+//        .searchRequestExecutorService(searchRequestExecutorService)
+//        .build();
+    assertThat(service.getResults("indexfoo", getProperPayload()), is(not(empty())));
+  }
+
+  @Test
+  void testGetResults_noTypeaheadOptions() {
+    when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonParser().parse(
+                new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/empty.json")))
+            .getAsJsonObject(), true)));
+//    IndexTypeaheadConsumerService indexTypeaheadConsumerService = IndexTypeaheadConsumerService.builder()
+//        .apiUrl("foo")
+//        .searchRequestExecutorService(searchRequestExecutorService)
+//        .build();
+    assertThat(service.getResults("indexfoo", getProperPayload()), is(empty()));
+  }
+
+  private void testImproperPayload(TypeaheadService typeaheadService,
+      TypeaheadPayload payload) {
+    assertThrows(IllegalArgumentException.class, () -> typeaheadService.getResults("indexfoo", payload));
+  }
+
+  private TypeaheadPayload getProperPayload() {
+    return DefaultTypeaheadPayload.builder()
+        .text("foo bar")
+        .language("de")
+        .filterEntry(SAMPLE_ALLOWED_FIELD, "val")
+        .build();
+  }
+
+  private TypeaheadPayload getPayloadInstance() {
+    return DefaultTypeaheadPayload.builder().build();
   }
 }
