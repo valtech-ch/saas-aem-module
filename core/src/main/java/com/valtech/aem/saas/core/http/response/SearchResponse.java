@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.http.response;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SearchResponse {
 
-  private final JsonObject response;
+  private final JsonElement response;
   @Getter
   private final boolean success;
 

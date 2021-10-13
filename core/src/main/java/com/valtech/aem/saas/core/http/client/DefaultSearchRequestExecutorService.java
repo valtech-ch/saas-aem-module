@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.http.client;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import java.io.IOException;
@@ -60,7 +60,7 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
           log.debug("Response content: {}", httpResponseParser.getContentString());
         }
       }
-      JsonObject jsonResponse = new HttpResponseParser(response).toGsonModel(JsonObject.class);
+      JsonElement jsonResponse = new HttpResponseParser(response).toGsonModel(JsonElement.class);
       if (jsonResponse != null) {
         return Optional.of(new SearchResponse(jsonResponse, isSuccess));
       }

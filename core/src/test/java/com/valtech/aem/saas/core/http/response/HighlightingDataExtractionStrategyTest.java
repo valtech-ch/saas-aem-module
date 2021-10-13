@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class HighlightingDataExtractionStrategyTest {
 
   @Test
-  void getResponse() {
+  void testGetData() {
     HighlightingDataExtractionStrategy strategy = new HighlightingDataExtractionStrategy();
     Assertions.assertThrows(UnsupportedOperationException.class, strategy::propertyName);
     assertThat(strategy.getData(new JsonObject()).isPresent(), is(true));
