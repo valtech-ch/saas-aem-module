@@ -1,12 +1,32 @@
 package com.valtech.aem.saas.core.bestbets;
 
+import com.google.gson.Gson;
+import com.valtech.aem.saas.api.bestbets.BestBet;
+import com.valtech.aem.saas.api.bestbets.BestBetPayload;
+import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
 import com.valtech.aem.saas.api.bestbets.BestBetsService;
-import com.valtech.aem.saas.api.bestbets.BestBetsConsumerService;
 import com.valtech.aem.saas.core.bestbets.DefaultBestBetsService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
+import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
+import com.valtech.aem.saas.core.http.request.SearchRequestGet;
+import com.valtech.aem.saas.core.http.request.SearchRequestPost;
+import com.valtech.aem.saas.core.http.request.SearchRequestPut;
+import com.valtech.aem.saas.core.http.response.BestBetsDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.JsonObjectDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.ModifiedBestBetIdExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.entity.ContentType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -23,6 +43,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public class DefaultBestBetsService implements BestBetsService {
 
   public static final String URL_PATH_DELIMITER = "/";
+  public static final String STRING_FORMAT_PLACEHOLDER = "%s";
+  public static final String FAILED_REQUEST_EXECUTION = "Failed to execute request to best bets api.";
 
   @Reference
   private SearchRequestExecutorService searchRequestExecutorService;
@@ -33,28 +55,147 @@ public class DefaultBestBetsService implements BestBetsService {
   private Configuration configuration;
 
   @Override
-  public BestBetsConsumerService getBestBetsConsumerService(String client) {
-    if (StringUtils.isBlank(client)) {
-      throw new IllegalArgumentException("Must specify client id.");
+  public void addBestBet(@NonNull String client, @NonNull BestBetPayload bestBetPayload) {
+    if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetAction())) {
+      throw new IllegalStateException("Add best bet action path is not specified.");
     }
-    return ClientBestBetsConsumerService.builder()
-        .searchRequestExecutorService(searchRequestExecutorService)
-        .commonPath(createApiCommonPath(client))
-        .addBestBetAction(configuration.bestBetsService_apiAddBestBetAction())
-        .addBestBetsAction(configuration.bestBetsService_apiAddBestBetsAction())
-        .updateBestBetAction(configuration.bestBetsService_apiUpdateBestBetAction())
-        .deleteBestBetAction(configuration.bestBetsService_apiDeleteBestBetAction())
-        .getBestBetsAction(configuration.bestBetsService_apiGetAllBestBetsAction())
-        .publishBestBetsForProjectAction(configuration.bestBetsService_apiPublishProjectBestBetsAction())
+    SearchRequest searchRequest = SearchRequestPost.builder()
+        .uri(createApiCommonPath(client) + configuration.bestBetsService_apiAddBestBetAction())
+        .httpEntity(createJsonPayloadEntity(bestBetPayload))
+        .build();
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+    handleFailedRequestExecution(searchResponse);
+    searchResponse
+        .ifPresent(r -> handleSearchResponseError(r, String.format("Failed to add best bet: %s", bestBetPayload)));
+  }
+
+  @Override
+  public void addBestBets(@NonNull String client, @NonNull List<BestBetPayload> bestBetPayloadList) {
+    if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetsAction())) {
+      throw new IllegalStateException("Add best bets action path is not specified.");
+    }
+    SearchRequest searchRequest = SearchRequestPost.builder()
+        .uri(createApiCommonPath(client) + configuration.bestBetsService_apiAddBestBetsAction())
+        .httpEntity(createJsonPayloadEntity(bestBetPayloadList))
+        .build();
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+    handleFailedRequestExecution(searchResponse);
+    searchResponse
+        .ifPresent(r -> handleSearchResponseError(r,
+            String.format("Failed to add best bets: %s", bestBetPayloadList)));
+  }
+
+  @Override
+  public void updateBestBet(@NonNull String client, int bestBetId, @NonNull BestBetPayload bestBetPayload) {
+    if (StringUtils.isBlank(configuration.bestBetsService_apiUpdateBestBetAction())) {
+      throw new IllegalStateException("Update best bet action path is not specified.");
+    }
+    SearchRequest searchRequest = SearchRequestPut.builder()
+        .uri(createApiCommonPath(client) + configuration.bestBetsService_apiUpdateBestBetAction() + URL_PATH_DELIMITER
+            + bestBetId)
+        .httpEntity(createJsonPayloadEntity(bestBetPayload))
+        .build();
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+    handleFailedRequestExecution(searchResponse);
+    searchResponse.ifPresent(r -> handleSearchResponseError(r,
+        String.format("Failed to update best bet with id %s, with %s", bestBetId, bestBetPayload)));
+    if (!searchResponse
+        .flatMap(response -> response.get(new ModifiedBestBetIdExtractionStrategy()))
+        .isPresent()) {
+      throw new BestBetsActionFailedException(
+          String.format("Failed to update best bet: %s with the following update details %s", bestBetId,
+              bestBetPayload));
+    }
+  }
+
+  @Override
+  public void deleteBestBet(@NonNull String client, int bestBetId) {
+    if (StringUtils.isBlank(configuration.bestBetsService_apiDeleteBestBetAction())) {
+      throw new IllegalStateException("Delete best bet action path is not specified.");
+    }
+    SearchRequest searchRequest = SearchRequestDelete.builder()
+        .uri(createApiCommonPath(client) + configuration.bestBetsService_apiDeleteBestBetAction() + URL_PATH_DELIMITER
+            + bestBetId)
+        .build();
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+    handleFailedRequestExecution(searchResponse);
+    searchResponse.ifPresent(r -> handleSearchResponseError(r,
+        String.format("Failed to delete best bet with id %s", bestBetId)));
+    if (!searchResponse
+        .filter(SearchResponse::isSuccess)
+        .flatMap(response -> response.get(new ModifiedBestBetIdExtractionStrategy()))
+        .isPresent()) {
+      throw new BestBetsActionFailedException(String.format("Failed to delete best bet: %s", bestBetId));
+    }
+  }
+
+  @Override
+  public void publishBestBetsForProject(@NonNull String client, int projectId) {
+    if (StringUtils.isBlank(configuration.bestBetsService_apiPublishProjectBestBetsAction())) {
+      throw new IllegalStateException("Publish best bets for project action path is not specified.");
+    }
+    if (!StringUtils.contains(configuration.bestBetsService_apiPublishProjectBestBetsAction(),
+        STRING_FORMAT_PLACEHOLDER)) {
+      throw new IllegalArgumentException(
+          "Publish Best Bets For Project Action is of illegal format. It should contain a wildcard/placeholder for project id.");
+    }
+    SearchRequest searchRequest = new SearchRequestGet(getPreparePublishBestBetsAction(client, projectId));
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+    handleFailedRequestExecution(searchResponse);
+    searchResponse.ifPresent(
+        r -> handleSearchResponseError(r, String.format("Failed to publish best bets for project: %s", projectId)));
+  }
+
+  @Override
+  public List<BestBet> getBestBets(@NonNull String client) {
+    if (StringUtils.isBlank(configuration.bestBetsService_apiGetAllBestBetsAction())) {
+      throw new IllegalStateException("Get best bets action path is not specified.");
+    }
+    SearchRequest searchRequest = new SearchRequestGet(
+        createApiCommonPath(client) + configuration.bestBetsService_apiGetAllBestBetsAction());
+    Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+    handleFailedRequestExecution(searchResponse);
+    return searchRequestExecutorService.execute(searchRequest)
+        .filter(SearchResponse::isSuccess)
+        .flatMap(response -> response.get(new BestBetsDataExtractionStrategy()))
+        .orElse(Collections.emptyList());
+  }
+
+  private String getPreparePublishBestBetsAction(@NonNull String client, int projectId) {
+    return createApiCommonPath(client) + String.format(configuration.bestBetsService_apiPublishProjectBestBetsAction(),
+        projectId);
+  }
+
+
+  private <T> HttpEntity createJsonPayloadEntity(T jsonPayload) {
+    return EntityBuilder.create()
+        .setText(new Gson().toJson(jsonPayload))
+        .setContentType(ContentType.APPLICATION_JSON)
+        .setContentEncoding(StandardCharsets.UTF_8.name())
         .build();
   }
 
+  private void handleSearchResponseError(SearchResponse searchResponse, String exceptionMessage) {
+    if (!searchResponse.isSuccess()) {
+      searchResponse.get(new JsonObjectDataExtractionStrategy())
+          .map(jsonObject -> new Gson().toJson(jsonObject))
+          .ifPresent(s -> {
+            throw new BestBetsActionFailedException(String.format("%s. Reason: %s", exceptionMessage, s));
+          });
+    }
+  }
+
+  private void handleFailedRequestExecution(Optional<SearchResponse> searchResponse) {
+    if (!searchResponse.isPresent()) {
+      throw new BestBetsActionFailedException(FAILED_REQUEST_EXECUTION);
+    }
+  }
+
   private String createApiCommonPath(String client) {
-    return StringUtils.join(
-        searchServiceConnectionConfigurationService.getBaseUrl(),
+    return new BestBetsApiCommonPathConstructor(searchServiceConnectionConfigurationService.getBaseUrl(),
         configuration.bestBetsService_apiBasePath(),
-        URL_PATH_DELIMITER + client,
-        configuration.bestBetsService_apiVersionPath());
+        configuration.bestBetsService_apiVersionPath())
+        .getPath(client);
   }
 
   @Activate

@@ -8,7 +8,9 @@ import lombok.Value;
 public class BestBetDetails implements BestBet {
 
   public static final String PN_PROJECT_ID = "project_id";
+
   int id;
+
   String language;
 
   String term;
