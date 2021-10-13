@@ -150,7 +150,7 @@ public class SearchResultsImpl implements SearchResults {
 
   private int getConfiguredResultsPerPage() {
     return Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
-        .flatMap(r -> r.getParentWithResourceType(RESOURCE_TYPE))
+        .flatMap(r -> r.getParentWithResourceType(SearchImpl.RESOURCE_TYPE))
         .map(r -> r.adaptTo(Search.class))
         .map(Search::getResultsPerPage).orElse(DEFAULT_RESULTS_PER_PAGE);
   }
