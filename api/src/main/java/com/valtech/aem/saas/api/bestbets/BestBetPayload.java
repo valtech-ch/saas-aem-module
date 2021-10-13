@@ -1,5 +1,8 @@
 package com.valtech.aem.saas.api.bestbets;
 
+/**
+ * Represents the payload object for best bets api
+ */
 public interface BestBetPayload {
 
   /**
