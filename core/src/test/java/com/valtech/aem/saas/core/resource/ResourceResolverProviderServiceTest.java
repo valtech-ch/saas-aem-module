@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,21 +31,21 @@ class ResourceResolverProviderServiceTest {
   @Test
   void resourceResolverConsumer() throws LoginException {
     Consumer<ResourceResolver> consumer = Mockito.mock(Consumer.class);
-    resourceResolverProvider.resourceResolverConsumer("foo", consumer);
+    resourceResolverProvider.resourceResolverConsumer(consumer);
     verify(resourceResolverFactory, times(1)).getServiceResourceResolver(Mockito.anyMap());
   }
 
   @Test
   void resourceResolverFunction() throws LoginException {
     Function<ResourceResolver, String> function = Mockito.mock(Function.class);
-    resourceResolverProvider.resourceResolverFunction("foo", function);
+    resourceResolverProvider.resourceResolverFunction(function);
     verify(resourceResolverFactory, times(1)).getServiceResourceResolver(Mockito.anyMap());
   }
 
   @Test
   void testResourceResolverLoginException() throws LoginException {
     when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenThrow(LoginException.class);
-    assertThat(resourceResolverProvider.resourceResolverFunction("foo", resourceResolver -> "bar"),
+    assertThat(resourceResolverProvider.resourceResolverFunction(resourceResolver -> "bar"),
         nullValue());
   }
 }

@@ -1,5 +1,5 @@
 {
 	"user.mapping": [
-		"saas.core:saas-content-reader=saas-content-reader"
+		"saas.core:saas-aem-module-service-user=saas-aem-module-service-user"
 	]
 }

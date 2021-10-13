@@ -9,15 +9,6 @@ import java.util.stream.Collectors;
 public interface PathExternalizer {
 
   /**
-   * Gets the rank of the externalizer, which determines its order in the pipeline. Rank must be unique for each
-   * implementation. If there are two or more implementations with same rank, only the one will be registered in the
-   * pipeline. The others will be ignored.
-   *
-   * @return rank value.
-   */
-  int getRank();
-
-  /**
    * Gets a processed version of the passed path argument.
    *
    * @param path resource/page path to be externalized.

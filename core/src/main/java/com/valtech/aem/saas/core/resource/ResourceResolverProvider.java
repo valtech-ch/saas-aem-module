@@ -12,21 +12,19 @@ import org.apache.sling.api.resource.ResourceResolver;
 public interface ResourceResolverProvider {
 
   /**
-   * Performs instantiation of a resource resolver instance which can be consumed.
+   * Consumes SaaS service user resource resolver session.
    *
-   * @param subServiceName the sub service name mapped to a service user.
-   * @param consumer       a lambda function consuming the resource resolver instance.
+   * @param consumer a lambda function consuming the resource resolver instance.
    */
-  void resourceResolverConsumer(@NonNull String subServiceName, @NonNull Consumer<ResourceResolver> consumer);
+  void resourceResolverConsumer(@NonNull Consumer<ResourceResolver> consumer);
 
   /**
-   * Performs instantiation of a resource resolver instance which can be consumed and return a certain result.
+   * Consumes SaaS service user resource resolver session and returns a result.
    *
-   * @param subServiceName the sub service name mapped to a service user.
-   * @param function       a lambda function that consumes the resource resolver instance and returns a certain result.
-   * @param <R>            the type of the resulting object.
+   * @param function a lambda function that consumes the resource resolver instance and returns a certain result.
+   * @param <R>      the type of the resulting object.
    * @return the result of the lambda function consuming the resource resolver instance.
    */
-  <R> R resourceResolverFunction(@NonNull String subServiceName, @NonNull Function<ResourceResolver, R> function);
+  <R> R resourceResolverFunction(@NonNull Function<ResourceResolver, R> function);
 
 }

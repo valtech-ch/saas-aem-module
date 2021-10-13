@@ -17,21 +17,22 @@ import org.osgi.service.component.annotations.Reference;
     service = ResourceResolverProvider.class)
 public class ResourceResolverProviderService implements ResourceResolverProvider {
 
+  public static final String SERVICE_USER = "saas-aem-module-service-user";
+
   @Reference
   private ResourceResolverFactory resourceResolverFactory;
 
   @Override
-  public void resourceResolverConsumer(@NonNull String subServiceName, @NonNull Consumer<ResourceResolver> consumer) {
-    resourceResolverFunction(subServiceName, (ResourceResolver resourceResolver) -> {
+  public void resourceResolverConsumer(@NonNull Consumer<ResourceResolver> consumer) {
+    resourceResolverFunction(resourceResolver -> {
       consumer.accept(resourceResolver);
       return Void.TYPE;
     });
   }
 
   @Override
-  public <R> R resourceResolverFunction(@NonNull String subServiceName,
-      @NonNull Function<ResourceResolver, R> function) {
-    return getResourceResolverFunctionForServiceUser(subServiceName, function);
+  public <R> R resourceResolverFunction(@NonNull Function<ResourceResolver, R> function) {
+    return getResourceResolverFunctionForServiceUser(SERVICE_USER, function);
   }
 
   private <R> R getResourceResolverFunctionForServiceUser(@NonNull String subServiceName,

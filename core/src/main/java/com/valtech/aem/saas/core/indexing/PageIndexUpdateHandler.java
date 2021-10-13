@@ -48,8 +48,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Slf4j
 public class PageIndexUpdateHandler implements EventHandler {
 
-  public static final String SAAS_CONTENT_READER = "saas-content-reader";
-
   @Reference
   private JobManager jobManager;
 
@@ -69,16 +67,13 @@ public class PageIndexUpdateHandler implements EventHandler {
 
   @Override
   public void handleEvent(Event event) {
-    if (!configuration.indexUpdateHandler_enable()) {
-      return;
-    }
     ReplicationAction action = getReplicationAction(event);
     if (action == null) {
       return;
     }
     String actionPath = action.getPath();
     log.info("Replication action {} occurred on {}", action.getType(), actionPath);
-    resourceResolverProvider.resourceResolverConsumer(SAAS_CONTENT_READER, resourceResolver ->
+    resourceResolverProvider.resourceResolverConsumer(resourceResolver ->
         getSaasClient(resourceResolver, actionPath).ifPresent(client -> {
           Map<String, Object> propertiesProto = getPropertiesPrototype(action, client);
           if (configuration.indexUpdateHandler_enableAemExternalizer()) {
@@ -171,16 +166,12 @@ public class PageIndexUpdateHandler implements EventHandler {
       description = "Replication event handler that trigger SaaS index update.")
   public @interface Configuration {
 
-    @AttributeDefinition(name = "Enable",
-        description = "If enabled, page replication event will trigger an according index update action.")
-    boolean indexUpdateHandler_enable() default false;
-
     @AttributeDefinition(name = "Enable Aem Externalizer",
         description = "If enabled, an index update job, with page path externalized by the default AEM externalizer, will be scheduled.")
     boolean indexUpdateHandler_enableAemExternalizer() default false;
 
     @AttributeDefinition(name = "Enable Custom Path Externalizer Pipeline",
-        description = "If enabled, the page path will be externalize by the pipeline consisted PathExternalizer implementations.")
+        description = "If enabled, the page path will be externalized by the pipeline consisted PathExternalizer implementations. (It is preceded by the Day CQ Externalizer.)")
     boolean indexUpdateHandler_enableCustomPathExternalizerPipeline() default false;
   }
 }
