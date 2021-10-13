@@ -6,11 +6,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(service = JobConsumer.class, property = {
-    JobConsumer.PROPERTY_TOPICS + "=" + IndexUpdateJobConsumer.INDEX_UPDATE
-})
+@Component(service = JobConsumer.class,
+    configurationPolicy = ConfigurationPolicy.REQUIRE,
+    property = {
+        JobConsumer.PROPERTY_TOPICS + "=" + IndexUpdateJobConsumer.INDEX_UPDATE
+    })
 @Slf4j
 public class IndexUpdateJobConsumer implements JobConsumer {
 
