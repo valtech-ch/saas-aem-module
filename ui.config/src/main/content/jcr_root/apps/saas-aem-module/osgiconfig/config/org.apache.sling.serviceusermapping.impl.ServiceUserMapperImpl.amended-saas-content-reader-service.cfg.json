@@ -1,0 +1,5 @@
+{
+	"user.mapping": [
+		"saas.core:saas-aem-module-service-user=saas-aem-module-service-user"
+	]
+}

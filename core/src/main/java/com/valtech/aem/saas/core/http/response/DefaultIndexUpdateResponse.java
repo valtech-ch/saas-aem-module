@@ -2,6 +2,7 @@ package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.annotations.SerializedName;
 import com.valtech.aem.saas.api.indexing.IndexUpdateResponse;
+import lombok.ToString;
 import lombok.Value;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Value;
  * update api.
  */
 @Value
+@ToString
 public class DefaultIndexUpdateResponse implements IndexUpdateResponse {
 
   String message;
