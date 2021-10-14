@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.typeahead.TypeaheadConfigurationService;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
@@ -21,7 +20,6 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.io.InputStreamReader;
 import java.util.Optional;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +39,6 @@ class DefaultTypeaheadServiceTest {
   HttpClientBuilderFactory httpClientBuilderFactory;
 
   TypeaheadService service;
-  TypeaheadConfigurationService configService;
 
   @BeforeEach
   void setUp(AemContext context) {
@@ -49,12 +46,6 @@ class DefaultTypeaheadServiceTest {
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
     context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     service = context.registerInjectActivateService(new DefaultTypeaheadService());
-    configService = context.registerInjectActivateService(new DefaultTypeaheadService());
-  }
-
-  @Test
-  void getAllowedFilterFields() {
-    assertThat(configService.getAllowedFilterFields(), Is.is(not(empty())));
   }
 
   @Test
@@ -82,10 +73,6 @@ class DefaultTypeaheadServiceTest {
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
             .getAsJsonObject(), true)));
-//    IndexTypeaheadConsumerService indexTypeaheadConsumerService = IndexTypeaheadConsumerService.builder()
-//        .apiUrl("foo")
-//        .searchRequestExecutorService(searchRequestExecutorService)
-//        .build();
     assertThat(service.getResults("indexfoo", getProperPayload()), is(not(empty())));
   }
 
@@ -95,10 +82,6 @@ class DefaultTypeaheadServiceTest {
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/empty.json")))
             .getAsJsonObject(), true)));
-//    IndexTypeaheadConsumerService indexTypeaheadConsumerService = IndexTypeaheadConsumerService.builder()
-//        .apiUrl("foo")
-//        .searchRequestExecutorService(searchRequestExecutorService)
-//        .build();
     assertThat(service.getResults("indexfoo", getProperPayload()), is(empty()));
   }
 

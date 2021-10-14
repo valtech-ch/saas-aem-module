@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.typeahead;
 
-import com.valtech.aem.saas.api.typeahead.TypeaheadConfigurationService;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
@@ -13,17 +12,11 @@ import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
 import com.valtech.aem.saas.core.query.FiltersQuery;
 import com.valtech.aem.saas.core.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.core.query.TypeaheadTextQuery;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -36,9 +29,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Slf4j
 @Component(name = "Search as a Service - Typeahead Service",
-    service = {TypeaheadService.class, TypeaheadConfigurationService.class})
+    service = TypeaheadService.class)
 @Designate(ocd = Configuration.class)
-public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfigurationService {
+public class DefaultTypeaheadService implements TypeaheadService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -56,8 +49,6 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
     if (StringUtils.isBlank(typeaheadPayload.getLanguage())) {
       throw new IllegalArgumentException("Typeahead payload should contain a language.");
     }
-    validateFilterFields(typeaheadPayload);
-
     SearchRequestGet searchRequestGet = new SearchRequestGet(getApiUrl(index) + getQueryString(typeaheadPayload));
     return searchRequestExecutorService.execute(searchRequestGet)
         .filter(SearchResponse::isSuccess)
@@ -76,27 +67,6 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
       builder.query(filtersQueryBuilder.build());
     }
     return builder.build().getQueryString();
-  }
-
-
-  private void validateFilterFields(@NonNull TypeaheadPayload typeaheadPayload) {
-    if (ArrayUtils.isNotEmpty(configuration.typeaheadService_allowedFilterFields())) {
-      List<String> forbiddenFilterFields = typeaheadPayload.getFilterEntries().keySet().stream()
-          .filter(field -> !ArrayUtils.contains(configuration.typeaheadService_allowedFilterFields(), field))
-          .collect(Collectors.toList());
-      if (CollectionUtils.isNotEmpty(forbiddenFilterFields)) {
-        throw new IllegalArgumentException(
-            String.format("The following filter field names are not allowed: %s", forbiddenFilterFields));
-      }
-    }
-  }
-
-  @Override
-  public List<String> getAllowedFilterFields() {
-    return Optional.ofNullable(configuration.typeaheadService_allowedFilterFields())
-        .map(Arrays::stream)
-        .orElse(Stream.empty())
-        .collect(Collectors.toList());
   }
 
   private String getApiUrl(String index) {
@@ -120,10 +90,6 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
     String DEFAULT_API_ACTION = "/typeahead";
     String DEFAULT_API_VERSION_PATH = "/api/v3";
 
-    String FF_LANGUAGE = "language";
-    String FF_DOMAIN = "domain";
-    String FF_REPOSITORY_PATH_URL = "repository_path_url";
-
     @AttributeDefinition(name = "Api version path",
         description = "Path designating the api version",
         type = AttributeType.STRING)
@@ -133,15 +99,6 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
         description = "Path designating the action",
         type = AttributeType.STRING)
     String typeaheadService_apiAction() default DEFAULT_API_ACTION;
-
-    @AttributeDefinition(name = "Allowed filter fields",
-        description = "List of field names that can be used in filter queries",
-        type = AttributeType.STRING)
-    String[] typeaheadService_allowedFilterFields() default {
-        FF_LANGUAGE,
-        FF_DOMAIN,
-        FF_REPOSITORY_PATH_URL
-    };
 
   }
 }
