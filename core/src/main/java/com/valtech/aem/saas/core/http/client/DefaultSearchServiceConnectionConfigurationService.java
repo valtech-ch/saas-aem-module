@@ -54,6 +54,16 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
     return configuration.searchService_httpSocketTimeout();
   }
 
+  @Override
+  public int getHttpMaxTotalConnections() {
+    return configuration.searchService_httpMaxTotalConnections();
+  }
+
+  @Override
+  public int getHttpMaxConnectionsPerRoute() {
+    return configuration.searchService_httpMaxConnectionsPerRoute();
+  }
+
   @Activate
   @Modified
   private void activate(Configuration configuration) {
@@ -68,6 +78,8 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
     int DEFAULT_TIMEOUT = 10000;
     boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
     boolean DEFAULT_IGNORE_SSL = false;
+    int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
+    int DEFAULT_MAX_TOTAL_CONNECTIONS_PER_ROUTE = 50;
 
     @AttributeDefinition(name = "Base URL",
         description = "The protocol + url for the search service")
@@ -101,6 +113,12 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
         description = "Timeout in milliseconds for waiting for data or a maximum period of inactivity between two consecutive data packets. Default is 10000ms ",
         type = AttributeType.INTEGER)
     int searchService_httpSocketTimeout() default DEFAULT_TIMEOUT;
+
+    @AttributeDefinition(name = "HTTP Client Max Total Connections", description = "How many connections an http client can have", type = AttributeType.INTEGER)
+    int searchService_httpMaxTotalConnections() default DEFAULT_MAX_TOTAL_CONNECTIONS;
+
+    @AttributeDefinition(name = "HTTP Client Max Connections Per Route", description = "How many connections an http client can have per route", type = AttributeType.INTEGER)
+    int searchService_httpMaxConnectionsPerRoute() default DEFAULT_MAX_TOTAL_CONNECTIONS_PER_ROUTE;
 
   }
 }
