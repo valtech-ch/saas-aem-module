@@ -16,7 +16,7 @@ import org.apache.commons.collections4.MapUtils;
 @RequiredArgsConstructor
 public final class TypeaheadDataExtractionStrategy implements SearchResponseDataExtractionStrategy<List<String>> {
 
-  private static final String TYPEAHEAD_SOLR_INDEX_FIELD_NAME_PREFIX = "autocomplete_text_";
+  private static final String TYPEAHEAD_INDEX_FIELD_NAME_PREFIX = "autocomplete_text_";
 
   private final String language;
 
@@ -38,7 +38,7 @@ public final class TypeaheadDataExtractionStrategy implements SearchResponseData
   private List<String> getTypeaheadResults(@NonNull FacetCounts facetCounts) {
     return Optional.ofNullable(facetCounts.getFacetFields())
         .filter(MapUtils::isNotEmpty)
-        .map(map -> map.get(getTypeaheadSolrIndexFieldName()))
+        .map(map -> map.get(getTypeaheadIndexFieldName()))
         .map(this::getTypeaheadItems)
         .orElse(Collections.emptyList());
   }
@@ -46,15 +46,18 @@ public final class TypeaheadDataExtractionStrategy implements SearchResponseData
   private List<String> getTypeaheadItems(@NonNull List<Object> facetFieldsList) {
     List<String> items = new ArrayList<>();
     for (int i = 0; i < facetFieldsList.size(); i++) {
-      if (i % 2 == 0 && facetFieldsList.get(i) instanceof String) {
-        //odd elements are typeahead text options
+      if (isTypeaheadTextOption(facetFieldsList, i)) {
         items.add((String) facetFieldsList.get(i));
       }
     }
     return items;
   }
 
-  private String getTypeaheadSolrIndexFieldName() {
-    return TYPEAHEAD_SOLR_INDEX_FIELD_NAME_PREFIX + language;
+  private boolean isTypeaheadTextOption(List<Object> facetFieldsList, int i) {
+    return i % 2 == 0 && facetFieldsList.get(i) instanceof String;
+  }
+
+  private String getTypeaheadIndexFieldName() {
+    return TYPEAHEAD_INDEX_FIELD_NAME_PREFIX + language;
   }
 }

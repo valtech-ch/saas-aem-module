@@ -26,6 +26,7 @@ import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
@@ -40,12 +41,11 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
   @Reference
   private HttpClientBuilderFactory httpClientBuilderFactory;
 
-  private HttpClientBuilder httpClientBuilder;
+  private CloseableHttpClient httpClient;
 
   @Override
   public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
     HttpUriRequest request = searchRequest.getRequest();
-    CloseableHttpClient httpClient = httpClientBuilder.build();
     CloseableHttpResponse response = null;
     try {
       response = httpClient.execute(request);
@@ -69,7 +69,6 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
     } finally {
       if (response != null) {
         IOUtils.closeQuietly(response, e -> log.error("Could not close response.", e));
-        IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
       }
     }
     return Optional.empty();
@@ -91,7 +90,7 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
     log.debug("Configuring new Http Client Builder for Search Service requests.");
     RequestConfig requestConfig = createRequestConfig();
     log.debug("Http Client will be built with following request configuration {}", requestConfig);
-    httpClientBuilder = httpClientBuilderFactory.newBuilder()
+    HttpClientBuilder httpClientBuilder = httpClientBuilderFactory.newBuilder()
         .setDefaultRequestConfig(requestConfig);
     if (searchServiceConnectionConfigurationService.isBasicAuthenticationEnabled()) {
       log.debug("Basic Authentication is enabled.");
@@ -104,6 +103,14 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
       log.warn("Initializing HttpService with ignoring SSL Certificate");
       setToIgnoredSsl(httpClientBuilder);
     }
+    httpClientBuilder.setMaxConnTotal(searchServiceConnectionConfigurationService.getHttpMaxTotalConnections());
+    httpClientBuilder.setMaxConnPerRoute(searchServiceConnectionConfigurationService.getHttpMaxConnectionsPerRoute());
+    httpClient = httpClientBuilder.build();
+  }
+
+  @Deactivate
+  private void deactivate() {
+    IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
   }
 
   private RequestConfig createRequestConfig() {

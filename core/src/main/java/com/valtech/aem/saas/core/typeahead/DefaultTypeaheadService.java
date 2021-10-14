@@ -1,18 +1,23 @@
 package com.valtech.aem.saas.core.typeahead;
 
-import com.valtech.aem.saas.api.typeahead.TypeaheadConfigurationService;
-import com.valtech.aem.saas.api.typeahead.TypeaheadConsumerService;
+import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService.Configuration;
-import java.util.Arrays;
+import com.valtech.aem.saas.core.http.request.SearchRequestGet;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
+import com.valtech.aem.saas.core.http.response.TypeaheadDataExtractionStrategy;
+import com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService.Configuration;
+import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
+import com.valtech.aem.saas.core.query.FiltersQuery;
+import com.valtech.aem.saas.core.query.GetQueryStringConstructor;
+import com.valtech.aem.saas.core.query.TypeaheadTextQuery;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -24,9 +29,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Slf4j
 @Component(name = "Search as a Service - Typeahead Service",
-    service = {TypeaheadService.class, TypeaheadConfigurationService.class})
+    service = TypeaheadService.class)
 @Designate(ocd = Configuration.class)
-public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfigurationService {
+public class DefaultTypeaheadService implements TypeaheadService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -37,21 +42,31 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
   private Configuration configuration;
 
   @Override
-  public TypeaheadConsumerService getTypeaheadConsumerService(String index) {
-    SaasIndexValidator.getInstance().validate(index);
-    return IndexTypeaheadConsumerService.builder()
-        .searchRequestExecutorService(searchRequestExecutorService)
-        .apiUrl(getApiUrl(index))
-        .allowedFilterFields(getAllowedFilterFields())
-        .build();
+  public List<String> getResults(@NonNull String index, @NonNull TypeaheadPayload typeaheadPayload) {
+    if (StringUtils.isBlank(typeaheadPayload.getText())) {
+      throw new IllegalArgumentException("Typeahead payload should contain a search text.");
+    }
+    if (StringUtils.isBlank(typeaheadPayload.getLanguage())) {
+      throw new IllegalArgumentException("Typeahead payload should contain a language.");
+    }
+    SearchRequestGet searchRequestGet = new SearchRequestGet(getApiUrl(index) + getQueryString(typeaheadPayload));
+    return searchRequestExecutorService.execute(searchRequestGet)
+        .filter(SearchResponse::isSuccess)
+        .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(typeaheadPayload.getLanguage())))
+        .orElse(Collections.emptyList());
   }
 
-  @Override
-  public List<String> getAllowedFilterFields() {
-    return Optional.ofNullable(configuration.typeaheadService_allowedFilterFields())
-        .map(Arrays::stream)
-        .orElse(Stream.empty())
-        .collect(Collectors.toList());
+  private String getQueryString(@NonNull TypeaheadPayload typeaheadPayload) {
+    GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
+        GetQueryStringConstructor.builder()
+            .query(new TypeaheadTextQuery(typeaheadPayload.getText()))
+            .query(new DefaultLanguageQuery(typeaheadPayload.getLanguage()));
+    if (MapUtils.isNotEmpty(typeaheadPayload.getFilterEntries())) {
+      FiltersQuery.FiltersQueryBuilder filtersQueryBuilder = FiltersQuery.builder();
+      typeaheadPayload.getFilterEntries().forEach(filtersQueryBuilder::filterEntry);
+      builder.query(filtersQueryBuilder.build());
+    }
+    return builder.build().getQueryString();
   }
 
   private String getApiUrl(String index) {
@@ -84,28 +99,6 @@ public class DefaultTypeaheadService implements TypeaheadService, TypeaheadConfi
         description = "Path designating the action",
         type = AttributeType.STRING)
     String typeaheadService_apiAction() default DEFAULT_API_ACTION;
-
-    @AttributeDefinition(name = "Allowed filter fields",
-        description = "List of field names that can be used in filter queries",
-        type = AttributeType.STRING)
-    String[] typeaheadService_allowedFilterFields() default {
-        "language",
-        "domain",
-        "scope",
-        "repository_path_url",
-        "page_type_str",
-        "publication_date",
-        "products_mstr",
-        "categories_mstr",
-        "categories_murl",
-        "tags_mstr",
-        "start_date",
-        "end_date",
-        "title_str",
-        "brand_str",
-        "parent_path_url",
-        "product_filter_paths_murl"
-    };
 
   }
 }

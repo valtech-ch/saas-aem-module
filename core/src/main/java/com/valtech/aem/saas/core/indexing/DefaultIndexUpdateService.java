@@ -10,6 +10,7 @@ import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestPost;
 import com.valtech.aem.saas.core.http.response.DefaultIndexUpdateDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService.Configuration;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -63,6 +64,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
         .build();
 
     return searchRequestExecutorService.execute(searchRequest)
+        .filter(SearchResponse::isSuccess)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
   }
 
@@ -75,6 +77,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
         .httpEntity(createIndexUpdatePayloadEntity(url, repositoryPath))
         .build();
     return searchRequestExecutorService.execute(searchRequest)
+        .filter(SearchResponse::isSuccess)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
   }
 
@@ -88,6 +91,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
         .build();
 
     return searchRequestExecutorService.execute(searchRequest)
+        .filter(SearchResponse::isSuccess)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
   }
 
@@ -108,9 +112,12 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
   }
 
   private String getRequestUri(String client, String action) {
-    return String.format("%s%s%s%s%s", searchServiceConnectionConfigurationService.getBaseUrl(),
-        configuration.indexUpdateService_apiBasePath(), client,
-        configuration.indexUpdateService_apiVersionPath(), action);
+    return String.format("%s%s/%s%s%s",
+        searchServiceConnectionConfigurationService.getBaseUrl(),
+        configuration.indexUpdateService_apiBasePath(),
+        client,
+        configuration.indexUpdateService_apiVersionPath(),
+        action);
   }
 
   private void validateInput(String client, String url, String repositoryPath) {

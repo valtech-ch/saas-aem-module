@@ -53,4 +53,18 @@ public interface SearchServiceConnectionConfigurationService {
    * @return timeout in seconds.
    */
   int getHttpSocketTimeout();
+
+  /**
+   * Gets the max limit of connections.
+   *
+   * @return positive integer.
+   */
+  int getHttpMaxTotalConnections();
+
+  /**
+   * Gets the max limit of connections per route.
+   *
+   * @return positive integer.
+   */
+  int getHttpMaxConnectionsPerRoute();
 }

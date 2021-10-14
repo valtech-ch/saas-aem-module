@@ -19,12 +19,13 @@ public class TypeaheadTextQuery implements TypeaheadQuery {
 
   public static final String KEY_TERM = "term";
   public static final String KEY_PREFIX = "prefix";
+  public static final String SEARCH_ALL = "*";
 
   private final NameValuePair term;
   private NameValuePair prefix;
 
   public TypeaheadTextQuery(String searchText) {
-    term = new BasicNameValuePair(KEY_TERM, "*");
+    term = new BasicNameValuePair(KEY_TERM, SEARCH_ALL);
     Optional.ofNullable(searchText)
         .filter(StringUtils::isNotBlank)
         .ifPresent(t -> prefix = new BasicNameValuePair(KEY_PREFIX, sanitizeSearchText(t)));

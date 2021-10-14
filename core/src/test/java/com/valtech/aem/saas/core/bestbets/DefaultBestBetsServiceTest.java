@@ -1,15 +1,26 @@
 package com.valtech.aem.saas.core.bestbets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.valtech.aem.saas.api.bestbets.BestBetsConsumerService;
-import com.valtech.aem.saas.core.http.client.DefaultSearchRequestExecutorService;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.valtech.aem.saas.api.bestbets.BestBetPayload;
+import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
+import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,21 +35,142 @@ class DefaultBestBetsServiceTest {
   @Mock
   HttpClientBuilderFactory httpClientBuilderFactory;
 
+  @Mock
+  SearchRequestExecutorService searchRequestExecutorService;
+
   DefaultBestBetsService testee;
 
   @BeforeEach
   void setUp(AemContext context) {
-    Mockito.when(httpClientBuilderFactory.newBuilder()).thenReturn(HttpClientBuilder.create());
     context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-    context.registerInjectActivateService(new DefaultSearchRequestExecutorService());
+    context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     testee = context.registerInjectActivateService(new DefaultBestBetsService());
   }
 
   @Test
-  void testGetBestBetsConsumerService() {
-    assertThrows(IllegalArgumentException.class, () -> testee.getBestBetsConsumerService(null));
-    assertThrows(IllegalArgumentException.class, () -> testee.getBestBetsConsumerService(""));
-    assertThat(testee.getBestBetsConsumerService("foo"), instanceOf(BestBetsConsumerService.class));
+  void testAddBestBet() {
+    Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonObject(), true)));
+    assertDoesNotThrow(() -> testee.addBestBet("clientfoo",
+        new DefaultBestBetPayload("foo", "baz", "bar", "de")));
   }
+
+  @Test
+  void testAddBestBet_failed() {
+    DefaultBestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
+    assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBet("clientfoo", payload));
+  }
+
+  @Test
+  void testAddBestBets() {
+    Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonObject(), true)));
+    assertDoesNotThrow(() -> testee.addBestBets("clientfoo", Collections.singletonList(
+        new DefaultBestBetPayload("foo", "baz", "bar", "de"))));
+  }
+
+  @Test
+  void testAddBestBets_failed() {
+    List<BestBetPayload> payload = Collections.singletonList(
+        new DefaultBestBetPayload("foo", "baz", "bar", "de"));
+    assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBets("clientfoo", payload));
+  }
+
+  @Test
+  void testUpdateBestBet() {
+    Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonParser().parse(
+                new InputStreamReader(
+                    getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
+            .getAsJsonObject(), true)));
+    assertDoesNotThrow(() -> testee.updateBestBet("clientfoo", 1,
+        new DefaultBestBetPayload("foo", "baz", "bar", "de")));
+  }
+
+  @Test
+  void testUpdateBestBet_missingAction(AemContext context) {
+    testee = context.registerInjectActivateService(new DefaultBestBetsService(),
+        ImmutableMap.<String, Object>builder()
+            .put("bestBetsService.apiUpdateBestBetAction", "")
+            .build());
+    DefaultBestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
+    assertThrows(IllegalStateException.class, () -> testee.updateBestBet("clientfoo", 1,
+        payload));
+  }
+
+  @Test
+  void testUpdateBestBet_failed() {
+    BestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
+    assertThrows(BestBetsActionFailedException.class, () -> testee.updateBestBet("clientfoo", 1, payload));
+  }
+
+  @Test
+  void testDeleteBestBet() {
+    Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonParser().parse(
+                new InputStreamReader(
+                    getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
+            .getAsJsonObject(), true)));
+    assertDoesNotThrow(() -> testee.deleteBestBet("clientfoo", 1));
+  }
+
+  @Test
+  void testDeleteBestBet_missingAction(AemContext context) {
+    testee = context.registerInjectActivateService(new DefaultBestBetsService(),
+        ImmutableMap.<String, Object>builder()
+            .put("bestBetsService.apiDeleteBestBetAction", "")
+            .build());
+    assertThrows(IllegalStateException.class, () -> testee.deleteBestBet("clientfoo", 1));
+  }
+
+  @Test
+  void testDeleteBestBet_failed() {
+    assertThrows(BestBetsActionFailedException.class, () -> testee.deleteBestBet("clientfoo", 1));
+  }
+
+  @Test
+  void testPublishBestBetsForProject() {
+    Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonObject(), true)));
+    assertDoesNotThrow(() -> testee.publishBestBetsForProject("clientfoo", 1));
+  }
+
+  @Test
+  void testPublishBestBetsForProject_wrongConfigForAction(AemContext context) {
+    testee = context.registerInjectActivateService(new DefaultBestBetsService(),
+        ImmutableMap.<String, Object>builder()
+            .put("bestBetsService.apiPublishProjectBestBetsAction", "/bestbets")
+            .build());
+    assertThrows(IllegalArgumentException.class, () -> testee.publishBestBetsForProject("clientfoo", 1));
+  }
+
+  @Test
+  void testPublishBestBetsForProject_failed() {
+    assertThrows(BestBetsActionFailedException.class, () -> testee.publishBestBetsForProject("clientfoo", 1));
+  }
+
+  @Test
+  void testGetBestBets() {
+    Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonParser().parse(
+                new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
+            .getAsJsonArray(), true)));
+    assertThat(testee.getBestBets("clientfoo"), not(empty()));
+  }
+
+  @Test
+  void testGetBestBets_missingAction(AemContext context) {
+    testee = context.registerInjectActivateService(new DefaultBestBetsService(),
+        ImmutableMap.<String, Object>builder()
+            .put("bestBetsService.apiGetAllBestBetsAction", "")
+            .build());
+    assertThrows(IllegalStateException.class, () -> testee.getBestBets("clientfoo"));
+  }
+
+  @Test
+  void testGetBestBets_failed() {
+    assertThrows(BestBetsActionFailedException.class, () -> testee.getBestBets("clientfoo"));
+  }
+
 }
