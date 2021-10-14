@@ -143,13 +143,9 @@ public class SearchResultsImpl implements SearchResults {
                           .filterEntries(Arrays.stream(searchConfiguration.searchFilters()).collect(Collectors.toMap(
                               SearchFilterConfiguration::name, SearchFilterConfiguration::value))).build())
                       .build();
-              Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getFulltextSearchConsumerService(
-                      searchConfiguration.index(),
-                      FulltextSearchConfigurationFactory.builder()
-                          .enableAutoSuggest(parentSearch.isAutoSuggestEnabled())
-                          .enableBestBets(parentSearch.isBestBetsEnabled())
-                          .build().getConfiguration())
-                  .getResults(fulltextSearchGetRequestPayload);
+              Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getResults(
+                  searchConfiguration.index(), fulltextSearchGetRequestPayload, parentSearch.isAutoSuggestEnabled(),
+                  parentSearch.isBestBetsEnabled());
               results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
               resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(0);
               showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;

@@ -6,7 +6,6 @@ import com.day.cq.wcm.api.Page;
 import com.google.gson.Gson;
 import com.valtech.aem.saas.api.autocomplete.AutocompleteResponse;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.typeahead.TypeaheadConsumerService;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
@@ -59,9 +58,7 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
                     .text(text)
                     .language(getLanguage(requestWrapper))
                     .build();
-                TypeaheadConsumerService typeaheadConsumerService =
-                    typeaheadService.getTypeaheadConsumerService(searchConfiguration.index());
-                List<String> results = typeaheadConsumerService.getResults(payload);
+                List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
                 new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
               }));
     }

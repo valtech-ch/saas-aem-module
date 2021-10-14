@@ -2,17 +2,23 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchConsumerService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.core.http.client.DefaultSearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
+import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
+import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
+import com.valtech.aem.saas.core.query.DefaultTermQuery;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.io.InputStreamReader;
+import java.util.Optional;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,28 +32,51 @@ class DefaultFulltextSearchServiceTest {
   @Mock
   HttpClientBuilderFactory httpClientBuilderFactory;
 
+  @Mock
+  SearchRequestExecutorService searchRequestExecutorService;
+
   FulltextSearchService service;
   FulltextSearchConfigurationService configService;
 
   @BeforeEach
   void setUp(AemContext context) {
-    when(httpClientBuilderFactory.newBuilder()).thenReturn(HttpClientBuilder.create());
     context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-    context.registerInjectActivateService(new DefaultSearchRequestExecutorService());
+    context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     service = context.registerInjectActivateService(new DefaultFulltextSearchService());
     configService = context.registerInjectActivateService(new DefaultFulltextSearchService());
   }
 
   @Test
-  void getTypeaheadConsumerService() {
-    assertThrows(IllegalArgumentException.class, () -> service.getFulltextSearchConsumerService(null, null));
-    assertThrows(IllegalArgumentException.class, () -> service.getFulltextSearchConsumerService("", null));
-    assertThat(service.getFulltextSearchConsumerService("foo", null), instanceOf(FulltextSearchConsumerService.class));
+  void testGetResults_failedRequestExecution() {
+    when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(Optional.empty());
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
+        new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
+    assertThat(service.getResults("indexfoo", payload, false, false).isPresent(), is(false));
   }
 
   @Test
-  void getAllowedFilterFields() {
+  void testGetResults_responseBodyMissing() {
+    when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonObject(), true)));
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
+        new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
+    assertThat(service.getResults("indexfoo", payload, false, false).isPresent(), is(false));
+  }
+
+  @Test
+  void testGetResults_ok() {
+    when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
+        Optional.of(new SearchResponse(new JsonParser().parse(
+                new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
+            .getAsJsonObject(), true)));
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
+        new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
+    assertThat(service.getResults("indexfoo", payload, false, false).isPresent(), is(true));
+  }
+
+  @Test
+  void testGetRowsMaxLimit() {
     assertThat(configService.getRowsMaxLimit(), is(9999));
   }
 
