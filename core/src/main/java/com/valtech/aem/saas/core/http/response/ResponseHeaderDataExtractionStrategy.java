@@ -7,7 +7,8 @@ import java.util.Optional;
 /**
  * A strategy for extracting response header data.
  */
-public class ResponseHeaderDataExtractionStrategy implements SearchResponseDataExtractionStrategy<ResponseHeader> {
+public final class ResponseHeaderDataExtractionStrategy implements
+    SearchResponseDataExtractionStrategy<ResponseHeader> {
 
   @Override
   public String propertyName() {

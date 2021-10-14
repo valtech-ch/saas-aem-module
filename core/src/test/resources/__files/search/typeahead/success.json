@@ -1,0 +1,40 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 205,
+    "params": {
+      "q": "autocomplete_text_de:is",
+      "facet.field": "autocomplete_text_de",
+      "facet.prefix": "wknd",
+      "terms.sort": "count",
+      "facet": "true"
+    }
+  },
+  "response": {
+    "numFound": 2018,
+    "start": 0,
+    "docs": []
+  },
+  "facet_counts": {
+    "facet_queries": {},
+    "facet_fields": {
+      "autocomplete_text_de": [
+        "wknd",
+        1,
+        "wknd is",
+        1,
+        "wknd is now",
+        1,
+        "wkndcil",
+        1,
+        "wkndcil and",
+        1,
+        "wkndcil and posoco",
+        1
+      ]
+    },
+    "facet_ranges": {},
+    "facet_intervals": {},
+    "facet_heatmaps": {}
+  }
+}

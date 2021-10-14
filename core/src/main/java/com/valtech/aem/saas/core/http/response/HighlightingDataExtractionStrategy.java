@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * A strategy for extracting highlighting data.
  */
-public class HighlightingDataExtractionStrategy implements SearchResponseDataExtractionStrategy<Highlighting> {
+public final class HighlightingDataExtractionStrategy implements SearchResponseDataExtractionStrategy<Highlighting> {
 
   @Override
   public String propertyName() {
