@@ -114,10 +114,14 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
         type = AttributeType.INTEGER)
     int searchService_httpSocketTimeout() default DEFAULT_TIMEOUT;
 
-    @AttributeDefinition(name = "HTTP Client Max Total Connections", description = "How many connections an http client can have", type = AttributeType.INTEGER)
+    @AttributeDefinition(name = "HTTP Client Max Total Connections",
+        description = "How many connections an http client can have",
+        type = AttributeType.INTEGER)
     int searchService_httpMaxTotalConnections() default DEFAULT_MAX_TOTAL_CONNECTIONS;
 
-    @AttributeDefinition(name = "HTTP Client Max Connections Per Route", description = "How many connections an http client can have per route", type = AttributeType.INTEGER)
+    @AttributeDefinition(name = "HTTP Client Max Connections Per Route",
+        description = "How many connections an http client can have per route",
+        type = AttributeType.INTEGER)
     int searchService_httpMaxConnectionsPerRoute() default DEFAULT_MAX_TOTAL_CONNECTIONS_PER_ROUTE;
 
   }
