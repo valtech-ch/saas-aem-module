@@ -3,8 +3,8 @@
      data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
 <div class="saas-aem-module-search__results-container">
   <sly
-      data-sly-use.resultItemTemplate="/apps/saas-aem-module/components/saas/searchresults/resultitem-template.html"
-      data-sly-list.result="${model.results}">
+          data-sly-use.resultItemTemplate="/apps/saas-aem-module/components/searchresults/resultitem-template.html"
+          data-sly-list.result="${model.results}">
     <sly data-sly-call="${resultItemTemplate.resultItem @ model=result, count=resultList.count}"></sly>
   </sly>
   <div data-sly-test.suggestion="${model.suggestion}">

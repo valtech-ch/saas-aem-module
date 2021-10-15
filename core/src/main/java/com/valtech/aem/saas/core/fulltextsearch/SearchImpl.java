@@ -1,7 +1,5 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import static com.valtech.aem.saas.core.fulltextsearch.SearchImpl.RESOURCE_TYPE;
-
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ContainerExporter;
 import com.adobe.cq.export.json.ExporterConstants;
@@ -13,12 +11,6 @@ import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,16 +18,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
-import org.apache.sling.models.annotations.Default;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
-import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.*;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 import org.apache.sling.models.factory.ModelFactory;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static com.valtech.aem.saas.core.fulltextsearch.SearchImpl.RESOURCE_TYPE;
 
 @Model(adaptables = {SlingHttpServletRequest.class, Resource.class},
     adapters = {Search.class, ComponentExporter.class, ContainerExporter.class},
@@ -48,7 +45,7 @@ import org.apache.sling.models.factory.ModelFactory;
     })
 public class SearchImpl implements Search {
 
-  public static final String RESOURCE_TYPE = "saas-aem-module/components/saas/search";
+  public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
   public static final String NN_SEARCH_RESULTS_TABS_CONTAINER = "searchresults-tabs";
   public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
   public static final int DEFAULT_AUTOCOMPLETE_THRESHOLD = 3;

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaceFilter version="1.0">
-    <filter root="/conf/saas-aem-module" mode="merge"/>
+    <filter root="/conf/saas-aem-module"/>
     <filter root="/content/saas-aem-module" mode="merge"/>
-    <filter root="/content/dam/saas-aem-module/asset.jpg" mode="merge"/>
-    <filter root="/content/experience-fragments/saas-aem-module" mode="merge"/>
 </workspaceFilter>

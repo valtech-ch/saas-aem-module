@@ -55,7 +55,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME, extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchResultsImpl implements SearchResults {
 
-  public static final String RESOURCE_TYPE = "saas-aem-module/components/saas/searchresults";
+  public static final String RESOURCE_TYPE = "saas-aem-module/components/searchresults";
   public static final String QUERY_PARAM_START = "start";
   public static final int DEFAULT_START_PAGE = 0;
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
