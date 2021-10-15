@@ -1,8 +1,6 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 
-import static com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl.RESOURCE_TYPE;
-
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
 import com.day.cq.i18n.I18n;
@@ -12,28 +10,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.caconfig.SearchFilterConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchResults;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.Result;
-import com.valtech.aem.saas.api.fulltextsearch.Search;
-import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
+import com.valtech.aem.saas.api.fulltextsearch.*;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
-import com.valtech.aem.saas.core.query.DefaultTermQuery;
-import com.valtech.aem.saas.core.query.FiltersQuery;
-import com.valtech.aem.saas.core.query.HighlightingTagQuery;
-import com.valtech.aem.saas.core.query.PaginationQuery;
+import com.valtech.aem.saas.core.query.*;
 import com.valtech.aem.saas.core.util.StringToInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -47,6 +29,12 @@ import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl.RESOURCE_TYPE;
+
 @Model(adaptables = SlingHttpServletRequest.class,
     adapters = {SearchResults.class, ComponentExporter.class},
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
@@ -54,7 +42,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME, extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchResultsImpl implements SearchResults {
 
-  public static final String RESOURCE_TYPE = "saas-aem-module/components/saas/searchresults";
+  public static final String RESOURCE_TYPE = "saas-aem-module/components/searchresults";
   public static final String QUERY_PARAM_START = "start";
   public static final int DEFAULT_START_PAGE = 0;
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
