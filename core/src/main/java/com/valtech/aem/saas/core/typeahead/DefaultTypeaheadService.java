@@ -2,6 +2,7 @@ package com.valtech.aem.saas.core.typeahead;
 
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
+import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
@@ -43,6 +44,7 @@ public class DefaultTypeaheadService implements TypeaheadService {
 
   @Override
   public List<String> getResults(@NonNull String index, @NonNull TypeaheadPayload typeaheadPayload) {
+    SaasIndexValidator.getInstance().validate(index);
     if (StringUtils.isBlank(typeaheadPayload.getText())) {
       throw new IllegalArgumentException("Typeahead payload should contain a search text.");
     }

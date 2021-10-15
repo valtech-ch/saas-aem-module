@@ -15,6 +15,7 @@ import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadPayload;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.caconfig.ConfigurationBuilder;
@@ -54,12 +55,14 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
               requestWrapper.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(text -> {
                 SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
                     .as(SearchConfiguration.class);
-                TypeaheadPayload payload = DefaultTypeaheadPayload.builder()
-                    .text(text)
-                    .language(getLanguage(requestWrapper))
-                    .build();
-                List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
-                new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
+                if (StringUtils.isNotBlank(searchConfiguration.index())) {
+                  TypeaheadPayload payload = DefaultTypeaheadPayload.builder()
+                      .text(text)
+                      .language(getLanguage(requestWrapper))
+                      .build();
+                  List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
+                  new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
+                }
               }));
     }
   }

@@ -24,4 +24,28 @@ class SuggestionDataExtractionStrategyTest {
         Suggestion.class));
 
   }
+
+  @Test
+  void testGetData_withoutCollations() {
+    testInvalidResponse("/__files/search/fulltext/spellcheck_wOutCollations.json");
+  }
+
+  @Test
+  void testGetData_insufficientNumberOfCollationItems() {
+    testInvalidResponse("/__files/search/fulltext/spellcheck_insufficientNumberOfCollationItems.json");
+  }
+
+  @Test
+  void testGetData_secondCollationItemIncorrectFormat() {
+    testInvalidResponse("/__files/search/fulltext/spellcheck_secondCollationItemIncorrectFormat.json");
+  }
+
+  private void testInvalidResponse(String responseFilePath) {
+    SuggestionDataExtractionStrategy strategy = new SuggestionDataExtractionStrategy();
+    assertThat(strategy.propertyName(), is(SuggestionDataExtractionStrategy.PN_SPELLCHECK));
+    assertThat(strategy.getData(new JsonObject()).isPresent(), is(false));
+    JsonObject response = new JsonParser().parse(
+        new InputStreamReader(getClass().getResourceAsStream(responseFilePath))).getAsJsonObject();
+    assertThat(strategy.getData(response).isPresent(), is(false));
+  }
 }

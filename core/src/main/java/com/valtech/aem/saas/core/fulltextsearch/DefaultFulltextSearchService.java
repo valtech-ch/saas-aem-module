@@ -4,6 +4,7 @@ import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchResults;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
+import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -61,10 +61,7 @@ public class DefaultFulltextSearchService implements
       @NonNull FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload,
       boolean enableAutoSuggest,
       boolean enableBestBets) {
-    if (StringUtils.isBlank(index)) {
-      throw new IllegalArgumentException(
-          "SaaS index name is missing. Please configure index name in Context Aware configuration.");
-    }
+    SaasIndexValidator.getInstance().validate(index);
     String requestUrl = getRequestUrl(index, fulltextSearchGetRequestPayload);
     log.debug("Search GET Request: {}", requestUrl);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));

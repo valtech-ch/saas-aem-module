@@ -39,7 +39,9 @@ public final class SuggestionDataExtractionStrategy implements SearchResponseDat
 
   private JsonArray getCollations(JsonObject spellcheck) {
     try {
-      return spellcheck.get(PN_COLLATIONS).getAsJsonArray();
+      if (spellcheck.has(PN_COLLATIONS)) {
+        return spellcheck.get(PN_COLLATIONS).getAsJsonArray();
+      }
     } catch (IllegalStateException e) {
       log.error("Error while fetching collations");
     }

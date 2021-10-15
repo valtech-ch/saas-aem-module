@@ -20,6 +20,7 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.io.InputStreamReader;
 import java.util.Optional;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +46,21 @@ class DefaultFulltextSearchServiceTest {
     context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     service = context.registerInjectActivateService(new DefaultFulltextSearchService());
     configService = context.registerInjectActivateService(new DefaultFulltextSearchService());
+  }
+
+  @Test
+  void testNullArguments() {
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
+        new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
+    Assertions.assertThrows(NullPointerException.class, () -> service.getResults(null, payload, false, false));
+    Assertions.assertThrows(NullPointerException.class, () -> service.getResults("indexfoo", null, false, false));
+  }
+
+  @Test
+  void testBlankIndexArgument() {
+    FulltextSearchGetRequestPayload payload = DefaultFulltextSearchRequestPayload.builder(
+        new DefaultTermQuery("bar"), new DefaultLanguageQuery("de")).build();
+    Assertions.assertThrows(IllegalArgumentException.class, () -> service.getResults("", payload, false, false));
   }
 
   @Test

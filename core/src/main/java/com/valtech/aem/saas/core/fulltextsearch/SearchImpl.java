@@ -117,7 +117,9 @@ public class SearchImpl implements Search {
   @NonNull
   @Override
   public Map<String, ? extends ComponentExporter> getExportedItems() {
-    return Optional.ofNullable(request.getResource().getChild(NN_SEARCH_RESULTS_TABS_CONTAINER))
+    return Optional.ofNullable(request)
+        .map(SlingHttpServletRequest::getResource)
+        .map(r -> r.getChild(NN_SEARCH_RESULTS_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
         .orElse(Stream.empty())

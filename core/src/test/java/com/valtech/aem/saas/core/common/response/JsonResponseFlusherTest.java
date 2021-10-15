@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,5 +41,11 @@ class JsonResponseFlusherTest {
     when(response.getWriter()).thenThrow(IOException.class);
     new JsonResponseFlusher(response).flush(printWriter -> printWriter.write("foo"));
     verify(response, times(1)).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void testNonNullArguments() {
+    Assertions.assertThrows(NullPointerException.class, () -> new JsonResponseFlusher(null));
+    Assertions.assertThrows(NullPointerException.class, () -> new JsonResponseFlusher(null, null));
   }
 }
