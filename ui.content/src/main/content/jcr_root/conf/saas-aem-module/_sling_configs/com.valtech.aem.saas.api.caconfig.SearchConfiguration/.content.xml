@@ -4,13 +4,13 @@
     jcr:primaryType="cq:Page">
     <jcr:content
         jcr:primaryType="cq:PageContent"
-        index="/fooweb">
+        index="icweb">
         <searchFilters
             jcr:primaryType="nt:unstructured">
             <item1
                 jcr:primaryType="nt:unstructured"
                 name="language"
-                value="de"/>
+                value="en"/>
         </searchFilters>
     </jcr:content>
 </jcr:root>

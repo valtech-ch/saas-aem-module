@@ -6,30 +6,16 @@
     <saas-aem-module jcr:primaryType="nt:unstructured">
         <components jcr:primaryType="nt:unstructured">
             <container jcr:primaryType="nt:unstructured">
-                <policy_1574694950110
-                        jcr:description="Allows the template components and defines the component mapping (this configures what components should be automatically created when authors drop assets from the content finder to the page editor)."
-                        jcr:primaryType="nt:unstructured"
-                        jcr:title="Page Root"
-                        sling:resourceType="wcm/core/components/policy/policy"
-                        components="[/apps/saas-aem-module/components/form/container]">
-                    <jcr:content jcr:primaryType="nt:unstructured"/>
-                </policy_1574694950110>
                 <policy_1574695586800
-                        jcr:description="Allows the page components and defines the component mapping (this configures what components should be automatically created when authors drop assets from the content finder to the page editor)."
-                        jcr:primaryType="nt:unstructured"
-                        jcr:title="Page Content"
-                        sling:resourceType="wcm/core/components/policy/policy"
-                        components="[group:Search as a Service - Content,/apps/saas-aem-module/components/form/container]">
+                    jcr:description="Allows the page components and defines the component mapping (this configures what components should be automatically created when authors drop assets from the content finder to the page editor)."
+                    jcr:lastModified="{Date}2021-09-09T10:26:54.641+02:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Page Content"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[/apps/saas-aem-module/components/search]">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy_1574695586800>
-                <policy_649128221558427
-                    cq:styleDefaultElement="main"
-                    jcr:description="Sets a &lt;main> element on the page content area."
-                    jcr:primaryType="nt:unstructured"
-                    jcr:title="Page Main"
-                    sling:resourceType="wcm/core/components/policy/policy">
-                    <jcr:content jcr:primaryType="nt:unstructured"/>
-                </policy_649128221558427>
             </container>
             <page jcr:primaryType="nt:unstructured">
                 <policy
@@ -42,6 +28,18 @@
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy>
             </page>
+            <search jcr:primaryType="nt:unstructured">
+                <policy_1631175352553
+                    jcr:lastModified="{Date}2021-09-09T10:23:57.122+02:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="SaaS Search Component Policy"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[saas-aem-module/components/searchresults]"
+                    policyResourceType="wcm/foundation/components/responsivegrid">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_1631175352553>
+            </search>
         </components>
     </saas-aem-module>
 </jcr:root>
