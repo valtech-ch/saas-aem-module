@@ -185,12 +185,6 @@
         </dependency>
         <dependency>
             <groupId>com.valtech.aem</groupId>
-            <artifactId>saas.ui.content</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.valtech.aem</groupId>
             <artifactId>saas.ui.config</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
