@@ -2,11 +2,19 @@ package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.adobe.cq.export.json.ContainerExporter;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a model of the aem search component.
  */
 public interface Search extends ContainerExporter {
+
+  /**
+   * Retrieves the title configurable for the search component.
+   *
+   * @return configured title.
+   */
+  String getTitle();
 
   /**
    * Retrieves the search term present in the adapted request.
@@ -16,11 +24,11 @@ public interface Search extends ContainerExporter {
   String getTerm();
 
   /**
-   * Retrieves a list of author configured search filter items.
+   * Retrieves a list of author configured search filter items (union of context aware and dialog config).
    *
-   * @return list of filter details.
+   * @return set of filter details.
    */
-  List<Filter> getFilters();
+  Set<Filter> getFilters();
 
   /**
    * Retrieves an author configured value for the max limit of results per request/page
@@ -58,16 +66,10 @@ public interface Search extends ContainerExporter {
   int getAutocompleteTriggerThreshold();
 
   /**
-   * Checks whether best bets feature is enabled.
+   * Gets list of search prepared urls to search tab resources;
    *
-   * @return true when enabled.
+   * @return list of urls.
    */
-  boolean isBestBetsEnabled();
+  List<String> getSearchTabs();
 
-  /**
-   * Checks whether autosuggest feature is enabled.
-   *
-   * @return true when enabled.
-   */
-  boolean isAutoSuggestEnabled();
 }

@@ -35,7 +35,7 @@
                     jcr:primaryType="nt:unstructured"
                     jcr:title="SaaS Search Component Policy"
                     sling:resourceType="wcm/core/components/policy/policy"
-                    components="[saas-aem-module/components/searchresults]"
+                    components="[saas-aem-module/components/searchtab]"
                     policyResourceType="wcm/foundation/components/responsivegrid">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy_1631175352553>

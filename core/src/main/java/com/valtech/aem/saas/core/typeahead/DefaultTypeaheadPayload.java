@@ -1,7 +1,8 @@
 package com.valtech.aem.saas.core.typeahead;
 
+import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
-import java.util.Map;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -15,6 +16,6 @@ public class DefaultTypeaheadPayload implements TypeaheadPayload {
   String language;
 
   @Singular
-  Map<String, String> filterEntries;
+  Set<Filter> filters;
 
 }

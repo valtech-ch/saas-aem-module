@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -59,16 +58,13 @@ public class DefaultTypeaheadService implements TypeaheadService {
   }
 
   private String getQueryString(@NonNull TypeaheadPayload typeaheadPayload) {
-    GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
-        GetQueryStringConstructor.builder()
-            .query(new TypeaheadTextQuery(typeaheadPayload.getText()))
-            .query(new DefaultLanguageQuery(typeaheadPayload.getLanguage()));
-    if (MapUtils.isNotEmpty(typeaheadPayload.getFilterEntries())) {
-      FiltersQuery.FiltersQueryBuilder filtersQueryBuilder = FiltersQuery.builder();
-      typeaheadPayload.getFilterEntries().forEach(filtersQueryBuilder::filterEntry);
-      builder.query(filtersQueryBuilder.build());
-    }
-    return builder.build().getQueryString();
+    return GetQueryStringConstructor.builder()
+        .query(new TypeaheadTextQuery(typeaheadPayload.getText()))
+        .query(new DefaultLanguageQuery(typeaheadPayload.getLanguage()))
+        .query(FiltersQuery.builder()
+            .filters(typeaheadPayload.getFilters()).build())
+        .build()
+        .getQueryString();
   }
 
   private String getApiUrl(String index) {
@@ -90,17 +86,17 @@ public class DefaultTypeaheadService implements TypeaheadService {
   public @interface Configuration {
 
     String DEFAULT_API_ACTION = "/typeahead";
-    String DEFAULT_API_VERSION_PATH = "/api/v3";
+    String DEFAULT_API_VERSION_PATH = "/api/v3"; //NOSONAR
 
     @AttributeDefinition(name = "Api version path",
         description = "Path designating the api version",
         type = AttributeType.STRING)
-    String typeaheadService_apiVersionPath() default DEFAULT_API_VERSION_PATH;
+    String typeaheadService_apiVersionPath() default DEFAULT_API_VERSION_PATH; //NOSONAR
 
     @AttributeDefinition(name = "Api action",
         description = "Path designating the action",
         type = AttributeType.STRING)
-    String typeaheadService_apiAction() default DEFAULT_API_ACTION;
+    String typeaheadService_apiAction() default DEFAULT_API_ACTION; //NOSONAR
 
   }
 }

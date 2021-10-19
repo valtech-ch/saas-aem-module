@@ -2,6 +2,7 @@ package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a model of the aem search results component.
@@ -9,11 +10,26 @@ import java.util.List;
 public interface SearchResults extends ComponentExporter {
 
   /**
+   * Retrieves the title configurable for the search tab component.
+   *
+   * @return configured title.
+   */
+  String getTitle();
+
+  /**
    * Retrieves the search term present in the adapted request.
    *
    * @return search term.
    */
   String getTerm();
+
+  /**
+   * Retrieves a list of author configured search filter items (union of context aware and search cmp and current search
+   * tab).
+   *
+   * @return set of filter details.
+   */
+  Set<Filter> getFilters();
 
   /**
    * Retrieves the current results page (i.e the results offset parameter) set in the adapted request as parameter.
@@ -37,6 +53,11 @@ public interface SearchResults extends ComponentExporter {
    */
   List<Result> getResults();
 
+  /**
+   * Get search suggestion if there is one.
+   *
+   * @return an object containing suggestion details.
+   */
   Suggestion getSuggestion();
 
   /**

@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -9,6 +10,7 @@ import static org.hamcrest.text.IsEmptyString.isEmptyString;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -58,21 +60,13 @@ class SearchImplTest {
     adaptRequest();
     testAdaptable();
     Map<String, ? extends ComponentExporter> exportedItemsMap = testee.getExportedItems();
-    assertThat(exportedItemsMap.isEmpty(), is(false));
-    assertThat(exportedItemsMap.size(), is(2));
-    String[] order = testee.getExportedItemsOrder();
-    assertThat(order, is(notNullValue()));
-    assertThat(order.length, is(2));
-    assertThat(order[0], is("searchresults"));
-    assertThat(order[1], is("searchresults_2"));
+    assertThat(exportedItemsMap.isEmpty(), is(true));
     assertThat(testee.getSearchButtonText(), is(SearchImpl.I18N_KEY_SEARCH_BUTTON_LABEL));
     assertThat(testee.getLoadMoreButtonText(), is(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
-    assertThat(testee.getFilters(), nullValue());
+    assertThat(testee.getFilters(), emptyCollectionOf(Filter.class));
     assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
-    assertThat(testee.isBestBetsEnabled(), is(true));
-    assertThat(testee.isAutoSuggestEnabled(), is(true));
     assertThat(testee.getTerm(), is("bar"));
   }
 
@@ -88,9 +82,7 @@ class SearchImplTest {
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
     assertThat(testee.getFilters(), nullValue());
-    assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
-    assertThat(testee.isBestBetsEnabled(), is(true));
-    assertThat(testee.isAutoSuggestEnabled(), is(true));
+    assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchImpl.AUTOCOMPLETE_THRESHOLD));
     assertThat(testee.getTerm(), is(nullValue()));
     assertThat(testee.getSearchButtonText(), isEmptyString());
     assertThat(testee.getLoadMoreButtonText(), isEmptyString());

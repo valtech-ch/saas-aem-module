@@ -2,6 +2,7 @@
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
      data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
 <div class="saas-aem-module-search">
+  <h2 class="saas-aem-module-search__title">${model.title @ i18n}</h2>
   <form class="saas-aem-module-search__form"
         id="searchForm"
         action="${currentPage.path @ extension='html'}">
@@ -15,7 +16,7 @@
              type="search"
              name="q"
              value="${model.term}"
-             placeholder="${model.searchFieldPlaceholderText}"
+             placeholder="${model.searchFieldPlaceholderText @ i18n}"
              autocomplete="off"/>
       <button class="saas-aem-module-search__submit"
               type="submit">${'com.valtech.aem.saas.core.search.submit.button.label' @ i18n}
@@ -24,6 +25,6 @@
   </form>
   <div class="saas-aem-module-search__results">
     <sly
-        data-sly-resource="${'searchresults-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></sly>
+        data-sly-resource="${'search-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></sly>
   </div>
 </div>

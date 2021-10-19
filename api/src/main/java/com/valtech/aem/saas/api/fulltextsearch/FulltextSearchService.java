@@ -1,9 +1,5 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-/**
- *
- */
-
 import java.util.Optional;
 import lombok.NonNull;
 

@@ -46,7 +46,7 @@ class SearchResultsImplTest {
     context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
     context.currentPage("/content/saas-aem-module/us/en");
     context.currentResource(
-        "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/searchresults-tabs/searchresults");
+        "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab");
     MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
   }
 

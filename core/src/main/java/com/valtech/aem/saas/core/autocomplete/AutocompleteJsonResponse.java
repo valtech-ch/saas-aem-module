@@ -6,12 +6,14 @@ import com.day.cq.wcm.api.Page;
 import com.google.gson.Gson;
 import com.valtech.aem.saas.api.autocomplete.AutocompleteResponse;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.response.JsonResponseFlusher;
 import com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl;
 import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadPayload;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
@@ -31,9 +33,6 @@ import org.apache.sling.models.annotations.injectorspecific.SlingObject;
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     resourceType = RESOURCE_TYPE)
 public class AutocompleteJsonResponse implements AutocompleteResponse {
-
-  public static final String QUERY_PARAM_LANGUAGE = "language";
-  public static final String DEFAULT_LANGUAGE = "en";
 
   @Self
   private SlingHttpServletRequest request;
@@ -58,7 +57,8 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
                 if (StringUtils.isNotBlank(searchConfiguration.index())) {
                   TypeaheadPayload payload = DefaultTypeaheadPayload.builder()
                       .text(text)
-                      .language(getLanguage(requestWrapper))
+                      .language(getLanguage())
+                      .filters(getSearch().map(Search::getFilters).orElse(Collections.emptySet()))
                       .build();
                   List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
                   new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
@@ -67,9 +67,12 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
     }
   }
 
-  private String getLanguage(RequestWrapper requestWrapper) {
-    return requestWrapper.getParameter(QUERY_PARAM_LANGUAGE)
-        .orElseGet(() -> currentPage.getLanguage().getLanguage());
+  private Optional<Search> getSearch() {
+    return Optional.ofNullable(request.getResource().adaptTo(Search.class));
+  }
+
+  private String getLanguage() {
+    return currentPage.getLanguage().getLanguage();
   }
 
 }

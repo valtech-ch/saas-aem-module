@@ -42,24 +42,24 @@
             "jcr:lastModified": "Mon Sep 20 2021 11:27:19 GMT+0200",
             "sling:resourceType": "saas-aem-module/components/search",
             "resultsPerPage": "15",
-            "searchresults-tabs": {
+            "search-tabs": {
               "jcr:primaryType": "nt:unstructured",
               "sling:resourceType": "wcm/foundation/components/responsivegrid",
-              "searchresults": {
+              "searchtab": {
                 "jcr:primaryType": "nt:unstructured",
                 "jcr:createdBy": "admin",
                 "jcr:lastModifiedBy": "admin",
                 "jcr:created": "Thu Sep 09 2021 10:42:07 GMT+0200",
                 "jcr:lastModified": "Thu Sep 09 2021 10:42:07 GMT+0200",
-                "sling:resourceType": "saas-aem-module/components/searchresults"
+                "sling:resourceType": "saas-aem-module/components/searchtab"
               },
-              "searchresults_2": {
+              "searchtab_2": {
                 "jcr:primaryType": "nt:unstructured",
                 "jcr:createdBy": "admin",
                 "jcr:lastModifiedBy": "admin",
                 "jcr:created": "Thu Sep 09 2021 10:42:07 GMT+0200",
                 "jcr:lastModified": "Thu Sep 09 2021 10:42:07 GMT+0200",
-                "sling:resourceType": "saas-aem-module/components/searchresults"
+                "sling:resourceType": "saas-aem-module/components/searchtab"
               }
             }
           }
