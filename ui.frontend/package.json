@@ -17,7 +17,8 @@
     "watch": "webpack-dev-server --config ./webpack.dev.js --env.writeToDisk & watch 'clientlib' ./dist & aemsync -w ../ui.apps/src/main/content",
     "lint": "eslint . --ext .js,.ts",
     "lint-fix": "eslint . --ext .js,.ts --fix",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "cd .. && husky install"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -41,7 +42,9 @@
     "eslint-loader": "^3.0.3",
     "glob-import-loader": "^1.1.4",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^7.0.2",
     "jest": "^27.3.1",
+    "lint-staged": "^11.2.3",
     "mini-css-extract-plugin": "^0.4.4",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
@@ -64,5 +67,9 @@
   "browserslist": [
     "last 2 version",
     "> 1%"
-  ]
+  ],
+  "lint-staged": {
+    "*.{js,ts}": "eslint --cache",
+    "*.{css,scss,less}": "prettier"
+  }
 }
