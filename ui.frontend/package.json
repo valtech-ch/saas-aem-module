@@ -14,7 +14,9 @@
     "prod": "webpack -p --config ./webpack.prod.js && clientlib --verbose",
     "start": "webpack-dev-server --open --config ./webpack.dev.js",
     "sync": "aemsync -d -p ../ui.apps/src/main/content",
-    "watch": "webpack-dev-server --config ./webpack.dev.js --env.writeToDisk & watch 'clientlib' ./dist & aemsync -w ../ui.apps/src/main/content"
+    "watch": "webpack-dev-server --config ./webpack.dev.js --env.writeToDisk & watch 'clientlib' ./dist & aemsync -w ../ui.apps/src/main/content",
+    "lint": "eslint . --ext .js,.ts",
+    "lint-fix": "eslint . --ext .js,.ts --fix"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -32,12 +34,14 @@
     "css-loader": "^3.0.0",
     "cssnano": "^4.1.10",
     "eslint": "^6.8.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-loader": "^3.0.3",
     "glob-import-loader": "^1.1.4",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.4",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
+    "prettier": "2.4.1",
     "sass": "^1.17.2",
     "sass-loader": "^7.1.0",
     "source-map-loader": "^0.2.4",
