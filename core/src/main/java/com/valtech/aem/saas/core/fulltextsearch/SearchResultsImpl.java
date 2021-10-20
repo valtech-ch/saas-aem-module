@@ -159,14 +159,9 @@ public class SearchResultsImpl implements SearchResults {
     Optional<Search> parentSearch = getParentSearchComponent();
     term = searchTerm;
     I18n i18n = requestWrapper.getI18n();
-    loadMoreButtonText = parentSearch
-        .map(Search::getLoadMoreButtonText)
-        .filter(StringUtils::isNotEmpty)
-        .orElseGet(() -> i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL));
+    loadMoreButtonText = getLoadMoreButtonText(parentSearch, i18n);
     startPage = getStartPage(requestWrapper);
-    int configuredResultsPerPage = getParentSearchComponent()
-        .map(Search::getResultsPerPage)
-        .orElse(SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE);
+    int configuredResultsPerPage = getConfiguredResultsPerPage(parentSearch);
     resultsPerPage = resolveResultsPerPage(requestWrapper, configuredResultsPerPage);
     //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
     loadMoreRows = resultsPerPage + configuredResultsPerPage;
@@ -190,6 +185,19 @@ public class SearchResultsImpl implements SearchResults {
     resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(NO_RESULTS);
     showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
     suggestion = fulltextSearchResults.map(FulltextSearchResults::getSuggestion).orElse(null);
+  }
+
+  private String getLoadMoreButtonText(Optional<Search> parentSearch, I18n i18n) {
+    return parentSearch
+        .map(Search::getLoadMoreButtonText)
+        .filter(StringUtils::isNotEmpty)
+        .orElseGet(() -> i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL));
+  }
+
+  private int getConfiguredResultsPerPage(Optional<Search> parentSearch) {
+    return parentSearch
+        .map(Search::getResultsPerPage)
+        .orElse(SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE);
   }
 
   private int resolveResultsPerPage(RequestWrapper requestWrapper, int configuredValue) {
