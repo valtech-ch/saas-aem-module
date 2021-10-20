@@ -4,3 +4,4 @@ node_modules/
 dist/
 webpack.*.js
 clientlib.config.js
+jest.config.js
