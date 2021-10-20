@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class JsonResponseFlusherTest {
+class JsonResponseCommitterTest {
 
   @Mock
   SlingHttpServletResponse response;
@@ -32,20 +32,20 @@ class JsonResponseFlusherTest {
   @Test
   void testFlush() throws IOException {
     when(response.getWriter()).thenReturn(printWriter);
-    new JsonResponseFlusher(response).flush(printWriter -> printWriter.write("foo"));
+    new JsonResponseCommitter(response).flush(printWriter -> printWriter.write("foo"));
     verify(response, never()).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
   }
 
   @Test
   void testFlush_errorOnWrite() throws IOException {
     when(response.getWriter()).thenThrow(IOException.class);
-    new JsonResponseFlusher(response).flush(printWriter -> printWriter.write("foo"));
+    new JsonResponseCommitter(response).flush(printWriter -> printWriter.write("foo"));
     verify(response, times(1)).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
   }
 
   @Test
   void testNonNullArguments() {
-    Assertions.assertThrows(NullPointerException.class, () -> new JsonResponseFlusher(null));
-    Assertions.assertThrows(NullPointerException.class, () -> new JsonResponseFlusher(null, null));
+    Assertions.assertThrows(NullPointerException.class, () -> new JsonResponseCommitter(null));
+    Assertions.assertThrows(NullPointerException.class, () -> new JsonResponseCommitter(null, null));
   }
 }

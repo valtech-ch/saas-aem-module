@@ -4,6 +4,10 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A helper class that parses and prepares the typeahead input text for the {@link
+ * com.valtech.aem.saas.core.query.TypeaheadTextQuery}
+ */
 @RequiredArgsConstructor
 public final class TypeaheadSearchTextParser {
 

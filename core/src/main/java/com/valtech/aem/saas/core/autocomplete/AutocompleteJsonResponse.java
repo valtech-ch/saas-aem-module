@@ -10,8 +10,8 @@ import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
-import com.valtech.aem.saas.core.common.response.JsonResponseFlusher;
-import com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl;
+import com.valtech.aem.saas.core.common.response.JsonResponseCommitter;
+import com.valtech.aem.saas.core.fulltextsearch.SearchTabImpl;
 import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadPayload;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +28,9 @@ import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
+/**
+ * Search component sling model that handles autocomplete requests.
+ */
 @Model(adaptables = SlingHttpServletRequest.class,
     adapters = AutocompleteResponse.class,
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
@@ -51,7 +54,7 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
     if (!response.isCommitted()) {
       Optional.ofNullable(request.adaptTo(RequestWrapper.class))
           .ifPresent(requestWrapper ->
-              requestWrapper.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(text -> {
+              requestWrapper.getParameter(SearchTabImpl.SEARCH_TERM).ifPresent(text -> {
                 SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
                     .as(SearchConfiguration.class);
                 if (StringUtils.isNotBlank(searchConfiguration.index())) {
@@ -61,7 +64,7 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
                       .filters(getSearch().map(Search::getFilters).orElse(Collections.emptySet()))
                       .build();
                   List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
-                  new JsonResponseFlusher(response).flush(printWriter -> new Gson().toJson(results, printWriter));
+                  new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));
                 }
               }));
     }

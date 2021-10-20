@@ -13,14 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class SuggestionDataExtractionStrategy implements SearchResponseDataExtractionStrategy<Suggestion> {
 
-  public static final String PN_SPELLCHECK = "spellcheck";
-  public static final String PN_COLLATION_QUERY = "collationQuery";
-  public static final String PN_COLLATIONS = "collations";
-  public static final String PN_HITS = "hits";
+  public static final String SPELLCHECK = "spellcheck";
+  public static final String COLLATION_QUERY = "collationQuery";
+  public static final String COLLATIONS = "collations";
+  public static final String HITS = "hits";
 
   @Override
   public String propertyName() {
-    return PN_SPELLCHECK;
+    return SPELLCHECK;
   }
 
   @Override
@@ -32,15 +32,15 @@ public final class SuggestionDataExtractionStrategy implements SearchResponseDat
         .map(this::getCollations)
         .map(this::getCollation)
         .filter(this::isCollationQueryExisting)
-        .map(jsonObject -> new Suggestion(jsonObject.getAsJsonPrimitive(PN_COLLATION_QUERY).getAsString(),
+        .map(jsonObject -> new Suggestion(jsonObject.getAsJsonPrimitive(COLLATION_QUERY).getAsString(),
             jsonObject.getAsJsonPrimitive(
-                PN_HITS).getAsInt()));
+                HITS).getAsInt()));
   }
 
   private JsonArray getCollations(JsonObject spellcheck) {
     try {
-      if (spellcheck.has(PN_COLLATIONS)) {
-        return spellcheck.get(PN_COLLATIONS).getAsJsonArray();
+      if (spellcheck.has(COLLATIONS)) {
+        return spellcheck.get(COLLATIONS).getAsJsonArray();
       }
     } catch (IllegalStateException e) {
       log.error("Error while fetching collations");
@@ -60,7 +60,7 @@ public final class SuggestionDataExtractionStrategy implements SearchResponseDat
   }
 
   private boolean isCollationQueryExisting(JsonObject collation) {
-    JsonElement collationQuery = collation.get(PN_COLLATION_QUERY);
+    JsonElement collationQuery = collation.get(COLLATION_QUERY);
     return collationQuery != null && collationQuery.isJsonPrimitive() && collationQuery.getAsJsonPrimitive().isString();
   }
 }

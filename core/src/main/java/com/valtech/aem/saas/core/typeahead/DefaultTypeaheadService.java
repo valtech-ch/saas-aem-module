@@ -86,17 +86,17 @@ public class DefaultTypeaheadService implements TypeaheadService {
   public @interface Configuration {
 
     String DEFAULT_API_ACTION = "/typeahead";
-    String DEFAULT_API_VERSION_PATH = "/api/v3"; //NOSONAR
+    String DEFAULT_API_VERSION_PATH = "/api/v3";  // NOSONAR
 
     @AttributeDefinition(name = "Api version path",
         description = "Path designating the api version",
         type = AttributeType.STRING)
-    String typeaheadService_apiVersionPath() default DEFAULT_API_VERSION_PATH; //NOSONAR
+    String typeaheadService_apiVersionPath() default DEFAULT_API_VERSION_PATH;  // NOSONAR
 
     @AttributeDefinition(name = "Api action",
         description = "Path designating the action",
         type = AttributeType.STRING)
-    String typeaheadService_apiAction() default DEFAULT_API_ACTION; //NOSONAR
+    String typeaheadService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
 
   }
 }

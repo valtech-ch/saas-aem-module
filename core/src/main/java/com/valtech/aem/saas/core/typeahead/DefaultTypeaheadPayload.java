@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 
+/**
+ * A POJO that represents typeahead payload and provides instance creation.
+ */
 @Value
 @Builder
 public class DefaultTypeaheadPayload implements TypeaheadPayload {

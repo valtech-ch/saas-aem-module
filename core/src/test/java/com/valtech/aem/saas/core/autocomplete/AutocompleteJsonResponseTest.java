@@ -14,7 +14,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
-import com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl;
+import com.valtech.aem.saas.core.fulltextsearch.SearchTabImpl;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -71,7 +71,7 @@ class AutocompleteJsonResponseTest {
 
   @Test
   void testAutocomplete_noIndexConfigured() {
-    context.request().addRequestParameter(SearchResultsImpl.SEARCH_TERM, "foo");
+    context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "foo");
     adaptRequest(context.request());
     testAdaptable();
     verify(typeaheadService, never()).getResults(anyString(), any(TypeaheadPayload.class));
@@ -79,7 +79,7 @@ class AutocompleteJsonResponseTest {
 
   @Test
   void testAutocomplete() {
-    context.request().addRequestParameter(SearchResultsImpl.SEARCH_TERM, "foo");
+    context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "foo");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "bar");
     adaptRequest(context.request());

@@ -15,7 +15,7 @@ class SuggestionDataExtractionStrategyTest {
   @Test
   void testGetData() {
     SuggestionDataExtractionStrategy strategy = new SuggestionDataExtractionStrategy();
-    assertThat(strategy.propertyName(), is(SuggestionDataExtractionStrategy.PN_SPELLCHECK));
+    assertThat(strategy.propertyName(), is(SuggestionDataExtractionStrategy.SPELLCHECK));
     assertThat(strategy.getData(new JsonObject()).isPresent(), is(false));
     JsonObject response = new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
         "/__files/search/fulltext/spellcheck.json"))).getAsJsonObject();
@@ -42,7 +42,7 @@ class SuggestionDataExtractionStrategyTest {
 
   private void testInvalidResponse(String responseFilePath) {
     SuggestionDataExtractionStrategy strategy = new SuggestionDataExtractionStrategy();
-    assertThat(strategy.propertyName(), is(SuggestionDataExtractionStrategy.PN_SPELLCHECK));
+    assertThat(strategy.propertyName(), is(SuggestionDataExtractionStrategy.SPELLCHECK));
     assertThat(strategy.getData(new JsonObject()).isPresent(), is(false));
     JsonObject response = new JsonParser().parse(
         new InputStreamReader(getClass().getResourceAsStream(responseFilePath))).getAsJsonObject();

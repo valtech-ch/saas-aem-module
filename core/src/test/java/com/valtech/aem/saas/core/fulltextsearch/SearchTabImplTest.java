@@ -10,7 +10,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
-import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTab;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
-class SearchResultsImplTest {
+class SearchTabImplTest {
 
   private final AemContext context = new AemContextBuilder()
       .plugin(ContextPlugins.CACONFIG)
@@ -35,7 +35,7 @@ class SearchResultsImplTest {
   @Mock
   FulltextSearchConfigurationService fulltextSearchConfigurationService;
 
-  SearchResults testee;
+  SearchTab testee;
 
   @BeforeEach
   void setUp() {
@@ -54,21 +54,21 @@ class SearchResultsImplTest {
   void testSearchResults() {
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
-    context.request().addRequestParameter(SearchResultsImpl.SEARCH_TERM, "bar");
+    context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "bar");
     testAdaptable();
-    assertThat(testee.getLoadMoreButtonText(), is(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
+    assertThat(testee.getLoadMoreButtonText(), is(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
     assertThat(testee.getResults(), emptyCollectionOf(Result.class));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getTerm(), is("bar"));
     assertThat(testee.getResultsTotal(), is(0));
     assertThat(testee.getStartPage(), is(0));
     assertThat(testee.getSuggestion(), is(nullValue()));
-    assertThat(testee.getExportedType(), is(SearchResultsImpl.RESOURCE_TYPE));
+    assertThat(testee.getExportedType(), is(SearchTabImpl.RESOURCE_TYPE));
   }
 
   private void testAdaptable() {
-    testee = context.request().adaptTo(SearchResults.class);
+    testee = context.request().adaptTo(SearchTab.class);
     assertThat(testee, notNullValue());
-    assertThat(testee, instanceOf(SearchResults.class));
+    assertThat(testee, instanceOf(SearchTab.class));
   }
 }

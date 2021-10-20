@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Represents a model of the aem search results component.
  */
-public interface SearchResults extends ComponentExporter {
+public interface SearchTab extends ComponentExporter {
 
   /**
    * Retrieves the title configurable for the search tab component.

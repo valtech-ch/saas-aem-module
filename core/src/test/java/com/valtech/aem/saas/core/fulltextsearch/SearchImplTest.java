@@ -56,13 +56,13 @@ class SearchImplTest {
   void testAdaptRequest() {
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
-    context.request().addRequestParameter(SearchResultsImpl.SEARCH_TERM, "bar");
+    context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "bar");
     adaptRequest();
     testAdaptable();
     Map<String, ? extends ComponentExporter> exportedItemsMap = testee.getExportedItems();
     assertThat(exportedItemsMap.isEmpty(), is(true));
     assertThat(testee.getSearchButtonText(), is(SearchImpl.I18N_KEY_SEARCH_BUTTON_LABEL));
-    assertThat(testee.getLoadMoreButtonText(), is(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
+    assertThat(testee.getLoadMoreButtonText(), is(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
     assertThat(testee.getFilters(), emptyCollectionOf(Filter.class));

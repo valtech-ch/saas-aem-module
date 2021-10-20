@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A singleton saas index value validator.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SaasIndexValidator {
 
@@ -16,6 +19,12 @@ public final class SaasIndexValidator {
     return instance;
   }
 
+  /**
+   * Validates index value.
+   *
+   * @param index saas index
+   * @throws IllegalArgumentException exception thrown when blank index value is passed
+   */
   public void validate(String index) {
     if (StringUtils.isBlank(index)) {
       throw new IllegalArgumentException(

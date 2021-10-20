@@ -10,22 +10,41 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.servlets.post.JSONResponse;
 
+/**
+ * Helper class that sets content via the response's writer and commits the response.
+ */
 @Slf4j
-public class JsonResponseFlusher {
+public final class JsonResponseCommitter {
 
   private final SlingHttpServletResponse response;
 
-  public JsonResponseFlusher(@NonNull final SlingHttpServletResponse response,
+  /**
+   * Instantiates an object that will commit the passed response object with the specified character encoding value.
+   *
+   * @param response          the response object to be committed.
+   * @param characterEncoding the char encoding to be set on the response object.
+   */
+  public JsonResponseCommitter(@NonNull final SlingHttpServletResponse response,
       @NonNull final String characterEncoding) {
     this.response = response;
     response.setContentType(JSONResponse.RESPONSE_CONTENT_TYPE);
     response.setCharacterEncoding(characterEncoding);
   }
 
-  public JsonResponseFlusher(@NonNull final SlingHttpServletResponse response) {
+  /**
+   * Instantiates an object that sets UTF-8 char encoding on the response object.
+   *
+   * @param response the response object to be committed.
+   */
+  public JsonResponseCommitter(@NonNull final SlingHttpServletResponse response) {
     this(response, StandardCharsets.UTF_8.name());
   }
 
+  /**
+   * Flushes the writer right after it applies the writer consuming logic passed as method parameter.
+   *
+   * @param writerConsumer lambda function containing writer consuming logic.
+   */
   public void flush(Consumer<PrintWriter> writerConsumer) {
     try {
       PrintWriter out = response.getWriter();

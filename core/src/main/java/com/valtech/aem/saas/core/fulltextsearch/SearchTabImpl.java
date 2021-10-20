@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 
-import static com.valtech.aem.saas.core.fulltextsearch.SearchResultsImpl.RESOURCE_TYPE;
+import static com.valtech.aem.saas.core.fulltextsearch.SearchTabImpl.RESOURCE_TYPE;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
@@ -17,7 +17,7 @@ import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchResults;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
-import com.valtech.aem.saas.api.fulltextsearch.SearchResults;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTab;
 import com.valtech.aem.saas.api.fulltextsearch.Suggestion;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
@@ -48,12 +48,15 @@ import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
+/**
+ * Search tab component sling model that handles component's rendering.
+ */
 @Model(adaptables = SlingHttpServletRequest.class,
-    adapters = {SearchResults.class, ComponentExporter.class},
+    adapters = {SearchTab.class, ComponentExporter.class},
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME, extensions = ExporterConstants.SLING_MODEL_EXTENSION)
-public class SearchResultsImpl implements SearchResults {
+public class SearchTabImpl implements SearchTab {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
   public static final String QUERY_PARAM_START = "start";
@@ -156,48 +159,51 @@ public class SearchResultsImpl implements SearchResults {
   }
 
   private void initSearch(String searchTerm, RequestWrapper requestWrapper) {
-    Optional<Search> parentSearch = getParentSearchComponent();
-    term = searchTerm;
-    I18n i18n = requestWrapper.getI18n();
-    loadMoreButtonText = getLoadMoreButtonText(parentSearch, i18n);
-    startPage = getStartPage(requestWrapper);
-    int configuredResultsPerPage = getConfiguredResultsPerPage(parentSearch);
-    resultsPerPage = resolveResultsPerPage(requestWrapper, configuredResultsPerPage);
-    //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
-    loadMoreRows = resultsPerPage + configuredResultsPerPage;
-    SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
-        .as(SearchConfiguration.class);
-    FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
-        DefaultFulltextSearchRequestPayload.builder(new DefaultTermQuery(searchTerm),
-                new DefaultLanguageQuery(getLanguage()))
-            .optionalQuery(
-                new PaginationQuery(startPage, resultsPerPage,
-                    fulltextSearchConfigurationService.getRowsMaxLimit()))
-            .optionalQuery(new HighlightingTagQuery(Highlighting.HIGHLIGHTING_TAG_NAME))
-            .optionalQuery(FiltersQuery.builder()
-                .filters(parentSearch.map(this::getMergedFilters).orElse(Collections.emptySet()))
-                .build())
-            .build();
-    Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getResults(
-        searchConfiguration.index(), fulltextSearchGetRequestPayload, searchConfiguration.enableAutoSuggest(),
-        searchConfiguration.enableBestBets());
-    results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
-    resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(NO_RESULTS);
-    showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
-    suggestion = fulltextSearchResults.map(FulltextSearchResults::getSuggestion).orElse(null);
+    getParentSearchComponent().ifPresent(parentSearch -> {
+      term = searchTerm;
+      I18n i18n = requestWrapper.getI18n();
+      loadMoreButtonText = getLoadMoreButtonText(parentSearch, i18n);
+      startPage = getStartPage(requestWrapper);
+      int configuredResultsPerPage = getConfiguredResultsPerPage(parentSearch);
+      resultsPerPage = resolveResultsPerPage(requestWrapper, configuredResultsPerPage);
+      //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
+      loadMoreRows = resultsPerPage + configuredResultsPerPage;
+      SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
+          .as(SearchConfiguration.class);
+      FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
+          getFulltextSearchGetRequestPayload(searchTerm, parentSearch);
+      Optional<FulltextSearchResults> fulltextSearchResults = fulltextSearchService.getResults(
+          searchConfiguration.index(), fulltextSearchGetRequestPayload, searchConfiguration.enableAutoSuggest(),
+          searchConfiguration.enableBestBets());
+      results = fulltextSearchResults.map(FulltextSearchResults::getResults).orElse(Collections.emptyList());
+      resultsTotal = fulltextSearchResults.map(FulltextSearchResults::getTotalResultsFound).orElse(NO_RESULTS);
+      showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
+      suggestion = fulltextSearchResults.map(FulltextSearchResults::getSuggestion).orElse(null);
+    });
   }
 
-  private String getLoadMoreButtonText(Optional<Search> parentSearch, I18n i18n) {
-    return parentSearch
-        .map(Search::getLoadMoreButtonText)
+  private DefaultFulltextSearchRequestPayload getFulltextSearchGetRequestPayload(String searchTerm,
+      Search parentSearch) {
+    return DefaultFulltextSearchRequestPayload.builder(new DefaultTermQuery(searchTerm),
+            new DefaultLanguageQuery(getLanguage()))
+        .optionalQuery(
+            new PaginationQuery(startPage, resultsPerPage,
+                fulltextSearchConfigurationService.getRowsMaxLimit()))
+        .optionalQuery(new HighlightingTagQuery(Highlighting.HIGHLIGHTING_TAG_NAME))
+        .optionalQuery(FiltersQuery.builder()
+            .filters(getMergedFilters(parentSearch))
+            .build())
+        .build();
+  }
+
+  private String getLoadMoreButtonText(Search parentSearch, I18n i18n) {
+    return Optional.ofNullable(parentSearch.getLoadMoreButtonText())
         .filter(StringUtils::isNotEmpty)
         .orElseGet(() -> i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL));
   }
 
-  private int getConfiguredResultsPerPage(Optional<Search> parentSearch) {
-    return parentSearch
-        .map(Search::getResultsPerPage)
-        .orElse(SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE);
+  private int getConfiguredResultsPerPage(Search parentSearch) {
+    return parentSearch.getResultsPerPage();
   }
 
   private int resolveResultsPerPage(RequestWrapper requestWrapper, int configuredValue) {
@@ -211,8 +217,9 @@ public class SearchResultsImpl implements SearchResults {
     Set<Filter> result = search.getFilters();
     if (filters != null) {
       result.addAll(filters);
+      return result;
     }
-    return result;
+    return Collections.emptySet();
   }
 
   private Optional<Search> getParentSearchComponent() {

@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
@@ -42,8 +43,12 @@ import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
+/**
+ * Search component sling model that handles component's rendering.
+ */
 @Slf4j
 @Model(adaptables = {SlingHttpServletRequest.class, Resource.class},
     adapters = {Search.class, ComponentExporter.class, ContainerExporter.class},
@@ -57,7 +62,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 public class SearchImpl implements Search {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
-  public static final String NN_SEARCH_TABS_CONTAINER = "search-tabs";
+  public static final String NODE_NAME_SEARCH_TABS_CONTAINER = "search-tabs";
   public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
   public static final int AUTOCOMPLETE_THRESHOLD = 3;
   public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
@@ -65,10 +70,13 @@ public class SearchImpl implements Search {
   @Self
   private SlingHttpServletRequest request;
 
+  @SlingObject
+  private ResourceResolver resourceResolver;
+
   @JsonIgnore
   @Getter
   @ValueMapValue
-  @Default(intValues = SearchResultsImpl.DEFAULT_RESULTS_PER_PAGE)
+  @Default(intValues = SearchTabImpl.DEFAULT_RESULTS_PER_PAGE)
   private int resultsPerPage;
 
   @Getter
@@ -102,7 +110,7 @@ public class SearchImpl implements Search {
     if (request != null) {
       Optional.ofNullable(request.adaptTo(RequestWrapper.class))
           .ifPresent(requestWrapper -> {
-            requestWrapper.getParameter(SearchResultsImpl.SEARCH_TERM).ifPresent(t -> term = t);
+            requestWrapper.getParameter(SearchTabImpl.SEARCH_TERM).ifPresent(t -> term = t);
             i18n = requestWrapper.getI18n();
             mergedFilters = getMergedFilters();
           });
@@ -139,7 +147,7 @@ public class SearchImpl implements Search {
   @Override
   public String getLoadMoreButtonText() {
     return Optional.ofNullable(i18n)
-        .map(t -> t.get(SearchResultsImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL))
+        .map(t -> t.get(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL))
         .orElse(StringUtils.EMPTY);
   }
 
@@ -152,7 +160,7 @@ public class SearchImpl implements Search {
   public List<String> getSearchTabs() {
     return Optional.ofNullable(request)
         .map(SlingHttpServletRequest::getResource)
-        .map(r -> r.getChild(NN_SEARCH_TABS_CONTAINER))
+        .map(r -> r.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
         .orElse(Stream.empty())
@@ -182,8 +190,12 @@ public class SearchImpl implements Search {
 
   private String getSearchTabUrl(@NonNull Resource searchTab) {
     try {
-      return new URIBuilder(String.format("%s.%s.%s", searchTab.getPath(), ExporterConstants.SLING_MODEL_SELECTOR,
-          ExporterConstants.SLING_MODEL_EXTENSION)).setCustomQuery(request.getQueryString()).toString();
+      return new URIBuilder(String.format("%s.%s.%s",
+          resourceResolver.map(request, searchTab.getPath()),
+          ExporterConstants.SLING_MODEL_SELECTOR,
+          ExporterConstants.SLING_MODEL_EXTENSION))
+          .setCustomQuery(request.getQueryString())
+          .toString();
     } catch (URISyntaxException e) {
       log.error("Failed to create search prepared url to search tab resource.");
     }

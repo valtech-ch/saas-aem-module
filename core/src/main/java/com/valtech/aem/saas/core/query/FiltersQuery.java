@@ -12,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+/**
+ * {@link com.valtech.aem.saas.api.query.Query} implementation that handles search filter params.
+ */
 @Builder
 public class FiltersQuery implements FulltextSearchOptionalQuery, TypeaheadQuery {
 

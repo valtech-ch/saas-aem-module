@@ -5,7 +5,7 @@
     xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="nt:unstructured"
     fieldLabel="Filters"
-    fieldDescription="Only simple filter entries can be configured."
+    fieldDescription="Filter entries with the 'AND' relation can be configured."
     sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
     composite="{Boolean}true">
     <field
