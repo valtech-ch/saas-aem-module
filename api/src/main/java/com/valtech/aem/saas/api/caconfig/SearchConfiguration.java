@@ -30,7 +30,7 @@ public @interface SearchConfiguration {
       description = "Flag that enables displaying best bets on the top of the search results.")
   boolean enableBestBets() default DEFAULT_ENABLE_BEST_BETS;
 
-  @Property(label = "Enable Best Bets",
+  @Property(label = "Enable Auto Suggest",
       description = "Flag that enables auto suggest feature in the search component.")
   boolean enableAutoSuggest() default DEFAULT_ENABLE_AUTO_SUGGEST;
 }
