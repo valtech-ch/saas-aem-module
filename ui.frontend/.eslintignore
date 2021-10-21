@@ -5,3 +5,6 @@ dist/
 webpack.*.js
 clientlib.config.js
 jest.config.js
+.eslintrc.js
+babel.config.js
+coverage/

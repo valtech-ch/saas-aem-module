@@ -1,6 +1,6 @@
-import getSearchElement from '../getSearchElement';
+import { getSearchElement } from '../searchElement';
 
-describe('getSearchElement', () => {
+describe('searchElement', () => {
     test('returns null when the element is not on the page', () => {
         document.body.innerHTML = `
             <html lang="en">

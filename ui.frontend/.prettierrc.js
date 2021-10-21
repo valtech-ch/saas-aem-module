@@ -1,7 +1,1 @@
-module.exports = {
-    trailingComma: "es5",
-    tabWidth: 4,
-    semi: true,
-    singleQuote: true,
-    bracketSpacing: true
-};
+module.exports = require('@valtech-ch/eslint-config/prettier.config')
