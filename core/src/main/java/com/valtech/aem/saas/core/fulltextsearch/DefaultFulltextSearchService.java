@@ -98,7 +98,7 @@ public class DefaultFulltextSearchService implements
       if (enableAutoSuggest) {
         log.debug("Auto suggest is enabled.");
         searchResponse.get(new SuggestionDataExtractionStrategy()).flatMap(suggestion -> LoggedOptional.of(suggestion,
-                logger -> logger.warn("No suggestion has been found in search response")))
+                logger -> logger.debug("No suggestion has been found in search response")))
             .ifPresent(fulltextSearchResultsBuilder::suggestion);
       }
       return Optional.of(fulltextSearchResultsBuilder.build());
@@ -148,22 +148,22 @@ public class DefaultFulltextSearchService implements
 
     int DEFAULT_ROWS_MAX_LIMIT = 9999;
     String DEFAULT_API_ACTION = "/search";
-    String DEFAULT_API_VERSION_PATH = "/api/v3";
+    String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
 
     @AttributeDefinition(name = "Api base path",
         description = "Api base path",
         type = AttributeType.STRING)
-    String fulltextSearchService_apiVersion() default DEFAULT_API_VERSION_PATH;
+    String fulltextSearchService_apiVersion() default DEFAULT_API_VERSION_PATH; // NOSONAR
 
     @AttributeDefinition(name = "Api action",
         description = "What kind of action should be defined",
         type = AttributeType.STRING)
-    String fulltextSearchService_apiAction() default DEFAULT_API_ACTION;
+    String fulltextSearchService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
 
     @AttributeDefinition(name = "Rows max limit.",
         description = "Maximum number of results per page allowed.",
         type = AttributeType.INTEGER)
-    int fulltextSearchService_rowsMaxLimit() default DEFAULT_ROWS_MAX_LIMIT;
+    int fulltextSearchService_rowsMaxLimit() default DEFAULT_ROWS_MAX_LIMIT; // NOSONAR
 
   }
 }
