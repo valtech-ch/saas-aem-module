@@ -48,12 +48,6 @@
                                 ]]></bnd>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>bnd-process-tests</id>
-                        <goals>
-                            <goal>bnd-process-tests</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>

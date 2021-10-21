@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
+import com.valtech.aem.saas.api.indexing.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.indexing.PathTransformerPipeline;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -74,7 +74,7 @@ public class SearchImpl implements Search {
   private Resource resource;
 
   @OSGiService
-  private PathTransformerPipeline pathTransformerPipeline;
+  private PathTransformer pathTransformer;
 
   @JsonIgnore
   @Getter
@@ -193,7 +193,7 @@ public class SearchImpl implements Search {
   private String getSearchTabUrl(@NonNull Resource searchTab) {
     try {
       return new URIBuilder(String.format("%s.%s.%s",
-          pathTransformerPipeline.getMappedPath(request, searchTab.getPath()),
+          pathTransformer.map(request, searchTab.getPath()),
           ExporterConstants.SLING_MODEL_SELECTOR,
           ExporterConstants.SLING_MODEL_EXTENSION))
           .setCustomQuery(request.getQueryString())
