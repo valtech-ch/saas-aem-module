@@ -48,12 +48,6 @@
                                 ]]></bnd>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>bnd-process-tests</id>
-                        <goals>
-                            <goal>bnd-process-tests</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -151,6 +145,11 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.caconfig-mock-plugin</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

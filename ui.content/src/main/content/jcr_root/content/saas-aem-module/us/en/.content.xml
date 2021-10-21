@@ -2,14 +2,15 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
-        pageTitle="Valtech AEM SAAS"
-        jcr:primaryType="cq:PageContent"
-        jcr:title="en"
         cq:contextHubPath="/etc/cloudsettings/default/contexthub"
         cq:contextHubSegmentsPath="/etc/segmentation/contexthub"
+        cq:lastModified="{Date}2021-10-18T12:29:16.881+02:00"
+        cq:lastModifiedBy="admin"
         cq:template="/conf/saas-aem-module/settings/wcm/templates/page-content"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="en"
         sling:resourceType="saas-aem-module/components/page"
-    >
+        pageTitle="Valtech AEM SAAS">
         <root
             jcr:primaryType="nt:unstructured"
             sling:resourceType="saas-aem-module/components/container"
@@ -21,6 +22,31 @@
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="saas-aem-module/components/container"
                     layout="responsiveGrid">
+                    <search
+                        jcr:created="{Date}2021-09-09T10:27:16.540+02:00"
+                        jcr:createdBy="admin"
+                        jcr:lastModified="{Date}2021-09-20T11:27:19.134+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="saas-aem-module/components/search"
+                        autoSuggestEnabled="true"
+                        bestBetsEnabled="true"
+                        loadMoreButtonText="Load more"
+                        resultsPerPage="10"
+                        searchButtonText="Submit"
+                        searchFieldPlaceholderText="Type search term here...">
+                        <search-tabs
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="wcm/foundation/components/responsivegrid">
+                            <searchtab
+                                jcr:created="{Date}2021-09-09T10:42:07.614+02:00"
+                                jcr:createdBy="admin"
+                                jcr:lastModified="{Date}2021-09-09T10:42:07.614+02:00"
+                                jcr:lastModifiedBy="admin"
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="saas-aem-module/components/searchtab"/>
+                        </search-tabs>
+                    </search>
                 </container>
             </container>
         </root>

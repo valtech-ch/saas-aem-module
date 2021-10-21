@@ -1,5 +1,6 @@
 <sly data-sly-template.resultItem="${@ model, count}">
   <a class="saas-aem-module-search__results-item"
+     x-cq-linkchecker="skip"
      href="${model.url}">
     <div class="saas-aem-module-search__results-item-content">
       <h3 class="saas-aem-module-search__results-item-title">${'{0}. {1}' @ format=[count,model.title],

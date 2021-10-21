@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.indexing;
 
-import com.day.cq.commons.Externalizer;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
@@ -8,7 +7,7 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.core.indexing.PageIndexUpdateHandler.Configuration;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,17 +21,12 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.caconfig.ConfigurationResolver;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.Designate;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 
 @Component(name = "Search as a Service - Page Replication Event Handler",
@@ -44,7 +38,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC,
         EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC
     })
-@Designate(ocd = Configuration.class)
 @Slf4j
 public class PageIndexUpdateHandler implements EventHandler {
 
@@ -55,15 +48,10 @@ public class PageIndexUpdateHandler implements EventHandler {
   private ConfigurationResolver configurationResolver;
 
   @Reference
-  private Externalizer externalizer;
-
-  @Reference
   private ResourceResolverProvider resourceResolverProvider;
 
   @Reference
-  private PathExternalizerPipeline pathExternalizerPipeline;
-
-  private Configuration configuration;
+  private PathTransformer pathTransformer;
 
   @Override
   public void handleEvent(Event event) {
@@ -75,14 +63,9 @@ public class PageIndexUpdateHandler implements EventHandler {
     log.info("Replication action {} occurred on {}", action.getType(), actionPath);
     resourceResolverProvider.resourceResolverConsumer(resourceResolver ->
         getSaasClient(resourceResolver, actionPath).ifPresent(client -> {
-          Map<String, Object> propertiesProto = getPropertiesPrototype(action, client);
-          if (configuration.indexUpdateHandler_enableAemExternalizer()) {
-            scheduleJobForPath(externalizer.publishLink(resourceResolver, actionPath), propertiesProto);
-          }
-          if (configuration.indexUpdateHandler_enableCustomPathExternalizerPipeline()) {
-            pathExternalizerPipeline.getExternalizedPaths(actionPath)
-                .forEach(s -> scheduleJobForPath(s, propertiesProto));
-          }
+          Map<String, Object> propertiesPrototype = getPropertiesPrototype(action, client);
+          pathTransformer.externalize(actionPath)
+              .forEach(s -> scheduleJobForPath(s, propertiesPrototype));
         }));
   }
 
@@ -154,24 +137,5 @@ public class PageIndexUpdateHandler implements EventHandler {
       return IndexUpdateAction.UPDATE;
     }
     return IndexUpdateAction.DELETE;
-  }
-
-  @Activate
-  @Modified
-  private void activate(Configuration configuration) {
-    this.configuration = configuration;
-  }
-
-  @ObjectClassDefinition(name = "Search as a Service - Index Update Event Listener",
-      description = "Replication event handler that trigger SaaS index update.")
-  public @interface Configuration {
-
-    @AttributeDefinition(name = "Enable Aem Externalizer",
-        description = "If enabled, an index update job, with page path externalized by the default AEM externalizer, will be scheduled.")
-    boolean indexUpdateHandler_enableAemExternalizer() default false;
-
-    @AttributeDefinition(name = "Enable Custom Path Externalizer Pipeline",
-        description = "If enabled, the page path will be externalized by the pipeline consisted PathExternalizer implementations. (It is preceded by the Day CQ Externalizer.)")
-    boolean indexUpdateHandler_enableCustomPathExternalizerPipeline() default false;
   }
 }

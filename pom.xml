@@ -32,7 +32,6 @@
         <module>ui.apps</module>
         <module>ui.apps.structure</module>
         <module>ui.config</module>
-        <module>ui.content</module>
         <module>it.tests</module>
         <module>ui.tests</module>
     </modules>
@@ -563,6 +562,22 @@
                 </pluginManagement>
             </build>
         </profile>
+
+        <profile>
+            <id>installSampleContent</id>
+            <modules>
+                <module>all</module>
+                <module>api</module>
+                <module>core</module>
+                <module>ui.frontend</module>
+                <module>ui.apps</module>
+                <module>ui.apps.structure</module>
+                <module>ui.config</module>
+                <module>ui.content</module>
+                <module>it.tests</module>
+                <module>ui.tests</module>
+            </modules>
+        </profile>
     </profiles>
 
 
@@ -633,6 +648,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.12.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.caconfig-mock-plugin</artifactId>
+                <version>1.3.2</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,9 +1,0 @@
-{
-  "scripts": [
-    "create path (rep:AuthorizableFolder) /home/users/system/saas",
-    "create service user saas-aem-module-service-user with path /home/users/system/saas",
-    "set ACL for saas-aem-module-service-user",
-    "allow jcr:read on /content",
-    "end"
-  ]
-}

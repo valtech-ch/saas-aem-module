@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.api.typeahead;
 
-import java.util.Map;
+import com.valtech.aem.saas.api.fulltextsearch.Filter;
+import java.util.Set;
 
 /**
  * Represents type ahead request payload.
@@ -27,6 +28,6 @@ public interface TypeaheadPayload {
    *
    * @return filter entries used for filtering typeahead results.
    */
-  Map<String, String> getFilterEntries();
+  Set<Filter> getFilters();
 
 }
