@@ -1,7 +1,7 @@
-package com.valtech.aem.saas.core.indexing;
+package com.valtech.aem.saas.core.resource;
 
 import com.day.cq.commons.Externalizer;
-import com.valtech.aem.saas.api.indexing.PathTransformer;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +21,12 @@ public class DefaultPathTransformer implements PathTransformer {
   private Externalizer externalizer;
 
   @Override
-  public List<String> externalize(SlingHttpServletRequest request, String path) {
-    return Collections.singletonList(externalizer.publishLink(request.getResourceResolver(), path));
+  public List<String> externalize(SlingHttpServletRequest request, String resourcePath) {
+    return Collections.singletonList(externalizer.publishLink(request.getResourceResolver(), resourcePath));
   }
 
   @Override
-  public String map(SlingHttpServletRequest request, String path) {
-    return externalizer.relativeLink(request, path);
+  public String map(SlingHttpServletRequest request, String resourcePath) {
+    return externalizer.relativeLink(request, resourcePath);
   }
 }

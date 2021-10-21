@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.indexing;
 
-import com.day.cq.commons.Externalizer;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
@@ -8,7 +7,7 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.indexing.PathTransformer;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,9 +46,6 @@ public class PageIndexUpdateHandler implements EventHandler {
 
   @Reference
   private ConfigurationResolver configurationResolver;
-
-  @Reference
-  private Externalizer externalizer;
 
   @Reference
   private ResourceResolverProvider resourceResolverProvider;

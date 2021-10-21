@@ -15,6 +15,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -40,13 +41,16 @@ class SearchImplTest {
   @Mock
   FulltextSearchConfigurationService fulltextSearchConfigurationService;
 
+  @Mock
+  PathTransformer pathTransformer;
+
   Search testee;
 
   @BeforeEach
   void setUp() {
     context.registerService(FulltextSearchConfigurationService.class, fulltextSearchConfigurationService);
     context.registerService(FulltextSearchService.class, fulltextSearchService);
-    context.registerInjectActivateService(new PathTransformerPipelineService());
+    context.registerService(PathTransformer.class, pathTransformer);
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
     context.create().page("/content/saas-aem-module/us");
     context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
