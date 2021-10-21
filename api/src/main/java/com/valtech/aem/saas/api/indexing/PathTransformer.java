@@ -2,11 +2,12 @@ package com.valtech.aem.saas.api.indexing;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.sling.api.SlingHttpServletRequest;
 
 /**
  * Service interface for externalizing resource path.
  */
-public interface PathExternalizer {
+public interface PathTransformer {
 
   /**
    * Gets a processed version of the passed path argument.
@@ -22,4 +23,6 @@ public interface PathExternalizer {
         .flatMap(List::stream)
         .collect(Collectors.toList());
   }
+
+  String map(SlingHttpServletRequest request, String path);
 }

@@ -12,40 +12,41 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(AemContextExtension.class)
-class PathExternalizerPipelineServiceTest {
+class PathTransformerPipelineServiceTest {
 
-  PathExternalizerPipeline testee;
+  PathTransformerPipeline testee;
 
   @Test
   void testGetExternalizedPaths(AemContext context) {
-    context.registerInjectActivateService(new BarQuxPathExternalizer(),
+    context.registerInjectActivateService(new BarQuxPathTransformer(),
         ImmutableMap.<String, Object>builder()
             .put("service.ranking", 2)
             .build());
-    context.registerInjectActivateService(new BarBazPathExternalizer(),
+    context.registerInjectActivateService(new BarBazPathTransformer(),
         ImmutableMap.<String, Object>builder()
             .put("service.ranking", 1)
             .build());
-    testee = context.registerInjectActivateService(new PathExternalizerPipelineService());
+    testee = context.registerInjectActivateService(new PathTransformerPipelineService());
     List<String> results = testee.getExternalizedPaths("foo");
     assertThat(results, notNullValue());
     assertThat(results.size(), Is.is(3));
+    assertThat(testee.getMappedPath(context.request(), "foo"), Is.is("baz"));
   }
 
   @Test
   void testGetExternalizedPaths_reversedOrder(AemContext context) {
-    context.registerInjectActivateService(new BarQuxPathExternalizer(),
+    context.registerInjectActivateService(new BarQuxPathTransformer(),
         ImmutableMap.<String, Object>builder()
             .put("service.ranking", 1)
             .build());
-    context.registerInjectActivateService(new BarBazPathExternalizer(),
+    context.registerInjectActivateService(new BarBazPathTransformer(),
         ImmutableMap.<String, Object>builder()
             .put("service.ranking", 2)
             .build());
-    testee = context.registerInjectActivateService(new PathExternalizerPipelineService());
+    testee = context.registerInjectActivateService(new PathTransformerPipelineService());
     List<String> results = testee.getExternalizedPaths("foo");
     assertThat(results, notNullValue());
     assertThat(results.size(), Is.is(2));
+    assertThat(testee.getMappedPath(context.request(), "foo"), Is.is("bar"));
   }
-
 }

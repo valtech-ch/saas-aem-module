@@ -81,7 +81,7 @@ class PageIndexUpdateHandlerTest {
   Resource pageResource;
 
   @Mock
-  PathExternalizerPipeline pathExternalizerPipeline;
+  PathTransformerPipeline pathTransformerPipeline;
 
   @Mock
   Event event;
@@ -95,7 +95,7 @@ class PageIndexUpdateHandlerTest {
     context.registerService(Externalizer.class, externalizer);
     context.registerService(ResourceResolverFactory.class, resourceResolverFactory);
     context.registerInjectActivateService(new ResourceResolverProviderService());
-    context.registerService(PathExternalizerPipeline.class, pathExternalizerPipeline);
+    context.registerService(PathTransformerPipeline.class, pathTransformerPipeline);
   }
 
   @Test
@@ -259,7 +259,7 @@ class PageIndexUpdateHandlerTest {
     testee.handleEvent(event);
     verify(externalizer, times(1)).publishLink(any(ResourceResolver.class), anyString());
     verify(jobManager, times(1)).createJob(anyString());
-    verify(pathExternalizerPipeline, never()).getExternalizedPaths(anyString());
+    verify(pathTransformerPipeline, never()).getExternalizedPaths(anyString());
   }
 
   @Test
@@ -285,10 +285,10 @@ class PageIndexUpdateHandlerTest {
     when(jobManager.createJob(anyString())).thenReturn(jobBuilder);
     when(jobBuilder.properties(anyMap())).thenReturn(jobBuilder);
     when(jobBuilder.add(anyList())).thenReturn(job);
-    when(pathExternalizerPipeline.getExternalizedPaths(anyString())).thenReturn(Arrays.asList("foo", "bar"));
+    when(pathTransformerPipeline.getExternalizedPaths(anyString())).thenReturn(Arrays.asList("foo", "bar"));
     testee.handleEvent(event);
     verify(externalizer, never()).publishLink(any(ResourceResolver.class), anyString());
-    verify(pathExternalizerPipeline, times(1)).getExternalizedPaths(anyString());
+    verify(pathTransformerPipeline, times(1)).getExternalizedPaths(anyString());
     verify(jobManager, times(2)).createJob(anyString());
   }
 }

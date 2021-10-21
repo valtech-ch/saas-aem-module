@@ -61,7 +61,7 @@ public class PageIndexUpdateHandler implements EventHandler {
   private ResourceResolverProvider resourceResolverProvider;
 
   @Reference
-  private PathExternalizerPipeline pathExternalizerPipeline;
+  private PathTransformerPipeline pathTransformerPipeline;
 
   private Configuration configuration;
 
@@ -80,7 +80,7 @@ public class PageIndexUpdateHandler implements EventHandler {
             scheduleJobForPath(externalizer.publishLink(resourceResolver, actionPath), propertiesProto);
           }
           if (configuration.indexUpdateHandler_enableCustomPathExternalizerPipeline()) {
-            pathExternalizerPipeline.getExternalizedPaths(actionPath)
+            pathTransformerPipeline.getExternalizedPaths(actionPath)
                 .forEach(s -> scheduleJobForPath(s, propertiesProto));
           }
         }));
@@ -168,10 +168,10 @@ public class PageIndexUpdateHandler implements EventHandler {
 
     @AttributeDefinition(name = "Enable Aem Externalizer",
         description = "If enabled, an index update job, with page path externalized by the default AEM externalizer, will be scheduled.")
-    boolean indexUpdateHandler_enableAemExternalizer() default false;
+    boolean indexUpdateHandler_enableAemExternalizer() default false; // NOSONAR
 
     @AttributeDefinition(name = "Enable Custom Path Externalizer Pipeline",
         description = "If enabled, the page path will be externalized by the pipeline consisted PathExternalizer implementations. (It is preceded by the Day CQ Externalizer.)")
-    boolean indexUpdateHandler_enableCustomPathExternalizerPipeline() default false;
+    boolean indexUpdateHandler_enableCustomPathExternalizerPipeline() default false; // NOSONAR
   }
 }

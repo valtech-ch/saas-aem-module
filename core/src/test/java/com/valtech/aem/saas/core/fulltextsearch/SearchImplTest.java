@@ -1,6 +1,8 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -13,6 +15,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
+import com.valtech.aem.saas.core.indexing.PathTransformerPipelineService;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -44,6 +47,7 @@ class SearchImplTest {
   void setUp() {
     context.registerService(FulltextSearchConfigurationService.class, fulltextSearchConfigurationService);
     context.registerService(FulltextSearchService.class, fulltextSearchService);
+    context.registerInjectActivateService(new PathTransformerPipelineService());
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
     context.create().page("/content/saas-aem-module/us");
     context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
@@ -68,6 +72,7 @@ class SearchImplTest {
     assertThat(testee.getFilters(), emptyCollectionOf(Filter.class));
     assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
     assertThat(testee.getTerm(), is("bar"));
+    assertThat(testee.getSearchTabs(), not(empty()));
   }
 
   @Test

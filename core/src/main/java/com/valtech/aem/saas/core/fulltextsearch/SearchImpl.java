@@ -14,6 +14,7 @@ import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.indexing.PathTransformerPipeline;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
@@ -42,8 +42,8 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
+import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
 /**
@@ -70,8 +70,11 @@ public class SearchImpl implements Search {
   @Self
   private SlingHttpServletRequest request;
 
-  @SlingObject
-  private ResourceResolver resourceResolver;
+  @Self
+  private Resource resource;
+
+  @OSGiService
+  private PathTransformerPipeline pathTransformerPipeline;
 
   @JsonIgnore
   @Getter
@@ -158,8 +161,7 @@ public class SearchImpl implements Search {
 
   @Override
   public List<String> getSearchTabs() {
-    return Optional.ofNullable(request)
-        .map(SlingHttpServletRequest::getResource)
+    return Optional.ofNullable(getCurrentResource())
         .map(r -> r.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
@@ -178,7 +180,7 @@ public class SearchImpl implements Search {
   }
 
   private List<Filter> getCaFilters() {
-    return Optional.ofNullable(request.getResource().adaptTo(ConfigurationBuilder.class))
+    return Optional.ofNullable(getCurrentResource().adaptTo(ConfigurationBuilder.class))
         .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
         .map(SearchConfiguration::searchFilters)
         .map(Arrays::stream)
@@ -191,7 +193,7 @@ public class SearchImpl implements Search {
   private String getSearchTabUrl(@NonNull Resource searchTab) {
     try {
       return new URIBuilder(String.format("%s.%s.%s",
-          resourceResolver.map(request, searchTab.getPath()),
+          pathTransformerPipeline.getMappedPath(request, searchTab.getPath()),
           ExporterConstants.SLING_MODEL_SELECTOR,
           ExporterConstants.SLING_MODEL_EXTENSION))
           .setCustomQuery(request.getQueryString())
@@ -200,5 +202,9 @@ public class SearchImpl implements Search {
       log.error("Failed to create search prepared url to search tab resource.");
     }
     return null;
+  }
+
+  private Resource getCurrentResource() {
+    return Optional.ofNullable(request).map(SlingHttpServletRequest::getResource).orElse(resource);
   }
 }
