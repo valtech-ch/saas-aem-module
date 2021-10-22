@@ -1,4 +1,5 @@
 {
+    "extends": "@valtech-ch/eslint-config/tsconfig",
     "compilerOptions": {
         "target": "es5",
         "module": "es6",
