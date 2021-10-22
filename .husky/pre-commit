@@ -1,0 +1,5 @@
+#!/bin/sh
+cd ./ui.frontend
+
+npm run lint-staged
+npm run test

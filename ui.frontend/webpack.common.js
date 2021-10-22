@@ -30,17 +30,11 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.[tj]sx?$/,
                 exclude: /node_modules/,
                 use: [
                     {
-                        options: {
-                            eslintPath: require.resolve('eslint'),
-                        },
-                        loader: require.resolve('eslint-loader'),
-                    },
-                    {
-                        loader: 'ts-loader'
+                        loader: 'babel-loader'
                     },
                     {
                         loader: 'glob-import-loader',
