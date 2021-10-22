@@ -34,7 +34,10 @@
     <artifactId>saas.ui.frontend</artifactId>
     <packaging>pom</packaging>
     <name>Valtech AEM SAAS - UI Frontend</name>
-
+ 
+    <properties>
+        <sonar.sources>src</sonar.sources>
+    </properties>
 
     <!-- ====================================================================== -->
     <!-- B U I L D   D E F I N I T I O N                                        -->
