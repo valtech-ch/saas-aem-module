@@ -1,16 +1,13 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.Search"></sly>
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
      data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
-<div class="saas-aem-module-search">
+<search data-sly-test="${wcmmode.disabled || wcmmode.preview}"
+        data-search-config="${model.configJson}"></search>
+<div data-sly-test="${wcmmode.edit}"
+     class="saas-aem-module-search">
   <h2 class="saas-aem-module-search__title">${model.title @ i18n}</h2>
   <form class="saas-aem-module-search__form"
-        id="searchForm"
-        action="${currentPage.path @ extension='html'}">
-    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
-    <input data-sly-test="${wcmmode.disabled}"
-           type="hidden"
-           name="wcmmode"
-           value="disabled">
+        id="searchForm">
     <div class="saas-aem-module-search__field">
       <input class="saas-aem-module-search__input"
              type="search"

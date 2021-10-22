@@ -1,9 +1,9 @@
 package com.valtech.aem.saas.core.common.request;
 
-import com.day.cq.i18n.I18n;
 import com.day.cq.wcm.api.Page;
+import java.util.Locale;
 import java.util.Optional;
-import java.util.ResourceBundle;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
@@ -17,12 +17,9 @@ public class RequestWrapper {
   @Self
   private SlingHttpServletRequest request;
 
+  @Getter
   @ScriptVariable
   private Page currentPage;
-
-  public Optional<Page> getCurrentPage() {
-    return Optional.ofNullable(currentPage);
-  }
 
   public Optional<String> getParameter(String name) {
     return Optional.ofNullable(request.getParameter(name)).filter(StringUtils::isNotBlank);
@@ -32,16 +29,8 @@ public class RequestWrapper {
     return Optional.ofNullable(request.getRequestPathInfo().getSuffix()).filter(StringUtils::isNotBlank);
   }
 
-  public I18n getI18n() {
-    return getResourceBundle()
-        .map(I18n::new)
-        .orElse(new I18n(request));
-  }
-
-  private Optional<ResourceBundle> getResourceBundle() {
-    return getCurrentPage()
-        .map(page -> page.getLanguage(false))
-        .map(request::getResourceBundle);
+  public Locale getLocale() {
+    return currentPage.getLanguage(false);
   }
 
 }

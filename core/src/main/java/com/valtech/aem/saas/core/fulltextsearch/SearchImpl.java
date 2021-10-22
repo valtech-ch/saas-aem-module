@@ -9,17 +9,20 @@ import com.day.cq.i18n.I18n;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.gson.Gson;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -76,6 +79,9 @@ public class SearchImpl implements Search {
   @OSGiService
   private PathTransformer pathTransformer;
 
+  @OSGiService
+  protected I18nProvider i18nProvider;
+
   @JsonIgnore
   @Getter
   @ValueMapValue
@@ -90,13 +96,25 @@ public class SearchImpl implements Search {
   @Getter
   @JsonInclude(Include.NON_EMPTY)
   @ValueMapValue
-  @Default(values = I18N_SEARCH_INPUT_PLACEHOLDER)
   private String searchFieldPlaceholderText;
 
   @ChildResource
   private List<Filter> filters;
 
   private Set<Filter> mergedFilters;
+
+  @Getter
+  private String searchButtonText;
+
+  @Getter
+  private String loadMoreButtonText;
+
+  @Getter
+  private List<String> searchTabs;
+
+  @JsonIgnore
+  @Getter
+  private String configJson;
 
   @Getter
   @JsonIgnore
@@ -106,18 +124,31 @@ public class SearchImpl implements Search {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
-  private I18n i18n;
-
   @PostConstruct
   private void init() {
     if (request != null) {
       Optional.ofNullable(request.adaptTo(RequestWrapper.class))
           .ifPresent(requestWrapper -> {
             requestWrapper.getParameter(SearchTabImpl.SEARCH_TERM).ifPresent(t -> term = t);
-            i18n = requestWrapper.getI18n();
-            mergedFilters = getMergedFilters();
+            initSearch(request.getResource(), requestWrapper.getLocale());
           });
+    } else if (resource != null) {
+      Optional.ofNullable(resource.adaptTo(ResourceWrapper.class))
+          .ifPresent(resourceWrapper -> initSearch(resource, resourceWrapper.getLocale()));
     }
+  }
+
+  private void initSearch(Resource resource, Locale locale) {
+    I18n i18n = i18nProvider.getI18n(locale);
+    mergedFilters = getMergedFilters(resource);
+    searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText) ? searchFieldPlaceholderText
+        : i18n.get(I18N_SEARCH_INPUT_PLACEHOLDER);
+    searchButtonText = getSearchButtonText(i18n);
+    loadMoreButtonText = getLoadMoreButtonText(i18n);
+    if (request != null) {
+      searchTabs = getSearchTabs(resource);
+    }
+    configJson = getSearchConfigJson();
   }
 
   @NonNull
@@ -140,15 +171,13 @@ public class SearchImpl implements Search {
     return mergedFilters;
   }
 
-  @Override
-  public String getSearchButtonText() {
+  private String getSearchButtonText(I18n i18n) {
     return Optional.ofNullable(i18n)
         .map(t -> t.get(I18N_KEY_SEARCH_BUTTON_LABEL))
         .orElse(StringUtils.EMPTY);
   }
 
-  @Override
-  public String getLoadMoreButtonText() {
+  private String getLoadMoreButtonText(I18n i18n) {
     return Optional.ofNullable(i18n)
         .map(t -> t.get(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL))
         .orElse(StringUtils.EMPTY);
@@ -159,10 +188,8 @@ public class SearchImpl implements Search {
     return AUTOCOMPLETE_THRESHOLD;
   }
 
-  @Override
-  public List<String> getSearchTabs() {
-    return Optional.ofNullable(getCurrentResource())
-        .map(r -> r.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
+  private List<String> getSearchTabs(Resource searchResource) {
+    return Optional.ofNullable(searchResource.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
         .orElse(Stream.empty())
@@ -171,16 +198,27 @@ public class SearchImpl implements Search {
         .collect(Collectors.toList());
   }
 
-  private Set<Filter> getMergedFilters() {
-    Set<Filter> distinctFilters = new HashSet<>(getCaFilters());
+  private String getSearchConfigJson() {
+    return new Gson().toJson(SearchConfigurationJson.builder()
+        .title(title)
+        .searchButtonText(searchButtonText)
+        .autocompleteTriggerThreshold(getAutocompleteTriggerThreshold())
+        .loadMoreButtonText(loadMoreButtonText)
+        .searchTabs(searchTabs)
+        .searchFieldPlaceholderText(searchFieldPlaceholderText)
+        .build());
+  }
+
+  private Set<Filter> getMergedFilters(Resource resource) {
+    Set<Filter> distinctFilters = new HashSet<>(getCaFilters(resource));
     if (filters != null) {
       distinctFilters.addAll(filters);
     }
     return distinctFilters;
   }
 
-  private List<Filter> getCaFilters() {
-    return Optional.ofNullable(getCurrentResource().adaptTo(ConfigurationBuilder.class))
+  private List<Filter> getCaFilters(Resource resource) {
+    return Optional.ofNullable(resource.adaptTo(ConfigurationBuilder.class))
         .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
         .map(SearchConfiguration::searchFilters)
         .map(Arrays::stream)
@@ -202,9 +240,5 @@ public class SearchImpl implements Search {
       log.error("Failed to create search prepared url to search tab resource.");
     }
     return null;
-  }
-
-  private Resource getCurrentResource() {
-    return Optional.ofNullable(request).map(SlingHttpServletRequest::getResource).orElse(resource);
   }
 }
