@@ -2,6 +2,8 @@ package com.valtech.aem.saas.core.http.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,10 +30,13 @@ public final class HttpResponseParser {
    * @return response content string.
    */
   public String getContentString() {
-    try {
-      return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8.name());
-    } catch (IOException e) {
-      log.error("IOException occurred while trying to parse the response {}", response);
+    InputStream contentInputStream = getContentInputStream();
+    if (contentInputStream != null) {
+      try {
+        return IOUtils.toString(contentInputStream, StandardCharsets.UTF_8.name());
+      } catch (IOException e) {
+        log.error("IOException occurred while trying to parse the response {}", response);
+      }
     }
     return StringUtils.EMPTY;
   }
@@ -57,10 +62,16 @@ public final class HttpResponseParser {
 
   private InputStream getContentInputStream() {
     try {
-      return response.getEntity().getContent();
+      return getCopy(response.getEntity().getContent());
     } catch (IOException e) {
       log.error("Error while fetching content input stream.", e);
     }
     return null;
+  }
+
+  private InputStream getCopy(InputStream inputStream) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    IOUtils.copy(inputStream, baos);
+    return new ByteArrayInputStream(baos.toByteArray());
   }
 }
