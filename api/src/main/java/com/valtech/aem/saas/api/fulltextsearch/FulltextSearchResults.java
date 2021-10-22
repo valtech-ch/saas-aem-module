@@ -20,4 +20,5 @@ public class FulltextSearchResults {
   @Singular
   List<Result> results;
 
+  Suggestion suggestion;
 }

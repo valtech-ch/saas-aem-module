@@ -1,0 +1,31 @@
+{
+  "spellcheck": {
+    "suggestions": [
+      "fooo bar",
+      {
+        "numFound": 1,
+        "startOffset": 0,
+        "endOffset": 5,
+        "origFreq": 0,
+        "suggestion": [
+          {
+            "word": "foo",
+            "freq": 16
+          }
+        ]
+      }
+    ],
+    "correctlySpelled": true,
+    "collations": [
+      "collation",
+      {
+        "collationQuery": "foo bar",
+        "hits": 0,
+        "misspellingsAndCorrections": [
+          "fooo",
+          "foo"
+        ]
+      }
+    ]
+  }
+}

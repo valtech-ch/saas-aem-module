@@ -72,12 +72,6 @@
                         </embedded>
                         <embedded>
                             <groupId>com.valtech.aem</groupId>
-                            <artifactId>saas.ui.content</artifactId>
-                            <type>zip</type>
-                            <target>/apps/saas-aem-module-packages/content/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.valtech.aem</groupId>
                             <artifactId>saas.ui.config</artifactId>
                             <type>zip</type>
                             <target>/apps/saas-aem-module-packages/application/install</target>
@@ -186,12 +180,6 @@
         <dependency>
             <groupId>com.valtech.aem</groupId>
             <artifactId>saas.ui.apps</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.valtech.aem</groupId>
-            <artifactId>saas.ui.content</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

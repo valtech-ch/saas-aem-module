@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
+import com.valtech.aem.saas.core.fulltextsearch.FilterImpl;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
@@ -60,7 +61,7 @@ class DefaultTypeaheadServiceTest {
     testImproperPayload(service, noLanguagePayload);
 
     TypeaheadPayload forbiddenFilterFieldsPayload = DefaultTypeaheadPayload.builder().text("foo bar")
-        .filterEntry("forbiddenKey", "val").build();
+        .filter(new FilterImpl("forbiddenKey", "val")).build();
     testImproperPayload(service, forbiddenFilterFieldsPayload);
 
     TypeaheadPayload properPayload = getProperPayload();
@@ -94,7 +95,7 @@ class DefaultTypeaheadServiceTest {
     return DefaultTypeaheadPayload.builder()
         .text("foo bar")
         .language("de")
-        .filterEntry(SAMPLE_ALLOWED_FIELD, "val")
+        .filter(new FilterImpl(SAMPLE_ALLOWED_FIELD, "val"))
         .build();
   }
 

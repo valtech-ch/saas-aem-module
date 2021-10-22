@@ -21,4 +21,6 @@ public class Result {
 
   @JsonInclude(Include.NON_EMPTY)
   String description;
+
+  boolean bestBet;
 }

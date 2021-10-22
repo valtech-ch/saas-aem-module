@@ -3,4 +3,5 @@
     <filter root="/apps/saas-aem-module/clientlibs"/>
     <filter root="/apps/saas-aem-module/components"/>
     <filter root="/apps/saas-aem-module/i18n"/>
+    <filter root="/apps/saas-aem-module/shared"/>
 </workspaceFilter>
