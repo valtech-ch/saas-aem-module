@@ -1,2 +1,10 @@
 ../ui.apps/
 ./src/main/webpack/tests/
+node_modules/
+dist/
+webpack.*.js
+clientlib.config.js
+jest.config.js
+.eslintrc.js
+babel.config.js
+coverage/
