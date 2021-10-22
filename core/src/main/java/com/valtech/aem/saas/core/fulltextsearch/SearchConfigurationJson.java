@@ -7,7 +7,6 @@ import lombok.Value;
 /**
  * Pojo for serialization of search cmp configuration.
  */
-@SuppressWarnings("all")
 @Value
 @Builder
 public class SearchConfigurationJson {
