@@ -7,6 +7,7 @@ import lombok.Value;
 /**
  * Pojo for serialization of search cmp configuration.
  */
+@SuppressWarnings("common-java:InsufficientBranchCoverage")
 @Value
 @Builder
 public class SearchConfigurationJson {
