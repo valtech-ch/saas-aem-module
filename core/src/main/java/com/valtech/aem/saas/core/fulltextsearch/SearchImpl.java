@@ -9,7 +9,8 @@ import com.day.cq.i18n.I18n;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
@@ -199,14 +200,12 @@ public class SearchImpl implements Search {
   }
 
   private String getSearchConfigJson() {
-    return new Gson().toJson(SearchConfigurationJson.builder()
-        .title(title)
-        .searchButtonText(searchButtonText)
-        .autocompleteTriggerThreshold(getAutocompleteTriggerThreshold())
-        .loadMoreButtonText(loadMoreButtonText)
-        .searchTabs(searchTabs)
-        .searchFieldPlaceholderText(searchFieldPlaceholderText)
-        .build());
+    try {
+      return new ObjectMapper().writeValueAsString(this);
+    } catch (JsonProcessingException e) {
+      log.error("Failed to serialize search config to json.", e);
+    }
+    return StringUtils.EMPTY;
   }
 
   private Set<Filter> getMergedFilters(Resource resource) {
