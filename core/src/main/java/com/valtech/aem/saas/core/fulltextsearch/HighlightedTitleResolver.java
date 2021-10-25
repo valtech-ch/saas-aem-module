@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.http.response.SearchResult;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +14,8 @@ public final class HighlightedTitleResolver {
 
   private static final String TITLE_PREFIX = "title_";
   private static final String HIGHLIGHTED_ITEMS_DELIMITER = " ";
-  private final SearchResult searchResult;
-  private final Highlighting highlighting;
+  private final SearchResultDto searchResultDto;
+  private final HighlightingDto highlightingDto;
 
   /**
    * Returns the result's description, highlighted or not, depending on the available data and highlighting flag's
@@ -24,14 +24,14 @@ public final class HighlightedTitleResolver {
    * @return the result's description.
    */
   public String getTitle() {
-    if (StringUtils.isBlank(searchResult.getId())) {
-      return searchResult.getTitle();
+    if (StringUtils.isBlank(searchResultDto.getId())) {
+      return searchResultDto.getTitle();
     }
-    return Optional.ofNullable(highlighting.getItems().get(searchResult.getId()))
-        .map(stringListMap -> stringListMap.get(TITLE_PREFIX + searchResult.getLanguage()))
+    return Optional.ofNullable(highlightingDto.getItems().get(searchResultDto.getId()))
+        .map(stringListMap -> stringListMap.get(TITLE_PREFIX + searchResultDto.getLanguage()))
         .map(list -> String.join(HIGHLIGHTED_ITEMS_DELIMITER, list))
         .filter(StringUtils::isNotBlank)
-        .orElse(searchResult.getTitle());
+        .orElse(searchResultDto.getTitle());
   }
 
 }

@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.indexing;
 
-import com.valtech.aem.saas.api.indexing.IndexUpdateResponse;
+import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class DeleteStrategy implements IndexUpdateJobProcessingStrategy {
 
   @Override
   public JobResult process(String client, String url, String repositoryPath) {
-    Optional<IndexUpdateResponse> response = indexUpdateService.deleteIndexedUrl(client, url, repositoryPath);
+    Optional<IndexUpdateResponseDTO> response = indexUpdateService.deleteIndexedUrl(client, url, repositoryPath);
     if (response.isPresent()) {
       log.debug("Index delete successful: {}", response.get());
       return JobResult.OK;

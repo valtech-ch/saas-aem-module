@@ -4,8 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
-import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.http.response.SearchResult;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,62 +26,62 @@ class HighlightedTitleResolverTest {
   private static final String HIGHLIGHTED_TITLE = "foo <em>bar</em> baz";
 
   @Mock
-  SearchResult searchResult;
+  SearchResultDto searchResultDto;
 
   @Mock
-  Highlighting highlighting;
+  HighlightingDto highlightingDto;
 
   @BeforeEach
   void setUp() {
-    when(searchResult.getTitle()).thenReturn(SEARCH_RESULT_TITLE);
+    when(searchResultDto.getTitle()).thenReturn(SEARCH_RESULT_TITLE);
   }
 
   @Test
   void getTitle_noHighlightEntryAvailable() {
     setupInput_noHighlightEntryAvailable();
-    assertThat(new HighlightedTitleResolver(searchResult, highlighting).getTitle(), is(SEARCH_RESULT_TITLE));
+    assertThat(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle(), is(SEARCH_RESULT_TITLE));
   }
 
   @Test
   void getTitle_noResultIdAvailable() {
     setupInput_noResultIdAvailable();
-    assertThat(new HighlightedTitleResolver(searchResult, highlighting).getTitle(), is(SEARCH_RESULT_TITLE));
+    assertThat(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle(), is(SEARCH_RESULT_TITLE));
   }
 
   @Test
   void getTitle_titleInHighlightingEntryAvailable() {
-    when(searchResult.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
+    when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_titleInHighlightingEntryAvailable();
-    assertThat(new HighlightedTitleResolver(searchResult, highlighting).getTitle(), is(HIGHLIGHTED_TITLE));
+    assertThat(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle(), is(HIGHLIGHTED_TITLE));
   }
 
   @Test
   void getTitle_noTitleInHighlightingEntryAvailable() {
-    when(searchResult.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
+    when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_noTitleInHighlightingEntryAvailable();
-    assertThat(new HighlightedTitleResolver(searchResult, highlighting).getTitle(), is(SEARCH_RESULT_TITLE));
+    assertThat(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle(), is(SEARCH_RESULT_TITLE));
   }
 
   private void setupInput_noHighlightEntryAvailable() {
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    when(highlighting.getItems()).thenReturn(Collections.emptyMap());
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(highlightingDto.getItems()).thenReturn(Collections.emptyMap());
   }
 
   private void setupInput_noResultIdAvailable() {
-    when(searchResult.getId()).thenReturn(StringUtils.EMPTY);
+    when(searchResultDto.getId()).thenReturn(StringUtils.EMPTY);
   }
 
   private void setupInput_noTitleInHighlightingEntryAvailable() {
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("title_en", Collections.emptyList());
-    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
+    when(highlightingDto.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 
   private void setupInput_titleInHighlightingEntryAvailable() {
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("title_en", Collections.singletonList(HIGHLIGHTED_TITLE));
-    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
+    when(highlightingDto.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 }

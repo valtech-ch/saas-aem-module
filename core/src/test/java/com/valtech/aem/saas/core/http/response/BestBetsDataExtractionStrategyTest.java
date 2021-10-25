@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.bestbets.BestBet;
+import com.valtech.aem.saas.api.bestbets.dto.BestBetDTO;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +20,7 @@ class BestBetsDataExtractionStrategyTest {
     BestBetsDataExtractionStrategy strategy = new BestBetsDataExtractionStrategy();
     Assertions.assertThrows(UnsupportedOperationException.class, strategy::propertyName);
     assertThat(strategy.getData(new JsonArray()).isPresent(), is(true));
-    Optional<List<BestBet>> bestBets = strategy.getData(new JsonParser().parse(
+    Optional<List<BestBetDTO>> bestBets = strategy.getData(new JsonParser().parse(
             new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
         .getAsJsonArray());
     assertThat(bestBets.isPresent(), is(true));

@@ -1,18 +1,18 @@
 package com.valtech.aem.saas.core.autocomplete;
 
-import static com.valtech.aem.saas.core.fulltextsearch.SearchImpl.RESOURCE_TYPE;
+import static com.valtech.aem.saas.core.fulltextsearch.SearchModelImpl.RESOURCE_TYPE;
 
 import com.day.cq.wcm.api.Page;
 import com.google.gson.Gson;
 import com.valtech.aem.saas.api.autocomplete.AutocompleteResponse;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.Search;
-import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
+import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.typeahead.dto.TypeaheadPayloadDTO;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.response.JsonResponseCommitter;
-import com.valtech.aem.saas.core.fulltextsearch.SearchTabImpl;
-import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadPayload;
+import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
+import com.valtech.aem.saas.api.typeahead.dto.DefaultTypeaheadPayloadDTO;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -54,14 +54,14 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
     if (!response.isCommitted()) {
       Optional.ofNullable(request.adaptTo(RequestWrapper.class))
           .ifPresent(requestWrapper ->
-              requestWrapper.getParameter(SearchTabImpl.SEARCH_TERM).ifPresent(text -> {
+              requestWrapper.getParameter(SearchTabModelImpl.SEARCH_TERM).ifPresent(text -> {
                 SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
                     .as(SearchConfiguration.class);
                 if (StringUtils.isNotBlank(searchConfiguration.index())) {
-                  TypeaheadPayload payload = DefaultTypeaheadPayload.builder()
+                  TypeaheadPayloadDTO payload = DefaultTypeaheadPayloadDTO.builder()
                       .text(text)
                       .language(getLanguage())
-                      .filters(getSearch().map(Search::getFilters).orElse(Collections.emptySet()))
+                      .filters(getSearch().map(SearchModel::getFilters).orElse(Collections.emptySet()))
                       .build();
                   List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
                   new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));
@@ -70,8 +70,8 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
     }
   }
 
-  private Optional<Search> getSearch() {
-    return Optional.ofNullable(request.getResource().adaptTo(Search.class));
+  private Optional<SearchModel> getSearch() {
+    return Optional.ofNullable(request.getResource().adaptTo(SearchModel.class));
   }
 
   private String getLanguage() {

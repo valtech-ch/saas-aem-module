@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.http.request;
 
+import com.valtech.aem.saas.api.request.SearchRequest;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;

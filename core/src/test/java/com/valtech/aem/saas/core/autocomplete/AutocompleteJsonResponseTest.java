@@ -11,10 +11,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
+import com.valtech.aem.saas.api.typeahead.dto.TypeaheadPayloadDTO;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
-import com.valtech.aem.saas.core.fulltextsearch.SearchTabImpl;
+import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -66,25 +66,25 @@ class AutocompleteJsonResponseTest {
     adaptRequest(context.request());
     testAdaptable();
     assertThat(testee, notNullValue());
-    verify(typeaheadService, never()).getResults(anyString(), any(TypeaheadPayload.class));
+    verify(typeaheadService, never()).getResults(anyString(), any(TypeaheadPayloadDTO.class));
   }
 
   @Test
   void testAutocomplete_noIndexConfigured() {
-    context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "foo");
+    context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "foo");
     adaptRequest(context.request());
     testAdaptable();
-    verify(typeaheadService, never()).getResults(anyString(), any(TypeaheadPayload.class));
+    verify(typeaheadService, never()).getResults(anyString(), any(TypeaheadPayloadDTO.class));
   }
 
   @Test
   void testAutocomplete() {
-    context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "foo");
+    context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "foo");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "bar");
     adaptRequest(context.request());
     testAdaptable();
-    verify(typeaheadService, times(1)).getResults(anyString(), any(TypeaheadPayload.class));
+    verify(typeaheadService, times(1)).getResults(anyString(), any(TypeaheadPayloadDTO.class));
   }
 
   private void testAdaptable() {

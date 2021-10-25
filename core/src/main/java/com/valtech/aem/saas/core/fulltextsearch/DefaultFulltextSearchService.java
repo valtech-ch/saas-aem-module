@@ -1,23 +1,26 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchResults;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.Result;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchPayloadDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
+import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
+import com.valtech.aem.saas.api.query.Query;
 import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
+import com.valtech.aem.saas.core.fulltextsearch.dto.DefaultFulltextSearchResultsDTO;
+import com.valtech.aem.saas.core.fulltextsearch.dto.DefaultResultDTO;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
-import com.valtech.aem.saas.core.http.response.FallbackHighlighting;
-import com.valtech.aem.saas.core.http.response.Highlighting;
 import com.valtech.aem.saas.core.http.response.HighlightingDataExtractionStrategy;
-import com.valtech.aem.saas.core.http.response.ResponseBody;
 import com.valtech.aem.saas.core.http.response.ResponseBodyDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.ResponseHeaderDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
-import com.valtech.aem.saas.core.http.response.SearchResult;
 import com.valtech.aem.saas.core.http.response.SuggestionDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.dto.FallbackHighlightingDto;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
+import com.valtech.aem.saas.core.http.response.dto.ResponseBodyDto;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
 import com.valtech.aem.saas.core.util.LoggedOptional;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -57,12 +61,12 @@ public class DefaultFulltextSearchService implements
   }
 
   @Override
-  public Optional<FulltextSearchResults> getResults(@NonNull String index,
-      @NonNull FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload,
+  public Optional<FulltextSearchResultsDTO> getResults(@NonNull String index,
+      @NonNull FulltextSearchPayloadDTO fulltextSearchPayloadDto,
       boolean enableAutoSuggest,
       boolean enableBestBets) {
     SaasIndexValidator.getInstance().validate(index);
-    String requestUrl = getRequestUrl(index, fulltextSearchGetRequestPayload);
+    String requestUrl = getRequestUrl(index, fulltextSearchPayloadDto);
     log.debug("Search GET Request: {}", requestUrl);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
     if (searchResponse.isPresent()) {
@@ -72,26 +76,51 @@ public class DefaultFulltextSearchService implements
     return Optional.empty();
   }
 
-  private String getRequestUrl(String index, FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload) {
-    return String.format("%s%s",
-        getApiUrl(index),
-        fulltextSearchGetRequestPayload.getPayload());
+  private String createQueryString(FulltextSearchPayloadDTO fulltextSearchPayloadDto) {
+    if (validate(fulltextSearchPayloadDto)) {
+      return GetQueryStringConstructor.builder()
+          .query(fulltextSearchPayloadDto.getTermQuery())
+          .query(fulltextSearchPayloadDto.getLanguageQuery())
+          .queries(fulltextSearchPayloadDto.getOptionalQueries())
+          .build()
+          .getQueryString();
+    }
+    throw new IllegalStateException("Payload is not valid.");
   }
 
-  private Optional<FulltextSearchResults> getFulltextSearchResults(SearchResponse searchResponse,
+  private boolean validate(FulltextSearchPayloadDTO fulltextSearchPayloadDto) {
+    return isNotEmpty(fulltextSearchPayloadDto.getTermQuery()) && isNotEmpty(
+        fulltextSearchPayloadDto.getLanguageQuery());
+  }
+
+  private boolean isNotEmpty(Query query) {
+    return Optional.ofNullable(query)
+        .map(Query::getEntries)
+        .filter(CollectionUtils::isNotEmpty)
+        .isPresent();
+  }
+
+
+  private String getRequestUrl(String index, FulltextSearchPayloadDTO fulltextSearchPayloadDto) {
+    return String.format("%s%s",
+        getApiUrl(index),
+        createQueryString(fulltextSearchPayloadDto));
+  }
+
+  private Optional<FulltextSearchResultsDTO> getFulltextSearchResults(SearchResponse searchResponse,
       boolean enableAutoSuggest,
       boolean enableBestBets) {
-    Optional<ResponseBody> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
+    Optional<ResponseBodyDto> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
     if (responseBody.isPresent()) {
-      Highlighting highlighting = searchResponse.get(new HighlightingDataExtractionStrategy())
-          .orElse(FallbackHighlighting.getInstance());
-      Stream<Result> results = getProcessedResults(responseBody.get().getDocs(), highlighting);
+      HighlightingDto highlightingDto = searchResponse.get(new HighlightingDataExtractionStrategy())
+          .orElse(FallbackHighlightingDto.getInstance());
+      Stream<DefaultResultDTO> results = getProcessedResults(responseBody.get().getDocs(), highlightingDto);
       if (enableBestBets) {
         log.debug("Best bets is enabled. Results will be sorted so that best bet results are on top.");
-        results = results.sorted(Comparator.comparing(Result::isBestBet).reversed());
+        results = results.sorted(Comparator.comparing(DefaultResultDTO::isBestBet).reversed());
       }
-      FulltextSearchResults.FulltextSearchResultsBuilder fulltextSearchResultsBuilder =
-          FulltextSearchResults.builder()
+      DefaultFulltextSearchResultsDTO.DefaultFulltextSearchResultsDTOBuilder fulltextSearchResultsBuilder =
+          DefaultFulltextSearchResultsDTO.builder()
               .totalResultsFound(responseBody.get().getNumFound())
               .currentResultPage(responseBody.get().getStart())
               .results(results.collect(Collectors.toList()));
@@ -108,18 +137,18 @@ public class DefaultFulltextSearchService implements
     return Optional.empty();
   }
 
-  private Stream<Result> getProcessedResults(List<SearchResult> searchResults,
-      Highlighting highlighting) {
-    return searchResults.stream()
-        .map(searchResult -> getResult(searchResult, highlighting));
+  private Stream<DefaultResultDTO> getProcessedResults(List<SearchResultDto> searchResultDtos,
+      HighlightingDto highlightingDto) {
+    return searchResultDtos.stream()
+        .map(searchResult -> getResult(searchResult, highlightingDto));
   }
 
-  private Result getResult(SearchResult searchResult, Highlighting highlighting) {
-    return Result.builder()
-        .url(searchResult.getUrl())
-        .title(new HighlightedTitleResolver(searchResult, highlighting).getTitle())
-        .description(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription())
-        .bestBet(searchResult.isElevated())
+  private DefaultResultDTO getResult(SearchResultDto searchResultDto, HighlightingDto highlightingDto) {
+    return DefaultResultDTO.builder()
+        .url(searchResultDto.getUrl())
+        .title(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle())
+        .description(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription())
+        .bestBet(searchResultDto.isElevated())
         .build();
   }
 
