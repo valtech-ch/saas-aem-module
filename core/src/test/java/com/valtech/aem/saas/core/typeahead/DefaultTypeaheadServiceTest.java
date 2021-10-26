@@ -9,12 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.typeahead.TypeaheadPayload;
+import com.valtech.aem.saas.api.typeahead.dto.DefaultTypeaheadPayloadDTO;
+import com.valtech.aem.saas.api.typeahead.dto.TypeaheadPayloadDTO;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.fulltextsearch.FilterImpl;
+import com.valtech.aem.saas.core.fulltextsearch.FilterModelImpl;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
-import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -51,20 +52,20 @@ class DefaultTypeaheadServiceTest {
 
   @Test
   void testInputValidation() {
-    TypeaheadPayload emptyPayload = getPayloadInstance();
+    TypeaheadPayloadDTO emptyPayload = getPayloadInstance();
     testImproperPayload(service, emptyPayload);
 
-    TypeaheadPayload noTermPayload = DefaultTypeaheadPayload.builder().language("de").build();
+    TypeaheadPayloadDTO noTermPayload = DefaultTypeaheadPayloadDTO.builder().language("de").build();
     testImproperPayload(service, noTermPayload);
 
-    TypeaheadPayload noLanguagePayload = DefaultTypeaheadPayload.builder().text("foo bar").build();
+    TypeaheadPayloadDTO noLanguagePayload = DefaultTypeaheadPayloadDTO.builder().text("foo bar").build();
     testImproperPayload(service, noLanguagePayload);
 
-    TypeaheadPayload forbiddenFilterFieldsPayload = DefaultTypeaheadPayload.builder().text("foo bar")
-        .filter(new FilterImpl("forbiddenKey", "val")).build();
+    TypeaheadPayloadDTO forbiddenFilterFieldsPayload = DefaultTypeaheadPayloadDTO.builder().text("foo bar")
+        .filter(new FilterModelImpl("forbiddenKey", "val")).build();
     testImproperPayload(service, forbiddenFilterFieldsPayload);
 
-    TypeaheadPayload properPayload = getProperPayload();
+    TypeaheadPayloadDTO properPayload = getProperPayload();
     assertDoesNotThrow(() -> service.getResults("indexfoo", properPayload));
   }
 
@@ -87,19 +88,19 @@ class DefaultTypeaheadServiceTest {
   }
 
   private void testImproperPayload(TypeaheadService typeaheadService,
-      TypeaheadPayload payload) {
+      TypeaheadPayloadDTO payload) {
     assertThrows(IllegalArgumentException.class, () -> typeaheadService.getResults("indexfoo", payload));
   }
 
-  private TypeaheadPayload getProperPayload() {
-    return DefaultTypeaheadPayload.builder()
+  private TypeaheadPayloadDTO getProperPayload() {
+    return DefaultTypeaheadPayloadDTO.builder()
         .text("foo bar")
         .language("de")
-        .filter(new FilterImpl(SAMPLE_ALLOWED_FIELD, "val"))
+        .filter(new FilterModelImpl(SAMPLE_ALLOWED_FIELD, "val"))
         .build();
   }
 
-  private TypeaheadPayload getPayloadInstance() {
-    return DefaultTypeaheadPayload.builder().build();
+  private TypeaheadPayloadDTO getPayloadInstance() {
+    return DefaultTypeaheadPayloadDTO.builder().build();
   }
 }
