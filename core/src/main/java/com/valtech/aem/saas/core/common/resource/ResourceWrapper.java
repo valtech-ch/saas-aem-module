@@ -1,7 +1,10 @@
 package com.valtech.aem.saas.core.common.resource;
 
 
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
 import com.valtech.aem.saas.core.util.StreamUtils;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -27,6 +30,14 @@ public class ResourceWrapper {
     return getDescendents(resource);
   }
 
+  public Optional<Page> getCurrentPage() {
+    return Optional.ofNullable(resource.getResourceResolver().adaptTo(PageManager.class))
+        .map(pm -> pm.getContainingPage(resource));
+  }
+
+  public Locale getLocale() {
+    return getCurrentPage().map(p -> p.getLanguage(false)).orElse(Locale.getDefault());
+  }
 
   private Resource getParentWithResourceType(@NonNull Resource resource, String resourceType) {
     if (resource.getParent() != null) {

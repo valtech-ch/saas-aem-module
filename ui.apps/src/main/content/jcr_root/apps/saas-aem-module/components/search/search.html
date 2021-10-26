@@ -1,30 +1,8 @@
-<sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchModel"></sly>
+<sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.Search"
+     data-sly-test.isEdit="${wcmmode.edit}"></sly>
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
-     data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
-<div class="saas-aem-module-search">
-  <h2 class="saas-aem-module-search__title">${model.title @ i18n}</h2>
-  <form class="saas-aem-module-search__form"
-        id="searchForm"
-        action="${currentPage.path @ extension='html'}">
-    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
-    <input data-sly-test="${wcmmode.disabled}"
-           type="hidden"
-           name="wcmmode"
-           value="disabled">
-    <div class="saas-aem-module-search__field">
-      <input class="saas-aem-module-search__input"
-             type="search"
-             name="q"
-             value="${model.term}"
-             placeholder="${model.searchFieldPlaceholderText @ i18n}"
-             autocomplete="off"/>
-      <button class="saas-aem-module-search__submit"
-              type="submit">${'com.valtech.aem.saas.core.search.submit.button.label' @ i18n}
-      </button>
-    </div>
-  </form>
-  <div class="saas-aem-module-search__results">
-    <sly
-        data-sly-resource="${'search-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></sly>
-  </div>
-</div>
+     data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
+<div data-sly-test="${isEdit}"
+     data-sly-resource="${'search-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>
+<search data-sly-test="${!isEdit}"
+        data-search-config="${model.configJson}"></search>
