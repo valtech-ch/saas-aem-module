@@ -72,4 +72,11 @@ public interface Search extends ContainerExporter {
    */
   List<String> getSearchTabs();
 
+  /**
+   * Gets the search configuration in a json format. In this format, the configs are used by the FE.
+   *
+   * @return json formatted string.
+   */
+  String getConfigJson();
+
 }

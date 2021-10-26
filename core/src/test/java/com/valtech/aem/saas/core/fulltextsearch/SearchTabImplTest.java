@@ -6,14 +6,18 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.mockito.Mockito.when;
 
+import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Result;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTab;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
+import java.util.Locale;
 import org.apache.sling.testing.mock.caconfig.ContextPlugins;
 import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +39,22 @@ class SearchTabImplTest {
   @Mock
   FulltextSearchConfigurationService fulltextSearchConfigurationService;
 
+  @Mock
+  I18nProvider i18nProvider;
+
+  @Mock
+  I18n i18n;
+
   SearchTab testee;
 
   @BeforeEach
   void setUp() {
+    when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
+    when(i18n.get(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
+    when(i18n.get(SearchImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
     context.registerService(FulltextSearchConfigurationService.class, fulltextSearchConfigurationService);
     context.registerService(FulltextSearchService.class, fulltextSearchService);
+    context.registerService(I18nProvider.class, i18nProvider);
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
     context.create().page("/content/saas-aem-module/us");
     context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
@@ -56,7 +70,7 @@ class SearchTabImplTest {
         "index", "foo");
     context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "bar");
     testAdaptable();
-    assertThat(testee.getLoadMoreButtonText(), is(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
+    assertThat(testee.getLoadMoreButtonText(), is("load more"));
     assertThat(testee.getResults(), emptyCollectionOf(Result.class));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getTerm(), is("bar"));

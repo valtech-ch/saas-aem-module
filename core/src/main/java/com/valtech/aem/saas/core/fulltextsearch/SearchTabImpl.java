@@ -22,6 +22,7 @@ import com.valtech.aem.saas.api.fulltextsearch.Suggestion;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.http.response.Highlighting;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.query.DefaultLanguageQuery;
 import com.valtech.aem.saas.core.query.DefaultTermQuery;
 import com.valtech.aem.saas.core.query.FiltersQuery;
@@ -69,6 +70,9 @@ public class SearchTabImpl implements SearchTab {
 
   @Self
   private SlingHttpServletRequest request;
+
+  @OSGiService
+  protected I18nProvider i18nProvider;
 
   @OSGiService
   private FulltextSearchService fulltextSearchService;
@@ -161,13 +165,10 @@ public class SearchTabImpl implements SearchTab {
   private void initSearch(String searchTerm, RequestWrapper requestWrapper) {
     getParentSearchComponent().ifPresent(parentSearch -> {
       term = searchTerm;
-      I18n i18n = requestWrapper.getI18n();
+      I18n i18n = i18nProvider.getI18n(requestWrapper.getLocale());
       loadMoreButtonText = getLoadMoreButtonText(parentSearch, i18n);
       startPage = getStartPage(requestWrapper);
-      int configuredResultsPerPage = getConfiguredResultsPerPage(parentSearch);
-      resultsPerPage = resolveResultsPerPage(requestWrapper, configuredResultsPerPage);
-      //todo: remove this when ICSAAS-315 is done - currently utilized only for demo purpose
-      loadMoreRows = resultsPerPage + configuredResultsPerPage;
+      resultsPerPage = getConfiguredResultsPerPage(parentSearch);
       SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
           .as(SearchConfiguration.class);
       FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload =
@@ -204,13 +205,6 @@ public class SearchTabImpl implements SearchTab {
 
   private int getConfiguredResultsPerPage(Search parentSearch) {
     return parentSearch.getResultsPerPage();
-  }
-
-  private int resolveResultsPerPage(RequestWrapper requestWrapper, int configuredValue) {
-    return requestWrapper.getParameter(QUERY_PARAM_ROWS)
-        .map(s -> new StringToInteger(s).asInt())
-        .map(OptionalInt::getAsInt)
-        .orElse(configuredValue);
   }
 
   private Set<Filter> getMergedFilters(Search search) {

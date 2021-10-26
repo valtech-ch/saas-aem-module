@@ -8,17 +8,20 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.hamcrest.text.IsEmptyString.isEmptyString;
+import static org.mockito.Mockito.when;
 
 import com.adobe.cq.export.json.ComponentExporter;
+import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.Filter;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.Search;
 import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.sling.testing.mock.caconfig.ContextPlugins;
 import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
@@ -44,13 +47,23 @@ class SearchImplTest {
   @Mock
   PathTransformer pathTransformer;
 
+  @Mock
+  I18nProvider i18nProvider;
+
+  @Mock
+  I18n i18n;
+
   Search testee;
 
   @BeforeEach
   void setUp() {
+    when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
+    when(i18n.get(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
+    when(i18n.get(SearchImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
     context.registerService(FulltextSearchConfigurationService.class, fulltextSearchConfigurationService);
     context.registerService(FulltextSearchService.class, fulltextSearchService);
     context.registerService(PathTransformer.class, pathTransformer);
+    context.registerService(I18nProvider.class, i18nProvider);
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
     context.create().page("/content/saas-aem-module/us");
     context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
@@ -61,6 +74,12 @@ class SearchImplTest {
 
   @Test
   void testAdaptRequest() {
+    when(pathTransformer.map(context.request(),
+        "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab")).thenReturn(
+        "foo");
+    when(pathTransformer.map(context.request(),
+        "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab_2")).thenReturn(
+        "bar");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
     context.request().addRequestParameter(SearchTabImpl.SEARCH_TERM, "bar");
@@ -68,8 +87,8 @@ class SearchImplTest {
     testAdaptable();
     Map<String, ? extends ComponentExporter> exportedItemsMap = testee.getExportedItems();
     assertThat(exportedItemsMap.isEmpty(), is(true));
-    assertThat(testee.getSearchButtonText(), is(SearchImpl.I18N_KEY_SEARCH_BUTTON_LABEL));
-    assertThat(testee.getLoadMoreButtonText(), is(SearchTabImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL));
+    assertThat(testee.getSearchButtonText(), is("search"));
+    assertThat(testee.getLoadMoreButtonText(), is("load more"));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
     assertThat(testee.getFilters(), emptyCollectionOf(Filter.class));
@@ -89,11 +108,9 @@ class SearchImplTest {
     assertThat(order.length, is(0));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
-    assertThat(testee.getFilters(), nullValue());
+    assertThat(testee.getFilters(), emptyCollectionOf(Filter.class));
     assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchImpl.AUTOCOMPLETE_THRESHOLD));
     assertThat(testee.getTerm(), is(nullValue()));
-    assertThat(testee.getSearchButtonText(), isEmptyString());
-    assertThat(testee.getLoadMoreButtonText(), isEmptyString());
 
   }
 
