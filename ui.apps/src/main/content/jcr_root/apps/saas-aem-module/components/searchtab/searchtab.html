@@ -1,7 +1,3 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchTab"></sly>
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
      data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
-<div data-sly-test="${wcmmode.edit}"
-     class="saas-aem-module-search__results-container">
-  <h2 class="saas-aem-module-search__results-container__title">${model.title @ i18n}</h2>
-</div>

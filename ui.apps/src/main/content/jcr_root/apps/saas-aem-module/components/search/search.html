@@ -2,5 +2,7 @@
      data-sly-test.isEdit="${wcmmode.edit}"></sly>
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
      data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
+<div data-sly-test="${isEdit}"
+     data-sly-resource="${'search-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>
 <search data-sly-test="${!isEdit}"
         data-search-config="${model.configJson}"></search>
