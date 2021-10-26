@@ -1,36 +1,7 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchTab"></sly>
 <sly data-sly-use.template="/libs/core/wcm/components/commons/v1/templates.html"
      data-sly-call="${template.placeholder @ isEmpty=wcmmode.edit}"></sly>
-<div class="saas-aem-module-search__results-container">
+<div data-sly-test="${wcmmode.edit}"
+     class="saas-aem-module-search__results-container">
   <h2 class="saas-aem-module-search__results-container__title">${model.title @ i18n}</h2>
-  <sly
-      data-sly-use.resultItemTemplate="/apps/saas-aem-module/components/searchtab/resultitem-template.html"
-      data-sly-list.result="${model.results}">
-    <sly data-sly-call="${resultItemTemplate.resultItem @ model=result, count=resultList.count}"></sly>
-  </sly>
-  <div data-sly-test.suggestion="${model.suggestion}">
-    ${'com.valtech.aem.saas.core.search.suggestion.text' @ i18n, format=[suggestion.text], context='html'}
-  </div>
-</div>
-<div data-sly-set.term="${model.term}"
-     data-sly-test="${model.showLoadMoreButton}"
-     class="saas-aem-module-search__results-load-more-form">
-  <form action="${currentPage.path @ extension='html'}">
-    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
-    <input data-sly-test="${wcmmode.disabled}"
-           type="hidden"
-           name="wcmmode"
-           value="disabled">
-    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
-    <input type="hidden"
-           name="q"
-           value="${term}"/>
-    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes */-->
-    <input type="hidden" name="start" value=0>
-    <input type="hidden" name="rows" value="${model.loadMoreRows}">
-    <!--/* todo: remove this when ICSAAS-315 is done - currently used for demo purposes*/-->
-    <button class="saas-aem-module-search__results-load-more-submit"
-            type="submit">${'com.valtech.aem.saas.core.search.loadmore.button.label' @ i18n}
-    </button>
-  </form>
 </div>

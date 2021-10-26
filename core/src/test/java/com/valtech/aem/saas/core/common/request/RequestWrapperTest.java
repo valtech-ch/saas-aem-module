@@ -4,18 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,8 +25,17 @@ class RequestWrapperTest {
     context.currentPage(context.create().page("/foo/bar"));
     RequestWrapper requestWrapper = context.request().adaptTo(RequestWrapper.class);
     testAdaptTo(requestWrapper);
-    assertThat(requestWrapper.getCurrentPage().isPresent(), is(true));
-    assertThat(requestWrapper.getCurrentPage().get().getPath(), is("/foo/bar"));
+    assertThat(requestWrapper.getCurrentPage(), is(notNullValue()));
+    assertThat(requestWrapper.getCurrentPage().getPath(), is("/foo/bar"));
+
+  }
+
+  @Test
+  void testGetLocale(AemContext context) {
+    context.currentPage(context.create().page("/content/foo/de"));
+    RequestWrapper requestWrapper = context.request().adaptTo(RequestWrapper.class);
+    testAdaptTo(requestWrapper);
+    assertThat(requestWrapper.getLocale(), is(Locale.GERMAN));
 
   }
 
@@ -61,25 +63,6 @@ class RequestWrapperTest {
     RequestWrapper requestWrapper = context.request().adaptTo(RequestWrapper.class);
     testAdaptTo(requestWrapper);
     assertThat(requestWrapper.getSuffix().isPresent(), is(false));
-  }
-
-  @Test
-  void testGetI18n_fromRequestContext(AemContext context) {
-    SlingHttpServletRequest request = spy(context.request());
-    RequestWrapper requestWrapper = request.adaptTo(RequestWrapper.class);
-    requestWrapper.getI18n();
-    verify(request, never()).getResourceBundle(Locale.ENGLISH);
-  }
-
-  @Test
-  void testGetI18n_fromAemResourceBundle(AemContext context) {
-    context.currentPage(context.create().page("/foo/bar"));
-    SlingHttpServletRequest request = spy(context.request());
-    doReturn(resourceBundle).when(request).getResourceBundle(any(Locale.class));
-    RequestWrapper requestWrapper = request.adaptTo(RequestWrapper.class);
-    testAdaptTo(requestWrapper);
-    requestWrapper.getI18n();
-    verify(request, times(1)).getResourceBundle(any(Locale.class));
   }
 
   private void testAdaptTo(RequestWrapper requestWrapper) {
