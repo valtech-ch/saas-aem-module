@@ -4,7 +4,6 @@ import com.adobe.cq.export.json.ComponentExporter;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents a model of the aem search results component.
@@ -19,34 +18,11 @@ public interface SearchTabModel extends ComponentExporter {
   String getTitle();
 
   /**
-   * Retrieves the search term present in the adapted request.
+   * Retrieves a list of dialog configured search filter items.
    *
-   * @return search term.
+   * @return list of filter details.
    */
-  String getTerm();
-
-  /**
-   * Retrieves a list of author configured search filter items (union of context aware and search cmp and current search
-   * tab).
-   *
-   * @return set of filter details.
-   */
-  Set<FilterModel> getFilters();
-
-  /**
-   * Retrieves the current results page (i.e the results offset parameter) set in the adapted request as parameter.
-   *
-   * @return current results page.
-   */
-  int getStartPage();
-
-  /**
-   * Retrieves the max results per request/page present in the adapted request or as fallback uses the author configured
-   * value for the max limit of results per request/page
-   *
-   * @return max number of results per request.
-   */
-  int getResultsPerPage();
+  List<FilterModel> getFilters();
 
   /**
    * Retrieves the results for the specified search query (query params in request)
@@ -61,13 +37,6 @@ public interface SearchTabModel extends ComponentExporter {
    * @return an object containing suggestion details.
    */
   SuggestionDTO getSuggestion();
-
-  /**
-   * Gets the label for the load more results button
-   *
-   * @return load more button text.
-   */
-  String getLoadMoreButtonText();
 
   /**
    * Get the total number of results found.

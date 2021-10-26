@@ -2,18 +2,16 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.when;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
@@ -91,9 +89,8 @@ class SearchModelImplTest {
     assertThat(testee.getLoadMoreButtonText(), is("load more"));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
-    assertThat(testee.getFilters(), emptyCollectionOf(FilterModel.class));
+    assertThat(testee.getFilters(), nullValue());
     assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
-    assertThat(testee.getTerm(), is("bar"));
     assertThat(testee.getSearchTabs(), not(empty()));
   }
 
@@ -108,10 +105,8 @@ class SearchModelImplTest {
     assertThat(order.length, is(0));
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
-    assertThat(testee.getFilters(), emptyCollectionOf(FilterModel.class));
+    assertThat(testee.getFilters(), nullValue());
     assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModelImpl.AUTOCOMPLETE_THRESHOLD));
-    assertThat(testee.getTerm(), is(nullValue()));
-
   }
 
   private void adaptRequest() {

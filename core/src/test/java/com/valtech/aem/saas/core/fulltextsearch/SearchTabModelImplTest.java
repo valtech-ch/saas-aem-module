@@ -70,12 +70,8 @@ class SearchTabModelImplTest {
         "index", "foo");
     context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "bar");
     testAdaptable();
-    assertThat(testee.getLoadMoreButtonText(), is("load more"));
     assertThat(testee.getResults(), emptyCollectionOf(ResultDTO.class));
-    assertThat(testee.getResultsPerPage(), is(15));
-    assertThat(testee.getTerm(), is("bar"));
     assertThat(testee.getResultsTotal(), is(0));
-    assertThat(testee.getStartPage(), is(0));
     assertThat(testee.getSuggestion(), is(nullValue()));
     assertThat(testee.getExportedType(), is(SearchTabModelImpl.RESOURCE_TYPE));
   }

@@ -71,17 +71,16 @@ public class SearchModelImpl implements SearchModel {
   public static final int AUTOCOMPLETE_THRESHOLD = 3;
   public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
 
-  @Self
-  private SlingHttpServletRequest request;
 
-  @Self
-  private Resource resource;
+  @Getter
+  @JsonInclude(Include.NON_EMPTY)
+  @ValueMapValue
+  private String title;
 
-  @OSGiService
-  private PathTransformer pathTransformer;
-
-  @OSGiService
-  protected I18nProvider i18nProvider;
+  @JsonIgnore
+  @Getter
+  @ChildResource
+  private List<FilterModel> filters;
 
   @JsonIgnore
   @Getter
@@ -92,17 +91,11 @@ public class SearchModelImpl implements SearchModel {
   @Getter
   @JsonInclude(Include.NON_EMPTY)
   @ValueMapValue
-  private String title;
-
-  @Getter
-  @JsonInclude(Include.NON_EMPTY)
-  @ValueMapValue
   private String searchFieldPlaceholderText;
 
-  @ChildResource
-  private List<FilterModel> filters;
-
-  private Set<FilterModel> mergedFilters;
+  @JsonIgnore
+  @Getter
+  private Set<FilterModel> effectiveFilters;
 
   @Getter
   private String searchButtonText;
@@ -118,36 +111,33 @@ public class SearchModelImpl implements SearchModel {
   private String configJson;
 
   @Getter
-  @JsonIgnore
-  private String term;
-
-  @Getter
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @Self
+  private SlingHttpServletRequest request;
+
+  @Self
+  private Resource resource;
+
+  @OSGiService
+  private PathTransformer pathTransformer;
+
+  @OSGiService
+  protected I18nProvider i18nProvider;
+
   @PostConstruct
   private void init() {
-    if (request != null) {
-      Optional.ofNullable(request.adaptTo(RequestWrapper.class))
-          .ifPresent(requestWrapper -> {
-            requestWrapper.getParameter(SearchTabModelImpl.SEARCH_TERM).ifPresent(t -> term = t);
-            initSearch(request.getResource(), requestWrapper.getLocale());
-          });
-    } else if (resource != null) {
-      Optional.ofNullable(resource.adaptTo(ResourceWrapper.class))
-          .ifPresent(resourceWrapper -> initSearch(resource, resourceWrapper.getLocale()));
-    }
-  }
-
-  private void initSearch(Resource resource, Locale locale) {
-    I18n i18n = i18nProvider.getI18n(locale);
-    mergedFilters = getMergedFilters(resource);
-    searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText) ? searchFieldPlaceholderText
+    Resource currentResource = getCurrentResource();
+    I18n i18n = i18nProvider.getI18n(getLocale());
+    effectiveFilters = getEffectiveFilters(currentResource);
+    searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
+        ? searchFieldPlaceholderText
         : i18n.get(I18N_SEARCH_INPUT_PLACEHOLDER);
-    searchButtonText = getSearchButtonText(i18n);
-    loadMoreButtonText = getLoadMoreButtonText(i18n);
+    searchButtonText = i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
+    loadMoreButtonText = i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
     if (request != null) {
-      searchTabs = getSearchTabs(resource);
+      searchTabs = getSearchTabs(currentResource);
     }
     configJson = getSearchConfigJson();
   }
@@ -164,24 +154,6 @@ public class SearchModelImpl implements SearchModel {
     return models.isEmpty()
         ? ArrayUtils.EMPTY_STRING_ARRAY
         : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-  }
-
-  @JsonIgnore
-  @Override
-  public Set<FilterModel> getFilters() {
-    return mergedFilters;
-  }
-
-  private String getSearchButtonText(I18n i18n) {
-    return Optional.ofNullable(i18n)
-        .map(t -> t.get(I18N_KEY_SEARCH_BUTTON_LABEL))
-        .orElse(StringUtils.EMPTY);
-  }
-
-  private String getLoadMoreButtonText(I18n i18n) {
-    return Optional.ofNullable(i18n)
-        .map(t -> t.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL))
-        .orElse(StringUtils.EMPTY);
   }
 
   @Override
@@ -208,7 +180,7 @@ public class SearchModelImpl implements SearchModel {
     return StringUtils.EMPTY;
   }
 
-  private Set<FilterModel> getMergedFilters(Resource resource) {
+  private Set<FilterModel> getEffectiveFilters(Resource resource) {
     Set<FilterModel> distinctFilters = new HashSet<>(getCaFilters(resource));
     if (filters != null) {
       distinctFilters.addAll(filters);
@@ -239,5 +211,15 @@ public class SearchModelImpl implements SearchModel {
       log.error("Failed to create search prepared url to search tab resource.");
     }
     return null;
+  }
+
+  private Resource getCurrentResource() {
+    return Optional.ofNullable(request).map(SlingHttpServletRequest::getResource).orElse(resource);
+  }
+
+  private Locale getLocale() {
+    return Optional.ofNullable(request).map(r -> r.adaptTo(RequestWrapper.class)).map(RequestWrapper::getLocale)
+        .orElseGet(() -> Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+            .orElse(Locale.getDefault()));
   }
 }

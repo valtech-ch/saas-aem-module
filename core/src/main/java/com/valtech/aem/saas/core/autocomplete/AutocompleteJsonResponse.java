@@ -61,7 +61,7 @@ public class AutocompleteJsonResponse implements AutocompleteResponse {
                   TypeaheadPayloadDTO payload = DefaultTypeaheadPayloadDTO.builder()
                       .text(text)
                       .language(getLanguage())
-                      .filters(getSearch().map(SearchModel::getFilters).orElse(Collections.emptySet()))
+                      .filters(getSearch().map(SearchModel::getEffectiveFilters).orElse(Collections.emptySet()))
                       .build();
                   List<String> results = typeaheadService.getResults(searchConfiguration.index(), payload);
                   new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));

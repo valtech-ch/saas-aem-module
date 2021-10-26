@@ -5,7 +5,6 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl.RESOUR
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
-import com.day.cq.i18n.I18n;
 import com.day.cq.wcm.api.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -65,47 +64,17 @@ public class SearchTabModelImpl implements SearchTabModel {
   public static final int DEFAULT_START_PAGE = 0;
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
   public static final String SEARCH_TERM = "q";
-  public static final String QUERY_PARAM_ROWS = "rows";
   public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL = "com.valtech.aem.saas.core.search.loadmore.button.label";
   public static final int NO_RESULTS = 0;
-
-  @Self
-  private SlingHttpServletRequest request;
-
-  @OSGiService
-  protected I18nProvider i18nProvider;
-
-  @OSGiService
-  private FulltextSearchService fulltextSearchService;
-
-  @OSGiService
-  private FulltextSearchConfigurationService fulltextSearchConfigurationService;
-
-  @ScriptVariable
-  private Page currentPage;
 
   @Getter
   @JsonInclude(Include.NON_EMPTY)
   @ValueMapValue
   private String title;
 
-  @ChildResource
-  private List<FilterModel> filters;
-
-  private Set<FilterModel> mergedFilters;
-
-  @JsonIgnore
-  @JsonInclude(Include.NON_EMPTY)
+  @JsonInclude(Include.NON_NULL)
   @Getter
-  private String term;
-
-  @JsonIgnore
-  @Getter
-  private int startPage;
-
-  @JsonIgnore
-  @Getter
-  private int resultsPerPage;
+  private SuggestionDTO suggestion;
 
   @JsonInclude(Include.NON_NULL)
   @Getter
@@ -118,21 +87,33 @@ public class SearchTabModelImpl implements SearchTabModel {
   @Getter
   private boolean showLoadMoreButton;
 
-  @JsonInclude(Include.NON_NULL)
-  @Getter
-  private SuggestionDTO suggestion;
-
   @Getter
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
-  @JsonIgnore
-  @Getter
-  private int loadMoreRows;
+  @Self
+  private SlingHttpServletRequest request;
+
+  @OSGiService
+  private I18nProvider i18nProvider;
+
+  @OSGiService
+  private FulltextSearchService fulltextSearchService;
+
+  @OSGiService
+  private FulltextSearchConfigurationService fulltextSearchConfigurationService;
+
+  @ScriptVariable
+  private Page currentPage;
 
   @JsonIgnore
   @Getter
-  private String loadMoreButtonText;
+  @ChildResource
+  private List<FilterModel> filters;
+
+  private int startPage;
+
+  private int resultsPerPage;
 
   @PostConstruct
   private void init() {
@@ -140,12 +121,6 @@ public class SearchTabModelImpl implements SearchTabModel {
     requestWrapper
         .flatMap(this::getSearchTerm)
         .ifPresent(searchTerm -> initSearch(searchTerm, requestWrapper.get()));
-  }
-
-  @JsonIgnore
-  @Override
-  public Set<FilterModel> getFilters() {
-    return mergedFilters;
   }
 
   private Optional<RequestWrapper> getRequestWrapper() {
@@ -165,9 +140,6 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   private void initSearch(String searchTerm, RequestWrapper requestWrapper) {
     getParentSearchComponent().ifPresent(parentSearch -> {
-      term = searchTerm;
-      I18n i18n = i18nProvider.getI18n(requestWrapper.getLocale());
-      loadMoreButtonText = getLoadMoreButtonText(parentSearch, i18n);
       startPage = getStartPage(requestWrapper);
       resultsPerPage = getConfiguredResultsPerPage(parentSearch);
       SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
@@ -193,23 +165,17 @@ public class SearchTabModelImpl implements SearchTabModel {
                 fulltextSearchConfigurationService.getRowsMaxLimit()))
         .optionalQuery(new HighlightingTagQuery(HighlightingDTO.HIGHLIGHTING_TAG_NAME))
         .optionalQuery(FiltersQuery.builder()
-            .filters(getMergedFilters(parentSearch))
+            .filters(getEffectiveFilters(parentSearch))
             .build())
         .build();
-  }
-
-  private String getLoadMoreButtonText(SearchModel parentSearch, I18n i18n) {
-    return Optional.ofNullable(parentSearch.getLoadMoreButtonText())
-        .filter(StringUtils::isNotEmpty)
-        .orElseGet(() -> i18n.get(I18N_KEY_LOAD_MORE_BUTTON_LABEL));
   }
 
   private int getConfiguredResultsPerPage(SearchModel parentSearch) {
     return parentSearch.getResultsPerPage();
   }
 
-  private Set<FilterModel> getMergedFilters(SearchModel search) {
-    Set<FilterModel> result = search.getFilters();
+  private Set<FilterModel> getEffectiveFilters(SearchModel search) {
+    Set<FilterModel> result = search.getEffectiveFilters();
     if (filters != null) {
       result.addAll(filters);
       return result;
