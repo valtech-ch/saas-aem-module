@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Value;
 
 @Value
-public class ResponseBodyDto {
+public class ResponseBodyDTO {
 
   public static final String PN_RESPONSE = "response";
 
@@ -12,5 +12,5 @@ public class ResponseBodyDto {
 
   int start;
 
-  List<SearchResultDto> docs;
+  List<SearchResultDTO> docs;
 }

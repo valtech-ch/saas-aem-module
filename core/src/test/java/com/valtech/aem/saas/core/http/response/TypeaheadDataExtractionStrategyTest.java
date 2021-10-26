@@ -7,7 +7,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.core.http.response.dto.FacetCountsDto;
+import com.valtech.aem.saas.core.http.response.dto.FacetCountsDTO;
 import java.io.InputStreamReader;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ class TypeaheadDataExtractionStrategyTest {
   @Test
   void testGetData() {
     TypeaheadDataExtractionStrategy strategy = new TypeaheadDataExtractionStrategy("de");
-    assertThat(strategy.propertyName(), is(FacetCountsDto.PN_FACET_COUNTS));
+    assertThat(strategy.propertyName(), is(FacetCountsDTO.PN_FACET_COUNTS));
     assertThat(strategy.getData(new JsonObject()).isPresent(), is(false));
     JsonObject response = new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
         "/__files/search/typeahead/success.json"))).getAsJsonObject();

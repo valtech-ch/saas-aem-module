@@ -7,7 +7,7 @@ import lombok.Value;
 
 @ToString
 @Value
-public class ResponseHeaderDto {
+public class ResponseHeaderDTO {
 
   public static final String PN_RESPONSE_HEADER = "responseHeader";
   public static final String PN_QUERY_TIME = "QTime";

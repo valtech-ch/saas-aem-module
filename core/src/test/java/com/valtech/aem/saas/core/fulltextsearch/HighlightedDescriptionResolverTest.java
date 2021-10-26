@@ -4,8 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
-import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +26,10 @@ class HighlightedDescriptionResolverTest {
   private static final String HIGHLIGHTED_CONTENT = "<em>Valtech</em> <em>Valtech</em> Group Luxembourg (HQ) <em>Valtech</em> SE UK <em>Valtech</em> Ltd. 100% True Clarity* * 100% El Chalten 100% <em>Valtech</em> LLC. (Ukraine) 100% Argentina <em>Valtech</em> Digital SA 95% Brazil <em>Valtech</em> Brasil";
 
   @Mock
-  SearchResultDto searchResultDto;
+  SearchResultDTO searchResultDto;
 
   @Mock
-  HighlightingDto highlightingDto;
+  HighlightingDTO highlightingDto;
 
   @Test
   void getMetaDescription_noHighlightEntryAvailable() {

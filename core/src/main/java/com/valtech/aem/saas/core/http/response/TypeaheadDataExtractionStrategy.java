@@ -2,7 +2,7 @@ package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.valtech.aem.saas.core.http.response.dto.FacetCountsDto;
+import com.valtech.aem.saas.core.http.response.dto.FacetCountsDTO;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +23,7 @@ public final class TypeaheadDataExtractionStrategy implements SearchResponseData
 
   @Override
   public String propertyName() {
-    return FacetCountsDto.PN_FACET_COUNTS;
+    return FacetCountsDTO.PN_FACET_COUNTS;
   }
 
   @Override
@@ -32,11 +32,11 @@ public final class TypeaheadDataExtractionStrategy implements SearchResponseData
         .filter(JsonElement::isJsonObject)
         .map(JsonElement::getAsJsonObject)
         .map(r -> r.getAsJsonObject(propertyName()))
-        .map(jsonObject -> new Gson().fromJson(jsonObject, FacetCountsDto.class))
+        .map(jsonObject -> new Gson().fromJson(jsonObject, FacetCountsDTO.class))
         .map(this::getTypeaheadResults);
   }
 
-  private List<String> getTypeaheadResults(@NonNull FacetCountsDto facetCounts) {
+  private List<String> getTypeaheadResults(@NonNull FacetCountsDTO facetCounts) {
     return Optional.ofNullable(facetCounts.getFacetFields())
         .filter(MapUtils::isNotEmpty)
         .map(map -> map.get(getTypeaheadIndexFieldName()))

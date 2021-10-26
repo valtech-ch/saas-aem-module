@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
-import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +14,8 @@ public final class HighlightedDescriptionResolver {
 
   private static final String META_DESCRIPTION_PREFIX = "meta_description_";
   private static final String CONTENT_PREFIX = "content_";
-  private final SearchResultDto searchResultDto;
-  private final HighlightingDto highlightingDto;
+  private final SearchResultDTO searchResultDto;
+  private final HighlightingDTO highlightingDto;
 
   /**
    * Returns the result's description, highlighted or not, depending on the available data and highlighting flag's

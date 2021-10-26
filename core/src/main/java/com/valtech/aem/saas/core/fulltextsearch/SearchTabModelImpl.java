@@ -27,7 +27,7 @@ import com.valtech.aem.saas.api.query.PaginationQuery;
 import com.valtech.aem.saas.api.query.TermQuery;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import java.util.Collections;
 import java.util.List;
@@ -190,7 +190,7 @@ public class SearchTabModelImpl implements SearchTabModel {
         .optionalQuery(
             new PaginationQuery(startPage, resultsPerPage,
                 fulltextSearchConfigurationService.getRowsMaxLimit()))
-        .optionalQuery(new HighlightingTagQuery(HighlightingDto.HIGHLIGHTING_TAG_NAME))
+        .optionalQuery(new HighlightingTagQuery(HighlightingDTO.HIGHLIGHTING_TAG_NAME))
         .optionalQuery(FiltersQuery.builder()
             .filters(getMergedFilters(parentSearch))
             .build())

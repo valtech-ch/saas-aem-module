@@ -6,7 +6,7 @@ import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class HighlightingDto {
+public class HighlightingDTO {
 
   public static final String HIGHLIGHTING_TAG_NAME = "em";
 

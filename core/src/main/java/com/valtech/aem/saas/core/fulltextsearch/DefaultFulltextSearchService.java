@@ -17,10 +17,10 @@ import com.valtech.aem.saas.core.http.response.ResponseBodyDataExtractionStrateg
 import com.valtech.aem.saas.core.http.response.ResponseHeaderDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.http.response.SuggestionDataExtractionStrategy;
-import com.valtech.aem.saas.core.http.response.dto.FallbackHighlightingDto;
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
-import com.valtech.aem.saas.core.http.response.dto.ResponseBodyDto;
-import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
+import com.valtech.aem.saas.core.http.response.dto.FallbackHighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.ResponseBodyDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import com.valtech.aem.saas.core.util.LoggedOptional;
 import java.util.Comparator;
 import java.util.List;
@@ -110,10 +110,10 @@ public class DefaultFulltextSearchService implements
   private Optional<FulltextSearchResultsDTO> getFulltextSearchResults(SearchResponse searchResponse,
       boolean enableAutoSuggest,
       boolean enableBestBets) {
-    Optional<ResponseBodyDto> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
+    Optional<ResponseBodyDTO> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
     if (responseBody.isPresent()) {
-      HighlightingDto highlightingDto = searchResponse.get(new HighlightingDataExtractionStrategy())
-          .orElse(FallbackHighlightingDto.getInstance());
+      HighlightingDTO highlightingDto = searchResponse.get(new HighlightingDataExtractionStrategy())
+          .orElse(FallbackHighlightingDTO.getInstance());
       Stream<DefaultResultDTO> results = getProcessedResults(responseBody.get().getDocs(), highlightingDto);
       if (enableBestBets) {
         log.debug("Best bets is enabled. Results will be sorted so that best bet results are on top.");
@@ -137,13 +137,13 @@ public class DefaultFulltextSearchService implements
     return Optional.empty();
   }
 
-  private Stream<DefaultResultDTO> getProcessedResults(List<SearchResultDto> searchResultDtos,
-      HighlightingDto highlightingDto) {
+  private Stream<DefaultResultDTO> getProcessedResults(List<SearchResultDTO> searchResultDtos,
+      HighlightingDTO highlightingDto) {
     return searchResultDtos.stream()
         .map(searchResult -> getResult(searchResult, highlightingDto));
   }
 
-  private DefaultResultDTO getResult(SearchResultDto searchResultDto, HighlightingDto highlightingDto) {
+  private DefaultResultDTO getResult(SearchResultDTO searchResultDto, HighlightingDTO highlightingDto) {
     return DefaultResultDTO.builder()
         .url(searchResultDto.getUrl())
         .title(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle())

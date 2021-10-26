@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Value;
 
 @Value
-public class FacetCountsDto {
+public class FacetCountsDTO {
 
   public static final String PN_FACET_COUNTS = "facet_counts";
   public static final String PN_FACET_FIELDS = "facet_fields";

@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class FallbackHighlightingDto extends HighlightingDto {
+public class FallbackHighlightingDTO extends HighlightingDTO {
 
-  private static FallbackHighlightingDto instance;
+  private static FallbackHighlightingDTO instance;
 
-  public static synchronized FallbackHighlightingDto getInstance() {
+  public static synchronized FallbackHighlightingDTO getInstance() {
     if (instance == null) {
-      instance = new FallbackHighlightingDto();
+      instance = new FallbackHighlightingDTO();
     }
     return instance;
   }

@@ -2,13 +2,13 @@ package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
 import java.util.Optional;
 
 /**
  * A strategy for extracting highlighting data.
  */
-public final class HighlightingDataExtractionStrategy implements SearchResponseDataExtractionStrategy<HighlightingDto> {
+public final class HighlightingDataExtractionStrategy implements SearchResponseDataExtractionStrategy<HighlightingDTO> {
 
   @Override
   public String propertyName() {
@@ -16,9 +16,9 @@ public final class HighlightingDataExtractionStrategy implements SearchResponseD
   }
 
   @Override
-  public Optional<HighlightingDto> getData(JsonElement response) {
+  public Optional<HighlightingDTO> getData(JsonElement response) {
     return Optional.ofNullable(response)
         .filter(JsonElement::isJsonObject)
-        .map(jsonObject -> new Gson().fromJson(jsonObject, HighlightingDto.class));
+        .map(jsonObject -> new Gson().fromJson(jsonObject, HighlightingDTO.class));
   }
 }

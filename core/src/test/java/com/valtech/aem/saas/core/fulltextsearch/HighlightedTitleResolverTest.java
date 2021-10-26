@@ -4,8 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDto;
-import com.valtech.aem.saas.core.http.response.dto.SearchResultDto;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +26,10 @@ class HighlightedTitleResolverTest {
   private static final String HIGHLIGHTED_TITLE = "foo <em>bar</em> baz";
 
   @Mock
-  SearchResultDto searchResultDto;
+  SearchResultDTO searchResultDto;
 
   @Mock
-  HighlightingDto highlightingDto;
+  HighlightingDTO highlightingDto;
 
   @BeforeEach
   void setUp() {

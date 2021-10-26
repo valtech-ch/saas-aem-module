@@ -7,7 +7,7 @@ import lombok.Getter;
  * Pojo for serializing saas results response.
  */
 @Getter
-public class SearchResultDto {
+public class SearchResultDTO {
 
   private static final String PN_META_DESCRIPTION = "meta_description";
   private static final String PN_REPOSITORY_PATH_URL = "repository_path_url";
