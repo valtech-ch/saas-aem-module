@@ -4,6 +4,7 @@ type SearchConfig = {
   searchTabs: string[]
   searchButtonText: string
   autocompleteTriggerThreshold: number
+  searchUrl?: string
 }
 
 export const getSearchElement = (
@@ -13,7 +14,7 @@ export const getSearchElement = (
 }
 
 export const isSearchConfig = (
-  searchConfig: SearchConfig,
+  searchConfig: SearchConfig | any,
 ): searchConfig is SearchConfig => {
   const {
     searchFieldPlaceholderText,
@@ -21,14 +22,19 @@ export const isSearchConfig = (
     searchTabs,
     searchButtonText,
     autocompleteTriggerThreshold,
+    searchUrl,
   } = searchConfig
 
   return (
     typeof searchFieldPlaceholderText === 'string' &&
+    Boolean(searchFieldPlaceholderText) &&
     typeof loadMoreButtonText === 'string' &&
+    Boolean(loadMoreButtonText) &&
     Array.isArray(searchTabs) &&
     typeof searchButtonText === 'string' &&
-    typeof autocompleteTriggerThreshold === 'number'
+    Boolean(searchButtonText) &&
+    typeof autocompleteTriggerThreshold === 'number' &&
+    (!searchUrl || typeof searchUrl === 'string')
   )
 }
 

@@ -1,18 +1,39 @@
 import buildSearchButton from './components/searchButton'
+import buildSearchForm, { addEventToSearchForm } from './components/searchForm'
 import buildSearchInput from './components/searchInput'
 import { getDataAttributeFromSearchElement } from './searchElement'
 
-export const buildSearch = (searchElement: HTMLElement): void => {
+type CallbackFunction = () => void
+
+type SearchOptions = {
+  callbacks: {
+    search: CallbackFunction
+  }
+}
+
+export const buildSearch = (
+  searchElement: HTMLElement,
+  options?: SearchOptions,
+): void => {
   const searchConfig = getDataAttributeFromSearchElement(searchElement)
 
   if (!searchConfig) {
     return
   }
 
-  const { searchFieldPlaceholderText, searchButtonText } = searchConfig
+  const { callbacks } = options || {}
+  const { search: searchCallback } = callbacks || {}
+
+  const {
+    searchFieldPlaceholderText,
+    searchButtonText,
+    searchUrl,
+    searchTabs,
+  } = searchConfig
 
   const searchContainer = document.createElement('div')
-  const searchFormElement = document.createElement('form')
+
+  const searchFormElement = buildSearchForm()
 
   const searchInputElement = buildSearchInput({
     searchFieldPlaceholderText,
@@ -22,16 +43,16 @@ export const buildSearch = (searchElement: HTMLElement): void => {
     searchButtonText,
   })
 
+  addEventToSearchForm(
+    searchFormElement,
+    searchInputElement,
+    searchUrl,
+    searchTabs,
+    { searchCallback },
+  )
+
   searchFormElement.appendChild(searchInputElement)
   searchFormElement.appendChild(searchButtonElement)
-
-  searchFormElement.addEventListener('submit', (event) => {
-    event.preventDefault()
-
-    const searchValue = searchInputElement.value
-
-    console.log({ searchValue })
-  })
 
   const searchElementParent = searchElement.parentElement
   searchElementParent?.replaceChild(searchContainer, searchElement)

@@ -4,10 +4,11 @@ type SearchButtonOptions = {
 
 const buildSearchButton = ({
   searchButtonText,
-}: SearchButtonOptions): HTMLButtonElement => {
-  const searchButton = document.createElement('button')
+}: SearchButtonOptions): HTMLInputElement => {
+  const searchButton = document.createElement('input')
 
-  searchButton.innerHTML = searchButtonText
+  searchButton.type = 'submit'
+  searchButton.value = searchButtonText
 
   return searchButton
 }
