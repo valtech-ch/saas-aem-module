@@ -1,14 +1,17 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
+import com.day.cq.wcm.api.PageManagerFactory;
+import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchPayloadDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
+import com.valtech.aem.saas.api.query.FacetsQuery;
+import com.valtech.aem.saas.api.query.FiltersQuery;
 import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
-import com.valtech.aem.saas.api.query.Query;
-import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
+import com.valtech.aem.saas.api.query.LanguageQuery;
+import com.valtech.aem.saas.api.query.TermQuery;
+import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
-import com.valtech.aem.saas.core.fulltextsearch.dto.DefaultFulltextSearchResultsDTO;
-import com.valtech.aem.saas.core.fulltextsearch.dto.DefaultResultDTO;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
@@ -25,11 +28,13 @@ import com.valtech.aem.saas.core.util.LoggedOptional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -41,11 +46,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Slf4j
 @Component(name = "Search as a Service - Fulltext Search Service",
-    service = {FulltextSearchService.class, FulltextSearchConfigurationService.class})
+    service = FulltextSearchService.class)
 @Designate(ocd = Configuration.class)
-public class DefaultFulltextSearchService implements
-    FulltextSearchService,
-    FulltextSearchConfigurationService {
+public class DefaultFulltextSearchService implements FulltextSearchService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -53,58 +56,55 @@ public class DefaultFulltextSearchService implements
   @Reference
   private SearchRequestExecutorService searchRequestExecutorService;
 
+  @Reference
+  private PageManagerFactory pageManagerFactory;
+
   private Configuration configuration;
 
   @Override
-  public int getRowsMaxLimit() {
-    return configuration.fulltextSearchService_rowsMaxLimit();
-  }
-
-  @Override
-  public Optional<FulltextSearchResultsDTO> getResults(@NonNull String index,
-      @NonNull FulltextSearchPayloadDTO fulltextSearchPayloadDto,
-      boolean enableAutoSuggest,
-      boolean enableBestBets) {
-    SaasIndexValidator.getInstance().validate(index);
-    String requestUrl = getRequestUrl(index, fulltextSearchPayloadDto);
+  public Optional<FulltextSearchResultsDTO> getResults(@NonNull Resource context, String searchText, int start,
+      int rows,
+      Set<FilterModel> filters,
+      Set<String> facets) {
+    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
+    String requestUrl = getRequestUrl(getApiUrl(searchConfigurationProvider.getIndex()),
+        createQueryString(searchText,
+            getLanguage(context),
+            getEffectiveFilters(searchConfigurationProvider.getFilters(), filters),
+            facets));
     log.debug("Search GET Request: {}", requestUrl);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
     if (searchResponse.isPresent()) {
       printResponseHeaderInLog(searchResponse.get());
-      return getFulltextSearchResults(searchResponse.get(), enableAutoSuggest, enableBestBets);
+      return getFulltextSearchResults(searchResponse.get(), searchConfigurationProvider.isAutoSuggestEnabled(),
+          searchConfigurationProvider.isBestBetsEnabled());
     }
     return Optional.empty();
   }
 
-  private String createQueryString(FulltextSearchPayloadDTO fulltextSearchPayloadDto) {
-    if (validate(fulltextSearchPayloadDto)) {
-      return GetQueryStringConstructor.builder()
-          .query(fulltextSearchPayloadDto.getTermQuery())
-          .query(fulltextSearchPayloadDto.getLanguageQuery())
-          .queries(fulltextSearchPayloadDto.getOptionalQueries())
-          .build()
-          .getQueryString();
-    }
-    throw new IllegalStateException("Payload is not valid.");
+  private Set<FilterModel> getEffectiveFilters(Set<FilterModel> contextFilters, Set<FilterModel> specifiedFilters) {
+    return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
   }
 
-  private boolean validate(FulltextSearchPayloadDTO fulltextSearchPayloadDto) {
-    return isNotEmpty(fulltextSearchPayloadDto.getTermQuery()) && isNotEmpty(
-        fulltextSearchPayloadDto.getLanguageQuery());
+  private String getLanguage(Resource context) {
+    return pageManagerFactory.getPageManager(context.getResourceResolver())
+        .getContainingPage(context)
+        .getLanguage()
+        .getLanguage();
   }
 
-  private boolean isNotEmpty(Query query) {
-    return Optional.ofNullable(query)
-        .map(Query::getEntries)
-        .filter(CollectionUtils::isNotEmpty)
-        .isPresent();
+  private String createQueryString(String term, String language, Set<FilterModel> filters, Set<String> facets) {
+    return GetQueryStringConstructor.builder()
+        .query(new TermQuery(term))
+        .query(new LanguageQuery(language))
+        .query(FiltersQuery.builder().filters(CollectionUtils.emptyIfNull(filters)).build())
+        .query(FacetsQuery.builder().fields(CollectionUtils.emptyIfNull(facets)).build())
+        .build()
+        .getQueryString();
   }
 
-
-  private String getRequestUrl(String index, FulltextSearchPayloadDTO fulltextSearchPayloadDto) {
-    return String.format("%s%s",
-        getApiUrl(index),
-        createQueryString(fulltextSearchPayloadDto));
+  private String getRequestUrl(String apiUrl, String queryString) {
+    return String.format("%s%s", apiUrl, queryString);
   }
 
   private Optional<FulltextSearchResultsDTO> getFulltextSearchResults(SearchResponse searchResponse,
@@ -113,14 +113,15 @@ public class DefaultFulltextSearchService implements
     Optional<ResponseBodyDTO> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
     if (responseBody.isPresent()) {
       HighlightingDTO highlightingDto = searchResponse.get(new HighlightingDataExtractionStrategy())
+          .filter(h -> h.getItems() != null)
           .orElse(FallbackHighlightingDTO.getInstance());
-      Stream<DefaultResultDTO> results = getProcessedResults(responseBody.get().getDocs(), highlightingDto);
+      Stream<ResultDTO> results = getProcessedResults(responseBody.get().getDocs(), highlightingDto);
       if (enableBestBets) {
         log.debug("Best bets is enabled. Results will be sorted so that best bet results are on top.");
-        results = results.sorted(Comparator.comparing(DefaultResultDTO::isBestBet).reversed());
+        results = results.sorted(Comparator.comparing(ResultDTO::isBestBet).reversed());
       }
-      DefaultFulltextSearchResultsDTO.DefaultFulltextSearchResultsDTOBuilder fulltextSearchResultsBuilder =
-          DefaultFulltextSearchResultsDTO.builder()
+      FulltextSearchResultsDTO.FulltextSearchResultsDTOBuilder fulltextSearchResultsBuilder =
+          FulltextSearchResultsDTO.builder()
               .totalResultsFound(responseBody.get().getNumFound())
               .currentResultPage(responseBody.get().getStart())
               .results(results.collect(Collectors.toList()));
@@ -137,14 +138,14 @@ public class DefaultFulltextSearchService implements
     return Optional.empty();
   }
 
-  private Stream<DefaultResultDTO> getProcessedResults(List<SearchResultDTO> searchResultDtos,
+  private Stream<ResultDTO> getProcessedResults(List<SearchResultDTO> searchResultDtos,
       HighlightingDTO highlightingDto) {
     return searchResultDtos.stream()
         .map(searchResult -> getResult(searchResult, highlightingDto));
   }
 
-  private DefaultResultDTO getResult(SearchResultDTO searchResultDto, HighlightingDTO highlightingDto) {
-    return DefaultResultDTO.builder()
+  private ResultDTO getResult(SearchResultDTO searchResultDto, HighlightingDTO highlightingDto) {
+    return ResultDTO.builder()
         .url(searchResultDto.getUrl())
         .title(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle())
         .description(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription())
@@ -175,7 +176,6 @@ public class DefaultFulltextSearchService implements
       description = "Fulltext Search Api specific details.")
   public @interface Configuration {
 
-    int DEFAULT_ROWS_MAX_LIMIT = 9999;
     String DEFAULT_API_ACTION = "/search";
     String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
 
@@ -188,11 +188,6 @@ public class DefaultFulltextSearchService implements
         description = "What kind of action should be defined",
         type = AttributeType.STRING)
     String fulltextSearchService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
-
-    @AttributeDefinition(name = "Rows max limit.",
-        description = "Maximum number of results per page allowed.",
-        type = AttributeType.INTEGER)
-    int fulltextSearchService_rowsMaxLimit() default DEFAULT_ROWS_MAX_LIMIT; // NOSONAR
 
   }
 }

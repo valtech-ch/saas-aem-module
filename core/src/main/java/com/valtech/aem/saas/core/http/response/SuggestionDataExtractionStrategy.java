@@ -3,7 +3,7 @@ package com.valtech.aem.saas.core.http.response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.valtech.aem.saas.core.fulltextsearch.dto.DefaultSuggestionDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class SuggestionDataExtractionStrategy implements
-    SearchResponseDataExtractionStrategy<DefaultSuggestionDTO> {
+    SearchResponseDataExtractionStrategy<SuggestionDTO> {
 
   public static final String SPELLCHECK = "spellcheck";
   public static final String COLLATION_QUERY = "collationQuery";
@@ -25,7 +25,7 @@ public final class SuggestionDataExtractionStrategy implements
   }
 
   @Override
-  public Optional<DefaultSuggestionDTO> getData(JsonElement response) {
+  public Optional<SuggestionDTO> getData(JsonElement response) {
     return Optional.ofNullable(response)
         .filter(JsonElement::isJsonObject)
         .map(JsonElement::getAsJsonObject)
@@ -33,7 +33,7 @@ public final class SuggestionDataExtractionStrategy implements
         .map(this::getCollations)
         .map(this::getCollation)
         .filter(this::isCollationQueryExisting)
-        .map(jsonObject -> new DefaultSuggestionDTO(jsonObject.getAsJsonPrimitive(COLLATION_QUERY).getAsString(),
+        .map(jsonObject -> new SuggestionDTO(jsonObject.getAsJsonPrimitive(COLLATION_QUERY).getAsString(),
             jsonObject.getAsJsonPrimitive(
                 HITS).getAsInt()));
   }

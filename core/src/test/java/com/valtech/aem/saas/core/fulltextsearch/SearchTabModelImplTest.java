@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
+import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -37,9 +37,6 @@ class SearchTabModelImplTest {
   FulltextSearchService fulltextSearchService;
 
   @Mock
-  FulltextSearchConfigurationService fulltextSearchConfigurationService;
-
-  @Mock
   I18nProvider i18nProvider;
 
   @Mock
@@ -52,7 +49,6 @@ class SearchTabModelImplTest {
     when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
     when(i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
     when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
-    context.registerService(FulltextSearchConfigurationService.class, fulltextSearchConfigurationService);
     context.registerService(FulltextSearchService.class, fulltextSearchService);
     context.registerService(I18nProvider.class, i18nProvider);
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");

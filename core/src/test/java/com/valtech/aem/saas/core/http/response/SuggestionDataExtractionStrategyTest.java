@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.core.fulltextsearch.dto.DefaultSuggestionDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
 import java.io.InputStreamReader;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class SuggestionDataExtractionStrategyTest {
         "/__files/search/fulltext/spellcheck.json"))).getAsJsonObject();
     assertThat(strategy.getData(response).isPresent(), is(true));
     assertThat(strategy.getData(response).get(), instanceOf(
-        DefaultSuggestionDTO.class));
+        SuggestionDTO.class));
 
   }
 

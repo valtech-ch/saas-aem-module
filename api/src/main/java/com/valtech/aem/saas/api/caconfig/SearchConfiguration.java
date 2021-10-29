@@ -9,6 +9,7 @@ public @interface SearchConfiguration {
 
   boolean DEFAULT_ENABLE_BEST_BETS = false;
   boolean DEFAULT_ENABLE_AUTO_SUGGEST = true;
+  String DEFAULT_HIGHLIHGT_TAG_NAME = "em";
 
   @Property(label = "Search Index",
       description = "SaaS index (Required)")
@@ -25,6 +26,9 @@ public @interface SearchConfiguration {
   @Property(label = "Search Templates",
       description = "List of custom query templates' names, for specialized/different field boosting strategies. (Optional)")
   String[] templates() default {};
+
+  @Property(label = "Search result highlight tag name", description = "The name of the tag that will be used to highlight portions of text in the search results. (Optional)")
+  String highlightTagName() default DEFAULT_HIGHLIHGT_TAG_NAME;
 
   @Property(label = "Enable Best Bets",
       description = "Flag that enables displaying best bets on the top of the search results.")
