@@ -33,7 +33,7 @@ public class IndexContentPayloadDTO {
       String metaKeywords, String metaDescription, String scope) {
     if (StringUtils.isAnyBlank(content, title, url, repositoryPath, language, metaKeywords, metaDescription,
         scope)) {
-      throw new IllegalStateException("Please set value for all required fields.");
+      throw new IllegalArgumentException("Please set value for all required fields.");
     }
     this.content = content;
     this.title = title;

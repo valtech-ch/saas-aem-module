@@ -15,6 +15,7 @@ import com.day.cq.replication.ReplicationEvent;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.resource.ResourceResolverProviderService;
@@ -26,7 +27,6 @@ import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobBuilder;
 import org.apache.sling.event.jobs.JobManager;
@@ -53,7 +53,7 @@ class PageIndexUpdateHandlerTest {
   Job job;
 
   @Mock
-  ConfigurationBuilder configurationBuilder;
+  SearchCAConfigurationModel searchCAConfigurationModel;
 
   @Mock
   SearchConfiguration searchConfiguration;
@@ -169,9 +169,8 @@ class PageIndexUpdateHandlerTest {
     when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
     when(pageManager.getPage("/foo/bar")).thenReturn(page);
     when(page.adaptTo(Resource.class)).thenReturn(pageResource);
-    when(pageResource.adaptTo(ConfigurationBuilder.class)).thenReturn(configurationBuilder);
-    when(configurationBuilder.as(SearchConfiguration.class)).thenReturn(searchConfiguration);
-    when(searchConfiguration.client()).thenReturn("");
+    when(pageResource.adaptTo(SearchCAConfigurationModel.class)).thenReturn(searchCAConfigurationModel);
+    when(searchCAConfigurationModel.getClient()).thenThrow(IllegalStateException.class);
     assertThrows(IllegalStateException.class, () -> testee.handleEvent(event));
   }
 
@@ -189,9 +188,8 @@ class PageIndexUpdateHandlerTest {
     when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
     when(pageManager.getPage("/foo/bar")).thenReturn(page);
     when(page.adaptTo(Resource.class)).thenReturn(pageResource);
-    when(pageResource.adaptTo(ConfigurationBuilder.class)).thenReturn(configurationBuilder);
-    when(configurationBuilder.as(SearchConfiguration.class)).thenReturn(searchConfiguration);
-    when(searchConfiguration.client()).thenReturn("foo");
+    when(pageResource.adaptTo(SearchCAConfigurationModel.class)).thenReturn(searchCAConfigurationModel);
+    when(searchCAConfigurationModel.getClient()).thenReturn("foo");
     when(jobManager.createJob(anyString())).thenReturn(jobBuilder);
     when(jobBuilder.properties(anyMap())).thenReturn(jobBuilder);
     when(jobBuilder.add(anyList())).thenReturn(job);

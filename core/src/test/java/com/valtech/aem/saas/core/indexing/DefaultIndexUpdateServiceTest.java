@@ -142,14 +142,14 @@ class DefaultIndexUpdateServiceTest {
   }
 
   private IndexContentPayloadDTO getCompleteDefaultIndexContentPayload() {
-    return new IndexContentPayloadDTO("foo",
-        "bar",
-        "baz",
-        "baz",
-        "de",
-        "foo bar",
-        "bar",
-        "qux");
+    return new IndexContentPayloadDTO("adventures content that is pushed.",
+        "WKND Adventures",
+        "https://wknd.site/us/en/adventures.html",
+        "/content/wknd/(?!www)",
+        "en",
+        "sailing",
+        "boat sailing is great",
+        "scope");
   }
 }
 

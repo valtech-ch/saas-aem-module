@@ -1,13 +1,13 @@
 package com.valtech.aem.saas.core.indexing;
 
 import com.google.gson.Gson;
-import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
+import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
-import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestPost;
 import com.valtech.aem.saas.core.http.response.DefaultIndexUpdateDataExtractionStrategy;
@@ -58,22 +58,24 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
   @Override
   public Optional<IndexUpdateResponseDTO> indexUrl(@NonNull Resource context, @NonNull String url,
       @NonNull String repositoryPath) {
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
-    return indexUrl(searchConfigurationProvider.getClient(), url, repositoryPath);
+    return getSearchCAConfigurationModel(context)
+        .flatMap(searchCAConfigurationModel -> indexUrl(searchCAConfigurationModel.getClient(), url, repositoryPath));
   }
 
   @Override
   public Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull Resource context, @NonNull String url,
       @NonNull String repositoryPath) {
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
-    return deleteIndexedUrl(searchConfigurationProvider.getClient(), url, repositoryPath);
+    return getSearchCAConfigurationModel(context)
+        .flatMap(searchCAConfigurationModel -> deleteIndexedUrl(searchCAConfigurationModel.getClient(), url,
+            repositoryPath));
   }
 
   @Override
   public Optional<IndexUpdateResponseDTO> indexContent(@NonNull Resource context,
       @NonNull IndexContentPayloadDTO indexContentPayloadDto) {
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
-    return indexContent(searchConfigurationProvider.getClient(), indexContentPayloadDto);
+    return getSearchCAConfigurationModel(context)
+        .flatMap(
+            searchCAConfigurationModel -> indexContent(searchCAConfigurationModel.getClient(), indexContentPayloadDto));
   }
 
   @Override
@@ -116,6 +118,10 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     return searchRequestExecutorService.execute(searchRequest)
         .filter(SearchResponse::isSuccess)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
+  }
+
+  private Optional<SearchCAConfigurationModel> getSearchCAConfigurationModel(Resource context) {
+    return Optional.ofNullable(context.adaptTo(SearchCAConfigurationModel.class));
   }
 
   private HttpEntity createIndexUpdatePayloadEntity(@NonNull String url, @NonNull String repositoryPath) {

@@ -6,8 +6,8 @@ import com.day.cq.replication.ReplicationEvent;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
-import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,8 +69,8 @@ public class PageIndexUpdateHandler implements EventHandler {
 
   private Optional<String> getSaasClient(ResourceResolver resourceResolver, String pagePath) {
     return Optional.ofNullable(getContextResource(resourceResolver, pagePath))
-        .map(SearchConfigurationProvider::new)
-        .map(SearchConfigurationProvider::getClient);
+        .map(r -> r.adaptTo(SearchCAConfigurationModel.class))
+        .map(SearchCAConfigurationModel::getClient);
   }
 
   private Resource getContextResource(ResourceResolver resourceResolver, String pagePath) {
