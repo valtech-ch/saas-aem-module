@@ -1,36 +1,32 @@
 package com.valtech.aem.saas.api.bestbets.dto;
 
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Represents the payload object for best bets api
+ * Represents the payload object for best bets api It performs input param validation in object's construction phase.
  */
-public interface BestBetPayloadDTO {
+@ToString
+@Getter
+public class BestBetPayloadDTO {
 
-  /**
-   * Gets best bet's index.
-   *
-   * @return saas index that the best bet entry is associated with.
-   */
-  String getIndex();
+  String url;
+  String term;
+  String language;
+  String index;
 
-  /**
-   * Gets best bet's term.
-   *
-   * @return the search term that best bet entry is associated with.
-   */
-  String getTerm();
+  public BestBetPayloadDTO(String url, String term, String language) {
+    if (StringUtils.isAnyBlank(url, term, language)) {
+      throw new IllegalArgumentException("Set values for all payload properties.");
+    }
+    this.url = url;
+    this.term = term;
+    this.language = language;
+  }
 
-  /**
-   * Gets best bet's language.
-   *
-   * @return the language that best bet entry is associated with.
-   */
-  String getLanguage();
-
-  /**
-   * Gets best bet's utl.
-   *
-   * @return the url that best bet entry is associated with.
-   */
-  String getUrl();
-
+  public BestBetPayloadDTO index(String index) {
+    this.index = index;
+    return this;
+  }
 }
