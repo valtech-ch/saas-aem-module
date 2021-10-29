@@ -2,8 +2,9 @@ package com.valtech.aem.saas.core.indexing;
 
 import com.google.gson.Gson;
 import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
-import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
+import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
+import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.api.request.SearchRequest;
@@ -21,6 +22,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -51,6 +53,27 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
   @Modified
   private void activate(Configuration configuration) {
     this.configuration = configuration;
+  }
+
+  @Override
+  public Optional<IndexUpdateResponseDTO> indexUrl(@NonNull Resource context, @NonNull String url,
+      @NonNull String repositoryPath) {
+    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
+    return indexUrl(searchConfigurationProvider.getClient(), url, repositoryPath);
+  }
+
+  @Override
+  public Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull Resource context, @NonNull String url,
+      @NonNull String repositoryPath) {
+    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
+    return deleteIndexedUrl(searchConfigurationProvider.getClient(), url, repositoryPath);
+  }
+
+  @Override
+  public Optional<IndexUpdateResponseDTO> indexContent(@NonNull Resource context,
+      @NonNull IndexContentPayloadDTO indexContentPayloadDto) {
+    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
+    return indexContent(searchConfigurationProvider.getClient(), indexContentPayloadDto);
   }
 
   @Override

@@ -6,19 +6,18 @@ import com.day.cq.replication.ReplicationEvent;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
-import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.caconfig.ConfigurationResolver;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
@@ -45,9 +44,6 @@ public class PageIndexUpdateHandler implements EventHandler {
   private JobManager jobManager;
 
   @Reference
-  private ConfigurationResolver configurationResolver;
-
-  @Reference
   private ResourceResolverProvider resourceResolverProvider;
 
   @Reference
@@ -61,20 +57,20 @@ public class PageIndexUpdateHandler implements EventHandler {
     }
     String actionPath = action.getPath();
     log.info("Replication action {} occurred on {}", action.getType(), actionPath);
-    resourceResolverProvider.resourceResolverConsumer(resourceResolver ->
-        getSaasClient(resourceResolver, actionPath).ifPresent(client -> {
+    resourceResolverProvider.resourceResolverFunction(resourceResolver ->
+            getSaasClient(resourceResolver, actionPath))
+        .flatMap(Function.identity())
+        .ifPresent(client -> {
           Map<String, Object> propertiesPrototype = getPropertiesPrototype(action, client);
           pathTransformer.externalize(actionPath)
               .forEach(s -> scheduleJobForPath(s, propertiesPrototype));
-        }));
+        });
   }
 
   private Optional<String> getSaasClient(ResourceResolver resourceResolver, String pagePath) {
     return Optional.ofNullable(getContextResource(resourceResolver, pagePath))
-        .map(configurationResolver::get)
-        .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
-        .map(SearchConfiguration::client)
-        .filter(StringUtils::isNotBlank);
+        .map(SearchConfigurationProvider::new)
+        .map(SearchConfigurationProvider::getClient);
   }
 
   private Resource getContextResource(ResourceResolver resourceResolver, String pagePath) {
