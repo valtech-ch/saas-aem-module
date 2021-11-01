@@ -139,7 +139,7 @@ public class SearchTabModelImpl implements SearchTabModel {
         showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
         suggestion = fulltextSearchResults.map(FulltextSearchResultsDTO::getSuggestion).orElse(null);
       } else {
-        log.warn("Could not resolve context aware search configurations from current request.");
+        log.error("Could not resolve context aware search configurations from current request.");
       }
     });
   }
