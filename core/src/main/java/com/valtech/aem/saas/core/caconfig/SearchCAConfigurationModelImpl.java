@@ -7,6 +7,7 @@ import com.valtech.aem.saas.core.fulltextsearch.FilterModelImpl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
@@ -33,10 +34,10 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
   @PostConstruct
   private void init() {
     ConfigurationBuilder configurationBuilder = resource.adaptTo(ConfigurationBuilder.class);
-    if (configurationBuilder != null) {
-      searchConfiguration = configurationBuilder.as(SearchConfiguration.class);
+    if (configurationBuilder == null) {
+      throw new IllegalStateException("Failed to resolve search configuration from adapted resource.");
     }
-    throw new IllegalStateException("Failed to resolve search configuration from adapted resource.");
+    searchConfiguration = configurationBuilder.as(SearchConfiguration.class);
   }
 
   @Override
@@ -56,17 +57,22 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
   }
 
   @Override
-  public List<FilterModel> getFilters() {
+  public Set<FilterModel> getFilters() {
     return asStream(searchConfiguration.searchFilters())
         .map(searchFilterConfiguration -> new FilterModelImpl(searchFilterConfiguration.name(),
             searchFilterConfiguration.value()))
-        .collect(Collectors.toList());
+        .collect(Collectors.toSet());
   }
 
   @Override
   public List<String> getTemplates() {
     return asStream(searchConfiguration.templates())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public String getHighlightTagName() {
+    return searchConfiguration.highlightTagName();
   }
 
   @Override
