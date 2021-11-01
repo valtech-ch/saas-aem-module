@@ -1,37 +1,23 @@
 package com.valtech.aem.saas.api.fulltextsearch.dto;
 
 import java.util.List;
+import lombok.Builder;
+import lombok.Singular;
+import lombok.Value;
 
 /**
  * Value object representing the fulltext search results data.
  */
-public interface FulltextSearchResultsDTO {
+@Builder
+@Value
+public class FulltextSearchResultsDTO {
 
-  /**
-   * Gets the total number of search results.
-   *
-   * @return results total
-   */
-  int getTotalResultsFound();
+  int totalResultsFound;
 
-  /**
-   * Gets the current result page
-   *
-   * @return the current page of search results pagination.
-   */
-  int getCurrentResultPage();
+  int currentResultPage;
 
-  /**
-   * Gets the search results for the current page.
-   *
-   * @return list of result objects.
-   */
-  List<ResultDTO> getResults();
+  @Singular
+  List<ResultDTO> results;
 
-  /**
-   * Gets the suggestion details.
-   *
-   * @return object containing the suggestion text and the number of hits.
-   */
-  SuggestionDTO getSuggestion();
+  SuggestionDTO suggestion;
 }

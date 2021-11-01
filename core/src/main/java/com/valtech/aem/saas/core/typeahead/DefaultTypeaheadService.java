@@ -1,18 +1,17 @@
 package com.valtech.aem.saas.core.typeahead;
 
-import com.valtech.aem.saas.api.typeahead.dto.TypeaheadPayloadDTO;
+import com.valtech.aem.saas.api.query.FiltersQuery;
+import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
+import com.valtech.aem.saas.api.query.LanguageQuery;
+import com.valtech.aem.saas.api.query.TypeaheadTextQuery;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
+import com.valtech.aem.saas.api.typeahead.dto.TypeaheadPayloadDTO;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.http.response.TypeaheadDataExtractionStrategy;
 import com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService.Configuration;
-import com.valtech.aem.saas.api.query.LanguageQuery;
-import com.valtech.aem.saas.api.query.FiltersQuery;
-import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
-import com.valtech.aem.saas.api.query.TypeaheadTextQuery;
 import java.util.Collections;
 import java.util.List;
 import lombok.NonNull;
@@ -43,7 +42,6 @@ public class DefaultTypeaheadService implements TypeaheadService {
 
   @Override
   public List<String> getResults(@NonNull String index, @NonNull TypeaheadPayloadDTO typeaheadPayloadDto) {
-    SaasIndexValidator.getInstance().validate(index);
     if (StringUtils.isBlank(typeaheadPayloadDto.getText())) {
       throw new IllegalArgumentException("Typeahead payload should contain a search text.");
     }
