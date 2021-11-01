@@ -147,7 +147,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
       throw new IllegalArgumentException("Please pass a url of a content that should be indexed.");
     }
     if (StringUtils.isBlank(repositoryPath)) {
-      throw new IllegalArgumentException("Please pass a repository path regex value.");
+      throw new IllegalArgumentException("Please pass a repository path value.");
     }
   }
 

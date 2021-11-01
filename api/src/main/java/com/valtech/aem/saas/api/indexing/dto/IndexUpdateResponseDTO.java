@@ -18,5 +18,6 @@ public class IndexUpdateResponseDTO {
   @SerializedName("site.id")
   String siteId;
 
+  //TODO: change field to index (https://tracking.valtech.swiss/browse/ICSAAS-356)
   String id;
 }

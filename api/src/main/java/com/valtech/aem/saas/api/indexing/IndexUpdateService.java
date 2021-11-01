@@ -16,7 +16,7 @@ public interface IndexUpdateService {
    *
    * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
    * @param url                 public url of the resource presenting the content that will be indexed.
-   * @param repositoryPath      a regex matching the resource/content node's location in jcr.
+   * @param repositoryPath      the resource/content node's location in jcr.
    * @return response optional, which is empty if the there has been an error during the request execution.
    */
   Optional<IndexUpdateResponseDTO> indexUrl(@NonNull SearchCAConfigurationModel searchConfiguration,
@@ -29,7 +29,7 @@ public interface IndexUpdateService {
    * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
    * @param url                 public url of the resource presenting the content that will be removed from indexed
    *                            data.
-   * @param repositoryPath      a regex matching the resource/content node's location in jcr.
+   * @param repositoryPath      the resource/content node's location in jcr.
    * @return response optional, which is empty if the there has been an error during the request execution.
    */
   Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull SearchCAConfigurationModel searchConfiguration,
@@ -53,7 +53,7 @@ public interface IndexUpdateService {
    *
    * @param client         unique identifier assigned to a site in the saas admin tool.
    * @param url            public url of the resource presenting the content that will be indexed.
-   * @param repositoryPath a regex matching the resource/content node's location in jcr.
+   * @param repositoryPath the resource/content node's location in jcr.
    * @return response optional, which is empty if the there has been an error during the request execution.
    */
   Optional<IndexUpdateResponseDTO> indexUrl(@NonNull String client, @NonNull String url,
@@ -64,7 +64,7 @@ public interface IndexUpdateService {
    *
    * @param client         unique identifier assigned to a site in the saas admin tool.
    * @param url            public url of the resource presenting the content that will be removed from indexed data.
-   * @param repositoryPath a regex matching the resource/content node's location in jcr.
+   * @param repositoryPath the resource/content node's location in jcr.
    * @return response optional, which is empty if the there has been an error during the request execution.
    */
   Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull String client, @NonNull String url,
