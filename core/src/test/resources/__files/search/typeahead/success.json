@@ -3,8 +3,8 @@
     "status": 0,
     "QTime": 205,
     "params": {
-      "q": "autocomplete_text_de:is",
-      "facet.field": "autocomplete_text_de",
+      "q": "autocomplete_text_en:is",
+      "facet.field": "autocomplete_text_en",
       "facet.prefix": "wknd",
       "terms.sort": "count",
       "facet": "true"
@@ -18,7 +18,7 @@
   "facet_counts": {
     "facet_queries": {},
     "facet_fields": {
-      "autocomplete_text_de": [
+      "autocomplete_text_en": [
         "wknd",
         1,
         "wknd is",
