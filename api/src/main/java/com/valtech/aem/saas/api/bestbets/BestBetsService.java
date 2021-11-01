@@ -2,9 +2,9 @@ package com.valtech.aem.saas.api.bestbets;
 
 import com.valtech.aem.saas.api.bestbets.dto.BestBetDTO;
 import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import java.util.List;
 import lombok.NonNull;
-import org.apache.sling.api.resource.Resource;
 
 /**
  * Represents a service that manages best bets.
@@ -14,41 +14,43 @@ public interface BestBetsService {
   /**
    * Adds a best bet entry in saas admin.
    *
-   * @param context        resource that specifies the context. used for resolving the client and index parameters.
-   * @param bestBetPayload object containing details for the best bet.
+   * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
+   * @param bestBetPayload      object containing details for the best bet.
    * @throws IllegalArgumentException      exception thrown when blank client argument is passed
    * @throws IllegalStateException         exception thrown when according action is not specified
    * @throws BestBetsActionFailedException exception thrown when the add action has failed or request execution has
    *                                       failed
    */
-  void addBestBet(@NonNull Resource context, @NonNull BestBetPayloadDTO bestBetPayload);
+  void addBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull BestBetPayloadDTO bestBetPayload);
 
 
   /**
    * Adds a list of best bet entry in saas admin.
    *
-   * @param context            resource that specifies the context. used for resolving the client and index parameters.
-   * @param bestBetPayloadList a list of objects containing best bet details.
+   * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
+   * @param bestBetPayloadList  a list of objects containing best bet details.
    * @throws IllegalArgumentException      exception thrown when blank client argument is passed
    * @throws IllegalStateException         exception thrown when according action is not specified
    * @throws BestBetsActionFailedException exception thrown when the add action has failed or request execution has
    *                                       failed
    */
-  void addBestBets(@NonNull Resource context, @NonNull List<BestBetPayloadDTO> bestBetPayloadList);
+  void addBestBets(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull List<BestBetPayloadDTO> bestBetPayloadList);
 
 
   /**
    * Updates the best bet entry with the specified id.
    *
-   * @param context        resource that specifies the context. used for resolving the client and index parameters.
-   * @param bestBetId      id of the best bet that is updated.
-   * @param bestBetPayload best bet details to be updated.
+   * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
+   * @param bestBetId           id of the best bet that is updated.
+   * @param bestBetPayload      best bet details to be updated.
    * @throws IllegalArgumentException      exception thrown when blank client argument is passed
    * @throws IllegalStateException         exception thrown when according action is not specified
    * @throws BestBetsActionFailedException exception thrown when the update action has failed or request execution has
    *                                       failed
    */
-  void updateBestBet(@NonNull Resource context, int bestBetId, @NonNull BestBetPayloadDTO bestBetPayload);
+  void updateBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, int bestBetId,
+      @NonNull BestBetPayloadDTO bestBetPayload);
 
   /**
    * Deletes the best bet entry with the specified id.
@@ -60,29 +62,29 @@ public interface BestBetsService {
    * @throws BestBetsActionFailedException exception thrown when the delete action has failed or request execution has
    *                                       failed.
    */
-  void deleteBestBet(@NonNull Resource context, int bestBetId);
+  void deleteBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, int bestBetId);
 
   /**
    * Published the best bets for the specified project.
    *
-   * @param context   resource that specifies the context. used for resolving the client and index parameters.
-   * @param projectId id of the project whose best bets should be published
+   * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
+   * @param projectId           id of the project whose best bets should be published
    * @throws IllegalArgumentException      exception thrown when blank client argument is passed
    * @throws IllegalStateException         exception thrown when according action is not specified
    * @throws BestBetsActionFailedException exception thrown when the publishing action has failed or request execution
    *                                       has failed
    */
-  void publishBestBetsForProject(@NonNull Resource context, int projectId);
+  void publishBestBetsForProject(@NonNull SearchCAConfigurationModel searchConfiguration, int projectId);
 
   /**
    * Gets the list of all best bets entries.
    *
-   * @param context resource that specifies the context. used for resolving the client and index parameters.
+   * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
    * @return list of best bets.
    * @throws IllegalArgumentException      exception thrown when blank client argument is passed
    * @throws IllegalStateException         exception thrown when according action is not specified
    * @throws BestBetsActionFailedException exception thrown when the request execution has failed.
    */
-  List<BestBetDTO> getBestBets(@NonNull Resource context);
+  List<BestBetDTO> getBestBets(@NonNull SearchCAConfigurationModel searchConfiguration);
 
 }
