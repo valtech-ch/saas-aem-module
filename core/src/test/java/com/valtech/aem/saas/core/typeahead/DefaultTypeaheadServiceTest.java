@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonParser;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
@@ -48,6 +49,10 @@ class DefaultTypeaheadServiceTest {
 
   TypeaheadService service;
 
+  Resource currentResource;
+
+  SearchCAConfigurationModel searchCAConfigurationModel;
+
   @BeforeEach
   void setUp() {
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
@@ -60,43 +65,44 @@ class DefaultTypeaheadServiceTest {
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
     context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     service = context.registerInjectActivateService(new DefaultTypeaheadService());
+    currentResource = context.currentResource();
   }
 
   @Test
   void testInputValidation_noIndex() {
-    Resource contextResource = context.currentResource();
-    assertThrows(IllegalStateException.class, () -> service.getResults(contextResource, "foo", null));
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    assertThrows(IllegalStateException.class, () -> service.getResults(searchCAConfigurationModel, "foo", "de", null));
   }
 
   @Test
   void testInputValidation_noText() {
-    Resource contextResource = context.currentResource();
-    assertThrows(IllegalStateException.class, () -> service.getResults(contextResource, "foo", null));
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    assertThrows(IllegalStateException.class, () -> service.getResults(searchCAConfigurationModel, "foo", "de", null));
   }
 
   @Test
   void testGetResults() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
             .getAsJsonObject(), true)));
-    assertThat(service.getResults(contextResource, "foo bar",
+    assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "en",
         new HashSet<>(Collections.singletonList(new FilterModelImpl("foo", "bar")))), is(not(empty())));
   }
 
   @Test
   void testGetResults_noTypeaheadOptions() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/empty.json")))
             .getAsJsonObject(), true)));
-    assertThat(service.getResults(contextResource, "foo bar",
+    assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "de",
         new HashSet<>(Collections.singletonList(new FilterModelImpl("foo", "bar")))), is(empty()));
   }
 
