@@ -6,15 +6,19 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.io.IOException;
+import java.util.Locale;
 import javax.servlet.ServletException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -36,18 +40,26 @@ class AutocompleteServletTest {
   @Mock
   TypeaheadService typeaheadService;
 
+  @Mock
+  I18nProvider i18nProvider;
+
+  @Mock
+  I18n i18n;
+
   AutocompleteServlet testee;
 
   @BeforeEach
   void setUp() {
     context.registerService(TypeaheadService.class, typeaheadService);
+    context.registerService(I18nProvider.class, i18nProvider);
     testee = context.registerInjectActivateService(new AutocompleteServlet());
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
     context.create().page("/content/saas-aem-module/us");
     context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
     context.currentPage("/content/saas-aem-module/us/en");
-    context.currentResource("/content/saas-aem-module/us/en/jcr:content");
+    context.currentResource("/content/saas-aem-module/us/en/jcr:content/root/container/container/search");
     MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
+    context.requestPathInfo().setSelectorString(AutocompleteServlet.AUTOCOMPLETE_SELECTOR);
   }
 
   @Test
@@ -62,6 +74,7 @@ class AutocompleteServletTest {
 
   @Test
   void testAutocomplete() throws ServletException, IOException {
+    when(i18nProvider.getI18n(any(Locale.class))).thenReturn(i18n);
     context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "foo");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "bar");

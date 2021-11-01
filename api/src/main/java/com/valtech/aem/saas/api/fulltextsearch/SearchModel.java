@@ -17,6 +17,13 @@ public interface SearchModel extends ContainerExporter {
   String getTitle();
 
   /**
+   * Retrieves the language configurable for the search component.
+   *
+   * @return configured language.
+   */
+  String getLanguage();
+
+  /**
    * Retrieves a list of dialog configured search filter items.
    *
    * @return list of filter details.

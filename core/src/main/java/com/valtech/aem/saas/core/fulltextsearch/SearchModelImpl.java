@@ -15,6 +15,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -114,6 +115,9 @@ public class SearchModelImpl implements SearchModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @ValueMapValue
+  private String language;
+
   @Self
   private SlingHttpServletRequest request;
 
@@ -124,7 +128,7 @@ public class SearchModelImpl implements SearchModel {
   private PathTransformer pathTransformer;
 
   @OSGiService
-  protected I18nProvider i18nProvider;
+  private I18nProvider i18nProvider;
 
   @PostConstruct
   private void init() {
@@ -140,6 +144,12 @@ public class SearchModelImpl implements SearchModel {
       searchTabs = getSearchTabs(currentResource);
     }
     configJson = getSearchConfigJson();
+  }
+
+  @JsonIgnore
+  @Override
+  public String getLanguage() {
+    return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
   }
 
   @NonNull
@@ -161,7 +171,18 @@ public class SearchModelImpl implements SearchModel {
     return AUTOCOMPLETE_THRESHOLD;
   }
 
+  private boolean isAutocompleteRequest() {
+    return Optional.ofNullable(request)
+        .map(r -> r.adaptTo(RequestWrapper.class))
+        .map(RequestWrapper::getSelectors)
+        .orElse(Collections.emptyList())
+        .contains(AutocompleteServlet.AUTOCOMPLETE_SELECTOR);
+  }
+
   private List<String> getSearchTabs(Resource searchResource) {
+    if (isAutocompleteRequest()) {
+      return Collections.emptyList();
+    }
     return Optional.ofNullable(searchResource.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
