@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.day.cq.wcm.api.PageManagerFactory;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
@@ -10,7 +10,6 @@ import com.valtech.aem.saas.api.query.FiltersQuery;
 import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.api.query.LanguageQuery;
 import com.valtech.aem.saas.api.query.TermQuery;
-import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
@@ -34,7 +33,6 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -56,41 +54,31 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
   @Reference
   private SearchRequestExecutorService searchRequestExecutorService;
 
-  @Reference
-  private PageManagerFactory pageManagerFactory;
-
   private Configuration configuration;
 
   @Override
-  public Optional<FulltextSearchResultsDTO> getResults(@NonNull Resource context, String searchText, int start,
+  public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
+      String searchText, @NonNull String language, int start,
       int rows,
       Set<FilterModel> filters,
       Set<String> facets) {
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
-    String requestUrl = getRequestUrl(getApiUrl(searchConfigurationProvider.getIndex()),
+    String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
         createQueryString(searchText,
-            getLanguage(context),
-            getEffectiveFilters(searchConfigurationProvider.getFilters(), filters),
+            language,
+            getEffectiveFilters(searchConfiguration.getFilters(), filters),
             facets));
     log.debug("Search GET Request: {}", requestUrl);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
     if (searchResponse.isPresent()) {
       printResponseHeaderInLog(searchResponse.get());
-      return getFulltextSearchResults(searchResponse.get(), searchConfigurationProvider.isAutoSuggestEnabled(),
-          searchConfigurationProvider.isBestBetsEnabled());
+      return getFulltextSearchResults(searchResponse.get(), searchConfiguration.isAutoSuggestEnabled(),
+          searchConfiguration.isBestBetsEnabled());
     }
     return Optional.empty();
   }
 
   private Set<FilterModel> getEffectiveFilters(Set<FilterModel> contextFilters, Set<FilterModel> specifiedFilters) {
     return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
-  }
-
-  private String getLanguage(Resource context) {
-    return pageManagerFactory.getPageManager(context.getResourceResolver())
-        .getContainingPage(context)
-        .getLanguage()
-        .getLanguage();
   }
 
   private String createQueryString(String term, String language, Set<FilterModel> filters, Set<String> facets) {

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.request.SearchRequest;
@@ -44,6 +45,10 @@ class DefaultFulltextSearchServiceTest {
 
   FulltextSearchService testee;
 
+  Resource currentResource;
+
+  SearchCAConfigurationModel searchCAConfigurationModel;
+
   @BeforeEach
   void setUp() {
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
@@ -56,48 +61,50 @@ class DefaultFulltextSearchServiceTest {
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
     context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     testee = context.registerInjectActivateService(new DefaultFulltextSearchService());
+    currentResource = context.currentResource();
   }
 
   @Test
   void testNullArguments() {
-    Assertions.assertThrows(NullPointerException.class, () -> testee.getResults(null, 0, 10));
+    Assertions.assertThrows(NullPointerException.class, () -> testee.getResults(null, "de", 0, 10));
   }
 
   @Test
   void testSearchIndexNotConfigured() {
-    Resource contextResource = context.currentResource();
-    Assertions.assertThrows(IllegalStateException.class, () -> testee.getResults(contextResource, 0, 10));
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    Assertions.assertThrows(IllegalStateException.class,
+        () -> testee.getResults(searchCAConfigurationModel, "de", 0, 10));
   }
 
   @Test
   void testGetResults_failedRequestExecution() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(Optional.empty());
-    assertThat(testee.getResults(contextResource, 0, 10).isPresent(), is(false));
+    assertThat(testee.getResults(searchCAConfigurationModel, "de", 0, 10).isPresent(), is(false));
   }
 
   @Test
   void testGetResults_responseBodyMissing() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
-    assertThat(testee.getResults(contextResource, 0, 10).isPresent(), is(false));
+    assertThat(testee.getResults(searchCAConfigurationModel, "de", 0, 10).isPresent(), is(false));
   }
 
   @Test
   void testGetResults_ok() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
             .getAsJsonObject(), true)));
-    assertThat(testee.getResults(contextResource, 0, 10).isPresent(), is(true));
+    assertThat(testee.getResults(searchCAConfigurationModel, "de", 0, 10).isPresent(), is(true));
   }
 
 }

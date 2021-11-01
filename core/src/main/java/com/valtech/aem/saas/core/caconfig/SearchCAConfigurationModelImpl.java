@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.caconfig;
 
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.core.fulltextsearch.FilterModelImpl;
@@ -9,32 +10,37 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
+import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.caconfig.ConfigurationBuilder;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 
 /**
- * A helper that provides context-aware search configurations.
+ * A sling model that provides context-aware search configurations.
  */
-public final class SearchConfigurationProvider {
+@Slf4j
+@Model(adaptables = Resource.class,
+    adapters = SearchCAConfigurationModel.class)
+public final class SearchCAConfigurationModelImpl implements SearchCAConfigurationModel {
 
-  private final SearchConfiguration searchConfiguration;
+  @Self
+  private Resource resource;
 
-  public SearchConfigurationProvider(@NonNull Resource resource) {
+  private SearchConfiguration searchConfiguration;
+
+  @PostConstruct
+  private void init() {
     ConfigurationBuilder configurationBuilder = resource.adaptTo(ConfigurationBuilder.class);
     if (configurationBuilder == null) {
-      throw new IllegalArgumentException("Resource can not be adapted to ConfigurationBuilder.");
+      throw new IllegalStateException("Failed to resolve search configuration from adapted resource.");
     }
     searchConfiguration = configurationBuilder.as(SearchConfiguration.class);
   }
 
-  /**
-   * Retrieves configured index value. Index is considered required.
-   *
-   * @return saas index
-   * @throws IllegalStateException thrown when index value is blank.
-   */
+  @Override
   public String getIndex() {
     if (StringUtils.isBlank(searchConfiguration.index())) {
       throw new IllegalStateException("Search Index must be configured.");
@@ -42,12 +48,7 @@ public final class SearchConfigurationProvider {
     return searchConfiguration.index();
   }
 
-  /**
-   * Retrieves configured client value. Client is considered required.
-   *
-   * @return saas client
-   * @throws IllegalStateException thrown when client value is blank.
-   */
+  @Override
   public String getClient() {
     if (StringUtils.isBlank(searchConfiguration.client())) {
       throw new IllegalStateException("Search Client must be configured.");
@@ -55,12 +56,7 @@ public final class SearchConfigurationProvider {
     return searchConfiguration.client();
   }
 
-
-  /**
-   * Retrieves set of query ready items.
-   *
-   * @return Set of filter entries.
-   */
+  @Override
   public Set<FilterModel> getFilters() {
     return asStream(searchConfiguration.searchFilters())
         .map(searchFilterConfiguration -> new FilterModelImpl(searchFilterConfiguration.name(),
@@ -68,34 +64,23 @@ public final class SearchConfigurationProvider {
         .collect(Collectors.toSet());
   }
 
-  /**
-   * Retrieves a list of predefined query templates.
-   *
-   * @return template names list
-   */
+  @Override
   public List<String> getTemplates() {
     return asStream(searchConfiguration.templates())
         .collect(Collectors.toList());
   }
 
+  @Override
   public String getHighlightTagName() {
     return searchConfiguration.highlightTagName();
   }
 
-  /**
-   * Checks whether best bets feature is enabled.
-   *
-   * @return true if enabled.
-   */
+  @Override
   public boolean isBestBetsEnabled() {
     return searchConfiguration.enableBestBets();
   }
 
-  /**
-   * Checks whether auto suggest feature is enabled.
-   *
-   * @return true if enabled.
-   */
+  @Override
   public boolean isAutoSuggestEnabled() {
     return searchConfiguration.enableAutoSuggest();
   }

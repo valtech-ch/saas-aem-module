@@ -8,6 +8,7 @@ import com.adobe.cq.export.json.ExporterConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
@@ -26,6 +27,7 @@ import java.util.OptionalInt;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
@@ -40,6 +42,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 /**
  * Search tab component sling model that handles component's rendering.
  */
+@Slf4j
 @Model(adaptables = SlingHttpServletRequest.class,
     adapters = {SearchTabModel.class, ComponentExporter.class},
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
@@ -124,12 +127,20 @@ public class SearchTabModelImpl implements SearchTabModel {
     getParentSearchComponent().ifPresent(parentSearch -> {
       startPage = getStartPage(requestWrapper);
       resultsPerPage = getConfiguredResultsPerPage(parentSearch);
-      Optional<FulltextSearchResultsDTO> fulltextSearchResults = fulltextSearchService.getResults(request.getResource(),
-          searchTerm, startPage, resultsPerPage, getEffectiveFilters(parentSearch));
-      results = fulltextSearchResults.map(FulltextSearchResultsDTO::getResults).orElse(Collections.emptyList());
-      resultsTotal = fulltextSearchResults.map(FulltextSearchResultsDTO::getTotalResultsFound).orElse(NO_RESULTS);
-      showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
-      suggestion = fulltextSearchResults.map(FulltextSearchResultsDTO::getSuggestion).orElse(null);
+      SearchCAConfigurationModel searchCAConfigurationModel = requestWrapper.getResource().adaptTo(
+          SearchCAConfigurationModel.class);
+      if (searchCAConfigurationModel != null) {
+        Optional<FulltextSearchResultsDTO> fulltextSearchResults = fulltextSearchService.getResults(
+            searchCAConfigurationModel,
+            searchTerm, requestWrapper.getLocale().getLanguage(), startPage, resultsPerPage,
+            getEffectiveFilters(parentSearch));
+        results = fulltextSearchResults.map(FulltextSearchResultsDTO::getResults).orElse(Collections.emptyList());
+        resultsTotal = fulltextSearchResults.map(FulltextSearchResultsDTO::getTotalResultsFound).orElse(NO_RESULTS);
+        showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
+        suggestion = fulltextSearchResults.map(FulltextSearchResultsDTO::getSuggestion).orElse(null);
+      } else {
+        log.warn("Could not resolve context aware search configurations from current request.");
+      }
     });
   }
 
