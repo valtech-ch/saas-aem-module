@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.resource;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.NonNull;
@@ -25,6 +26,6 @@ public interface ResourceResolverProvider {
    * @param <R>      the type of the resulting object.
    * @return the result of the lambda function consuming the resource resolver instance.
    */
-  <R> R resourceResolverFunction(@NonNull Function<ResourceResolver, R> function);
+  <R> Optional<R> resourceResolverFunction(@NonNull Function<ResourceResolver, R> function);
 
 }

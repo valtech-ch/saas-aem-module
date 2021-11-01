@@ -12,7 +12,7 @@ public interface IndexUpdateJobProcessingStrategy {
    *
    * @param client         unique identifier assigned to a site in the saas admin tool.
    * @param url            public url of the resource presenting the content that will be indexed.
-   * @param repositoryPath a regex matching the resource/content node's location in jcr.
+   * @param repositoryPath the resource/content node's location in jcr.
    * @return an enum of type @{@link JobConsumer.JobResult}.
    */
   JobConsumer.JobResult process(String client, String url, String repositoryPath);

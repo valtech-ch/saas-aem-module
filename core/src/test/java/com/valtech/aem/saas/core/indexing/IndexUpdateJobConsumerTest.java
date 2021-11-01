@@ -3,11 +3,10 @@ package com.valtech.aem.saas.core.indexing;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
+import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.event.jobs.Job;
@@ -78,7 +77,7 @@ class IndexUpdateJobConsumerTest {
     mockClient();
     mockUrl();
     mockRepositoryPath();
-    IndexUpdateResponseDTO indexUpdateResponseDto = mock(IndexUpdateResponseDTO.class);
+    IndexUpdateResponseDTO indexUpdateResponseDto = new IndexUpdateResponseDTO("foo", "bar", "baz", "quz");
     when(indexUpdateService.indexUrl(anyString(), anyString(), anyString())).thenReturn(
         Optional.of(indexUpdateResponseDto));
     MatcherAssert.assertThat(testee.process(job), Is.is(JobResult.OK));
@@ -100,7 +99,7 @@ class IndexUpdateJobConsumerTest {
     mockClient();
     mockUrl();
     mockRepositoryPath();
-    IndexUpdateResponseDTO indexUpdateResponseDto = mock(IndexUpdateResponseDTO.class);
+    IndexUpdateResponseDTO indexUpdateResponseDto = new IndexUpdateResponseDTO("foo", "bar", "baz", "quz");
     when(indexUpdateService.deleteIndexedUrl(anyString(), anyString(), anyString())).thenReturn(
         Optional.of(indexUpdateResponseDto));
     MatcherAssert.assertThat(testee.process(job), Is.is(JobResult.OK));
