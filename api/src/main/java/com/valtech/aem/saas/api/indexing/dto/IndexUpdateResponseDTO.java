@@ -1,35 +1,23 @@
 package com.valtech.aem.saas.api.indexing.dto;
 
+import com.google.gson.annotations.SerializedName;
+import lombok.ToString;
+import lombok.Value;
+
 /**
- * An object representing the response of an index update request.
+ * Represents the response of an index update request. The POJO is used for serializing response of index update api.
  */
-public interface IndexUpdateResponseDTO {
+@Value
+@ToString
+public class IndexUpdateResponseDTO {
 
-  /**
-   * Gets short feedback message for the action's success or failure.
-   *
-   * @return text message.
-   */
-  String getMessage();
+  String message;
 
-  /**
-   * Gets the page's url which content is indexed.
-   *
-   * @return page url string.
-   */
-  String getUrl();
+  String url;
 
-  /**
-   * Gets the site id.
-   *
-   * @return site id.
-   */
-  String getSiteId();
+  @SerializedName("site.id")
+  String siteId;
 
-  /**
-   * Gets the index id.
-   *
-   * @return index id.
-   */
-  String getId();
+  //TODO: change field to index (https://tracking.valtech.swiss/browse/ICSAAS-356)
+  String id;
 }
