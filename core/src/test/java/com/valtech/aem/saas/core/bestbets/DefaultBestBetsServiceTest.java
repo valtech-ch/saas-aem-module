@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
 import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
@@ -49,6 +50,10 @@ class DefaultBestBetsServiceTest {
 
   DefaultBestBetsService testee;
 
+  Resource currentResource;
+
+  SearchCAConfigurationModel searchCAConfigurationModel;
+
   @BeforeEach
   void setUp() {
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
@@ -61,201 +66,204 @@ class DefaultBestBetsServiceTest {
     context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
     context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
     testee = context.registerInjectActivateService(new DefaultBestBetsService());
+    currentResource = context.currentResource();
   }
 
   @Test
   void testAddBestBet() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
-    assertDoesNotThrow(() -> testee.addBestBet(contextResource,
+    assertDoesNotThrow(() -> testee.addBestBet(searchCAConfigurationModel,
         new BestBetPayloadDTO("foo", "baz", "de")));
   }
 
   @Test
   void testClientMissing() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
-    assertThrows(IllegalStateException.class, () -> testee.addBestBet(contextResource, payload));
+    assertThrows(IllegalStateException.class, () -> testee.addBestBet(searchCAConfigurationModel, payload));
     List<BestBetPayloadDTO> bestBetsPayload = Collections.singletonList(payload);
-    assertThrows(IllegalStateException.class, () -> testee.addBestBets(contextResource, bestBetsPayload));
-    assertThrows(IllegalStateException.class, () -> testee.updateBestBet(contextResource, 1,
+    assertThrows(IllegalStateException.class, () -> testee.addBestBets(searchCAConfigurationModel, bestBetsPayload));
+    assertThrows(IllegalStateException.class, () -> testee.updateBestBet(searchCAConfigurationModel, 1,
         payload));
-    assertThrows(IllegalStateException.class, () -> testee.deleteBestBet(contextResource, 1));
-    assertThrows(IllegalStateException.class, () -> testee.publishBestBetsForProject(contextResource, 1));
-    assertThrows(IllegalStateException.class, () -> testee.getBestBets(contextResource));
+    assertThrows(IllegalStateException.class, () -> testee.deleteBestBet(searchCAConfigurationModel, 1));
+    assertThrows(IllegalStateException.class, () -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
+    assertThrows(IllegalStateException.class, () -> testee.getBestBets(searchCAConfigurationModel));
   }
 
   @Test
   void testIndexMissing() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
     List<BestBetPayloadDTO> bestBetsPayload = Collections.singletonList(payload);
-    assertThrows(IllegalStateException.class, () -> testee.addBestBet(contextResource,
+    assertThrows(IllegalStateException.class, () -> testee.addBestBet(searchCAConfigurationModel,
         payload));
-    assertThrows(IllegalStateException.class, () -> testee.addBestBets(contextResource, bestBetsPayload));
-    assertThrows(IllegalStateException.class, () -> testee.updateBestBet(contextResource, 1,
+    assertThrows(IllegalStateException.class, () -> testee.addBestBets(searchCAConfigurationModel, bestBetsPayload));
+    assertThrows(IllegalStateException.class, () -> testee.updateBestBet(searchCAConfigurationModel, 1,
         payload));
   }
 
   @Test
   void testAddBestBet_failed() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
-    assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBet(contextResource, payload));
+    assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBet(searchCAConfigurationModel, payload));
   }
 
   @Test
   void testAddBestBets() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
-    assertDoesNotThrow(() -> testee.addBestBets(contextResource, Collections.singletonList(
+    assertDoesNotThrow(() -> testee.addBestBets(searchCAConfigurationModel, Collections.singletonList(
         new BestBetPayloadDTO("foo", "baz", "de"))));
   }
 
   @Test
   void testAddBestBets_failed() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     List<BestBetPayloadDTO> payload = Collections.singletonList(
         new BestBetPayloadDTO("foo", "baz", "de"));
-    assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBets(contextResource, payload));
+    assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBets(searchCAConfigurationModel, payload));
   }
 
   @Test
   void testUpdateBestBet() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(
                     getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
             .getAsJsonObject(), true)));
-    assertDoesNotThrow(() -> testee.updateBestBet(contextResource, 1,
+    assertDoesNotThrow(() -> testee.updateBestBet(searchCAConfigurationModel, 1,
         new BestBetPayloadDTO("foo", "baz", "de")));
   }
 
   @Test
-  void testUpdateBestBet_missingAction(AemContext context) {
+  void testUpdateBestBet_missingAction() {
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     testee = context.registerInjectActivateService(new DefaultBestBetsService(),
         ImmutableMap.<String, Object>builder()
             .put("bestBetsService.apiUpdateBestBetAction", "")
             .build());
-    Resource contextResource = context.currentResource();
     BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
-    assertThrows(IllegalStateException.class, () -> testee.updateBestBet(contextResource, 1,
+    assertThrows(IllegalStateException.class, () -> testee.updateBestBet(searchCAConfigurationModel, 1,
         payload));
   }
 
   @Test
   void testUpdateBestBet_failed() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
-    assertThrows(BestBetsActionFailedException.class, () -> testee.updateBestBet(contextResource, 1, payload));
+    assertThrows(BestBetsActionFailedException.class,
+        () -> testee.updateBestBet(searchCAConfigurationModel, 1, payload));
   }
 
   @Test
   void testDeleteBestBet() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(
                     getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
             .getAsJsonObject(), true)));
-    assertDoesNotThrow(() -> testee.deleteBestBet(contextResource, 1));
+    assertDoesNotThrow(() -> testee.deleteBestBet(searchCAConfigurationModel, 1));
   }
 
   @Test
-  void testDeleteBestBet_missingAction(AemContext context) {
+  void testDeleteBestBet_missingAction() {
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     testee = context.registerInjectActivateService(new DefaultBestBetsService(),
         ImmutableMap.<String, Object>builder()
             .put("bestBetsService.apiDeleteBestBetAction", "")
             .build());
-    Resource contextResource = context.currentResource();
-    assertThrows(IllegalStateException.class, () -> testee.deleteBestBet(contextResource, 1));
+    assertThrows(IllegalStateException.class, () -> testee.deleteBestBet(searchCAConfigurationModel, 1));
   }
 
   @Test
   void testDeleteBestBet_failed() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
-    assertThrows(BestBetsActionFailedException.class, () -> testee.deleteBestBet(contextResource, 1));
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    assertThrows(BestBetsActionFailedException.class, () -> testee.deleteBestBet(searchCAConfigurationModel, 1));
   }
 
   @Test
   void testPublishBestBetsForProject() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
-    assertDoesNotThrow(() -> testee.publishBestBetsForProject(contextResource, 1));
+    assertDoesNotThrow(() -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
   }
 
   @Test
-  void testPublishBestBetsForProject_wrongConfigForAction(AemContext context) {
+  void testPublishBestBetsForProject_wrongConfigForAction() {
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     testee = context.registerInjectActivateService(new DefaultBestBetsService(),
         ImmutableMap.<String, Object>builder()
             .put("bestBetsService.apiPublishProjectBestBetsAction", "/bestbets")
             .build());
-    Resource contextResource = context.currentResource();
-    assertThrows(IllegalArgumentException.class, () -> testee.publishBestBetsForProject(contextResource, 1));
+    assertThrows(IllegalArgumentException.class, () -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
   }
 
   @Test
   void testPublishBestBetsForProject_failed() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
-    assertThrows(BestBetsActionFailedException.class, () -> testee.publishBestBetsForProject(contextResource, 1));
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    assertThrows(BestBetsActionFailedException.class,
+        () -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
   }
 
   @Test
   void testGetBestBets() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonParser().parse(
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
             .getAsJsonArray(), true)));
-    assertThat(testee.getBestBets(contextResource), not(empty()));
+    assertThat(testee.getBestBets(searchCAConfigurationModel), not(empty()));
   }
 
   @Test
-  void testGetBestBets_missingAction(AemContext context) {
-    Resource contextResource = context.currentResource();
+  void testGetBestBets_missingAction() {
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
     testee = context.registerInjectActivateService(new DefaultBestBetsService(),
         ImmutableMap.<String, Object>builder()
             .put("bestBetsService.apiGetAllBestBetsAction", "")
             .build());
-    assertThrows(IllegalStateException.class, () -> testee.getBestBets(contextResource));
+    assertThrows(IllegalStateException.class, () -> testee.getBestBets(searchCAConfigurationModel));
   }
 
   @Test
   void testGetBestBets_failed() {
-    Resource contextResource = context.currentResource();
-    MockContextAwareConfig.writeConfiguration(context, contextResource.getPath(), SearchConfiguration.class,
+    MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
-    assertThrows(BestBetsActionFailedException.class, () -> testee.getBestBets(contextResource));
+    searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    assertThrows(BestBetsActionFailedException.class, () -> testee.getBestBets(searchCAConfigurationModel));
   }
 
 }

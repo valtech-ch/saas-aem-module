@@ -5,9 +5,9 @@ import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
 import com.valtech.aem.saas.api.bestbets.BestBetsService;
 import com.valtech.aem.saas.api.bestbets.dto.BestBetDTO;
 import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.bestbets.DefaultBestBetsService.Configuration;
-import com.valtech.aem.saas.core.caconfig.SearchConfigurationProvider;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.ContentType;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -58,16 +57,16 @@ public class DefaultBestBetsService implements BestBetsService {
   private Configuration configuration;
 
   @Override
-  public void addBestBet(@NonNull Resource context, @NonNull BestBetPayloadDTO bestBetPayloadDto) {
+  public void addBestBet(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull BestBetPayloadDTO bestBetPayloadDto) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetAction())) {
       throw new IllegalStateException("Add best bet action path is not specified.");
     }
 
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
     SearchRequest searchRequest = SearchRequestPost.builder()
-        .uri(createApiCommonPath(searchConfigurationProvider.getClient())
+        .uri(createApiCommonPath(searchConfiguration.getClient())
             + configuration.bestBetsService_apiAddBestBetAction())
-        .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(searchConfigurationProvider.getIndex())))
+        .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(searchConfiguration.getIndex())))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
@@ -76,16 +75,16 @@ public class DefaultBestBetsService implements BestBetsService {
   }
 
   @Override
-  public void addBestBets(@NonNull Resource context, @NonNull List<BestBetPayloadDTO> bestBetPayloadList) {
+  public void addBestBets(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull List<BestBetPayloadDTO> bestBetPayloadList) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetsAction())) {
       throw new IllegalStateException("Add best bets action path is not specified.");
     }
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
     SearchRequest searchRequest = SearchRequestPost.builder()
-        .uri(createApiCommonPath(searchConfigurationProvider.getClient())
+        .uri(createApiCommonPath(searchConfiguration.getClient())
             + configuration.bestBetsService_apiAddBestBetsAction())
         .httpEntity(createJsonPayloadEntity(bestBetPayloadList.stream()
-            .map(bestBetPayloadDTO -> bestBetPayloadDTO.index(searchConfigurationProvider.getIndex())).collect(
+            .map(bestBetPayloadDTO -> bestBetPayloadDTO.index(searchConfiguration.getIndex())).collect(
                 Collectors.toList())))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
@@ -96,16 +95,16 @@ public class DefaultBestBetsService implements BestBetsService {
   }
 
   @Override
-  public void updateBestBet(@NonNull Resource context, int bestBetId, @NonNull BestBetPayloadDTO bestBetPayloadDto) {
+  public void updateBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, int bestBetId,
+      @NonNull BestBetPayloadDTO bestBetPayloadDto) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiUpdateBestBetAction())) {
       throw new IllegalStateException("Update best bet action path is not specified.");
     }
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
     SearchRequest searchRequest = SearchRequestPut.builder()
-        .uri(createApiCommonPath(searchConfigurationProvider.getClient())
+        .uri(createApiCommonPath(searchConfiguration.getClient())
             + configuration.bestBetsService_apiUpdateBestBetAction() + URL_PATH_DELIMITER
             + bestBetId)
-        .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(searchConfigurationProvider.getIndex())))
+        .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(searchConfiguration.getIndex())))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
@@ -121,13 +120,12 @@ public class DefaultBestBetsService implements BestBetsService {
   }
 
   @Override
-  public void deleteBestBet(@NonNull Resource context, int bestBetId) {
+  public void deleteBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, int bestBetId) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiDeleteBestBetAction())) {
       throw new IllegalStateException("Delete best bet action path is not specified.");
     }
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
     SearchRequest searchRequest = SearchRequestDelete.builder()
-        .uri(createApiCommonPath(searchConfigurationProvider.getClient())
+        .uri(createApiCommonPath(searchConfiguration.getClient())
             + configuration.bestBetsService_apiDeleteBestBetAction() + URL_PATH_DELIMITER
             + bestBetId)
         .build();
@@ -144,7 +142,7 @@ public class DefaultBestBetsService implements BestBetsService {
   }
 
   @Override
-  public void publishBestBetsForProject(@NonNull Resource context, int projectId) {
+  public void publishBestBetsForProject(@NonNull SearchCAConfigurationModel searchConfiguration, int projectId) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiPublishProjectBestBetsAction())) {
       throw new IllegalStateException("Publish best bets for project action path is not specified.");
     }
@@ -153,9 +151,8 @@ public class DefaultBestBetsService implements BestBetsService {
       throw new IllegalArgumentException(
           "Publish Best Bets For Project Action is of illegal format. It should contain a wildcard/placeholder for project id.");
     }
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
     SearchRequest searchRequest = new SearchRequestGet(
-        getPreparePublishBestBetsAction(searchConfigurationProvider.getClient(), projectId));
+        getPreparePublishBestBetsAction(searchConfiguration.getClient(), projectId));
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
     searchResponse.ifPresent(
@@ -163,13 +160,12 @@ public class DefaultBestBetsService implements BestBetsService {
   }
 
   @Override
-  public List<BestBetDTO> getBestBets(@NonNull Resource context) {
+  public List<BestBetDTO> getBestBets(@NonNull SearchCAConfigurationModel searchConfiguration) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiGetAllBestBetsAction())) {
       throw new IllegalStateException("Get best bets action path is not specified.");
     }
-    SearchConfigurationProvider searchConfigurationProvider = new SearchConfigurationProvider(context);
     SearchRequest searchRequest = new SearchRequestGet(
-        createApiCommonPath(searchConfigurationProvider.getClient())
+        createApiCommonPath(searchConfiguration.getClient())
             + configuration.bestBetsService_apiGetAllBestBetsAction());
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
