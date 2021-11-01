@@ -40,9 +40,6 @@ class SearchModelImplTest {
   FulltextSearchService fulltextSearchService;
 
   @Mock
-  FulltextSearchConfigurationService fulltextSearchConfigurationService;
-
-  @Mock
   PathTransformer pathTransformer;
 
   @Mock
@@ -58,7 +55,6 @@ class SearchModelImplTest {
     when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
     when(i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
     when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
-    context.registerService(FulltextSearchConfigurationService.class, fulltextSearchConfigurationService);
     context.registerService(FulltextSearchService.class, fulltextSearchService);
     context.registerService(PathTransformer.class, pathTransformer);
     context.registerService(I18nProvider.class, i18nProvider);

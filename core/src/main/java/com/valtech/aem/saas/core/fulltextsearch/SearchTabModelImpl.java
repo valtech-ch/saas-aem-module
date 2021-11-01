@@ -5,28 +5,19 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl.RESOUR
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
-import com.day.cq.wcm.api.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
-import com.valtech.aem.saas.api.fulltextsearch.dto.DefaultFulltextSearchRequestPayloadDTO;
-import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchPayloadDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
-import com.valtech.aem.saas.api.query.FiltersQuery;
-import com.valtech.aem.saas.api.query.HighlightingTagQuery;
-import com.valtech.aem.saas.api.query.LanguageQuery;
-import com.valtech.aem.saas.api.query.PaginationQuery;
-import com.valtech.aem.saas.api.query.TermQuery;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import java.util.Collections;
@@ -36,22 +27,22 @@ import java.util.OptionalInt;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
-import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
 /**
  * Search tab component sling model that handles component's rendering.
  */
+@Slf4j
 @Model(adaptables = SlingHttpServletRequest.class,
     adapters = {SearchTabModel.class, ComponentExporter.class},
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
@@ -91,6 +82,11 @@ public class SearchTabModelImpl implements SearchTabModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @JsonIgnore
+  @Getter
+  @ChildResource
+  private List<FilterModel> filters;
+
   @Self
   private SlingHttpServletRequest request;
 
@@ -99,17 +95,6 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   @OSGiService
   private FulltextSearchService fulltextSearchService;
-
-  @OSGiService
-  private FulltextSearchConfigurationService fulltextSearchConfigurationService;
-
-  @ScriptVariable
-  private Page currentPage;
-
-  @JsonIgnore
-  @Getter
-  @ChildResource
-  private List<FilterModel> filters;
 
   private int startPage;
 
@@ -142,32 +127,21 @@ public class SearchTabModelImpl implements SearchTabModel {
     getParentSearchComponent().ifPresent(parentSearch -> {
       startPage = getStartPage(requestWrapper);
       resultsPerPage = getConfiguredResultsPerPage(parentSearch);
-      SearchConfiguration searchConfiguration = request.getResource().adaptTo(ConfigurationBuilder.class)
-          .as(SearchConfiguration.class);
-      FulltextSearchPayloadDTO fulltextSearchPayloadDto =
-          getFulltextSearchGetRequestPayload(searchTerm, parentSearch);
-      Optional<FulltextSearchResultsDTO> fulltextSearchResults = fulltextSearchService.getResults(
-          searchConfiguration.index(), fulltextSearchPayloadDto, searchConfiguration.enableAutoSuggest(),
-          searchConfiguration.enableBestBets());
-      results = fulltextSearchResults.map(FulltextSearchResultsDTO::getResults).orElse(Collections.emptyList());
-      resultsTotal = fulltextSearchResults.map(FulltextSearchResultsDTO::getTotalResultsFound).orElse(NO_RESULTS);
-      showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
-      suggestion = fulltextSearchResults.map(FulltextSearchResultsDTO::getSuggestion).orElse(null);
+      SearchCAConfigurationModel searchCAConfigurationModel = requestWrapper.getResource().adaptTo(
+          SearchCAConfigurationModel.class);
+      if (searchCAConfigurationModel != null) {
+        Optional<FulltextSearchResultsDTO> fulltextSearchResults = fulltextSearchService.getResults(
+            searchCAConfigurationModel,
+            searchTerm, requestWrapper.getLocale().getLanguage(), startPage, resultsPerPage,
+            getEffectiveFilters(parentSearch));
+        results = fulltextSearchResults.map(FulltextSearchResultsDTO::getResults).orElse(Collections.emptyList());
+        resultsTotal = fulltextSearchResults.map(FulltextSearchResultsDTO::getTotalResultsFound).orElse(NO_RESULTS);
+        showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
+        suggestion = fulltextSearchResults.map(FulltextSearchResultsDTO::getSuggestion).orElse(null);
+      } else {
+        log.error("Could not resolve context aware search configurations from current request.");
+      }
     });
-  }
-
-  private DefaultFulltextSearchRequestPayloadDTO getFulltextSearchGetRequestPayload(String searchTerm,
-      SearchModel parentSearch) {
-    return DefaultFulltextSearchRequestPayloadDTO.builder(new TermQuery(searchTerm),
-            new LanguageQuery(getLanguage()))
-        .optionalQuery(
-            new PaginationQuery(startPage, resultsPerPage,
-                fulltextSearchConfigurationService.getRowsMaxLimit()))
-        .optionalQuery(new HighlightingTagQuery(HighlightingDTO.HIGHLIGHTING_TAG_NAME))
-        .optionalQuery(FiltersQuery.builder()
-            .filters(getEffectiveFilters(parentSearch))
-            .build())
-        .build();
   }
 
   private int getConfiguredResultsPerPage(SearchModel parentSearch) {
@@ -187,9 +161,5 @@ public class SearchTabModelImpl implements SearchTabModel {
     return Optional.ofNullable(request.getResource().adaptTo(ResourceWrapper.class))
         .flatMap(r -> r.getParentWithResourceType(SearchModelImpl.RESOURCE_TYPE))
         .map(r -> r.adaptTo(SearchModel.class));
-  }
-
-  private String getLanguage() {
-    return currentPage.getLanguage().getLanguage();
   }
 }

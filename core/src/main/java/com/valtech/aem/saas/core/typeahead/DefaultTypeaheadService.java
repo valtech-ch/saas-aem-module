@@ -44,9 +44,9 @@ public class DefaultTypeaheadService implements TypeaheadService {
   private Configuration configuration;
 
   @Override
-  public List<String> getResults(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull String text,
-      @NonNull String language, Set<FilterModel> filters) {
-    if (StringUtils.isBlank(text)) {
+  public List<String> getResults(@NonNull String index, @NonNull TypeaheadPayloadDTO typeaheadPayloadDto) {
+    SaasIndexValidator.getInstance().validate(index);
+    if (StringUtils.isBlank(typeaheadPayloadDto.getText())) {
       throw new IllegalArgumentException("Typeahead payload should contain a search text.");
     }
     if (StringUtils.isBlank(language)) {
