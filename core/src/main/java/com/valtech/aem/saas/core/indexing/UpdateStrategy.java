@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.indexing;
 
-import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
+import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

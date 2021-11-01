@@ -1,12 +1,13 @@
 package com.valtech.aem.saas.core.indexing;
 
 import com.google.gson.Gson;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
+import com.valtech.aem.saas.api.indexing.IndexUpdateService;
 import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
-import com.valtech.aem.saas.api.indexing.IndexUpdateService;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestPost;
 import com.valtech.aem.saas.core.http.response.DefaultIndexUpdateDataExtractionStrategy;
@@ -51,6 +52,26 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
   @Modified
   private void activate(Configuration configuration) {
     this.configuration = configuration;
+  }
+
+  @Override
+  public Optional<IndexUpdateResponseDTO> indexUrl(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull String url,
+      @NonNull String repositoryPath) {
+    return indexUrl(searchConfiguration.getClient(), url, repositoryPath);
+  }
+
+  @Override
+  public Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull String url,
+      @NonNull String repositoryPath) {
+    return deleteIndexedUrl(searchConfiguration.getClient(), url, repositoryPath);
+  }
+
+  @Override
+  public Optional<IndexUpdateResponseDTO> indexContent(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull IndexContentPayloadDTO indexContentPayloadDto) {
+    return indexContent(searchConfiguration.getClient(), indexContentPayloadDto);
   }
 
   @Override
@@ -126,7 +147,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
       throw new IllegalArgumentException("Please pass a url of a content that should be indexed.");
     }
     if (StringUtils.isBlank(repositoryPath)) {
-      throw new IllegalArgumentException("Please pass a repository path regex value.");
+      throw new IllegalArgumentException("Please pass a repository path value.");
     }
   }
 

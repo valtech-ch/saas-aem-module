@@ -2,6 +2,7 @@ package com.valtech.aem.saas.core.resource;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.NonNull;
@@ -31,18 +32,18 @@ public class ResourceResolverProviderService implements ResourceResolverProvider
   }
 
   @Override
-  public <R> R resourceResolverFunction(@NonNull Function<ResourceResolver, R> function) {
+  public <R> Optional<R> resourceResolverFunction(@NonNull Function<ResourceResolver, R> function) {
     return getResourceResolverFunctionForServiceUser(SERVICE_USER, function);
   }
 
-  private <R> R getResourceResolverFunctionForServiceUser(@NonNull String subServiceName,
+  private <R> Optional<R> getResourceResolverFunctionForServiceUser(@NonNull String subServiceName,
       Function<ResourceResolver, R> function) {
     Map<String, Object> map = Collections.singletonMap(ResourceResolverFactory.SUBSERVICE, subServiceName);
     try (ResourceResolver resolver = resourceResolverFactory.getServiceResourceResolver(map)) {
-      return function.apply(resolver);
+      return Optional.ofNullable(function.apply(resolver));
     } catch (LoginException e) {
       log.error("Access denied", e);
-      return null;
     }
+    return Optional.empty();
   }
 }
