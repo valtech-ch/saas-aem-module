@@ -9,19 +9,19 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
 import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
-import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.io.InputStreamReader;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +65,7 @@ class DefaultIndexUpdateServiceTest {
   @Test
   void testIndexUrl_inputValidationFails() {
     assertThrows(NullPointerException.class,
-        () -> testee.indexUrl((Resource) null, SAMPLE_URL, SAMPLE_REPO_PATH));
+        () -> testee.indexUrl((SearchCAConfigurationModel) null, SAMPLE_URL, SAMPLE_REPO_PATH));
     assertThrows(IllegalArgumentException.class,
         () -> testee.indexUrl("/foo", StringUtils.EMPTY, SAMPLE_REPO_PATH));
     assertThrows(NullPointerException.class,
@@ -84,7 +84,7 @@ class DefaultIndexUpdateServiceTest {
 
   @Test
   void testIndexContent_inputValidationFails() {
-    assertThrows(NullPointerException.class, () -> testee.indexContent((Resource) null, null));
+    assertThrows(NullPointerException.class, () -> testee.indexContent((SearchCAConfigurationModel) null, null));
     IndexContentPayloadDTO indexContentPayload = getCompleteDefaultIndexContentPayload();
     assertThrows(IllegalArgumentException.class,
         () -> testee.indexContent(StringUtils.EMPTY, indexContentPayload));

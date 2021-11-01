@@ -22,7 +22,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -56,26 +55,23 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
   }
 
   @Override
-  public Optional<IndexUpdateResponseDTO> indexUrl(@NonNull Resource context, @NonNull String url,
+  public Optional<IndexUpdateResponseDTO> indexUrl(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull String url,
       @NonNull String repositoryPath) {
-    return getSearchCAConfigurationModel(context)
-        .flatMap(searchCAConfigurationModel -> indexUrl(searchCAConfigurationModel.getClient(), url, repositoryPath));
+    return indexUrl(searchConfiguration.getClient(), url, repositoryPath);
   }
 
   @Override
-  public Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull Resource context, @NonNull String url,
+  public Optional<IndexUpdateResponseDTO> deleteIndexedUrl(@NonNull SearchCAConfigurationModel searchConfiguration,
+      @NonNull String url,
       @NonNull String repositoryPath) {
-    return getSearchCAConfigurationModel(context)
-        .flatMap(searchCAConfigurationModel -> deleteIndexedUrl(searchCAConfigurationModel.getClient(), url,
-            repositoryPath));
+    return deleteIndexedUrl(searchConfiguration.getClient(), url, repositoryPath);
   }
 
   @Override
-  public Optional<IndexUpdateResponseDTO> indexContent(@NonNull Resource context,
+  public Optional<IndexUpdateResponseDTO> indexContent(@NonNull SearchCAConfigurationModel searchConfiguration,
       @NonNull IndexContentPayloadDTO indexContentPayloadDto) {
-    return getSearchCAConfigurationModel(context)
-        .flatMap(
-            searchCAConfigurationModel -> indexContent(searchCAConfigurationModel.getClient(), indexContentPayloadDto));
+    return indexContent(searchConfiguration.getClient(), indexContentPayloadDto);
   }
 
   @Override
@@ -118,10 +114,6 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     return searchRequestExecutorService.execute(searchRequest)
         .filter(SearchResponse::isSuccess)
         .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
-  }
-
-  private Optional<SearchCAConfigurationModel> getSearchCAConfigurationModel(Resource context) {
-    return Optional.ofNullable(context.adaptTo(SearchCAConfigurationModel.class));
   }
 
   private HttpEntity createIndexUpdatePayloadEntity(@NonNull String url, @NonNull String repositoryPath) {
