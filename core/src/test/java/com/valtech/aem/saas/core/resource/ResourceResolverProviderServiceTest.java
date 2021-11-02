@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.resource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.nullValue;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,7 +45,7 @@ class ResourceResolverProviderServiceTest {
   @Test
   void testResourceResolverLoginException() throws LoginException {
     when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenThrow(LoginException.class);
-    assertThat(resourceResolverProvider.resourceResolverFunction(resourceResolver -> "bar"),
-        nullValue());
+    assertThat(resourceResolverProvider.resourceResolverFunction(resourceResolver -> "bar").isPresent(),
+        is(false));
   }
 }

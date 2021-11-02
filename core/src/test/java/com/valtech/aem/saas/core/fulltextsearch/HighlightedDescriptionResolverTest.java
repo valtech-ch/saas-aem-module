@@ -4,8 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
-import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.http.response.SearchResult;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,82 +26,82 @@ class HighlightedDescriptionResolverTest {
   private static final String HIGHLIGHTED_CONTENT = "<em>Valtech</em> <em>Valtech</em> Group Luxembourg (HQ) <em>Valtech</em> SE UK <em>Valtech</em> Ltd. 100% True Clarity* * 100% El Chalten 100% <em>Valtech</em> LLC. (Ukraine) 100% Argentina <em>Valtech</em> Digital SA 95% Brazil <em>Valtech</em> Brasil";
 
   @Mock
-  SearchResult searchResult;
+  SearchResultDTO searchResultDto;
 
   @Mock
-  Highlighting highlighting;
+  HighlightingDTO highlightingDto;
 
   @Test
   void getMetaDescription_noHighlightEntryAvailable() {
     setupInput_noHighlightEntryAvailable();
-    assertThat(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription(),
+    assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(SEARCH_RESULT_META_DESCRIPTION));
   }
 
   @Test
   void getMetaDescription_noResultIdAvailable() {
     setupInput_noResultIdAvailable();
-    assertThat(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription(),
+    assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(SEARCH_RESULT_META_DESCRIPTION));
   }
 
   @Test
   void getMetaDescription_metaDescriptionInHighlightingEntryAvailable() {
-    when(searchResult.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
+    when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_metaDescriptionInHighlightingEntryAvailable();
-    assertThat(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription(),
+    assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(HIGHLIGHTED_META_DESCRIPTION));
   }
 
   @Test
   void getMetaDescription_noMetaDescriptionInHighlightingEntryAvailable() {
-    when(searchResult.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
-    when(searchResult.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
+    when(searchResultDto.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
+    when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_noMetaDescriptionInHighlightingEntryAvailable();
-    assertThat(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription(),
+    assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(SEARCH_RESULT_META_DESCRIPTION));
   }
 
   @Test
   void getMetaDescription_contentInHighlightingEntryAvailable() {
-    when(searchResult.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
-    when(searchResult.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
+    when(searchResultDto.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
+    when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_contentInHighlightingEntryAvailable();
-    assertThat(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription(),
+    assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(HIGHLIGHTED_CONTENT));
   }
 
   private void setupInput_noHighlightEntryAvailable() {
-    when(searchResult.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
-    when(highlighting.getItems()).thenReturn(Collections.emptyMap());
+    when(searchResultDto.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(highlightingDto.getItems()).thenReturn(Collections.emptyMap());
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("meta_description_en", Collections.singletonList(HIGHLIGHTED_META_DESCRIPTION));
   }
 
   private void setupInput_noResultIdAvailable() {
-    when(searchResult.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
-    when(searchResult.getId()).thenReturn(StringUtils.EMPTY);
+    when(searchResultDto.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
+    when(searchResultDto.getId()).thenReturn(StringUtils.EMPTY);
   }
 
   private void setupInput_noMetaDescriptionInHighlightingEntryAvailable() {
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("meta_description_en", Collections.emptyList());
-    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
+    when(highlightingDto.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 
   private void setupInput_contentInHighlightingEntryAvailable() {
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("content_en", Collections.singletonList(HIGHLIGHTED_CONTENT));
-    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
+    when(highlightingDto.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 
   private void setupInput_metaDescriptionInHighlightingEntryAvailable() {
-    when(searchResult.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("meta_description_en", Collections.singletonList(HIGHLIGHTED_META_DESCRIPTION));
-    when(highlighting.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
+    when(highlightingDto.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
   }
 }

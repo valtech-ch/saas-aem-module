@@ -9,11 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.bestbets.BestBetPayload;
+import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
 import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
+import com.valtech.aem.saas.api.bestbets.dto.DefaultBestBetPayloadDTO;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
-import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -53,12 +54,12 @@ class DefaultBestBetsServiceTest {
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
     assertDoesNotThrow(() -> testee.addBestBet("clientfoo",
-        new DefaultBestBetPayload("foo", "baz", "bar", "de")));
+        new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de")));
   }
 
   @Test
   void testAddBestBet_failed() {
-    DefaultBestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
+    DefaultBestBetPayloadDTO payload = new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de");
     assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBet("clientfoo", payload));
   }
 
@@ -67,13 +68,13 @@ class DefaultBestBetsServiceTest {
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
         Optional.of(new SearchResponse(new JsonObject(), true)));
     assertDoesNotThrow(() -> testee.addBestBets("clientfoo", Collections.singletonList(
-        new DefaultBestBetPayload("foo", "baz", "bar", "de"))));
+        new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de"))));
   }
 
   @Test
   void testAddBestBets_failed() {
-    List<BestBetPayload> payload = Collections.singletonList(
-        new DefaultBestBetPayload("foo", "baz", "bar", "de"));
+    List<BestBetPayloadDTO> payload = Collections.singletonList(
+        new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de"));
     assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBets("clientfoo", payload));
   }
 
@@ -85,7 +86,7 @@ class DefaultBestBetsServiceTest {
                     getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
             .getAsJsonObject(), true)));
     assertDoesNotThrow(() -> testee.updateBestBet("clientfoo", 1,
-        new DefaultBestBetPayload("foo", "baz", "bar", "de")));
+        new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de")));
   }
 
   @Test
@@ -94,14 +95,14 @@ class DefaultBestBetsServiceTest {
         ImmutableMap.<String, Object>builder()
             .put("bestBetsService.apiUpdateBestBetAction", "")
             .build());
-    DefaultBestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
+    DefaultBestBetPayloadDTO payload = new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de");
     assertThrows(IllegalStateException.class, () -> testee.updateBestBet("clientfoo", 1,
         payload));
   }
 
   @Test
   void testUpdateBestBet_failed() {
-    BestBetPayload payload = new DefaultBestBetPayload("foo", "baz", "bar", "de");
+    BestBetPayloadDTO payload = new DefaultBestBetPayloadDTO("foo", "baz", "bar", "de");
     assertThrows(BestBetsActionFailedException.class, () -> testee.updateBestBet("clientfoo", 1, payload));
   }
 

@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.http.client;
 
 import com.google.gson.JsonElement;
-import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import java.io.IOException;
 import java.security.KeyManagementException;

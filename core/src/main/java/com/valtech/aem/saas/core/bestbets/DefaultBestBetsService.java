@@ -1,14 +1,14 @@
 package com.valtech.aem.saas.core.bestbets;
 
 import com.google.gson.Gson;
-import com.valtech.aem.saas.api.bestbets.BestBet;
-import com.valtech.aem.saas.api.bestbets.BestBetPayload;
+import com.valtech.aem.saas.api.bestbets.dto.BestBetDTO;
+import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
 import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
 import com.valtech.aem.saas.api.bestbets.BestBetsService;
 import com.valtech.aem.saas.core.bestbets.DefaultBestBetsService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.http.request.SearchRequest;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.request.SearchRequestPost;
@@ -55,56 +55,56 @@ public class DefaultBestBetsService implements BestBetsService {
   private Configuration configuration;
 
   @Override
-  public void addBestBet(@NonNull String client, @NonNull BestBetPayload bestBetPayload) {
+  public void addBestBet(@NonNull String client, @NonNull BestBetPayloadDTO bestBetPayloadDto) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetAction())) {
       throw new IllegalStateException("Add best bet action path is not specified.");
     }
     SearchRequest searchRequest = SearchRequestPost.builder()
         .uri(createApiCommonPath(client) + configuration.bestBetsService_apiAddBestBetAction())
-        .httpEntity(createJsonPayloadEntity(bestBetPayload))
+        .httpEntity(createJsonPayloadEntity(bestBetPayloadDto))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
     searchResponse
-        .ifPresent(r -> handleSearchResponseError(r, String.format("Failed to add best bet: %s", bestBetPayload)));
+        .ifPresent(r -> handleSearchResponseError(r, String.format("Failed to add best bet: %s", bestBetPayloadDto)));
   }
 
   @Override
-  public void addBestBets(@NonNull String client, @NonNull List<BestBetPayload> bestBetPayloadList) {
+  public void addBestBets(@NonNull String client, @NonNull List<BestBetPayloadDTO> bestBetPayloadDTOList) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetsAction())) {
       throw new IllegalStateException("Add best bets action path is not specified.");
     }
     SearchRequest searchRequest = SearchRequestPost.builder()
         .uri(createApiCommonPath(client) + configuration.bestBetsService_apiAddBestBetsAction())
-        .httpEntity(createJsonPayloadEntity(bestBetPayloadList))
+        .httpEntity(createJsonPayloadEntity(bestBetPayloadDTOList))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
     searchResponse
         .ifPresent(r -> handleSearchResponseError(r,
-            String.format("Failed to add best bets: %s", bestBetPayloadList)));
+            String.format("Failed to add best bets: %s", bestBetPayloadDTOList)));
   }
 
   @Override
-  public void updateBestBet(@NonNull String client, int bestBetId, @NonNull BestBetPayload bestBetPayload) {
+  public void updateBestBet(@NonNull String client, int bestBetId, @NonNull BestBetPayloadDTO bestBetPayloadDto) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiUpdateBestBetAction())) {
       throw new IllegalStateException("Update best bet action path is not specified.");
     }
     SearchRequest searchRequest = SearchRequestPut.builder()
         .uri(createApiCommonPath(client) + configuration.bestBetsService_apiUpdateBestBetAction() + URL_PATH_DELIMITER
             + bestBetId)
-        .httpEntity(createJsonPayloadEntity(bestBetPayload))
+        .httpEntity(createJsonPayloadEntity(bestBetPayloadDto))
         .build();
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
     handleFailedRequestExecution(searchResponse);
     searchResponse.ifPresent(r -> handleSearchResponseError(r,
-        String.format("Failed to update best bet with id %s, with %s", bestBetId, bestBetPayload)));
+        String.format("Failed to update best bet with id %s, with %s", bestBetId, bestBetPayloadDto)));
     if (!searchResponse
         .flatMap(response -> response.get(new ModifiedBestBetIdExtractionStrategy()))
         .isPresent()) {
       throw new BestBetsActionFailedException(
           String.format("Failed to update best bet: %s with the following update details %s", bestBetId,
-              bestBetPayload));
+              bestBetPayloadDto));
     }
   }
 
@@ -147,7 +147,7 @@ public class DefaultBestBetsService implements BestBetsService {
   }
 
   @Override
-  public List<BestBet> getBestBets(@NonNull String client) {
+  public List<BestBetDTO> getBestBets(@NonNull String client) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiGetAllBestBetsAction())) {
       throw new IllegalStateException("Get best bets action path is not specified.");
     }
@@ -212,47 +212,47 @@ public class DefaultBestBetsService implements BestBetsService {
     String DEFAULT_API_BEST_BET_ACTION = "/bestbet";
     String DEFAULT_API_BEST_BETS_ACTION = "/bestbets";
     String DEFAULT_API_PROJECT_BEST_BETS_PUBLISH_ACTION = DEFAULT_API_BEST_BETS_ACTION + "/%s/publish";
-    String DEFAULT_API_BASE_PATH = "/admin";
-    String DEFAULT_API_VERSION_PATH = "/api/v3";
+    String DEFAULT_API_BASE_PATH = "/admin"; // NOSONAR
+    String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
 
     @AttributeDefinition(name = "Api base path",
         description = "Base path of the api.",
         type = AttributeType.STRING)
-    String bestBetsService_apiBasePath() default DEFAULT_API_BASE_PATH;
+    String bestBetsService_apiBasePath() default DEFAULT_API_BASE_PATH; // NOSONAR
 
     @AttributeDefinition(name = "Api version path",
         description = "Path designating the api version.",
         type = AttributeType.STRING)
-    String bestBetsService_apiVersionPath() default DEFAULT_API_VERSION_PATH;
+    String bestBetsService_apiVersionPath() default DEFAULT_API_VERSION_PATH; // NOSONAR
 
     @AttributeDefinition(name = "Api best bet add action",
         description = "Path designating the action of adding a best bet entry.",
         type = AttributeType.STRING)
-    String bestBetsService_apiAddBestBetAction() default DEFAULT_API_BEST_BET_ACTION;
+    String bestBetsService_apiAddBestBetAction() default DEFAULT_API_BEST_BET_ACTION; // NOSONAR
 
     @AttributeDefinition(name = "Api best bets add action",
         description = "Path designating the action of adding a list of best bets.",
         type = AttributeType.STRING)
-    String bestBetsService_apiAddBestBetsAction() default DEFAULT_API_BEST_BETS_ACTION;
+    String bestBetsService_apiAddBestBetsAction() default DEFAULT_API_BEST_BETS_ACTION; // NOSONAR
 
     @AttributeDefinition(name = "Api best bets update action",
         description = "Path designating the action of updating a best bet entry.",
         type = AttributeType.STRING)
-    String bestBetsService_apiUpdateBestBetAction() default DEFAULT_API_BEST_BETS_ACTION;
+    String bestBetsService_apiUpdateBestBetAction() default DEFAULT_API_BEST_BETS_ACTION; // NOSONAR
 
     @AttributeDefinition(name = "Api best bet delete action",
         description = "Path designating the action of deleting a best bet entry.",
         type = AttributeType.STRING)
-    String bestBetsService_apiDeleteBestBetAction() default DEFAULT_API_BEST_BETS_ACTION;
+    String bestBetsService_apiDeleteBestBetAction() default DEFAULT_API_BEST_BETS_ACTION; // NOSONAR
 
     @AttributeDefinition(name = "Api project's best bets publish action",
         description = "Path designating the action of publishing the best bets for a project.",
         type = AttributeType.STRING)
-    String bestBetsService_apiPublishProjectBestBetsAction() default DEFAULT_API_PROJECT_BEST_BETS_PUBLISH_ACTION;
+    String bestBetsService_apiPublishProjectBestBetsAction() default DEFAULT_API_PROJECT_BEST_BETS_PUBLISH_ACTION; // NOSONAR
 
     @AttributeDefinition(name = "Api best bets get action",
         description = "Path designating the action of getting all best bets.",
         type = AttributeType.STRING)
-    String bestBetsService_apiGetAllBestBetsAction() default DEFAULT_API_BEST_BETS_ACTION;
+    String bestBetsService_apiGetAllBestBetsAction() default DEFAULT_API_BEST_BETS_ACTION; // NOSONAR
   }
 }
