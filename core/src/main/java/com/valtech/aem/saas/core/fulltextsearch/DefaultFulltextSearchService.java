@@ -1,31 +1,38 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchGetRequestPayload;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchResults;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
+import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.Result;
-import com.valtech.aem.saas.core.common.saas.SaasIndexValidator;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
+import com.valtech.aem.saas.api.query.FacetsQuery;
+import com.valtech.aem.saas.api.query.FiltersQuery;
+import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
+import com.valtech.aem.saas.api.query.LanguageQuery;
+import com.valtech.aem.saas.api.query.TermQuery;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
-import com.valtech.aem.saas.core.http.response.FallbackHighlighting;
-import com.valtech.aem.saas.core.http.response.Highlighting;
 import com.valtech.aem.saas.core.http.response.HighlightingDataExtractionStrategy;
-import com.valtech.aem.saas.core.http.response.ResponseBody;
 import com.valtech.aem.saas.core.http.response.ResponseBodyDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.ResponseHeaderDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
-import com.valtech.aem.saas.core.http.response.SearchResult;
 import com.valtech.aem.saas.core.http.response.SuggestionDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.dto.FallbackHighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.ResponseBodyDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import com.valtech.aem.saas.core.util.LoggedOptional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -37,11 +44,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Slf4j
 @Component(name = "Search as a Service - Fulltext Search Service",
-    service = {FulltextSearchService.class, FulltextSearchConfigurationService.class})
+    service = FulltextSearchService.class)
 @Designate(ocd = Configuration.class)
-public class DefaultFulltextSearchService implements
-    FulltextSearchService,
-    FulltextSearchConfigurationService {
+public class DefaultFulltextSearchService implements FulltextSearchService {
 
   @Reference
   private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -52,46 +57,59 @@ public class DefaultFulltextSearchService implements
   private Configuration configuration;
 
   @Override
-  public int getRowsMaxLimit() {
-    return configuration.fulltextSearchService_rowsMaxLimit();
-  }
-
-  @Override
-  public Optional<FulltextSearchResults> getResults(@NonNull String index,
-      @NonNull FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload,
-      boolean enableAutoSuggest,
-      boolean enableBestBets) {
-    SaasIndexValidator.getInstance().validate(index);
-    String requestUrl = getRequestUrl(index, fulltextSearchGetRequestPayload);
+  public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
+      String searchText, @NonNull String language, int start,
+      int rows,
+      Set<FilterModel> filters,
+      Set<String> facets) {
+    String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
+        createQueryString(searchText,
+            language,
+            getEffectiveFilters(searchConfiguration.getFilters(), filters),
+            facets));
     log.debug("Search GET Request: {}", requestUrl);
     Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
     if (searchResponse.isPresent()) {
       printResponseHeaderInLog(searchResponse.get());
-      return getFulltextSearchResults(searchResponse.get(), enableAutoSuggest, enableBestBets);
+      return getFulltextSearchResults(searchResponse.get(), searchConfiguration.isAutoSuggestEnabled(),
+          searchConfiguration.isBestBetsEnabled());
     }
     return Optional.empty();
   }
 
-  private String getRequestUrl(String index, FulltextSearchGetRequestPayload fulltextSearchGetRequestPayload) {
-    return String.format("%s%s",
-        getApiUrl(index),
-        fulltextSearchGetRequestPayload.getPayload());
+  private Set<FilterModel> getEffectiveFilters(Set<FilterModel> contextFilters, Set<FilterModel> specifiedFilters) {
+    return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
   }
 
-  private Optional<FulltextSearchResults> getFulltextSearchResults(SearchResponse searchResponse,
+  private String createQueryString(String term, String language, Set<FilterModel> filters, Set<String> facets) {
+    return GetQueryStringConstructor.builder()
+        .query(new TermQuery(term))
+        .query(new LanguageQuery(language))
+        .query(FiltersQuery.builder().filters(CollectionUtils.emptyIfNull(filters)).build())
+        .query(FacetsQuery.builder().fields(CollectionUtils.emptyIfNull(facets)).build())
+        .build()
+        .getQueryString();
+  }
+
+  private String getRequestUrl(String apiUrl, String queryString) {
+    return String.format("%s%s", apiUrl, queryString);
+  }
+
+  private Optional<FulltextSearchResultsDTO> getFulltextSearchResults(SearchResponse searchResponse,
       boolean enableAutoSuggest,
       boolean enableBestBets) {
-    Optional<ResponseBody> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
+    Optional<ResponseBodyDTO> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
     if (responseBody.isPresent()) {
-      Highlighting highlighting = searchResponse.get(new HighlightingDataExtractionStrategy())
-          .orElse(FallbackHighlighting.getInstance());
-      Stream<Result> results = getProcessedResults(responseBody.get().getDocs(), highlighting);
+      HighlightingDTO highlightingDto = searchResponse.get(new HighlightingDataExtractionStrategy())
+          .filter(h -> h.getItems() != null)
+          .orElse(FallbackHighlightingDTO.getInstance());
+      Stream<ResultDTO> results = getProcessedResults(responseBody.get().getDocs(), highlightingDto);
       if (enableBestBets) {
         log.debug("Best bets is enabled. Results will be sorted so that best bet results are on top.");
-        results = results.sorted(Comparator.comparing(Result::isBestBet).reversed());
+        results = results.sorted(Comparator.comparing(ResultDTO::isBestBet).reversed());
       }
-      FulltextSearchResults.FulltextSearchResultsBuilder fulltextSearchResultsBuilder =
-          FulltextSearchResults.builder()
+      FulltextSearchResultsDTO.FulltextSearchResultsDTOBuilder fulltextSearchResultsBuilder =
+          FulltextSearchResultsDTO.builder()
               .totalResultsFound(responseBody.get().getNumFound())
               .currentResultPage(responseBody.get().getStart())
               .results(results.collect(Collectors.toList()));
@@ -108,18 +126,18 @@ public class DefaultFulltextSearchService implements
     return Optional.empty();
   }
 
-  private Stream<Result> getProcessedResults(List<SearchResult> searchResults,
-      Highlighting highlighting) {
-    return searchResults.stream()
-        .map(searchResult -> getResult(searchResult, highlighting));
+  private Stream<ResultDTO> getProcessedResults(List<SearchResultDTO> searchResultDtos,
+      HighlightingDTO highlightingDto) {
+    return searchResultDtos.stream()
+        .map(searchResult -> getResult(searchResult, highlightingDto));
   }
 
-  private Result getResult(SearchResult searchResult, Highlighting highlighting) {
-    return Result.builder()
-        .url(searchResult.getUrl())
-        .title(new HighlightedTitleResolver(searchResult, highlighting).getTitle())
-        .description(new HighlightedDescriptionResolver(searchResult, highlighting).getDescription())
-        .bestBet(searchResult.isElevated())
+  private ResultDTO getResult(SearchResultDTO searchResultDto, HighlightingDTO highlightingDto) {
+    return ResultDTO.builder()
+        .url(searchResultDto.getUrl())
+        .title(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle())
+        .description(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription())
+        .bestBet(searchResultDto.isElevated())
         .build();
   }
 
@@ -146,7 +164,6 @@ public class DefaultFulltextSearchService implements
       description = "Fulltext Search Api specific details.")
   public @interface Configuration {
 
-    int DEFAULT_ROWS_MAX_LIMIT = 9999;
     String DEFAULT_API_ACTION = "/search";
     String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
 
@@ -159,11 +176,6 @@ public class DefaultFulltextSearchService implements
         description = "What kind of action should be defined",
         type = AttributeType.STRING)
     String fulltextSearchService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
-
-    @AttributeDefinition(name = "Rows max limit.",
-        description = "Maximum number of results per page allowed.",
-        type = AttributeType.INTEGER)
-    int fulltextSearchService_rowsMaxLimit() default DEFAULT_ROWS_MAX_LIMIT; // NOSONAR
 
   }
 }

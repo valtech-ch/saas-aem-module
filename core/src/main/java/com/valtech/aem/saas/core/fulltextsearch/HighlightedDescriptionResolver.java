@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.valtech.aem.saas.core.http.response.Highlighting;
-import com.valtech.aem.saas.core.http.response.SearchResult;
+import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
+import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +14,8 @@ public final class HighlightedDescriptionResolver {
 
   private static final String META_DESCRIPTION_PREFIX = "meta_description_";
   private static final String CONTENT_PREFIX = "content_";
-  private final SearchResult searchResult;
-  private final Highlighting highlighting;
+  private final SearchResultDTO searchResultDto;
+  private final HighlightingDTO highlightingDto;
 
   /**
    * Returns the result's description, highlighted or not, depending on the available data and highlighting flag's
@@ -24,15 +24,15 @@ public final class HighlightedDescriptionResolver {
    * @return the result's description.
    */
   public String getDescription() {
-    if (StringUtils.isBlank(searchResult.getId())) {
-      return searchResult.getMetaDescription();
+    if (StringUtils.isBlank(searchResultDto.getId())) {
+      return searchResultDto.getMetaDescription();
     }
-    return Optional.ofNullable(highlighting.getItems().get(searchResult.getId()))
-        .map(stringListMap -> stringListMap.getOrDefault(META_DESCRIPTION_PREFIX + searchResult.getLanguage(),
-            stringListMap.get(CONTENT_PREFIX + searchResult.getLanguage())))
+    return Optional.ofNullable(highlightingDto.getItems().get(searchResultDto.getId()))
+        .map(stringListMap -> stringListMap.getOrDefault(META_DESCRIPTION_PREFIX + searchResultDto.getLanguage(),
+            stringListMap.get(CONTENT_PREFIX + searchResultDto.getLanguage())))
         .map(list -> String.join(" ", list))
         .filter(StringUtils::isNotBlank)
-        .orElse(searchResult.getMetaDescription());
+        .orElse(searchResultDto.getMetaDescription());
   }
 
 }

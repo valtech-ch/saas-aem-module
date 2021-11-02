@@ -9,11 +9,13 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.indexing.IndexUpdateResponse;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
+import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
+import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
-import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -47,7 +49,7 @@ class DefaultIndexUpdateServiceTest {
   void testIndexUrl() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class)))
         .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
-    Optional<IndexUpdateResponse> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+    Optional<IndexUpdateResponseDTO> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
     assertThat(response.isPresent(), is(true));
     testSuccessfulResponse(response.get());
   }
@@ -56,14 +58,14 @@ class DefaultIndexUpdateServiceTest {
   void testIndexUrl_exceptionDuringExecution() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class)))
         .thenReturn(Optional.empty());
-    Optional<IndexUpdateResponse> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+    Optional<IndexUpdateResponseDTO> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
     assertThat(response.isPresent(), is(false));
   }
 
   @Test
   void testIndexUrl_inputValidationFails() {
     assertThrows(NullPointerException.class,
-        () -> testee.indexUrl(null, SAMPLE_URL, SAMPLE_REPO_PATH));
+        () -> testee.indexUrl((SearchCAConfigurationModel) null, SAMPLE_URL, SAMPLE_REPO_PATH));
     assertThrows(IllegalArgumentException.class,
         () -> testee.indexUrl("/foo", StringUtils.EMPTY, SAMPLE_REPO_PATH));
     assertThrows(NullPointerException.class,
@@ -74,25 +76,25 @@ class DefaultIndexUpdateServiceTest {
   void testIndexContent() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class)))
         .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
-    DefaultIndexContentPayload defaultIndexContentPayload = getCompleteDefaultIndexContentPayload();
-    Optional<IndexUpdateResponse> response = testee.indexContent("/foo", defaultIndexContentPayload);
+    IndexContentPayloadDTO indexContentPayload = getCompleteDefaultIndexContentPayload();
+    Optional<IndexUpdateResponseDTO> response = testee.indexContent("/foo", indexContentPayload);
     assertThat(response.isPresent(), is(true));
     testSuccessfulResponse(response.get());
   }
 
   @Test
   void testIndexContent_inputValidationFails() {
-    assertThrows(NullPointerException.class, () -> testee.indexContent(null, null));
-    DefaultIndexContentPayload defaultIndexContentPayload = getCompleteDefaultIndexContentPayload();
+    assertThrows(NullPointerException.class, () -> testee.indexContent((SearchCAConfigurationModel) null, null));
+    IndexContentPayloadDTO indexContentPayload = getCompleteDefaultIndexContentPayload();
     assertThrows(IllegalArgumentException.class,
-        () -> testee.indexContent(StringUtils.EMPTY, defaultIndexContentPayload));
+        () -> testee.indexContent(StringUtils.EMPTY, indexContentPayload));
   }
 
   @Test
   void testIndexContent_exceptionDuringExecution() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class)))
         .thenReturn(Optional.empty());
-    Optional<IndexUpdateResponse> response = testee.indexContent("/foo", getCompleteDefaultIndexContentPayload());
+    Optional<IndexUpdateResponseDTO> response = testee.indexContent("/foo", getCompleteDefaultIndexContentPayload());
     assertThat(response.isPresent(), is(false));
   }
 
@@ -100,7 +102,7 @@ class DefaultIndexUpdateServiceTest {
   void testDeleteIndexedUrl() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class)))
         .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
-    Optional<IndexUpdateResponse> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+    Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
     assertThat(response.isPresent(), is(true));
     testSuccessfulResponse(response.get());
   }
@@ -109,7 +111,7 @@ class DefaultIndexUpdateServiceTest {
   void testDeleteIndexedUrl_exceptionDuringExecution() {
     when(searchRequestExecutorService.execute(any(SearchRequest.class)))
         .thenReturn(Optional.empty());
-    Optional<IndexUpdateResponse> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+    Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
     assertThat(response.isPresent(), is(false));
   }
 
@@ -117,7 +119,7 @@ class DefaultIndexUpdateServiceTest {
   @Test
   void testDeleteIndexedUrl_inputValidationFails() {
     assertThrows(NullPointerException.class,
-        () -> testee.deleteIndexedUrl(null, SAMPLE_URL,
+        () -> testee.deleteIndexedUrl((String) null, SAMPLE_URL,
             SAMPLE_REPO_PATH));
     assertThrows(IllegalArgumentException.class,
         () -> testee.deleteIndexedUrl("/foo", StringUtils.EMPTY, SAMPLE_REPO_PATH));
@@ -125,8 +127,8 @@ class DefaultIndexUpdateServiceTest {
         () -> testee.deleteIndexedUrl("/foo", SAMPLE_URL, ""));
   }
 
-  private void testSuccessfulResponse(IndexUpdateResponse response) {
-    assertThat(response, instanceOf(IndexUpdateResponse.class));
+  private void testSuccessfulResponse(IndexUpdateResponseDTO response) {
+    assertThat(response, instanceOf(IndexUpdateResponseDTO.class));
     assertThat(response.getUrl(), is(SAMPLE_URL));
     assertThat(response.getMessage(), is("Added URL to queue of site"));
     assertThat(response.getSiteId(), is("1"));
@@ -139,17 +141,15 @@ class DefaultIndexUpdateServiceTest {
         .getAsJsonObject();
   }
 
-  private DefaultIndexContentPayload getCompleteDefaultIndexContentPayload() {
-    return DefaultIndexContentPayload.builder()
-        .content("foo")
-        .title("bar")
-        .url("baz")
-        .repositoryPath("baz")
-        .language("de")
-        .metaKeywords("foo bar")
-        .metaDescription("bar")
-        .scope("qux")
-        .build();
+  private IndexContentPayloadDTO getCompleteDefaultIndexContentPayload() {
+    return new IndexContentPayloadDTO("adventures content that is pushed.",
+        "WKND Adventures",
+        "https://wknd.site/us/en/adventures.html",
+        "/content/wknd/(?!www)",
+        "en",
+        "sailing",
+        "boat sailing is great",
+        "scope");
   }
 }
 
