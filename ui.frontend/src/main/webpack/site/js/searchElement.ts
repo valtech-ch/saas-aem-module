@@ -54,19 +54,5 @@ export const getDataAttributeFromSearchElement = (
     return null
   }
 
-  const {
-    searchFieldPlaceholderText,
-    loadMoreButtonText,
-    searchTabs,
-    searchButtonText,
-    autocompleteTriggerThreshold,
-  } = searchConfig
-
-  return {
-    searchFieldPlaceholderText,
-    loadMoreButtonText,
-    searchTabs,
-    searchButtonText,
-    autocompleteTriggerThreshold,
-  }
+  return searchConfig
 }

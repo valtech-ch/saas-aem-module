@@ -1,3 +1,5 @@
+import { SearchItem } from './searchItem'
+
 type SearchTabOptions = {
   tabId: string
   tabName: string
@@ -10,6 +12,16 @@ export type Tab = {
   tabId: string
   tabName: string
   resultsTotal: number
+  results: SearchItem[]
+  showLoadMoreButton: boolean
+}
+
+const extractTabNameFromUrl = (url: string) => {
+  const tabNameCaptureRegex = new RegExp('search-tabs/(.+).model.json')
+
+  const captureGroup = tabNameCaptureRegex.exec(url)
+
+  return captureGroup?.length === 2 ? captureGroup[1] : url
 }
 
 const buildSearchTab = ({
@@ -22,7 +34,7 @@ const buildSearchTab = ({
   searchTab.classList.add('saas-search-tab')
 
   const searchTabName = document.createElement('span')
-  searchTabName.innerHTML = tabName
+  searchTabName.innerHTML = `${extractTabNameFromUrl(tabName)} `
 
   const searchTabNumberOfResults = document.createElement('span')
   searchTabNumberOfResults.innerHTML = `(${tabNumberOfResults})`

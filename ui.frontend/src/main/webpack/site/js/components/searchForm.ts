@@ -1,3 +1,5 @@
+import buildLoadMoreButton from './loadMoreButton'
+import buildSearchResult from './searchResults'
 import buildSearchTab, { removeSearchTabs, Tab } from './searchTabs'
 
 type SearchFormSubmitEventOption = {
@@ -13,6 +15,7 @@ export const addEventToSearchForm = (
   searchInputElement: HTMLInputElement,
   searchUrl: string | undefined,
   searchTabs: string[],
+  loadMoreButtonText: string,
   options?: SearchFormSubmitEventOption,
 ): void => {
   const { searchCallback } = options || {}
@@ -53,7 +56,23 @@ export const addEventToSearchForm = (
           setResults: () => {},
         })
 
+        const searchResults = buildSearchResult({
+          searchItems: tabResult.results,
+        })
+
         searchFormParent?.appendChild(searchTabElement)
+        searchFormParent?.appendChild(searchResults)
+
+        if (tabResult.showLoadMoreButton) {
+          const loadMoreButton = buildLoadMoreButton({
+            loadMoreButtonText,
+            offset: 10,
+            tabUrl: tabResult.tabId,
+            searchValue,
+            searchResultsElement: searchResults,
+          })
+          searchFormParent?.appendChild(loadMoreButton)
+        }
       })
     })()
   })

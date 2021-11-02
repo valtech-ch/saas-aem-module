@@ -29,6 +29,7 @@ export const buildSearch = (
     searchButtonText,
     searchUrl,
     searchTabs,
+    loadMoreButtonText,
   } = searchConfig
 
   const searchContainer = document.createElement('div')
@@ -48,6 +49,7 @@ export const buildSearch = (
     searchInputElement,
     searchUrl,
     searchTabs,
+    loadMoreButtonText,
     { searchCallback },
   )
 
