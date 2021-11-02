@@ -18,6 +18,7 @@ import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
+import com.valtech.aem.saas.core.util.UniqueUtils;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,7 +105,7 @@ public class SearchModelImpl implements SearchModel {
   private String loadMoreButtonText;
 
   @Getter
-  private List<String> searchTabs;
+  private List<SearchTabDTO> searchTabs;
 
   @JsonIgnore
   @Getter
@@ -161,13 +162,12 @@ public class SearchModelImpl implements SearchModel {
     return AUTOCOMPLETE_THRESHOLD;
   }
 
-  private List<String> getSearchTabs(Resource searchResource) {
+  private List<SearchTabDTO> getSearchTabs(Resource searchResource) {
     return Optional.ofNullable(searchResource.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
         .orElse(Stream.empty())
-        .map(this::getSearchTabUrl)
-        .filter(StringUtils::isNotBlank)
+        .map(this::createSearchTabItem)
         .collect(Collectors.toList());
   }
 
@@ -197,6 +197,11 @@ public class SearchModelImpl implements SearchModel {
         .map(searchFilterConfiguration -> new FilterModelImpl(searchFilterConfiguration.name(),
             searchFilterConfiguration.value()))
         .collect(Collectors.toList());
+  }
+
+  private SearchTabDTO createSearchTabItem(Resource resource) {
+    return SearchTabDTO.builder().name(UniqueUtils.getUniqueId(resource.getPath())).url(getSearchTabUrl(resource))
+        .build();
   }
 
   private String getSearchTabUrl(@NonNull Resource searchTab) {

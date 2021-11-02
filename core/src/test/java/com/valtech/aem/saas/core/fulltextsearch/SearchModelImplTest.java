@@ -1,9 +1,9 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -13,7 +13,6 @@ import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -48,7 +47,7 @@ class SearchModelImplTest {
   @Mock
   I18n i18n;
 
-  SearchModel testee;
+  SearchModelImpl testee;
 
   @BeforeEach
   void setUp() {
@@ -106,15 +105,15 @@ class SearchModelImplTest {
   }
 
   private void adaptRequest() {
-    testee = context.request().adaptTo(SearchModel.class);
+    testee = context.request().adaptTo(SearchModelImpl.class);
   }
 
   private void adaptResource() {
-    testee = context.currentResource().adaptTo(SearchModel.class);
+    testee = context.currentResource().adaptTo(SearchModelImpl.class);
   }
 
   private void testAdaptable() {
     assertThat(testee, notNullValue());
-    assertThat(testee, instanceOf(SearchModel.class));
+    assertThat(testee, instanceOf(SearchModelImpl.class));
   }
 }
