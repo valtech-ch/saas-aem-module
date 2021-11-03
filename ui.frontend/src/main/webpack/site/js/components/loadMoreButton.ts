@@ -44,7 +44,6 @@ const buildLoadMoreButton = ({
     resultJSON.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)
 
-      // searchResultsElement.appendChild(searchItemElement)
       searchResultsElement.insertBefore(searchItemElement, loadMoreButton)
     })
 

@@ -75,7 +75,6 @@ export const triggerSearch = async (
 
       const searchTabElement = buildSearchTab({
         tabId,
-        tabName: tabId,
         tabNumberOfResults: resultsTotal,
         title,
         onSwitchTab,

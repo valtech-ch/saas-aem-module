@@ -3,7 +3,6 @@ import { SearchItem } from './searchItem'
 
 export type SearchTabOptions = {
   tabId: string
-  tabName: string
   tabNumberOfResults: number
   title: string
   onSwitchTab?: OnSwitchTabCallback
@@ -18,17 +17,8 @@ export type Tab = {
   showLoadMoreButton: boolean
 }
 
-const extractTabNameFromUrl = (url: string) => {
-  const tabNameCaptureRegex = new RegExp('search-tabs/(.+).model.json')
-
-  const captureGroup = tabNameCaptureRegex.exec(url)
-
-  return captureGroup?.length === 2 ? captureGroup[1] : url
-}
-
 const buildSearchTab = ({
   tabId,
-  tabName,
   title,
   tabNumberOfResults,
   onSwitchTab,
@@ -37,10 +27,10 @@ const buildSearchTab = ({
   searchTab.classList.add('saas-container_tab')
 
   const searchTabName = document.createElement('span')
-  searchTabName.innerHTML = title || `${extractTabNameFromUrl(tabName)} `
+  searchTabName.innerHTML = title
 
   const searchTabNumberOfResults = document.createElement('span')
-  searchTabNumberOfResults.innerHTML = `(${tabNumberOfResults})`
+  searchTabNumberOfResults.innerHTML = ` (${tabNumberOfResults})`
 
   searchTab.appendChild(searchTabName)
   searchTab.appendChild(searchTabNumberOfResults)
@@ -63,9 +53,10 @@ const buildSearchTab = ({
 
       if (tabElement.dataset.tab === tabId) {
         tabElement.style.display = 'block'
-      } else {
-        tabElement.style.display = 'none'
+        return
       }
+
+      tabElement.style.display = 'none'
     })
   })
 
