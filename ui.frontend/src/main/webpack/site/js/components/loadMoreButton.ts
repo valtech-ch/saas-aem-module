@@ -16,6 +16,7 @@ const buildLoadMoreButton = ({
   searchResultsElement,
 }: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
+  loadMoreButton.classList.add('saas-load-more-button')
 
   loadMoreButton.dataset.offset = `${offset}`
 
@@ -38,7 +39,8 @@ const buildLoadMoreButton = ({
     resultJSON.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)
 
-      searchResultsElement.appendChild(searchItemElement)
+      // searchResultsElement.appendChild(searchItemElement)
+      searchResultsElement.insertBefore(searchItemElement, loadMoreButton)
     })
 
     if (!resultJSON.showLoadMoreButton) {

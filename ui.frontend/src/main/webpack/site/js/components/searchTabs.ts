@@ -6,6 +6,7 @@ type SearchTabOptions = {
   tabNumberOfResults: number
   selectTab: (tabId: string) => void
   setResults: () => void
+  title: string
 }
 
 export type Tab = {
@@ -13,6 +14,7 @@ export type Tab = {
   tabName: string
   resultsTotal: number
   results: SearchItem[]
+  title: string
   showLoadMoreButton: boolean
 }
 
@@ -27,6 +29,7 @@ const extractTabNameFromUrl = (url: string) => {
 const buildSearchTab = ({
   tabId,
   tabName,
+  title,
   tabNumberOfResults,
   selectTab,
 }: SearchTabOptions): HTMLDivElement => {
@@ -34,7 +37,7 @@ const buildSearchTab = ({
   searchTab.classList.add('saas-search-tab')
 
   const searchTabName = document.createElement('span')
-  searchTabName.innerHTML = `${extractTabNameFromUrl(tabName)} `
+  searchTabName.innerHTML = title || `${extractTabNameFromUrl(tabName)} `
 
   const searchTabNumberOfResults = document.createElement('span')
   searchTabNumberOfResults.innerHTML = `(${tabNumberOfResults})`

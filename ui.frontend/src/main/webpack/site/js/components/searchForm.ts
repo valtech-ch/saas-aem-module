@@ -7,7 +7,10 @@ type SearchFormSubmitEventOption = {
 }
 
 const buildSearchForm = (): HTMLFormElement => {
-  return document.createElement('form')
+  const searchForm = document.createElement('form')
+  searchForm.classList.add('saas-search-form')
+
+  return searchForm
 }
 
 export const addEventToSearchForm = (
@@ -48,30 +51,38 @@ export const addEventToSearchForm = (
       const searchFormParent = searchForm.parentElement
 
       tabResultsArray.forEach((tabResult) => {
-        const searchTabElement = buildSearchTab({
-          tabId: tabResult.tabId,
-          tabName: tabResult.tabId,
-          tabNumberOfResults: tabResult.resultsTotal,
-          selectTab: () => {},
-          setResults: () => {},
-        })
+        const hasResults = tabResult.resultsTotal
 
-        const searchResults = buildSearchResult({
-          searchItems: tabResult.results,
-        })
-
-        searchFormParent?.appendChild(searchTabElement)
-        searchFormParent?.appendChild(searchResults)
-
-        if (tabResult.showLoadMoreButton) {
-          const loadMoreButton = buildLoadMoreButton({
-            loadMoreButtonText,
-            offset: 10,
-            tabUrl: tabResult.tabId,
-            searchValue,
-            searchResultsElement: searchResults,
+        if (hasResults) {
+          const searchTabElement = buildSearchTab({
+            tabId: tabResult.tabId,
+            tabName: tabResult.tabId,
+            tabNumberOfResults: tabResult.resultsTotal,
+            title: tabResult.title,
+            selectTab: () => {},
+            setResults: () => {},
           })
-          searchFormParent?.appendChild(loadMoreButton)
+
+          const searchResults = buildSearchResult({
+            searchItems: tabResult.results,
+          })
+
+          searchForm?.parentNode?.insertBefore(
+            searchTabElement,
+            searchForm.nextSibling,
+          )
+          searchFormParent?.appendChild(searchResults)
+
+          if (tabResult.showLoadMoreButton) {
+            const loadMoreButton = buildLoadMoreButton({
+              loadMoreButtonText,
+              offset: 10,
+              tabUrl: tabResult.tabId,
+              searchValue,
+              searchResultsElement: searchResults,
+            })
+            searchResults?.appendChild(loadMoreButton)
+          }
         }
       })
     })()
