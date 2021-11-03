@@ -1,3 +1,4 @@
+import { OnLoadMoreButtonClickCallback } from '../types/callbacks'
 import { buildSearchItem, SearchItem } from './searchItem'
 
 type SearchButtonOptions = {
@@ -6,6 +7,7 @@ type SearchButtonOptions = {
   tabUrl: string
   searchValue: string
   searchResultsElement: HTMLDivElement
+  onLoadMoreButtonClick?: OnLoadMoreButtonClickCallback
 }
 
 const buildLoadMoreButton = ({
@@ -14,6 +16,7 @@ const buildLoadMoreButton = ({
   tabUrl,
   searchValue,
   searchResultsElement,
+  onLoadMoreButtonClick,
 }: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
   loadMoreButton.classList.add('saas-load-more-button')
@@ -24,6 +27,8 @@ const buildLoadMoreButton = ({
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   loadMoreButton.addEventListener('click', async (event) => {
+    onLoadMoreButtonClick?.()
+
     event.preventDefault()
 
     const currentOffset = loadMoreButton.dataset.offset || offset

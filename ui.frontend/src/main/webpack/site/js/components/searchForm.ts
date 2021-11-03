@@ -1,3 +1,4 @@
+import type { SearchCallbacks } from '../types/callbacks'
 import buildLoadMoreButton from './loadMoreButton'
 import buildSearchResult from './searchResults'
 import buildSearchTab, {
@@ -7,9 +8,7 @@ import buildSearchTab, {
   Tab,
 } from './searchTabs'
 
-type SearchFormSubmitEventOption = {
-  searchCallback?: () => void
-}
+type SearchFormSubmitEventOption = SearchCallbacks
 
 const buildSearchForm = (): HTMLFormElement => {
   const searchForm = document.createElement('form')
@@ -26,14 +25,17 @@ export const addEventToSearchForm = (
   loadMoreButtonText: string,
   options?: SearchFormSubmitEventOption,
 ): void => {
-  const { searchCallback } = options || {}
+  const { onSearch, onSwitchTab, onSearchItemClick, onLoadMoreButtonClick } =
+    options || {}
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises,sonarjs/cognitive-complexity
   return searchForm.addEventListener('submit', (event) => {
     event.preventDefault()
 
     return (async () => {
-      searchCallback?.()
+      const searchValue = searchInputElement.value
+
+      onSearch?.(searchValue)
 
       if (searchUrl) {
         window.location.href = searchUrl
@@ -43,8 +45,6 @@ export const addEventToSearchForm = (
       removeSearchTabs()
       removeSearchResults()
       removeSelectedTabFromSearchContainer()
-
-      const searchValue = searchInputElement.value
 
       const tabResultsArray = await Promise.all(
         searchTabs.map(async (tab): Promise<Tab> => {
@@ -58,7 +58,8 @@ export const addEventToSearchForm = (
       const searchFormParent = searchForm.parentElement
 
       tabResultsArray.forEach((tabResult) => {
-        const { resultsTotal, showLoadMoreButton, tabId } = tabResult
+        const { resultsTotal, showLoadMoreButton, tabId, title, results } =
+          tabResult
 
         if (resultsTotal) {
           const searchContainer = document.querySelector<HTMLDivElement>(
@@ -70,15 +71,17 @@ export const addEventToSearchForm = (
           }
 
           const searchTabElement = buildSearchTab({
-            tabId: tabResult.tabId,
-            tabName: tabResult.tabId,
-            tabNumberOfResults: tabResult.resultsTotal,
-            title: tabResult.title,
+            tabId,
+            tabName: tabId,
+            tabNumberOfResults: resultsTotal,
+            title,
+            onSwitchTab,
           })
 
           const searchResults = buildSearchResult({
-            searchItems: tabResult.results,
-            tabId: tabResult.tabId,
+            searchItems: results,
+            tabId,
+            onSearchItemClick,
           })
 
           searchForm?.parentNode?.insertBefore(
@@ -94,6 +97,7 @@ export const addEventToSearchForm = (
               tabUrl: tabId,
               searchValue,
               searchResultsElement: searchResults,
+              onLoadMoreButtonClick,
             })
             searchResults?.appendChild(loadMoreButton)
           }

@@ -2,14 +2,7 @@ import buildSearchButton from './components/searchButton'
 import buildSearchForm, { addEventToSearchForm } from './components/searchForm'
 import buildSearchInput from './components/searchInput'
 import { getDataAttributeFromSearchElement } from './searchElement'
-
-type CallbackFunction = () => void
-
-type SearchOptions = {
-  callbacks: {
-    search: CallbackFunction
-  }
-}
+import { SearchOptions } from './types/searchOptions'
 
 export const buildSearch = (
   searchElement: HTMLElement,
@@ -22,7 +15,7 @@ export const buildSearch = (
   }
 
   const { callbacks } = options || {}
-  const { search: searchCallback } = callbacks || {}
+  const { onSearch } = callbacks || {}
 
   const {
     searchFieldPlaceholderText,
@@ -51,7 +44,7 @@ export const buildSearch = (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
-    { searchCallback },
+    { onSearch },
   )
 
   searchFormElement.appendChild(searchInputElement)

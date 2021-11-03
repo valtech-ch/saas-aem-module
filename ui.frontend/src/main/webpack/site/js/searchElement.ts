@@ -1,11 +1,4 @@
-type SearchConfig = {
-  searchFieldPlaceholderText: string
-  loadMoreButtonText: string
-  searchTabs: string[]
-  searchButtonText: string
-  autocompleteTriggerThreshold: number
-  searchUrl?: string
-}
+import type { SearchConfig } from './types/searchOptions'
 
 export const getSearchElement = (
   searchSelector = 'search',
@@ -14,7 +7,7 @@ export const getSearchElement = (
 }
 
 export const isSearchConfig = (
-  searchConfig: SearchConfig | any,
+  searchConfig: SearchConfig | never,
 ): searchConfig is SearchConfig => {
   const {
     searchFieldPlaceholderText,

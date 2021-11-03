@@ -1,10 +1,12 @@
+import { OnSwitchTabCallback } from '../types/callbacks'
 import { SearchItem } from './searchItem'
 
-type SearchTabOptions = {
+export type SearchTabOptions = {
   tabId: string
   tabName: string
   tabNumberOfResults: number
   title: string
+  onSwitchTab?: OnSwitchTabCallback
 }
 
 export type Tab = {
@@ -29,6 +31,7 @@ const buildSearchTab = ({
   tabName,
   title,
   tabNumberOfResults,
+  onSwitchTab,
 }: SearchTabOptions): HTMLDivElement => {
   const searchTab = document.createElement('div')
   searchTab.classList.add('saas-search-tab')
@@ -43,6 +46,8 @@ const buildSearchTab = ({
   searchTab.appendChild(searchTabNumberOfResults)
 
   searchTab.addEventListener('click', () => {
+    onSwitchTab?.()
+
     const searchTabs = document.querySelectorAll<HTMLDivElement>(
       '.saas-search-results',
     )
