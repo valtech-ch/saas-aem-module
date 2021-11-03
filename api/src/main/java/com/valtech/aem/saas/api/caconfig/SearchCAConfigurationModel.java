@@ -26,6 +26,14 @@ public interface SearchCAConfigurationModel {
   String getClient();
 
   /**
+   * Retrieves configured project id. Project id is considered required.
+   *
+   * @return saas project id
+   * @throws IllegalStateException thrown when project id is blank.
+   */
+  int getProjectId();
+
+  /**
    * Retrieves set of query ready items.
    *
    * @return set of filter entries.
