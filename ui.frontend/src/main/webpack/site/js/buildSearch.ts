@@ -1,13 +1,16 @@
 import buildSearchButton from './components/searchButton'
-import buildSearchForm, { addEventToSearchForm } from './components/searchForm'
+import buildSearchForm, {
+  addEventToSearchForm,
+  triggerSearch,
+} from './components/searchForm'
 import buildSearchInput from './components/searchInput'
 import { getDataAttributeFromSearchElement } from './searchElement'
 import { SearchOptions } from './types/searchOptions'
 
-export const buildSearch = (
+export const buildSearch = async (
   searchElement: HTMLElement,
   options?: SearchOptions,
-): void => {
+): Promise<void> => {
   const searchConfig = getDataAttributeFromSearchElement(searchElement)
 
   if (!searchConfig) {
@@ -15,7 +18,6 @@ export const buildSearch = (
   }
 
   const { callbacks } = options || {}
-  const { onSearch } = callbacks || {}
 
   const {
     searchFieldPlaceholderText,
@@ -44,7 +46,7 @@ export const buildSearch = (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
-    { onSearch },
+    callbacks,
   )
 
   searchFormElement.appendChild(searchInputElement)
@@ -54,4 +56,21 @@ export const buildSearch = (
   searchElementParent?.replaceChild(searchContainer, searchElement)
 
   searchContainer.appendChild(searchFormElement)
+
+  const currentUrl = new URL(window.location.href)
+  const currentParams = new URLSearchParams(currentUrl.search)
+  const searchValue = currentParams.get('q')
+
+  if (searchValue) {
+    searchInputElement.value = searchValue
+
+    await triggerSearch(
+      searchFormElement,
+      searchInputElement,
+      searchUrl,
+      searchTabs,
+      loadMoreButtonText,
+      callbacks,
+    )
+  }
 }
