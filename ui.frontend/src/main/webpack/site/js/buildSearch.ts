@@ -26,7 +26,7 @@ export const buildSearch = (
   } = searchConfig
 
   const searchContainer = document.createElement('div')
-  searchContainer.classList.add('saas-search-container')
+  searchContainer.classList.add('saas-container')
 
   const searchFormElement = buildSearchForm()
 

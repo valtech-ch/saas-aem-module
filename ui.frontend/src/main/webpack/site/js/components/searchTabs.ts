@@ -34,7 +34,7 @@ const buildSearchTab = ({
   onSwitchTab,
 }: SearchTabOptions): HTMLDivElement => {
   const searchTab = document.createElement('div')
-  searchTab.classList.add('saas-search-tab')
+  searchTab.classList.add('saas-container_tab')
 
   const searchTabName = document.createElement('span')
   searchTabName.innerHTML = title || `${extractTabNameFromUrl(tabName)} `
@@ -49,11 +49,10 @@ const buildSearchTab = ({
     onSwitchTab?.()
 
     const searchTabs = document.querySelectorAll<HTMLDivElement>(
-      '.saas-search-results',
+      '.saas-container_results',
     )
-    const searchContainer = document.querySelector<HTMLDivElement>(
-      '.saas-search-container',
-    )
+    const searchContainer =
+      document.querySelector<HTMLDivElement>('.saas-container')
 
     if (searchContainer) {
       searchContainer.dataset.selectedTab = tabId
@@ -74,8 +73,9 @@ const buildSearchTab = ({
 }
 
 export const removeSearchTabs = (): void => {
-  const searchTabs =
-    document.querySelectorAll<HTMLDivElement>('.saas-search-tab')
+  const searchTabs = document.querySelectorAll<HTMLDivElement>(
+    '.saas-container_tab',
+  )
 
   searchTabs.forEach((tab) => {
     tab.remove()
@@ -84,7 +84,7 @@ export const removeSearchTabs = (): void => {
 
 export const removeSearchResults = (): void => {
   const searchResults = document.querySelectorAll<HTMLDivElement>(
-    '.saas-search-results',
+    '.saas-container_results',
   )
 
   searchResults.forEach((searchResult) => {
@@ -93,9 +93,8 @@ export const removeSearchResults = (): void => {
 }
 
 export const removeSelectedTabFromSearchContainer = (): void => {
-  const searchContainer = document.querySelector<HTMLDivElement>(
-    '.saas-search-container',
-  )
+  const searchContainer =
+    document.querySelector<HTMLDivElement>('.saas-container')
 
   if (searchContainer) {
     searchContainer.removeAttribute('data-selected-tab')

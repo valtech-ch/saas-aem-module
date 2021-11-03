@@ -12,7 +12,7 @@ type SearchFormSubmitEventOption = SearchCallbacks
 
 const buildSearchForm = (): HTMLFormElement => {
   const searchForm = document.createElement('form')
-  searchForm.classList.add('saas-search-form')
+  searchForm.classList.add('saas-container_form')
 
   return searchForm
 }
@@ -62,9 +62,8 @@ export const addEventToSearchForm = (
           tabResult
 
         if (resultsTotal) {
-          const searchContainer = document.querySelector<HTMLDivElement>(
-            '.saas-search-container',
-          )
+          const searchContainer =
+            document.querySelector<HTMLDivElement>('.saas-container')
 
           if (searchContainer && !searchContainer.dataset.selectedTab) {
             searchContainer.dataset.selectedTab = tabResult.tabId

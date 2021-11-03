@@ -13,7 +13,7 @@ const buildSearchResult = ({
   onSearchItemClick,
 }: SearchResultsOptions): HTMLDivElement => {
   const searchResults = document.createElement('div')
-  searchResults.classList.add('saas-search-results')
+  searchResults.classList.add('saas-container_results')
 
   searchResults.dataset.tab = tabId
 
