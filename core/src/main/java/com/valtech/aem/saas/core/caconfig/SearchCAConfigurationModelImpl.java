@@ -57,6 +57,14 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
   }
 
   @Override
+  public int getProjectId() {
+    if (searchConfiguration.projectId() <= SearchConfiguration.DEFAULT_PROJECT_ID) {
+      throw new IllegalStateException("Project Id must be configured and should be a non-negative integer.");
+    }
+    return searchConfiguration.projectId();
+  }
+
+  @Override
   public Set<FilterModel> getFilters() {
     return asStream(searchConfiguration.searchFilters())
         .map(searchFilterConfiguration -> new FilterModelImpl(searchFilterConfiguration.name(),

@@ -1,49 +1,26 @@
 package com.valtech.aem.saas.api.bestbets.dto;
 
+import com.google.gson.annotations.SerializedName;
+import lombok.Value;
+
 /**
  * Represents a best bet details object
  */
-public interface BestBetDTO {
+@Value
+public class BestBetDTO {
 
-  /**
-   * Gets Best bet's id
-   *
-   * @return identifying int value.
-   */
-  int getId();
+  public static final String PN_PROJECT_ID = "project_id";
 
-  /**
-   * Gets Best bet's language
-   *
-   * @return a string representing a language.
-   */
-  String getLanguage();
+  int id;
 
-  /**
-   * Gets Best bet's term.
-   *
-   * @return a string value associated with the best bet.
-   */
-  String getTerm();
+  String language;
 
-  /**
-   * Gets Best bet's url
-   *
-   * @return the resource's url that is associated with the best bet.
-   */
-  String getUrl();
+  String term;
 
-  /**
-   * Gets Best bet's project id
-   *
-   * @return identifying int value of a project.
-   */
-  int getProjectId();
+  String url;
 
-  /**
-   * Gets Best bet's saas identifier
-   *
-   * @return identifying int value in SaaS.
-   */
-  int getIdentifier();
+  @SerializedName(PN_PROJECT_ID)
+  int projectId;
+
+  int identifier;
 }
