@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.api.caconfig;
 
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +38,7 @@ public interface SearchCAConfigurationModel {
    *
    * @return set of filter entries.
    */
-  Set<FilterModel> getFilters();
+  Set<Filter> getFilters();
 
   /**
    * Retrieves a list of predefined query templates.

@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.adobe.cq.export.json.ContainerExporter;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public interface SearchModel extends ContainerExporter {
    *
    * @return set of filter details.
    */
-  Set<FilterModel> getEffectiveFilters();
+  Set<Filter> getEffectiveFilters();
 
   /**
    * Retrieves an author configured value for the max limit of results per request/page

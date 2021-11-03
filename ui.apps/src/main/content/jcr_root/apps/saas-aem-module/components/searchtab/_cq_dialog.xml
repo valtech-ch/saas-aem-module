@@ -39,6 +39,33 @@
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/include"
                                                 path="/apps/saas-aem-module/shared/dialog/filters"/>
+                                            <facets
+                                                jcr:primaryType="nt:unstructured"
+                                                fieldLabel="Facets"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                                composite="{Boolean}true">
+                                                <field
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                    name="./facets">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <label
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Label"
+                                                            fieldDescription="Human readable value for the facet field."
+                                                            name="label"
+                                                            required="{Boolean}true">
+                                                        </label>
+                                                        <fieldName
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            name="fieldName"
+                                                            required="{Boolean}true">
+                                                        </fieldName>
+                                                    </items>
+                                                </field>
+                                            </facets>
                                         </items>
                                     </column>
                                 </items>

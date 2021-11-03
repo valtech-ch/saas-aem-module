@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.api.typeahead.dto;
 
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.Set;
 
 /**
@@ -28,6 +28,6 @@ public interface TypeaheadPayloadDTO {
    *
    * @return filter entries used for filtering typeahead results.
    */
-  Set<FilterModel> getFilters();
+  Set<Filter> getFilters();
 
 }

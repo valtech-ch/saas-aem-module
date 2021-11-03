@@ -1,11 +1,11 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.query.FacetsQuery;
+import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FiltersQuery;
 import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.api.query.LanguageQuery;
@@ -14,6 +14,7 @@ import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Con
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
+import com.valtech.aem.saas.core.http.response.FacetFieldsDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.HighlightingDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.ResponseBodyDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.ResponseHeaderDataExtractionStrategy;
@@ -24,6 +25,7 @@ import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
 import com.valtech.aem.saas.core.http.response.dto.ResponseBodyDTO;
 import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import com.valtech.aem.saas.core.util.LoggedOptional;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +62,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
   public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
       String searchText, @NonNull String language, int start,
       int rows,
-      Set<FilterModel> filters,
+      Set<Filter> filters,
       Set<String> facets) {
     String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
         createQueryString(searchText,
@@ -77,11 +79,11 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
     return Optional.empty();
   }
 
-  private Set<FilterModel> getEffectiveFilters(Set<FilterModel> contextFilters, Set<FilterModel> specifiedFilters) {
+  private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters) {
     return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
   }
 
-  private String createQueryString(String term, String language, Set<FilterModel> filters, Set<String> facets) {
+  private String createQueryString(String term, String language, Set<Filter> filters, Set<String> facets) {
     return GetQueryStringConstructor.builder()
         .query(new TermQuery(term))
         .query(new LanguageQuery(language))
@@ -112,7 +114,9 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
           FulltextSearchResultsDTO.builder()
               .totalResultsFound(responseBody.get().getNumFound())
               .currentResultPage(responseBody.get().getStart())
-              .results(results.collect(Collectors.toList()));
+              .results(results.collect(Collectors.toList()))
+              .facetFieldsResults(
+                  searchResponse.get(new FacetFieldsDataExtractionStrategy()).orElse(Collections.emptyList()));
       if (enableAutoSuggest) {
         log.debug("Auto suggest is enabled.");
         searchResponse.get(new SuggestionDataExtractionStrategy()).flatMap(suggestion -> LoggedOptional.of(suggestion,

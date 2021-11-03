@@ -1,8 +1,11 @@
 package com.valtech.aem.saas.core.common.request;
 
 import com.day.cq.wcm.api.Page;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -29,6 +32,13 @@ public class RequestWrapper {
 
   public Optional<String> getParameter(String name) {
     return Optional.ofNullable(request.getParameter(name)).filter(StringUtils::isNotBlank);
+  }
+
+  public List<String> getParameterValues(String name) {
+    return Optional.ofNullable(request.getParameterValues(name))
+        .map(Stream::of)
+        .orElse(Stream.empty())
+        .collect(Collectors.toList());
   }
 
   public Optional<String> getSuffix() {

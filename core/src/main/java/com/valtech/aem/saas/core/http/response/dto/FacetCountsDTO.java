@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.http.response.dto;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.List;
@@ -12,5 +13,5 @@ public class FacetCountsDTO {
   public static final String PN_FACET_FIELDS = "facet_fields";
 
   @SerializedName(PN_FACET_FIELDS)
-  HashMap<String, List<Object>> facetFields;
+  HashMap<String, List<JsonElement>> facetFields;
 }
