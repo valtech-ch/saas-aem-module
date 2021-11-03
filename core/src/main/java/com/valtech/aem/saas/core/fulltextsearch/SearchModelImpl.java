@@ -44,11 +44,11 @@ import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
 /**
@@ -60,10 +60,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-    extensions = ExporterConstants.SLING_MODEL_EXTENSION,
-    options = {
-        @ExporterOption(name = "SerializationFeature.INDENT_OUTPUT", value = "true")
-    })
+    extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchModelImpl implements SearchModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
@@ -121,7 +118,7 @@ public class SearchModelImpl implements SearchModel {
   @Self
   private SlingHttpServletRequest request;
 
-  @Self
+  @SlingObject
   private Resource resource;
 
   @OSGiService
@@ -132,16 +129,15 @@ public class SearchModelImpl implements SearchModel {
 
   @PostConstruct
   private void init() {
-    Resource currentResource = getCurrentResource();
     I18n i18n = i18nProvider.getI18n(getLocale());
-    effectiveFilters = getEffectiveFilters(currentResource);
+    effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
         ? searchFieldPlaceholderText
         : i18n.get(I18N_SEARCH_INPUT_PLACEHOLDER);
     searchButtonText = i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
     loadMoreButtonText = i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
     if (request != null) {
-      searchTabs = getSearchTabs(currentResource);
+      searchTabs = getSearchTabs(resource);
     }
     configJson = getSearchConfigJson();
   }
@@ -234,13 +230,8 @@ public class SearchModelImpl implements SearchModel {
     return null;
   }
 
-  private Resource getCurrentResource() {
-    return Optional.ofNullable(request).map(SlingHttpServletRequest::getResource).orElse(resource);
-  }
-
   private Locale getLocale() {
-    return Optional.ofNullable(request).map(r -> r.adaptTo(RequestWrapper.class)).map(RequestWrapper::getLocale)
-        .orElseGet(() -> Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-            .orElse(Locale.getDefault()));
+    return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+        .orElse(Locale.getDefault());
   }
 }
