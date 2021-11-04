@@ -15,6 +15,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -43,11 +44,11 @@ import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
 /**
@@ -59,10 +60,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-    extensions = ExporterConstants.SLING_MODEL_EXTENSION,
-    options = {
-        @ExporterOption(name = "SerializationFeature.INDENT_OUTPUT", value = "true")
-    })
+    extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchModelImpl implements SearchModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
@@ -114,32 +112,40 @@ public class SearchModelImpl implements SearchModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @ValueMapValue
+  private String language;
+
   @Self
   private SlingHttpServletRequest request;
 
-  @Self
+  @SlingObject
   private Resource resource;
 
   @OSGiService
   private PathTransformer pathTransformer;
 
   @OSGiService
-  protected I18nProvider i18nProvider;
+  private I18nProvider i18nProvider;
 
   @PostConstruct
   private void init() {
-    Resource currentResource = getCurrentResource();
     I18n i18n = i18nProvider.getI18n(getLocale());
-    effectiveFilters = getEffectiveFilters(currentResource);
+    effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
         ? searchFieldPlaceholderText
         : i18n.get(I18N_SEARCH_INPUT_PLACEHOLDER);
     searchButtonText = i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
     loadMoreButtonText = i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
     if (request != null) {
-      searchTabs = getSearchTabs(currentResource);
+      searchTabs = getSearchTabs(resource);
     }
     configJson = getSearchConfigJson();
+  }
+
+  @JsonIgnore
+  @Override
+  public String getLanguage() {
+    return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
   }
 
   @NonNull
@@ -161,7 +167,18 @@ public class SearchModelImpl implements SearchModel {
     return AUTOCOMPLETE_THRESHOLD;
   }
 
+  private boolean isAutocompleteRequest() {
+    return Optional.ofNullable(request)
+        .map(r -> r.adaptTo(RequestWrapper.class))
+        .map(RequestWrapper::getSelectors)
+        .orElse(Collections.emptyList())
+        .contains(AutocompleteServlet.AUTOCOMPLETE_SELECTOR);
+  }
+
   private List<String> getSearchTabs(Resource searchResource) {
+    if (isAutocompleteRequest()) {
+      return Collections.emptyList();
+    }
     return Optional.ofNullable(searchResource.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
         .map(r -> r.adaptTo(ResourceWrapper.class))
         .map(ResourceWrapper::getDirectChildren)
@@ -213,13 +230,8 @@ public class SearchModelImpl implements SearchModel {
     return null;
   }
 
-  private Resource getCurrentResource() {
-    return Optional.ofNullable(request).map(SlingHttpServletRequest::getResource).orElse(resource);
-  }
-
   private Locale getLocale() {
-    return Optional.ofNullable(request).map(r -> r.adaptTo(RequestWrapper.class)).map(RequestWrapper::getLocale)
-        .orElseGet(() -> Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-            .orElse(Locale.getDefault()));
+    return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+        .orElse(Locale.getDefault());
   }
 }
