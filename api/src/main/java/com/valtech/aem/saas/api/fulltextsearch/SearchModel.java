@@ -73,11 +73,11 @@ public interface SearchModel extends ContainerExporter {
   int getAutocompleteTriggerThreshold();
 
   /**
-   * Gets list of search prepared urls to search tab resources;
+   * Gets list of search tabs;
    *
-   * @return list of urls.
+   * @return list of search tabs.
    */
-  List<String> getSearchTabs();
+  List<SearchTabModel> getSearchTabs();
 
   /**
    * Gets the search configuration in a json format. In this format, the configs are used by the FE.
