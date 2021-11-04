@@ -15,8 +15,6 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
-import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
-import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.util.Arrays;
@@ -112,6 +110,9 @@ public class SearchModelImpl implements SearchModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
+  private List<Resource> searchTabResources;
+
   @ValueMapValue
   private String language;
 
@@ -167,10 +168,7 @@ public class SearchModelImpl implements SearchModel {
 
   private List<SearchTabModel> getSearchTabList() {
     if (request != null) {
-      return Optional.ofNullable(resource.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
-          .map(r -> r.adaptTo(ResourceWrapper.class))
-          .map(ResourceWrapper::getDirectChildren)
-          .orElse(Stream.empty())
+      return searchTabResources.stream()
           .map(r -> modelFactory.getModelFromWrappedRequest(request, r, SearchTabModel.class))
           .filter(Objects::nonNull)
           .collect(Collectors.toList());

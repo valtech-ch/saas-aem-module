@@ -31,7 +31,6 @@ import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -121,7 +120,7 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   @PostConstruct
   private void init() {
-    url = constructJsonExportUrl();
+    constructJsonExportUrl().ifPresent(u -> url = u);
     getRequestWrapper().ifPresent(rw -> requestWrapper = rw);
     getSearchTerm().ifPresent(s -> searchTerm = s);
     getParentSearchComponent().ifPresent(cmp -> parentSearch = cmp);
@@ -133,18 +132,18 @@ public class SearchTabModelImpl implements SearchTabModel {
     });
   }
 
-  private String constructJsonExportUrl() {
+  private Optional<String> constructJsonExportUrl() {
     try {
-      return new URIBuilder(String.format("%s.%s.%s",
+      return Optional.of(new URIBuilder(String.format("%s.%s.%s",
           pathTransformer.map(request, resource.getPath()),
           ExporterConstants.SLING_MODEL_SELECTOR,
           ExporterConstants.SLING_MODEL_EXTENSION))
           .setCustomQuery(request.getQueryString())
-          .toString();
+          .toString());
     } catch (URISyntaxException e) {
-      log.error("Failed to create search prepared url to search tab resource.");
+      log.error("Failed to create search prepared url to search tab resource.", e);
     }
-    return null;
+    return Optional.empty();
   }
 
   private Optional<RequestWrapper> getRequestWrapper() {
@@ -163,23 +162,40 @@ public class SearchTabModelImpl implements SearchTabModel {
   }
 
   private Optional<FulltextSearchResultsDTO> getFulltextSearchResults() {
-    if (!isResourceOverriddenRequest()) {
-      if (StringUtils.isNotBlank(searchTerm)) {
-        SearchCAConfigurationModel searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
-        if (ObjectUtils.allNotNull(searchCAConfigurationModel, parentSearch, requestWrapper)) {
-          return fulltextSearchService.getResults(
-              searchCAConfigurationModel,
-              searchTerm, requestWrapper.getLocale().getLanguage(), getStartPage(requestWrapper),
-              getResultsPerPage(parentSearch),
-              getEffectiveFilters(parentSearch));
-        } else {
-          log.error("Could not resolve context aware search configurations from current request.");
-        }
-      } else {
-        log.debug("No search term is passed in the request.");
-      }
+    if (isResourceOverriddenRequest()) {
+      log.trace(
+          String.join(StringUtils.EMPTY,
+              "Skip querying for search results in case this sling model is initialized with a request",
+              " when request.getRequestPathInfo().getResourcePath() != request.getResource().getPath().",
+              " (Possible when the request is of type org.apache.sling.models.impl.ResourceOverridingRequestWrapper)"));
+      return Optional.empty();
     }
-    return Optional.empty();
+    if (StringUtils.isBlank(searchTerm)) {
+      log.debug("No search term is passed in the request.");
+      return Optional.empty();
+    }
+    SearchCAConfigurationModel searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
+    if (searchCAConfigurationModel == null) {
+      log.error("Could not resolve context aware search configurations from current request.");
+      return Optional.empty();
+    }
+    if (parentSearch == null) {
+      log.error(
+          "Could not resolve the parent search component. (This is highly unlikely. It suggests content corruption.)");
+      return Optional.empty();
+    }
+    if (requestWrapper == null) {
+      log.error(
+          "Could not adapt the request to com.valtech.aem.saas.core.common.request.RequestWrapper. (This should never happen.)");
+      return Optional.empty();
+    }
+    return fulltextSearchService.getResults(
+        searchCAConfigurationModel,
+        searchTerm,
+        requestWrapper.getLocale().getLanguage(),
+        getStartPage(requestWrapper),
+        getResultsPerPage(parentSearch),
+        getEffectiveFilters(parentSearch));
   }
 
   private boolean isResourceOverriddenRequest() {
