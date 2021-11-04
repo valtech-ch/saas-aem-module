@@ -1,8 +1,11 @@
 package com.valtech.aem.saas.core.common.request;
 
 import com.day.cq.wcm.api.Page;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -35,8 +38,12 @@ public class RequestWrapper {
     return Optional.ofNullable(request.getRequestPathInfo().getSuffix()).filter(StringUtils::isNotBlank);
   }
 
+  public List<String> getSelectors() {
+    return Stream.of(request.getRequestPathInfo().getSelectors()).collect(Collectors.toList());
+  }
+
   public Locale getLocale() {
-    return currentPage.getLanguage(false);
+    return Optional.ofNullable(currentPage).map(p -> p.getLanguage(false)).orElse(Locale.getDefault());
   }
 
 }

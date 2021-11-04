@@ -15,6 +15,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -42,7 +43,6 @@ import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
@@ -60,10 +60,7 @@ import org.apache.sling.models.factory.ModelFactory;
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-    extensions = ExporterConstants.SLING_MODEL_EXTENSION,
-    options = {
-        @ExporterOption(name = "SerializationFeature.INDENT_OUTPUT", value = "true")
-    })
+    extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchModelImpl implements SearchModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
@@ -115,6 +112,9 @@ public class SearchModelImpl implements SearchModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @ValueMapValue
+  private String language;
+
   @Self
   private SlingHttpServletRequest request;
 
@@ -138,6 +138,12 @@ public class SearchModelImpl implements SearchModel {
     loadMoreButtonText = i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
     searchTabs = getSearchTabList();
     configJson = getSearchConfigJson();
+  }
+
+  @JsonIgnore
+  @Override
+  public String getLanguage() {
+    return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
   }
 
   @NonNull
@@ -201,9 +207,7 @@ public class SearchModelImpl implements SearchModel {
   }
 
   private Locale getLocale() {
-    return Optional.ofNullable(request).map(r -> r.adaptTo(RequestWrapper.class)).map(RequestWrapper::getLocale)
-        .orElseGet(() -> Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-            .orElse(Locale.getDefault()));
+    return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+        .orElse(Locale.getDefault());
   }
-
 }
