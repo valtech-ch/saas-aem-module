@@ -15,8 +15,11 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
+import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,6 +37,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.caconfig.ConfigurationBuilder;
@@ -110,6 +114,9 @@ public class SearchModelImpl implements SearchModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @Getter
+  private String autosuggestUrl;
+
   @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
   private List<Resource> searchTabResources;
 
@@ -128,8 +135,12 @@ public class SearchModelImpl implements SearchModel {
   @OSGiService
   private ModelFactory modelFactory;
 
+  @OSGiService
+  private PathTransformer pathTransformer;
+
   @PostConstruct
   private void init() {
+    createAutosuggestUrl().ifPresent(url -> autosuggestUrl = url);
     I18n i18n = i18nProvider.getI18n(getLocale());
     effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
@@ -174,6 +185,26 @@ public class SearchModelImpl implements SearchModel {
           .collect(Collectors.toList());
     }
     return Collections.emptyList();
+  }
+
+  private Optional<String> createAutosuggestUrl() {
+    return Optional.ofNullable(request).map(r -> pathTransformer.map(r, resource.getPath()))
+        .map(url -> String.format("%s.%s.%s",
+            url,
+            AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
+            AutocompleteServlet.EXTENSION_JSON))
+        .map(this::createUriBuilder)
+        .map(uriBuilder -> uriBuilder.setCustomQuery(request.getQueryString()))
+        .map(URIBuilder::toString);
+  }
+
+  private URIBuilder createUriBuilder(String uri) {
+    try {
+      return new URIBuilder(uri);
+    } catch (URISyntaxException e) {
+      log.error("Failed to create UriBuilder.", e);
+    }
+    return null;
   }
 
   private String getSearchConfigJson() {
