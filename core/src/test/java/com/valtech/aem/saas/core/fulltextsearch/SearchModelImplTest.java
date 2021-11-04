@@ -1,19 +1,20 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
-import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -21,6 +22,7 @@ import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.testing.mock.caconfig.ContextPlugins;
 import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +50,7 @@ class SearchModelImplTest {
   @Mock
   I18n i18n;
 
-  SearchModel testee;
+  SearchModelImpl testee;
 
   @BeforeEach
   void setUp() {
@@ -68,11 +70,11 @@ class SearchModelImplTest {
 
   @Test
   void testAdaptRequest() {
-    when(pathTransformer.map(context.request(),
-        "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab")).thenReturn(
+    when(pathTransformer.map(any(SlingHttpServletRequest.class),
+        eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab"))).thenReturn(
         "foo");
-    when(pathTransformer.map(context.request(),
-        "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab_2")).thenReturn(
+    when(pathTransformer.map(any(SlingHttpServletRequest.class),
+        eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab_2"))).thenReturn(
         "bar");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
@@ -106,15 +108,15 @@ class SearchModelImplTest {
   }
 
   private void adaptRequest() {
-    testee = context.request().adaptTo(SearchModel.class);
+    testee = context.request().adaptTo(SearchModelImpl.class);
   }
 
   private void adaptResource() {
-    testee = context.currentResource().adaptTo(SearchModel.class);
+    testee = context.currentResource().adaptTo(SearchModelImpl.class);
   }
 
   private void testAdaptable() {
     assertThat(testee, notNullValue());
-    assertThat(testee, instanceOf(SearchModel.class));
+    assertThat(testee, instanceOf(SearchModelImpl.class));
   }
 }
