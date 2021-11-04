@@ -1,11 +1,9 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-import com.valtech.aem.saas.api.query.Filter;
-
 /**
  * Represents a sling resource that contains pre-configurable search filter details.
  */
-public interface FilterModel extends Filter {
+public interface FilterModel {
 
   /**
    * Gets the filter field name.

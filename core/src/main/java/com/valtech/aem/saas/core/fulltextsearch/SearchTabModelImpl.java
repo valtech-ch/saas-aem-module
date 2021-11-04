@@ -22,16 +22,16 @@ import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFiltersDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
-import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.api.query.CompositeFilter;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FilterFactory;
 import com.valtech.aem.saas.api.query.SimpleFilter;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -270,14 +270,27 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   private Set<Filter> getEffectiveFilters(SearchModel search, RequestWrapper requestWrapper) {
     Set<Filter> result = search.getEffectiveFilters();
-    result.addAll(getConfigureFilters());
+    getConfiguredFilter().ifPresent(result::add);
     result.addAll(getSelectedFacetFilters(requestWrapper));
     return result;
   }
 
-  private Set<Filter> getConfigureFilters() {
-    return Optional.ofNullable(filters).map(List::stream).orElse(Stream.empty())
-        .map(f -> new SimpleFilter(f.getName(), f.getValue())).collect(Collectors.toSet());
+  private Optional<Filter> getConfiguredFilter() {
+    if (CollectionUtils.isEmpty(filters)) {
+      return Optional.empty();
+    }
+    if (filters.size() == 1) {
+      return Optional.of(filters.get(0)).map(this::createFilterFrom);
+    }
+    return Optional.of(CompositeFilter.builder()
+        .filters(filters.stream()
+            .map(this::createFilterFrom)
+            .collect(Collectors.toList()))
+        .build());
+  }
+
+  private SimpleFilter createFilterFrom(FilterModel filterModel) {
+    return new SimpleFilter(filterModel.getName(), filterModel.getValue());
   }
 
   private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
