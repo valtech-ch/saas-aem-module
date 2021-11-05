@@ -19,7 +19,6 @@ import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,7 +36,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.caconfig.ConfigurationBuilder;
@@ -192,19 +190,7 @@ public class SearchModelImpl implements SearchModel {
         .map(url -> String.format("%s.%s.%s",
             url,
             AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
-            AutocompleteServlet.EXTENSION_JSON))
-        .map(this::createUriBuilder)
-        .map(uriBuilder -> uriBuilder.setCustomQuery(request.getQueryString()))
-        .map(URIBuilder::toString);
-  }
-
-  private URIBuilder createUriBuilder(String uri) {
-    try {
-      return new URIBuilder(uri);
-    } catch (URISyntaxException e) {
-      log.error("Failed to create UriBuilder.", e);
-    }
-    return null;
+            AutocompleteServlet.EXTENSION_JSON));
   }
 
   private String getSearchConfigJson() {
