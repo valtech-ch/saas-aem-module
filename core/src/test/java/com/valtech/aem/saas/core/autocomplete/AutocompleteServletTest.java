@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -44,6 +45,9 @@ class AutocompleteServletTest {
   I18nProvider i18nProvider;
 
   @Mock
+  PathTransformer pathTransformer;
+
+  @Mock
   I18n i18n;
 
   AutocompleteServlet testee;
@@ -52,6 +56,7 @@ class AutocompleteServletTest {
   void setUp() {
     context.registerService(TypeaheadService.class, typeaheadService);
     context.registerService(I18nProvider.class, i18nProvider);
+    context.registerService(PathTransformer.class, pathTransformer);
     testee = context.registerInjectActivateService(new AutocompleteServlet());
     context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
     context.create().page("/content/saas-aem-module/us");

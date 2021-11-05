@@ -69,7 +69,7 @@ public interface SearchModel extends ContainerExporter {
   /**
    * Gets the autocomplete trigger threshold.
    *
-   * @return min number of chars typed before trigerring the autocomplete.
+   * @return min number of chars typed before triggering the autocomplete.
    */
   int getAutocompleteTriggerThreshold();
 
@@ -86,5 +86,12 @@ public interface SearchModel extends ContainerExporter {
    * @return json formatted string.
    */
   String getConfigJson();
+
+  /**
+   * Gets the auto suggest url of the search component.
+   *
+   * @return url string.
+   */
+  String getAutosuggestUrl();
 
 }
