@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum FilterJoinOperator {
-  AND(" "),
+  AND(" AND "),
   OR(" OR ");
 
   @Getter

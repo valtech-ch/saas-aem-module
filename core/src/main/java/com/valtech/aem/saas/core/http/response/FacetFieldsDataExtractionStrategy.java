@@ -44,9 +44,15 @@ public final class FacetFieldsDataExtractionStrategy implements
 
   private List<FacetFieldResultDTO> getFacetFieldItems(@NonNull List<JsonElement> facetFieldsList) {
     List<FacetFieldResultDTO> items = new ArrayList<>();
+    //due to the specific way the facet field result items are delivered.(flat list of text, count pairs)
+    //they list is iterated in pairs
+    //i - is the index of the facet value
+    //i + 1 - is the number of hits for the according value
     for (int i = 0; i < facetFieldsList.size(); i = i + 2) {
-      items.add(FacetFieldResultDTO.builder().text(facetFieldsList.get(i).getAsString()).count(
-          facetFieldsList.get(i + 1).getAsBigDecimal().intValue()).build());
+      items.add(FacetFieldResultDTO.builder()
+          .text(facetFieldsList.get(i).getAsString())
+          .count(facetFieldsList.get(i + 1).getAsInt())
+          .build());
     }
     return items;
   }
