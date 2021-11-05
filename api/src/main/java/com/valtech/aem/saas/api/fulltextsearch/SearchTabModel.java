@@ -51,4 +51,12 @@ public interface SearchTabModel extends ComponentExporter {
    * @return true if there are more results to be loaded.
    */
   boolean isShowLoadMoreButton();
+
+  /**
+   * Retrieves the json export url.
+   *
+   * @return
+   */
+  String getUrl();
+
 }
