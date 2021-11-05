@@ -76,6 +76,9 @@ class SearchModelImplTest {
     when(pathTransformer.map(any(SlingHttpServletRequest.class),
         eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab_2"))).thenReturn(
         "bar");
+    when(pathTransformer.map(any(SlingHttpServletRequest.class),
+        eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search"))).thenReturn(
+        "/search");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
     context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "bar");
@@ -90,6 +93,7 @@ class SearchModelImplTest {
     assertThat(testee.getFilters(), nullValue());
     assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
     assertThat(testee.getSearchTabs(), not(empty()));
+    assertThat(testee.getAutosuggestUrl(), is("/search.autocomplete.json"));
   }
 
   @Test
@@ -119,4 +123,5 @@ class SearchModelImplTest {
     assertThat(testee, notNullValue());
     assertThat(testee, instanceOf(SearchModelImpl.class));
   }
+
 }
