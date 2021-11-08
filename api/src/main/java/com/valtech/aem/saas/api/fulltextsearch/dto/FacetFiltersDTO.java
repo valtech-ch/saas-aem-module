@@ -4,6 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
+/**
+ * A DTO containing the facet based filters' details.
+ */
 @Value
 @RequiredArgsConstructor
 public class FacetFiltersDTO {

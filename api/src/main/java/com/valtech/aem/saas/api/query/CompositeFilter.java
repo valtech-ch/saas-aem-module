@@ -9,6 +9,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
 
+
+/**
+ * Implementation of Filter that can create composite filter query entries. A composite filter represents a list of
+ * filters that are joined by an 'AND' or 'OR' operator.
+ */
 @EqualsAndHashCode
 @Builder
 public class CompositeFilter implements Filter {

@@ -5,6 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+
+/**
+ * An implementation of Filter that represents a simple filter query entry.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode

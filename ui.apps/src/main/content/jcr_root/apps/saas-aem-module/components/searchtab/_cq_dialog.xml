@@ -60,6 +60,8 @@
                                                         <fieldName
                                                             jcr:primaryType="nt:unstructured"
                                                             sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Field name"
+                                                            fieldDescription="This is an existing index field in SaaS."
                                                             name="fieldName"
                                                             required="{Boolean}true">
                                                         </fieldName>

@@ -4,6 +4,9 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 
+/**
+ * Represents a value object containing facet field results details.
+ */
 @Builder
 @Value
 public class FacetFieldResultsDTO {
