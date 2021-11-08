@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.api.typeahead;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.List;
 import java.util.Set;
 import lombok.NonNull;
@@ -21,6 +21,6 @@ public interface TypeaheadService {
    * @return List of string represented typeahead options. Empty list if no options are found.
    */
   List<String> getResults(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull String text,
-      @NonNull String language, Set<FilterModel> filters);
+      @NonNull String language, Set<Filter> filters);
 
 }

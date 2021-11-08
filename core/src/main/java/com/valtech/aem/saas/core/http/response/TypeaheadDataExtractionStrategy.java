@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.http.response;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.valtech.aem.saas.core.http.response.dto.FacetCountsDTO;
 import java.util.ArrayList;
@@ -28,11 +27,7 @@ public final class TypeaheadDataExtractionStrategy implements SearchResponseData
 
   @Override
   public Optional<List<String>> getData(JsonElement response) {
-    return Optional.ofNullable(response)
-        .filter(JsonElement::isJsonObject)
-        .map(JsonElement::getAsJsonObject)
-        .map(r -> r.getAsJsonObject(propertyName()))
-        .map(jsonObject -> new Gson().fromJson(jsonObject, FacetCountsDTO.class))
+    return new FacetCountsDataExtractionStrategy().getData(response)
         .map(this::getTypeaheadResults);
   }
 
@@ -44,18 +39,19 @@ public final class TypeaheadDataExtractionStrategy implements SearchResponseData
         .orElse(Collections.emptyList());
   }
 
-  private List<String> getTypeaheadItems(@NonNull List<Object> facetFieldsList) {
+  private List<String> getTypeaheadItems(@NonNull List<JsonElement> facetFieldsList) {
     List<String> items = new ArrayList<>();
     for (int i = 0; i < facetFieldsList.size(); i++) {
       if (isTypeaheadTextOption(facetFieldsList, i)) {
-        items.add((String) facetFieldsList.get(i));
+        items.add(facetFieldsList.get(i).getAsString());
       }
     }
     return items;
   }
 
-  private boolean isTypeaheadTextOption(List<Object> facetFieldsList, int i) {
-    return i % 2 == 0 && facetFieldsList.get(i) instanceof String;
+  private boolean isTypeaheadTextOption(List<JsonElement> facetFieldsList, int i) {
+    return i % 2 == 0 && facetFieldsList.get(i).isJsonPrimitive() && facetFieldsList.get(i).getAsJsonPrimitive()
+        .isString();
   }
 
   private String getTypeaheadIndexFieldName() {

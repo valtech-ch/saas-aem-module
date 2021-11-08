@@ -28,6 +28,13 @@ public class RequestWrapper {
     return Optional.ofNullable(request.getParameter(name)).filter(StringUtils::isNotBlank);
   }
 
+  public List<String> getParameterValues(String name) {
+    return Optional.ofNullable(request.getParameterValues(name))
+        .map(Stream::of)
+        .orElse(Stream.empty())
+        .collect(Collectors.toList());
+  }
+
   public Optional<String> getSuffix() {
     return Optional.ofNullable(request.getRequestPathInfo().getSuffix()).filter(StringUtils::isNotBlank);
   }

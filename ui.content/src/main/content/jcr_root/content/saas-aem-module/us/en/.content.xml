@@ -4,7 +4,7 @@
     <jcr:content
         cq:contextHubPath="/etc/cloudsettings/default/contexthub"
         cq:contextHubSegmentsPath="/etc/segmentation/contexthub"
-        cq:lastModified="{Date}2021-10-18T12:29:16.881+02:00"
+        cq:lastModified="{Date}2021-11-03T10:11:14.862+01:00"
         cq:lastModifiedBy="admin"
         cq:template="/conf/saas-aem-module/settings/wcm/templates/page-content"
         jcr:primaryType="cq:PageContent"
@@ -25,7 +25,7 @@
                     <search
                         jcr:created="{Date}2021-09-09T10:27:16.540+02:00"
                         jcr:createdBy="admin"
-                        jcr:lastModified="{Date}2021-09-20T11:27:19.134+02:00"
+                        jcr:lastModified="{Date}2021-11-03T10:00:50.051+01:00"
                         jcr:lastModifiedBy="admin"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="saas-aem-module/components/search"
@@ -34,17 +34,45 @@
                         loadMoreButtonText="Load more"
                         resultsPerPage="10"
                         searchButtonText="Submit"
-                        searchFieldPlaceholderText="Type search term here...">
+                        searchFieldPlaceholderText="Type search term here..."
+                        title="Search Cmp">
                         <search-tabs
                             jcr:primaryType="nt:unstructured"
                             sling:resourceType="wcm/foundation/components/responsivegrid">
                             <searchtab
                                 jcr:created="{Date}2021-09-09T10:42:07.614+02:00"
                                 jcr:createdBy="admin"
-                                jcr:lastModified="{Date}2021-09-09T10:42:07.614+02:00"
+                                jcr:lastModified="{Date}2021-11-03T10:11:14.858+01:00"
                                 jcr:lastModifiedBy="admin"
                                 jcr:primaryType="nt:unstructured"
-                                sling:resourceType="saas-aem-module/components/searchtab"/>
+                                sling:resourceType="saas-aem-module/components/searchtab"
+                                title="Search tab">
+                                <facets jcr:primaryType="nt:unstructured">
+                                    <item0
+                                        jcr:primaryType="nt:unstructured"
+                                        fieldName="domain"
+                                        label="Domain"/>
+                                    <item1
+                                        jcr:primaryType="nt:unstructured"
+                                        fieldName="contentType"
+                                        label="Content type"/>
+                                </facets>
+                            </searchtab>
+                            <searchtab_765476375
+                                jcr:created="{Date}2021-11-02T14:04:16.529+01:00"
+                                jcr:createdBy="admin"
+                                jcr:lastModified="{Date}2021-11-03T09:54:40.159+01:00"
+                                jcr:lastModifiedBy="admin"
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="saas-aem-module/components/searchtab"
+                                title="ZIP Only">
+                                <filters jcr:primaryType="nt:unstructured">
+                                    <item0
+                                        jcr:primaryType="nt:unstructured"
+                                        name="contentType"
+                                        value="zip"/>
+                                </filters>
+                            </searchtab_765476375>
                         </search-tabs>
                     </search>
                 </container>

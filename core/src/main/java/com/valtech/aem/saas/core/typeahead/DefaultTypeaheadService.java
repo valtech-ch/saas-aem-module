@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.typeahead;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
+import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FiltersQuery;
 import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.api.query.LanguageQuery;
@@ -45,7 +45,7 @@ public class DefaultTypeaheadService implements TypeaheadService {
 
   @Override
   public List<String> getResults(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull String text,
-      @NonNull String language, Set<FilterModel> filters) {
+      @NonNull String language, Set<Filter> filters) {
     if (StringUtils.isBlank(text)) {
       throw new IllegalArgumentException("Typeahead payload should contain a search text.");
     }
@@ -61,7 +61,7 @@ public class DefaultTypeaheadService implements TypeaheadService {
         .orElse(Collections.emptyList());
   }
 
-  private String getQueryString(String text, String language, Set<FilterModel> filters) {
+  private String getQueryString(String text, String language, Set<Filter> filters) {
     return GetQueryStringConstructor.builder()
         .query(new TypeaheadTextQuery(text))
         .query(new LanguageQuery(language))

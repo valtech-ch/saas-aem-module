@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.fulltextsearch.FilterModelImpl;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
@@ -90,7 +90,7 @@ class DefaultTypeaheadServiceTest {
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
             .getAsJsonObject(), true)));
     assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "en",
-        new HashSet<>(Collections.singletonList(new FilterModelImpl("foo", "bar")))), is(not(empty())));
+        new HashSet<>(Collections.singletonList(new SimpleFilter("foo", "bar")))), is(not(empty())));
   }
 
   @Test
@@ -103,7 +103,7 @@ class DefaultTypeaheadServiceTest {
                 new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/empty.json")))
             .getAsJsonObject(), true)));
     assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "en",
-        new HashSet<>(Collections.singletonList(new FilterModelImpl("foo", "bar")))), is(empty()));
+        new HashSet<>(Collections.singletonList(new SimpleFilter("foo", "bar")))), is(empty()));
   }
 
 }

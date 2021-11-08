@@ -2,8 +2,8 @@ package com.valtech.aem.saas.core.caconfig;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
-import com.valtech.aem.saas.core.fulltextsearch.FilterModelImpl;
+import com.valtech.aem.saas.api.query.Filter;
+import com.valtech.aem.saas.api.query.SimpleFilter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -65,9 +65,9 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
   }
 
   @Override
-  public Set<FilterModel> getFilters() {
+  public Set<Filter> getFilters() {
     return asStream(searchConfiguration.searchFilters())
-        .map(searchFilterConfiguration -> new FilterModelImpl(searchFilterConfiguration.name(),
+        .map(searchFilterConfiguration -> new SimpleFilter(searchFilterConfiguration.name(),
             searchFilterConfiguration.value()))
         .collect(Collectors.toSet());
   }

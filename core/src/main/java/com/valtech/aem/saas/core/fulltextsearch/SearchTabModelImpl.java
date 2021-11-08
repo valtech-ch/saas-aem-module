@@ -9,28 +9,42 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
+import com.valtech.aem.saas.api.fulltextsearch.FacetModel;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFieldResultDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFieldResultsDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFilterDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFilterOptionDTO;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFiltersDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
+import com.valtech.aem.saas.api.query.CompositeFilter;
+import com.valtech.aem.saas.api.query.Filter;
+import com.valtech.aem.saas.api.query.FilterFactory;
+import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -62,6 +76,7 @@ public class SearchTabModelImpl implements SearchTabModel {
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
   public static final String SEARCH_TERM = "q";
   public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL = "com.valtech.aem.saas.core.search.loadmore.button.label";
+  public static final String FACET_FILTER = "facetFilter";
 
   @Getter
   @JsonInclude(Include.NON_EMPTY)
@@ -109,6 +124,13 @@ public class SearchTabModelImpl implements SearchTabModel {
   @OSGiService
   private FulltextSearchService fulltextSearchService;
 
+  @JsonInclude(Include.NON_NULL)
+  @Getter
+  private FacetFiltersDTO facetFilters;
+
+  @ChildResource
+  private List<FacetModel> facets;
+
   @OSGiService
   private PathTransformer pathTransformer;
 
@@ -129,6 +151,7 @@ public class SearchTabModelImpl implements SearchTabModel {
       resultsTotal = fulltextSearchResults.getTotalResultsFound();
       showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
       suggestion = fulltextSearchResults.getSuggestion();
+      facetFilters = getFacetFilters(fulltextSearchResults.getFacetFieldsResults());
     });
   }
 
@@ -195,7 +218,10 @@ public class SearchTabModelImpl implements SearchTabModel {
         requestWrapper.getLocale().getLanguage(),
         getStartPage(requestWrapper),
         getResultsPerPage(parentSearch),
-        getEffectiveFilters(parentSearch));
+        getEffectiveFilters(parentSearch, requestWrapper),
+        Optional.ofNullable(facets).map(List::stream).orElse(
+            Stream.empty()).map(FacetModel::getFieldName).collect(
+            Collectors.toSet()));
   }
 
   private boolean isResourceOverriddenRequest() {
@@ -206,14 +232,81 @@ public class SearchTabModelImpl implements SearchTabModel {
     return search.getResultsPerPage();
   }
 
-
-  private Set<FilterModel> getEffectiveFilters(SearchModel search) {
-    Set<FilterModel> result = search.getEffectiveFilters();
-    if (filters != null) {
-      result.addAll(filters);
-      return result;
+  private FacetFiltersDTO getFacetFilters(List<FacetFieldResultsDTO> facetFieldResultsDTOList) {
+    if (isFacetsConfigured()) {
+      Map<String, String> facetFieldToLabelMap = getFacetFieldToLabelMap();
+      List<FacetFilterDTO> facetFilterDTOList = facetFieldResultsDTOList.stream()
+          .map(facetFieldResultsDTO -> createFacetFilter(facetFieldToLabelMap, facetFieldResultsDTO))
+          .collect(Collectors.toList());
+      return CollectionUtils.isNotEmpty(facetFilterDTOList) ? new FacetFiltersDTO(FACET_FILTER, facetFilterDTOList)
+          : null;
     }
-    return Collections.emptySet();
+    return null;
+  }
+
+  private FacetFilterDTO createFacetFilter(Map<String, String> facetFieldToLabelMap,
+      FacetFieldResultsDTO facetFieldResultsDTO) {
+    return new FacetFilterDTO(facetFieldToLabelMap.get(facetFieldResultsDTO.getFieldName()),
+        facetFieldResultsDTO.getFieldName(),
+        facetFieldResultsDTO.getItems().stream()
+            .map(this::createFacetFilterOption)
+            .collect(Collectors.toList()));
+  }
+
+  private FacetFilterOptionDTO createFacetFilterOption(FacetFieldResultDTO facetFieldResultDTO) {
+    return new FacetFilterOptionDTO(facetFieldResultDTO.getText(), facetFieldResultDTO.getCount());
+  }
+
+  private boolean isFacetsConfigured() {
+    return CollectionUtils.isNotEmpty(facets);
+  }
+
+  private Map<String, String> getFacetFieldToLabelMap() {
+    return Optional.ofNullable(facets)
+        .map(List::stream)
+        .orElse(Stream.empty())
+        .collect(Collectors.toMap(FacetModel::getFieldName, FacetModel::getLabel));
+  }
+
+  private Set<Filter> getEffectiveFilters(SearchModel search, RequestWrapper requestWrapper) {
+    Set<Filter> result = search.getEffectiveFilters();
+    getConfiguredFilter().ifPresent(result::add);
+    result.addAll(getSelectedFacetFilters(requestWrapper));
+    return result;
+  }
+
+  private Optional<Filter> getConfiguredFilter() {
+    if (CollectionUtils.isEmpty(filters)) {
+      return Optional.empty();
+    }
+    if (filters.size() == 1) {
+      return Optional.of(filters.get(0)).map(this::createFilterFrom);
+    }
+    return Optional.of(CompositeFilter.builder()
+        .filters(filters.stream()
+            .map(this::createFilterFrom)
+            .collect(Collectors.toList()))
+        .build());
+  }
+
+  private SimpleFilter createFilterFrom(FilterModel filterModel) {
+    return new SimpleFilter(filterModel.getName(), filterModel.getValue());
+  }
+
+  private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
+    return requestWrapper.getParameterValues(FACET_FILTER).stream()
+        .map(this::createFilter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
+  }
+
+  private Filter createFilter(String facetFilterEntry) {
+    FacetFilterParser facetFilterParser = new FacetFilterParser(facetFilterEntry);
+    if (StringUtils.isNotEmpty(facetFilterParser.getKey()) && CollectionUtils.isNotEmpty(
+        facetFilterParser.getValues())) {
+      return FilterFactory.createFilter(facetFilterParser.getKey(), facetFilterParser.getValues());
+    }
+    return null;
   }
 
   private Optional<SearchModel> getParentSearchComponent() {

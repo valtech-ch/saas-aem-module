@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.adobe.cq.export.json.ComponentExporter;
+import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFiltersDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
 import java.util.List;
@@ -23,6 +24,13 @@ public interface SearchTabModel extends ComponentExporter {
    * @return list of filter details.
    */
   List<FilterModel> getFilters();
+
+  /**
+   * Retrieves a list of facet filter items.
+   *
+   * @return list of facet filter names.
+   */
+  FacetFiltersDTO getFacetFilters();
 
   /**
    * Retrieves the results for the specified search query (query params in request)

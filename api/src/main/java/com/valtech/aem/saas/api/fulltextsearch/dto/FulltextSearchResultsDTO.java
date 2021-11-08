@@ -20,4 +20,7 @@ public class FulltextSearchResultsDTO {
   List<ResultDTO> results;
 
   SuggestionDTO suggestion;
+
+  @Singular
+  List<FacetFieldResultsDTO> facetFieldsResults;
 }
