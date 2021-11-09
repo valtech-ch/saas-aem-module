@@ -9,6 +9,7 @@ import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FiltersQuery;
 import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.api.query.LanguageQuery;
+import com.valtech.aem.saas.api.query.PaginationQuery;
 import com.valtech.aem.saas.api.query.TermQuery;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
@@ -60,13 +61,17 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
 
   @Override
   public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
-      String searchText, @NonNull String language, int start,
+      String searchText,
+      @NonNull String language,
+      int start,
       int rows,
       Set<Filter> filters,
       Set<String> facets) {
     String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
         createQueryString(searchText,
             language,
+            start,
+            rows,
             getEffectiveFilters(searchConfiguration.getFilters(), filters),
             facets));
     log.debug("Search GET Request: {}", requestUrl);
@@ -83,10 +88,12 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
     return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
   }
 
-  private String createQueryString(String term, String language, Set<Filter> filters, Set<String> facets) {
+  private String createQueryString(String term, String language, int start, int rows, Set<Filter> filters,
+      Set<String> facets) {
     return GetQueryStringConstructor.builder()
         .query(new TermQuery(term))
         .query(new LanguageQuery(language))
+        .query(new PaginationQuery(start, rows))
         .query(FiltersQuery.builder().filters(CollectionUtils.emptyIfNull(filters)).build())
         .query(FacetsQuery.builder().fields(CollectionUtils.emptyIfNull(facets)).build())
         .build()
