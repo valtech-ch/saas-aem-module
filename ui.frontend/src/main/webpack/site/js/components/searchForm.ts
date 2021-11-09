@@ -1,4 +1,5 @@
 import type { SearchCallbacks } from '../types/callbacks'
+import fetchSearch from '../utils/fetchSearch'
 import buildLoadMoreButton from './loadMoreButton'
 import buildSearchResult from './searchResults'
 import buildSearchTab, {
@@ -53,8 +54,7 @@ export const triggerSearch = async (
 
   const tabResultsArray = await Promise.all(
     searchTabs.map(async (tab): Promise<Tab> => {
-      const tabResults = await fetch(`${tab.url}&q=${searchValue}`)
-      const tabResultsJSON = await tabResults.json()
+      const tabResultsJSON = await fetchSearch(tab.url, searchValue)
 
       return { ...tabResultsJSON, tabId: tab.title } as Tab
     }),

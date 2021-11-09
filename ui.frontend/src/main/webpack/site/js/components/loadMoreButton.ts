@@ -1,4 +1,5 @@
 import { OnLoadMoreButtonClickCallback } from '../types/callbacks'
+import fetchSearch from '../utils/fetchSearch'
 import { buildSearchItem, SearchItem } from './searchItem'
 
 type SearchButtonOptions = {
@@ -33,13 +34,9 @@ const buildLoadMoreButton = ({
 
     const currentOffset = loadMoreButton.dataset.offset || offset
 
-    const result = await fetch(
-      `${tabUrl}&q=${searchValue}&start=${currentOffset || 0}`,
-    )
+    const resultJSON = await fetchSearch(tabUrl, searchValue, +currentOffset)
 
     loadMoreButton.dataset.offset = `${+currentOffset + offset}`
-
-    const resultJSON = await result.json()
 
     resultJSON?.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)
@@ -47,7 +44,7 @@ const buildLoadMoreButton = ({
       searchResultsElement.insertBefore(searchItemElement, loadMoreButton)
     })
 
-    if (!resultJSON.showLoadMoreButton) {
+    if (!resultJSON?.showLoadMoreButton) {
       loadMoreButton.remove()
     }
   })
