@@ -28,8 +28,8 @@ const buildSearchTab = ({
   title,
   tabNumberOfResults,
   onSwitchTab,
-}: SearchTabOptions): HTMLDivElement => {
-  const searchTab = document.createElement('div')
+}: SearchTabOptions): HTMLButtonElement => {
+  const searchTab = document.createElement('button')
   searchTab.classList.add('saas-container_tab')
 
   const searchTabName = document.createElement('span')
