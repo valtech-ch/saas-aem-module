@@ -6,6 +6,7 @@ import buildSearchTab, {
   removeSearchTabs,
   removeSelectedTabFromSearchContainer,
   Tab,
+  TabConfig,
 } from './searchTabs'
 
 type SearchFormSubmitEventOption = SearchCallbacks
@@ -21,7 +22,7 @@ export const triggerSearch = async (
   searchForm: HTMLFormElement,
   searchInputElement: HTMLInputElement,
   searchUrl: string | undefined,
-  searchTabs: string[],
+  searchTabs: TabConfig[],
   loadMoreButtonText: string,
   options?: SearchFormSubmitEventOption,
 ): Promise<void> => {
@@ -52,17 +53,17 @@ export const triggerSearch = async (
 
   const tabResultsArray = await Promise.all(
     searchTabs.map(async (tab): Promise<Tab> => {
-      const tabResults = await fetch(`${tab}&q=${searchValue}`)
+      const tabResults = await fetch(`${tab.url}&q=${searchValue}`)
       const tabResultsJSON = await tabResults.json()
 
-      return { ...tabResultsJSON, tabId: tab } as Tab
+      return { ...tabResultsJSON, tabId: tab.title } as Tab
     }),
   )
 
   const searchFormParent = searchForm.parentElement
 
   tabResultsArray.forEach((tabResult) => {
-    const { resultsTotal, showLoadMoreButton, tabId, title, results } =
+    const { resultsTotal, showLoadMoreButton, tabId, title, results, url } =
       tabResult
 
     if (resultsTotal) {
@@ -95,8 +96,8 @@ export const triggerSearch = async (
       if (showLoadMoreButton) {
         const loadMoreButton = buildLoadMoreButton({
           loadMoreButtonText,
-          offset: 10,
-          tabUrl: tabId,
+          offset: 1,
+          tabUrl: url,
           searchValue,
           searchResultsElement: searchResults,
           onLoadMoreButtonClick,
@@ -104,7 +105,7 @@ export const triggerSearch = async (
         searchResults?.appendChild(loadMoreButton)
       }
 
-      if (searchContainer?.dataset.selectedTab !== tabResult.tabId) {
+      if (searchContainer?.dataset.selectedTab !== tabId) {
         searchResults.style.display = 'none'
       }
     }
@@ -115,7 +116,7 @@ export const addEventToSearchForm = (
   searchForm: HTMLFormElement,
   searchInputElement: HTMLInputElement,
   searchUrl: string | undefined,
-  searchTabs: string[],
+  searchTabs: TabConfig[],
   loadMoreButtonText: string,
   options?: SearchFormSubmitEventOption,
 ): void => {

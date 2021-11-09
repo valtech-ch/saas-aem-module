@@ -8,6 +8,11 @@ export type SearchTabOptions = {
   onSwitchTab?: OnSwitchTabCallback
 }
 
+export type TabConfig = {
+  title: string
+  url: string
+}
+
 export type Tab = {
   tabId: string
   tabName: string
@@ -15,6 +20,7 @@ export type Tab = {
   results: SearchItem[]
   title: string
   showLoadMoreButton: boolean
+  url: string
 }
 
 const buildSearchTab = ({

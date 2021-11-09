@@ -1,3 +1,4 @@
+import { TabConfig } from '../components/searchTabs'
 import { SearchCallbacks } from './callbacks'
 
 export type SearchOptions = {
@@ -7,7 +8,7 @@ export type SearchOptions = {
 export type SearchConfig = {
   searchFieldPlaceholderText: string
   loadMoreButtonText: string
-  searchTabs: string[]
+  searchTabs: TabConfig[]
   searchButtonText: string
   autocompleteTriggerThreshold: number
   searchUrl?: string

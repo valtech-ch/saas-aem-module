@@ -2,6 +2,7 @@ export type SearchItem = {
   title: string
   description: string
   url: string
+  bestBet: boolean
 }
 
 export const buildSearchItem = ({
@@ -11,7 +12,7 @@ export const buildSearchItem = ({
 }: SearchItem): HTMLDivElement => {
   const searchItem = document.createElement('div')
 
-  const searchItemTitle = document.createElement('h2')
+  const searchItemTitle = document.createElement('h3')
   searchItemTitle.innerHTML = title
 
   const searchItemDescription = document.createElement('p')
