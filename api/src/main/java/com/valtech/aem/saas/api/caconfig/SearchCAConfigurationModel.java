@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.api.caconfig;
 
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.List;
 import java.util.Set;
 
@@ -26,11 +26,19 @@ public interface SearchCAConfigurationModel {
   String getClient();
 
   /**
+   * Retrieves configured project id. Project id is considered required.
+   *
+   * @return saas project id
+   * @throws IllegalStateException thrown when project id is blank.
+   */
+  int getProjectId();
+
+  /**
    * Retrieves set of query ready items.
    *
    * @return set of filter entries.
    */
-  Set<FilterModel> getFilters();
+  Set<Filter> getFilters();
 
   /**
    * Retrieves a list of predefined query templates.

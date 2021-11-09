@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.http.response.dto;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 import lombok.ToString;
@@ -17,5 +18,5 @@ public class ResponseHeaderDTO {
   @SerializedName(PN_QUERY_TIME)
   int queryTime;
 
-  Map<String, String> params;
+  Map<String, JsonElement> params;
 }

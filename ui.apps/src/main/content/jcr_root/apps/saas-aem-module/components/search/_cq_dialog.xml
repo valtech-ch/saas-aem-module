@@ -35,6 +35,12 @@
                                                 sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
                                                 fieldLabel="Title"
                                                 name="./title"/>
+                                            <language
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                fieldLabel="Language"
+                                                fieldDescription="Optional override of context resolved language."
+                                                name="./language"/>
                                             <filters
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/include"

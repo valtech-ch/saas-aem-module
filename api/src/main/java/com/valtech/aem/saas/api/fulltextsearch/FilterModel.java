@@ -1,7 +1,5 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
-
 /**
  * Represents a sling resource that contains pre-configurable search filter details.
  */
@@ -12,7 +10,6 @@ public interface FilterModel {
    *
    * @return filter field name.
    */
-  @ValueMapValue
   String getName();
 
   /**
@@ -20,6 +17,5 @@ public interface FilterModel {
    *
    * @return filter value
    */
-  @ValueMapValue
   String getValue();
 }

@@ -1,6 +1,8 @@
 package com.valtech.aem.saas.core.common.request;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -59,10 +61,25 @@ class RequestWrapperTest {
   }
 
   @Test
+  void testGetSelectors(AemContext context) {
+    context.requestPathInfo().setSelectorString("foo.bar.qux");
+    RequestWrapper requestWrapper = context.request().adaptTo(RequestWrapper.class);
+    testAdaptTo(requestWrapper);
+    assertThat(requestWrapper.getSelectors(), not(empty()));
+  }
+
+  @Test
   void testGetSuffix_missing(AemContext context) {
     RequestWrapper requestWrapper = context.request().adaptTo(RequestWrapper.class);
     testAdaptTo(requestWrapper);
     assertThat(requestWrapper.getSuffix().isPresent(), is(false));
+  }
+
+  @Test
+  void testGetSelectors_missing(AemContext context) {
+    RequestWrapper requestWrapper = context.request().adaptTo(RequestWrapper.class);
+    testAdaptTo(requestWrapper);
+    assertThat(requestWrapper.getSelectors(), is(empty()));
   }
 
   private void testAdaptTo(RequestWrapper requestWrapper) {

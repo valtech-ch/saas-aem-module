@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.adobe.cq.export.json.ContainerExporter;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,13 @@ public interface SearchModel extends ContainerExporter {
   String getTitle();
 
   /**
+   * Retrieves the language configurable for the search component.
+   *
+   * @return configured language.
+   */
+  String getLanguage();
+
+  /**
    * Retrieves a list of dialog configured search filter items.
    *
    * @return list of filter details.
@@ -28,7 +36,7 @@ public interface SearchModel extends ContainerExporter {
    *
    * @return set of filter details.
    */
-  Set<FilterModel> getEffectiveFilters();
+  Set<Filter> getEffectiveFilters();
 
   /**
    * Retrieves an author configured value for the max limit of results per request/page
@@ -61,16 +69,16 @@ public interface SearchModel extends ContainerExporter {
   /**
    * Gets the autocomplete trigger threshold.
    *
-   * @return min number of chars typed before trigerring the autocomplete.
+   * @return min number of chars typed before triggering the autocomplete.
    */
   int getAutocompleteTriggerThreshold();
 
   /**
-   * Gets list of search prepared urls to search tab resources;
+   * Gets list of search tabs;
    *
-   * @return list of urls.
+   * @return list of search tabs.
    */
-  List<String> getSearchTabs();
+  List<SearchTabModel> getSearchTabs();
 
   /**
    * Gets the search configuration in a json format. In this format, the configs are used by the FE.
@@ -78,5 +86,12 @@ public interface SearchModel extends ContainerExporter {
    * @return json formatted string.
    */
   String getConfigJson();
+
+  /**
+   * Gets the auto suggest url of the search component.
+   *
+   * @return url string.
+   */
+  String getAutosuggestUrl();
 
 }

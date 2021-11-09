@@ -14,17 +14,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
+import com.valtech.aem.saas.api.query.Filter;
+import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,7 +39,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.caconfig.ConfigurationBuilder;
@@ -43,12 +46,13 @@ import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.ChildResource;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.apache.sling.models.factory.ModelFactory;
 
 /**
  * Search component sling model that handles component's rendering.
@@ -59,10 +63,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-    extensions = ExporterConstants.SLING_MODEL_EXTENSION,
-    options = {
-        @ExporterOption(name = "SerializationFeature.INDENT_OUTPUT", value = "true")
-    })
+    extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchModelImpl implements SearchModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
@@ -95,7 +96,7 @@ public class SearchModelImpl implements SearchModel {
 
   @JsonIgnore
   @Getter
-  private Set<FilterModel> effectiveFilters;
+  private Set<Filter> effectiveFilters;
 
   @Getter
   private String searchButtonText;
@@ -104,7 +105,7 @@ public class SearchModelImpl implements SearchModel {
   private String loadMoreButtonText;
 
   @Getter
-  private List<String> searchTabs;
+  private List<SearchTabModel> searchTabs;
 
   @JsonIgnore
   @Getter
@@ -114,32 +115,48 @@ public class SearchModelImpl implements SearchModel {
   @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
   private String exportedType;
 
+  @Getter
+  private String autosuggestUrl;
+
+  @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
+  private List<Resource> searchTabResources;
+
+  @ValueMapValue
+  private String language;
+
   @Self
   private SlingHttpServletRequest request;
 
-  @Self
+  @SlingObject
   private Resource resource;
+
+  @OSGiService
+  private I18nProvider i18nProvider;
+
+  @OSGiService
+  private ModelFactory modelFactory;
 
   @OSGiService
   private PathTransformer pathTransformer;
 
-  @OSGiService
-  protected I18nProvider i18nProvider;
-
   @PostConstruct
   private void init() {
-    Resource currentResource = getCurrentResource();
+    createAutosuggestUrl().ifPresent(url -> autosuggestUrl = url);
     I18n i18n = i18nProvider.getI18n(getLocale());
-    effectiveFilters = getEffectiveFilters(currentResource);
+    effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
         ? searchFieldPlaceholderText
         : i18n.get(I18N_SEARCH_INPUT_PLACEHOLDER);
     searchButtonText = i18n.get(I18N_KEY_SEARCH_BUTTON_LABEL);
     loadMoreButtonText = i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL);
-    if (request != null) {
-      searchTabs = getSearchTabs(currentResource);
-    }
+    searchTabs = getSearchTabList();
     configJson = getSearchConfigJson();
+  }
+
+  @JsonIgnore
+  @Override
+  public String getLanguage() {
+    return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
   }
 
   @NonNull
@@ -161,14 +178,22 @@ public class SearchModelImpl implements SearchModel {
     return AUTOCOMPLETE_THRESHOLD;
   }
 
-  private List<String> getSearchTabs(Resource searchResource) {
-    return Optional.ofNullable(searchResource.getChild(NODE_NAME_SEARCH_TABS_CONTAINER))
-        .map(r -> r.adaptTo(ResourceWrapper.class))
-        .map(ResourceWrapper::getDirectChildren)
-        .orElse(Stream.empty())
-        .map(this::getSearchTabUrl)
-        .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toList());
+  private List<SearchTabModel> getSearchTabList() {
+    if (request != null) {
+      return searchTabResources.stream()
+          .map(r -> modelFactory.getModelFromWrappedRequest(request, r, SearchTabModel.class))
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
+    }
+    return Collections.emptyList();
+  }
+
+  private Optional<String> createAutosuggestUrl() {
+    return Optional.ofNullable(request).map(r -> pathTransformer.map(r, resource.getPath()))
+        .map(url -> String.format("%s.%s.%s",
+            url,
+            AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
+            AutocompleteServlet.EXTENSION_JSON));
   }
 
   private String getSearchConfigJson() {
@@ -180,46 +205,30 @@ public class SearchModelImpl implements SearchModel {
     return StringUtils.EMPTY;
   }
 
-  private Set<FilterModel> getEffectiveFilters(Resource resource) {
-    Set<FilterModel> distinctFilters = new HashSet<>(getCaFilters(resource));
-    if (filters != null) {
-      distinctFilters.addAll(filters);
-    }
-    return distinctFilters;
+  private Set<Filter> getEffectiveFilters(Resource resource) {
+    Set<Filter> effectiveFiltersList = getCaFilters(resource);
+    effectiveFiltersList.addAll(getConfigureFilters());
+    return effectiveFiltersList;
   }
 
-  private List<FilterModel> getCaFilters(Resource resource) {
+  private Set<Filter> getConfigureFilters() {
+    return Optional.ofNullable(filters).map(List::stream).orElse(Stream.empty())
+        .map(f -> new SimpleFilter(f.getName(), f.getValue())).collect(Collectors.toSet());
+  }
+
+  private Set<Filter> getCaFilters(Resource resource) {
     return Optional.ofNullable(resource.adaptTo(ConfigurationBuilder.class))
         .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
         .map(SearchConfiguration::searchFilters)
         .map(Arrays::stream)
         .orElse(Stream.empty())
-        .map(searchFilterConfiguration -> new FilterModelImpl(searchFilterConfiguration.name(),
+        .map(searchFilterConfiguration -> new SimpleFilter(searchFilterConfiguration.name(),
             searchFilterConfiguration.value()))
-        .collect(Collectors.toList());
-  }
-
-  private String getSearchTabUrl(@NonNull Resource searchTab) {
-    try {
-      return new URIBuilder(String.format("%s.%s.%s",
-          pathTransformer.map(request, searchTab.getPath()),
-          ExporterConstants.SLING_MODEL_SELECTOR,
-          ExporterConstants.SLING_MODEL_EXTENSION))
-          .setCustomQuery(request.getQueryString())
-          .toString();
-    } catch (URISyntaxException e) {
-      log.error("Failed to create search prepared url to search tab resource.");
-    }
-    return null;
-  }
-
-  private Resource getCurrentResource() {
-    return Optional.ofNullable(request).map(SlingHttpServletRequest::getResource).orElse(resource);
+        .collect(Collectors.toSet());
   }
 
   private Locale getLocale() {
-    return Optional.ofNullable(request).map(r -> r.adaptTo(RequestWrapper.class)).map(RequestWrapper::getLocale)
-        .orElseGet(() -> Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-            .orElse(Locale.getDefault()));
+    return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+        .orElse(Locale.getDefault());
   }
 }

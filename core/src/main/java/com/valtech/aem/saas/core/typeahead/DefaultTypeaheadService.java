@@ -1,11 +1,12 @@
 package com.valtech.aem.saas.core.typeahead;
 
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
+import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FiltersQuery;
 import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
 import com.valtech.aem.saas.api.query.LanguageQuery;
 import com.valtech.aem.saas.api.query.TypeaheadTextQuery;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.api.typeahead.dto.TypeaheadPayloadDTO;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
@@ -14,8 +15,10 @@ import com.valtech.aem.saas.core.http.response.TypeaheadDataExtractionStrategy;
 import com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService.Configuration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -41,26 +44,29 @@ public class DefaultTypeaheadService implements TypeaheadService {
   private Configuration configuration;
 
   @Override
-  public List<String> getResults(@NonNull String index, @NonNull TypeaheadPayloadDTO typeaheadPayloadDto) {
-    if (StringUtils.isBlank(typeaheadPayloadDto.getText())) {
+  public List<String> getResults(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull String text,
+      @NonNull String language, Set<Filter> filters) {
+    if (StringUtils.isBlank(text)) {
       throw new IllegalArgumentException("Typeahead payload should contain a search text.");
     }
-    if (StringUtils.isBlank(typeaheadPayloadDto.getLanguage())) {
-      throw new IllegalArgumentException("Typeahead payload should contain a language.");
+    if (StringUtils.isBlank(language)) {
+      throw new IllegalArgumentException("Typeahead payload should contain a search language scope.");
     }
-    SearchRequestGet searchRequestGet = new SearchRequestGet(getApiUrl(index) + getQueryString(typeaheadPayloadDto));
+    String index = searchConfiguration.getIndex();
+    SearchRequestGet searchRequestGet = new SearchRequestGet(
+        getApiUrl(index) + getQueryString(text, language, filters));
     return searchRequestExecutorService.execute(searchRequestGet)
         .filter(SearchResponse::isSuccess)
-        .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(typeaheadPayloadDto.getLanguage())))
+        .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(language)))
         .orElse(Collections.emptyList());
   }
 
-  private String getQueryString(@NonNull TypeaheadPayloadDTO typeaheadPayloadDto) {
+  private String getQueryString(String text, String language, Set<Filter> filters) {
     return GetQueryStringConstructor.builder()
-        .query(new TypeaheadTextQuery(typeaheadPayloadDto.getText()))
-        .query(new LanguageQuery(typeaheadPayloadDto.getLanguage()))
+        .query(new TypeaheadTextQuery(text))
+        .query(new LanguageQuery(language))
         .query(FiltersQuery.builder()
-            .filters(typeaheadPayloadDto.getFilters()).build())
+            .filters(CollectionUtils.emptyIfNull(filters)).build())
         .build()
         .getQueryString();
   }

@@ -2,6 +2,7 @@ package com.valtech.aem.saas.api.fulltextsearch;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
+import com.valtech.aem.saas.api.query.Filter;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -56,7 +57,7 @@ public interface FulltextSearchService {
    */
   default Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
       String searchText, @NonNull String language, int start,
-      int rows, Set<FilterModel> filters) {
+      int rows, Set<Filter> filters) {
     return getResults(searchConfiguration, searchText, language, start, rows, filters, Collections.emptySet());
   }
 
@@ -72,7 +73,7 @@ public interface FulltextSearchService {
    */
   default Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
       @NonNull String language, int start, int rows,
-      Set<FilterModel> filters) {
+      Set<Filter> filters) {
     return getResults(searchConfiguration, language, start, rows, filters, Collections.emptySet());
   }
 
@@ -88,7 +89,7 @@ public interface FulltextSearchService {
    */
   default Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
       @NonNull String language, int start, int rows,
-      Set<FilterModel> filters,
+      Set<Filter> filters,
       Set<String> facets) {
     return getResults(searchConfiguration, null, language, start, rows, filters, facets);
   }
@@ -105,6 +106,6 @@ public interface FulltextSearchService {
    */
   Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
       String searchText, @NonNull String language, int start, int rows,
-      Set<FilterModel> filters, Set<String> facets);
+      Set<Filter> filters, Set<String> facets);
 
 }
