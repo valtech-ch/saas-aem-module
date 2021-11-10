@@ -20,7 +20,7 @@ jobs:
           java-version: '8'
           distribution: 'zulu'
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -PcmBuild
   sonarcloud:
     name: Sonarcloud Analysis
     runs-on: ubuntu-latest
