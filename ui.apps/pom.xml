@@ -110,26 +110,18 @@
             <artifactId>saas.core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.valtech.aem</groupId>
             <artifactId>saas.ui.frontend</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-
         <dependency>
             <groupId>com.valtech.aem</groupId>
             <artifactId>saas.ui.apps.structure</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-
-        <dependency>
-            <groupId>com.adobe.aem</groupId>
-            <artifactId>aem-sdk-api</artifactId>
-        </dependency>
-
         <!-- HTL dependencies needed for the HTL Maven Plugin source code generation -->
         <dependency>
             <groupId>org.apache.sling</groupId>

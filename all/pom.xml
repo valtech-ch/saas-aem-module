@@ -162,7 +162,8 @@
                                     <goal>install</goal>
                                 </goals>
                                 <configuration>
-                                    <targetURL>http://${aem.publish.host}:${aem.publish.port}/crx/packmgr/service.jsp</targetURL>
+                                    <targetURL>http://${aem.publish.host}:${aem.publish.port}/crx/packmgr/service.jsp
+                                    </targetURL>
                                     <failOnError>true</failOnError>
                                 </configuration>
                             </execution>
@@ -170,6 +171,88 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>onPremBuild</id>
+            <activation>
+                <!-- https://experienceleague.adobe.com/docs/experience-manager-cloud-manager/using/getting-started/create-application-project/setting-up-project.html?lang=en#activating-maven-profiles-in-cloud-manager -->
+                <property>
+                    <name>!env.CM_BUILD</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.jackrabbit</groupId>
+                        <artifactId>filevault-package-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <group>com.valtech.aem</group>
+                            <packageType>container</packageType>
+                            <!-- skip sub package validation for now as some vendor packages like CIF apps will not pass -->
+                            <skipSubPackageValidation>true</skipSubPackageValidation>
+                            <embeddeds>
+                                <embedded>
+                                    <groupId>com.valtech.aem</groupId>
+                                    <artifactId>saas.ui.apps</artifactId>
+                                    <type>zip</type>
+                                    <target>/apps/saas-aem-module-packages/application/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.valtech.aem</groupId>
+                                    <artifactId>saas.api</artifactId>
+                                    <target>/apps/saas-aem-module-packages/application/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.valtech.aem</groupId>
+                                    <artifactId>saas.core</artifactId>
+                                    <target>/apps/saas-aem-module-packages/application/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.valtech.aem</groupId>
+                                    <artifactId>saas.ui.config</artifactId>
+                                    <type>zip</type>
+                                    <target>/apps/saas-aem-module-packages/application/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.adobe.cq</groupId>
+                                    <artifactId>core.wcm.components.content</artifactId>
+                                    <type>zip</type>
+                                    <target>/apps/saas-aem-module-vendor-packages/application/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.adobe.cq</groupId>
+                                    <artifactId>core.wcm.components.core</artifactId>
+                                    <target>/apps/saas-aem-module-vendor-packages/application/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.adobe.cq</groupId>
+                                    <artifactId>core.wcm.components.config</artifactId>
+                                    <type>zip</type>
+                                    <target>/apps/saas-aem-module-vendor-packages/application/install</target>
+                                </embedded>
+                            </embeddeds>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.adobe.cq</groupId>
+                    <artifactId>core.wcm.components.core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.adobe.cq</groupId>
+                    <artifactId>core.wcm.components.content</artifactId>
+                    <type>zip</type>
+                </dependency>
+                <dependency>
+                    <groupId>com.adobe.cq</groupId>
+                    <artifactId>core.wcm.components.config</artifactId>
+                    <type>zip</type>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
