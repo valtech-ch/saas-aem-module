@@ -61,12 +61,12 @@
                             jcr:lastModifiedBy="admin"
                             jcr:primaryType="nt:unstructured"
                             sling:resourceType="saas-aem-module/components/searchtab"
-                            title="ZIP Only">
+                            title="PDF Only">
                             <filters jcr:primaryType="nt:unstructured">
                                 <item0
                                     jcr:primaryType="nt:unstructured"
                                     name="contentType"
-                                    value="zip"/>
+                                    value="pdf"/>
                             </filters>
                         </searchtab_765476375>
                     </search-tabs>
