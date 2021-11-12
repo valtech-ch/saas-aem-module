@@ -274,7 +274,12 @@ public class SearchTabModelImpl implements SearchTabModel {
   }
 
   private Set<Filter> getConfiguredFilters() {
-    return new ConfiguredFiltersParser(filters).getFilters();
+    return Optional.ofNullable(filters)
+        .map(List::stream)
+        .orElse(Stream.empty())
+        .map(FilterModel::getFilter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
   }
 
   private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
