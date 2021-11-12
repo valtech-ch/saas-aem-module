@@ -2,6 +2,7 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.text.IsEmptyString.isEmptyString;
 import static org.mockito.Mockito.when;
 
 import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,11 +31,6 @@ class HighlightedTitleResolverTest {
   @Mock
   HighlightingDTO highlightingDto;
 
-  @BeforeEach
-  void setUp() {
-    when(searchResultDto.getTitle()).thenReturn(SEARCH_RESULT_TITLE);
-  }
-
   @Test
   void getTitle_noHighlightEntryAvailable() {
     setupInput_noHighlightEntryAvailable();
@@ -46,6 +41,12 @@ class HighlightedTitleResolverTest {
   void getTitle_noResultIdAvailable() {
     setupInput_noResultIdAvailable();
     assertThat(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle(), is(SEARCH_RESULT_TITLE));
+  }
+
+  @Test
+  void getTitle_noTitleAvailable() {
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
+    assertThat(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle(), isEmptyString());
   }
 
   @Test
@@ -64,15 +65,18 @@ class HighlightedTitleResolverTest {
 
   private void setupInput_noHighlightEntryAvailable() {
     when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getTitle()).thenReturn(SEARCH_RESULT_TITLE);
     when(highlightingDto.getItems()).thenReturn(Collections.emptyMap());
   }
 
   private void setupInput_noResultIdAvailable() {
     when(searchResultDto.getId()).thenReturn(StringUtils.EMPTY);
+    when(searchResultDto.getTitle()).thenReturn(SEARCH_RESULT_TITLE);
   }
 
   private void setupInput_noTitleInHighlightingEntryAvailable() {
     when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
+    when(searchResultDto.getTitle()).thenReturn(SEARCH_RESULT_TITLE);
     Map<String, List<String>> highlightingEntry = new HashMap<>();
     highlightingEntry.put("title_en", Collections.emptyList());
     when(highlightingDto.getItems()).thenReturn(Collections.singletonMap(SEARCH_RESULT_ID, highlightingEntry));
