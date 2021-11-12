@@ -189,6 +189,5 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-
     </dependencies>
 </project>

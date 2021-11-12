@@ -1,20 +1,16 @@
-const initSearch = () => {
-    window.addEventListener('load', () => {
-        const searchForm = document.querySelector<HTMLFormElement>(
-            '.saas-aem-module-search__form'
-        );
-        const searchInput = searchForm?.querySelector<HTMLInputElement>(
-            '.saas-aem-module-search__input'
-        );
+import { buildSearch } from './buildSearch'
+import { getSearchElement } from './searchElement'
 
-        searchForm?.addEventListener('submit', (event) => {
-            event?.preventDefault();
+const initSearch = (): void => {
+  window.addEventListener('load', () => {
+    const searchElement = getSearchElement()
 
-            const searchInputValue = searchInput?.value;
+    if (!searchElement) {
+      return
+    }
 
-            console.log(searchInputValue);
-        });
-    });
-};
+    buildSearch(searchElement)
+  })
+}
 
-export default initSearch;
+export default initSearch
