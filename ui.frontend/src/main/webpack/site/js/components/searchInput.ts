@@ -8,6 +8,16 @@ type SearchInputOptions = {
   autoSuggestionDebounceTime: number
 }
 
+const removeSuggestionList = () => {
+  const existingDataList = document.querySelector(
+    '.saas-container_form #suggestions',
+  )
+
+  if (existingDataList) {
+    existingDataList.remove()
+  }
+}
+
 const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   debounce(
     async (
@@ -16,24 +26,27 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       autocompleteTriggerThreshold: number,
       searchInput: HTMLInputElement,
     ) => {
+      removeSuggestionList()
+
       if (query.length >= autocompleteTriggerThreshold) {
         const results = await fetchAutoSuggest(autosuggestUrl, query)
 
         if (results?.length) {
-          const existingDataList = document.querySelector(
-            '.saas-container_form datalist',
-          )
-
-          if (existingDataList) {
-            existingDataList.remove()
-          }
-
-          const dataListElement = document.createElement('datalist')
+          const dataListElement = document.createElement('div')
           dataListElement.id = 'suggestions'
 
           results.forEach((result) => {
-            const dataListOptionElement = document.createElement('option')
-            dataListOptionElement.value = result
+            const dataListOptionElement = document.createElement('div')
+            dataListOptionElement.innerText = result
+            dataListOptionElement.classList.add('saas-suggestions-element')
+
+            dataListOptionElement.addEventListener('click', () => {
+              const searchInputElementCopy = searchInput
+
+              removeSuggestionList()
+
+              searchInputElementCopy.value = result
+            })
 
             dataListElement.appendChild(dataListOptionElement)
           })
@@ -55,7 +68,7 @@ const buildSearchInput = ({
 
   searchInput.placeholder = searchFieldPlaceholderText
   searchInput.id = 'saas-search-input'
-  searchInput.setAttribute('list', 'suggestions')
+  searchInput.autocomplete = 'off'
 
   searchInput.addEventListener('input', (event) => {
     debouncedSearch(autoSuggestionDebounceTime)(
@@ -64,6 +77,11 @@ const buildSearchInput = ({
       autocompleteTriggerThreshold,
       searchInput,
     )
+  })
+
+  document.addEventListener('click', () => {
+    /* Remove the autocomplete list from DOM when a click happens in the document */
+    removeSuggestionList()
   })
 
   return searchInput

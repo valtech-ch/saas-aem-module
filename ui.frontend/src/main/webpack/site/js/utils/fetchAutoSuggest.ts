@@ -16,7 +16,9 @@ const fetchAutoSuggest = async (
     const searchURL = buildAutoSuggestUrl(url, query)
     const results = await fetch(searchURL)
 
-    return (await results.json()) as AutosuggestResult
+    const resultsJSON = (await results.json()) as AutosuggestResult
+
+    return resultsJSON.filter((result) => result.length)
   } catch {
     return null
   }
