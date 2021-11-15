@@ -49,15 +49,15 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
         const results = await fetchAutoSuggest(autosuggestUrl, query)
 
         if (results?.length) {
-          const dataListElement = document.createElement('div')
-          dataListElement.id = 'suggestions'
+          const suggestionDropdown = document.createElement('div')
+          suggestionDropdown.id = 'suggestions'
 
           results.forEach((result) => {
-            const dataListOptionElement = document.createElement('div')
-            dataListOptionElement.innerText = result
-            dataListOptionElement.classList.add(SUGGESTION_ELEMENT_CLASS)
+            const suggestionDropdownElement = document.createElement('div')
+            suggestionDropdownElement.innerText = result
+            suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
 
-            dataListOptionElement.addEventListener('click', () => {
+            suggestionDropdownElement.addEventListener('click', () => {
               const searchInputElementCopy = searchInput
 
               removeSuggestionList()
@@ -65,10 +65,10 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
               searchInputElementCopy.value = result
             })
 
-            dataListElement.appendChild(dataListOptionElement)
+            suggestionDropdown.appendChild(suggestionDropdownElement)
           })
 
-          searchInput.after(dataListElement)
+          searchInput.after(suggestionDropdown)
         }
       }
     },
