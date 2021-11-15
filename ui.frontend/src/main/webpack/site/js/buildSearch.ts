@@ -17,7 +17,7 @@ export const buildSearch = async (
     return
   }
 
-  const { callbacks } = options || {}
+  const { callbacks, autoSuggestionDebounceTime = 500 } = options || {}
 
   const {
     searchFieldPlaceholderText,
@@ -25,6 +25,8 @@ export const buildSearch = async (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
+    autosuggestUrl,
+    autocompleteTriggerThreshold,
   } = searchConfig
 
   const searchContainer = document.createElement('div')
@@ -34,6 +36,9 @@ export const buildSearch = async (
 
   const searchInputElement = buildSearchInput({
     searchFieldPlaceholderText,
+    autosuggestUrl,
+    autocompleteTriggerThreshold,
+    autoSuggestionDebounceTime,
   })
 
   const searchButtonElement = buildSearchButton({
