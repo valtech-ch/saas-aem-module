@@ -45,6 +45,16 @@ const initSaasStyle = (): void => {
           `,
     0,
   )
+
+  document.styleSheets[0].insertRule(
+    `
+            .saas-suggestions-element--active {
+              background-color: DodgerBlue !important;
+              color: #fff;
+            }
+          `,
+    0,
+  )
 }
 
 export default initSaasStyle
