@@ -1,0 +1,115 @@
+package com.valtech.aem.saas.core.fulltextsearch;
+
+
+import static com.valtech.aem.saas.core.fulltextsearch.SearchRedirectModelImpl.RESOURCE_TYPE;
+
+import com.adobe.cq.export.json.ComponentExporter;
+import com.adobe.cq.export.json.ExporterConstants;
+import com.day.cq.i18n.I18n;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel;
+import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.jcr.resource.api.JcrResourceConstants;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Exporter;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.OSGiService;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+
+/**
+ * Search redirect component sling model that handles component's rendering.
+ */
+@Slf4j
+@Model(adaptables = SlingHttpServletRequest.class,
+    adapters = {SearchRedirectModel.class, ComponentExporter.class},
+    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+    resourceType = RESOURCE_TYPE)
+@Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
+    extensions = ExporterConstants.SLING_MODEL_EXTENSION)
+public class SearchRedirectModelImpl implements SearchRedirectModel {
+
+  public static final String RESOURCE_TYPE = "saas-aem-module/components/searchredirect";
+
+  @Getter
+  @ValueMapValue
+  private String searchFieldPlaceholderText;
+
+  @Getter
+  @JsonInclude(Include.NON_EMPTY)
+  @ValueMapValue
+  private String searchPagePath;
+
+  @JsonIgnore
+  @Getter
+  private String configJson;
+
+  @Getter
+  @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+  private String exportedType;
+
+  @SlingObject
+  private Resource resource;
+
+  @OSGiService
+  private I18nProvider i18nProvider;
+
+  @PostConstruct
+  private void init() {
+    I18n i18n = i18nProvider.getI18n(getLocale());
+    searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
+        ? searchFieldPlaceholderText
+        : i18n.get(SearchModelImpl.I18N_SEARCH_INPUT_PLACEHOLDER);
+    configJson = getSearchConfigJson();
+  }
+
+  @NonNull
+  @Override
+  public Map<String, ? extends ComponentExporter> getExportedItems() {
+    return Collections.emptyMap();
+  }
+
+  @Override
+  public String @NonNull [] getExportedItemsOrder() {
+    Map<String, ? extends ComponentExporter> models = getExportedItems();
+    return models.isEmpty()
+        ? ArrayUtils.EMPTY_STRING_ARRAY
+        : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+  }
+
+  @Override
+  public int getAutocompleteTriggerThreshold() {
+    return SearchModelImpl.AUTOCOMPLETE_THRESHOLD;
+  }
+
+  private String getSearchConfigJson() {
+    try {
+      return new ObjectMapper().writeValueAsString(this);
+    } catch (JsonProcessingException e) {
+      log.error("Failed to serialize search config to json.", e);
+    }
+    return StringUtils.EMPTY;
+  }
+
+  private Locale getLocale() {
+    return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+        .orElse(Locale.getDefault());
+  }
+}
