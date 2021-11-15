@@ -1,0 +1,6 @@
+<sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel"
+     data-sly-test.isEdit="${wcmmode.edit}"></sly>
+<sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
+     data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
+<search-redirect data-sly-test="${!isEdit}"
+                 data-config="${model.configJson}"></search-redirect>
