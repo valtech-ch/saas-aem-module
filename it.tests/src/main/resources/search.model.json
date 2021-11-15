@@ -1,0 +1,23 @@
+{
+  "title": "Search Cmp",
+  "searchFieldPlaceholderText": "Type search term here...",
+  "searchButtonText": "Search",
+  "loadMoreButtonText": "Load more",
+  "searchTabs": [
+    {
+      "title": "Search tab",
+      "url": "/content/saas-aem-module/us/en/_jcr_content/root/container/search/search-tabs/searchtab.model.json",
+      ":type": "saas-aem-module/components/searchtab"
+    },
+    {
+      "title": "ZIP Only",
+      "url": "/content/saas-aem-module/us/en/_jcr_content/root/container/search/search-tabs/searchtab_765476375.model.json",
+      ":type": "saas-aem-module/components/searchtab"
+    }
+  ],
+  "autosuggestUrl": "/content/saas-aem-module/us/en/_jcr_content/root/container/search.autocomplete.json",
+  "autocompleteTriggerThreshold": 3,
+  ":type": "saas-aem-module/components/search",
+  ":items": {},
+  ":itemsOrder": []
+}
