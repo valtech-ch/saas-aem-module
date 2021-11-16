@@ -20,7 +20,7 @@
     <groupId>io.github.valtech-ch</groupId>
     <artifactId>saas-aem</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>Valtech AEM SAAS</name>
     <description>Valtech AEM SAAS</description>
 
