@@ -1,0 +1,23 @@
+{
+  "jcr:primaryType": "nt:unstructured",
+  "item0": {
+    "jcr:primaryType": "nt:unstructured",
+    "name": "contentType",
+    "value": "pdf,xls"
+  },
+  "item1": {
+    "jcr:primaryType": "nt:unstructured",
+    "name": "domain",
+    "value": "https://wknd.site"
+  },
+  "item2": {
+    "jcr:primaryType": "nt:unstructured",
+    "name": "",
+    "value": "https://wknd.site"
+  },
+  "item3": {
+    "jcr:primaryType": "nt:unstructured",
+    "name": "domain",
+    "value": ""
+  }
+}
