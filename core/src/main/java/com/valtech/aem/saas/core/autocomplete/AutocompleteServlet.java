@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import lombok.NonNull;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.osgi.service.component.annotations.Component;
@@ -42,7 +43,7 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
     }
     String searchTerm = requestWrapper.getParameter(SearchTabModelImpl.SEARCH_TERM)
         .orElseThrow(() -> new IllegalArgumentException("Search term not specified."));
-    SearchModel searchModel = getSearch(request).orElseThrow(
+    SearchModel searchModel = getSearch(request.getResource()).orElseThrow(
         () -> new IllegalStateException("Can not resolve search model."));
     SearchCAConfigurationModel searchCAConfigurationModel = Optional.ofNullable(request.getResource()
             .adaptTo(SearchCAConfigurationModel.class))
@@ -54,8 +55,8 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
     new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));
   }
 
-  private Optional<SearchModel> getSearch(@NonNull SlingHttpServletRequest request) {
-    return Optional.ofNullable(request.adaptTo(SearchModel.class));
+  private Optional<SearchModel> getSearch(@NonNull Resource resource) {
+    return Optional.ofNullable(resource.adaptTo(SearchModel.class));
   }
 
 }

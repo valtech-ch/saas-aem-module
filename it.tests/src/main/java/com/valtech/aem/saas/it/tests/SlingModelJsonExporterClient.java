@@ -1,6 +1,8 @@
 package com.valtech.aem.saas.it.tests;
 
 import java.net.URI;
+import java.util.List;
+import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
@@ -21,10 +23,16 @@ public final class SlingModelJsonExporterClient extends SlingClient {
     super(url, user, password);
   }
 
-  public JsonNode doGetModelJson(String path, int... expectedStatus) throws ClientException {
-    path = path + ".model.json";
+  public JsonNode doGetJsonNode(String path, int... expectedStatus) throws ClientException {
 
     SlingHttpResponse response = this.doGet(path, HttpUtils.getExpectedStatus(200, expectedStatus));
+    return JsonUtils.getJsonNodeFromString(response.getContent());
+  }
+
+  public JsonNode doGetJsonNode(String path, List<NameValuePair> parameters, int... expectedStatus)
+      throws ClientException {
+
+    SlingHttpResponse response = this.doGet(path, parameters, HttpUtils.getExpectedStatus(200, expectedStatus));
     return JsonUtils.getJsonNodeFromString(response.getContent());
   }
 }
