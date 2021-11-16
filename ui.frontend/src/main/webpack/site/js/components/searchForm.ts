@@ -30,6 +30,13 @@ export const triggerSearch = async (
   autoSuggestText: string,
   options?: SearchFormSubmitEventOption,
 ): Promise<void> => {
+  if (searchInputElement.dataset.loading === 'true') {
+    return
+  }
+  const searchInputElementCopy = searchInputElement
+
+  searchInputElementCopy.dataset.loading = 'true'
+
   const searchValue = searchInputElement.value
   const { onSearch, onSwitchTab, onSearchItemClick, onLoadMoreButtonClick } =
     options || {}
@@ -54,7 +61,9 @@ export const triggerSearch = async (
 
       return { ...tabResultsJSON, tabId: tab.title, index } as Tab
     }),
-  )
+  ).finally(() => {
+    searchInputElementCopy.dataset.loading = 'false'
+  })
 
   const searchFormParent = searchForm.parentElement
 
