@@ -14,4 +14,5 @@ export type SearchConfig = {
   autocompleteTriggerThreshold: number
   searchUrl?: string
   autosuggestUrl: string
+  autoSuggestText: string
 }
