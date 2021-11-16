@@ -18,12 +18,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.valtech.aem</groupId>
-        <artifactId>saas</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>io.github.valtech-ch</groupId>
+        <artifactId>saas-aem</artifactId>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>saas.core</artifactId>
+    <artifactId>saas-aem.core</artifactId>
     <name>Valtech AEM SAAS - Core</name>
     <description>Core bundle for Valtech AEM SAAS</description>
     <build>
@@ -85,8 +85,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.valtech.aem</groupId>
-            <artifactId>saas.api</artifactId>
+            <groupId>io.github.valtech-ch</groupId>
+            <artifactId>saas-aem.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- Apache Sling Dependencies -->
