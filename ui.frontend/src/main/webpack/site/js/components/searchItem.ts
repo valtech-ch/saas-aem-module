@@ -9,9 +9,14 @@ export const buildSearchItem = ({
   title,
   description,
   url,
+  bestBet,
 }: SearchItem): HTMLDivElement => {
   const searchItem = document.createElement('div')
   searchItem.classList.add('saas-container_results_item')
+
+  if (bestBet) {
+    searchItem.classList.add('saas-container_results_item--best-bet')
+  }
 
   const searchItemTitle = document.createElement('h3')
   searchItemTitle.classList.add('saas-container_results_item_title')
