@@ -22,16 +22,16 @@
     <!-- P A R E N T  P R O J E C T  D E S C R I P T I O N                      -->
     <!-- ====================================================================== -->
     <parent>
-        <groupId>com.valtech.aem</groupId>
-        <artifactId>saas</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>io.github.valtech-ch</groupId>
+        <artifactId>saas-aem</artifactId>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <!-- ====================================================================== -->
     <!-- P R O J E C T  D E S C R I P T I O N                                   -->
     <!-- ====================================================================== -->
-    <artifactId>saas.all</artifactId>
+    <artifactId>saas-aem.all</artifactId>
     <packaging>content-package</packaging>
     <name>Valtech AEM SAAS - All</name>
     <description>All content package for Valtech AEM SAAS</description>
@@ -55,24 +55,24 @@
                     <skipSubPackageValidation>true</skipSubPackageValidation>
                     <embeddeds>
                         <embedded>
-                            <groupId>com.valtech.aem</groupId>
-                            <artifactId>saas.ui.apps</artifactId>
+                            <groupId>io.github.valtech-ch</groupId>
+                            <artifactId>saas-aem.ui.apps</artifactId>
                             <type>zip</type>
                             <target>/apps/saas-aem-module-packages/application/install</target>
                         </embedded>
                         <embedded>
-                            <groupId>com.valtech.aem</groupId>
-                            <artifactId>saas.api</artifactId>
+                            <groupId>io.github.valtech-ch</groupId>
+                            <artifactId>saas-aem.api</artifactId>
                             <target>/apps/saas-aem-module-packages/application/install</target>
                         </embedded>
                         <embedded>
-                            <groupId>com.valtech.aem</groupId>
-                            <artifactId>saas.core</artifactId>
+                            <groupId>io.github.valtech-ch</groupId>
+                            <artifactId>saas-aem.core</artifactId>
                             <target>/apps/saas-aem-module-packages/application/install</target>
                         </embedded>
                         <embedded>
-                            <groupId>com.valtech.aem</groupId>
-                            <artifactId>saas.ui.config</artifactId>
+                            <groupId>io.github.valtech-ch</groupId>
+                            <artifactId>saas-aem.ui.config</artifactId>
                             <type>zip</type>
                             <target>/apps/saas-aem-module-packages/application/install</target>
                         </embedded>
@@ -178,14 +178,14 @@
     <!-- ====================================================================== -->
     <dependencies>
         <dependency>
-            <groupId>com.valtech.aem</groupId>
-            <artifactId>saas.ui.apps</artifactId>
+            <groupId>io.github.valtech-ch</groupId>
+            <artifactId>saas-aem.ui.apps</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>com.valtech.aem</groupId>
-            <artifactId>saas.ui.config</artifactId>
+            <groupId>io.github.valtech-ch</groupId>
+            <artifactId>saas-aem.ui.config</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
