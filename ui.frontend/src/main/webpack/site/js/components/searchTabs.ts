@@ -21,6 +21,7 @@ export type Suggestion = {
 export type Tab = {
   tabId: string
   tabName: string
+  index: number
   resultsTotal: number
   results: SearchItem[]
   title: string

@@ -49,10 +49,10 @@ export const triggerSearch = async (
   removeSelectedTabFromSearchContainer()
 
   const tabResultsArray = await Promise.all(
-    searchTabs.map(async (tab): Promise<Tab> => {
+    searchTabs.map(async (tab, index): Promise<Tab> => {
       const tabResultsJSON = await fetchSearch(tab.url, searchValue)
 
-      return { ...tabResultsJSON, tabId: tab.title } as Tab
+      return { ...tabResultsJSON, tabId: tab.title, index } as Tab
     }),
   )
 
@@ -71,18 +71,30 @@ export const triggerSearch = async (
     return
   }
 
-  tabResultsArray.forEach((tabResult) => {
-    buildSearchResultsTab({
-      tabResult,
-      searchValue,
-      searchForm,
-      searchFormParent,
-      loadMoreButtonText,
-      onSearchItemClick,
-      onSwitchTab,
-      onLoadMoreButtonClick,
+  tabResultsArray
+    .sort((tab1, tab2) => {
+      if (tab1.index < tab2.index) {
+        return 1
+      }
+
+      if (tab2.index < tab1.index) {
+        return -1
+      }
+
+      return 0
     })
-  })
+    .forEach((tabResult) => {
+      buildSearchResultsTab({
+        tabResult,
+        searchValue,
+        searchForm,
+        searchFormParent,
+        loadMoreButtonText,
+        onSearchItemClick,
+        onSwitchTab,
+        onLoadMoreButtonClick,
+      })
+    })
 }
 
 export const addEventToSearchForm = (

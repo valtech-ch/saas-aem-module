@@ -31,7 +31,7 @@ const buildSearchResultsTab = ({
     const searchContainer =
       document.querySelector<HTMLDivElement>('.saas-container')
 
-    if (searchContainer && !searchContainer.dataset.selectedTab) {
+    if (searchContainer && tabResult.index === 0) {
       searchContainer.dataset.selectedTab = tabResult.tabId
     }
 
