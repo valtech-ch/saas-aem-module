@@ -22,10 +22,8 @@ import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFiltersDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
-import com.valtech.aem.saas.api.query.CompositeFilter;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FilterFactory;
-import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
@@ -270,27 +268,18 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   private Set<Filter> getEffectiveFilters(SearchModel search, RequestWrapper requestWrapper) {
     Set<Filter> result = search.getEffectiveFilters();
-    getConfiguredFilter().ifPresent(result::add);
+    result.addAll(getConfiguredFilters());
     result.addAll(getSelectedFacetFilters(requestWrapper));
     return result;
   }
 
-  private Optional<Filter> getConfiguredFilter() {
-    if (CollectionUtils.isEmpty(filters)) {
-      return Optional.empty();
-    }
-    if (filters.size() == 1) {
-      return Optional.of(filters.get(0)).map(this::createFilterFrom);
-    }
-    return Optional.of(CompositeFilter.builder()
-        .filters(filters.stream()
-            .map(this::createFilterFrom)
-            .collect(Collectors.toList()))
-        .build());
-  }
-
-  private SimpleFilter createFilterFrom(FilterModel filterModel) {
-    return new SimpleFilter(filterModel.getName(), filterModel.getValue());
+  private Set<Filter> getConfiguredFilters() {
+    return Optional.ofNullable(filters)
+        .map(List::stream)
+        .orElse(Stream.empty())
+        .map(FilterModel::getFilter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
   }
 
   private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {

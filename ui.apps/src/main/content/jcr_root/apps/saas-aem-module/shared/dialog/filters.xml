@@ -4,31 +4,58 @@
     xmlns:jcr="http://www.jcp.org/jcr/1.0"
     xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="nt:unstructured"
-    fieldLabel="Filters"
-    fieldDescription="Filter entries with the 'AND' relation can be configured."
-    sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
-    composite="{Boolean}true">
-    <field
-        jcr:primaryType="nt:unstructured"
-        sling:resourceType="granite/ui/components/coral/foundation/container"
-        name="./filters">
-        <items jcr:primaryType="nt:unstructured">
-            <name
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                fieldLabel="Name"
-                fieldDescription="SaaS Metadata field name"
-                name="name"
-                required="{Boolean}true">
-            </name>
-            <value
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                fieldLabel="Value"
-                fieldDescription="Indexed value for that field"
-                name="value"
-                required="{Boolean}true">
-            </value>
-        </items>
-    </field>
+    jcr:title="Filters"
+    sling:resourceType="granite/ui/components/coral/foundation/container"
+    margin="{Boolean}true">
+    <items jcr:primaryType="nt:unstructured">
+        <columns
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+            margin="{Boolean}true">
+            <items jcr:primaryType="nt:unstructured">
+                <column
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                    <items jcr:primaryType="nt:unstructured">
+                        <alert
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/alert"
+                            size="S"
+                            text="Filter entries are joined with 'AND' operator. For a single filter entry, it is possible to specify multiple comma separated values, which will be translated in a composite filter query composed of 'OR' related entries.">
+                        </alert>
+                        <filters
+                            jcr:primaryType="nt:unstructured"
+                            fieldLabel="Filters"
+                            fieldDescription="The filter entries are joined with a binary 'AND' operator."
+                            sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                            composite="{Boolean}true">
+                            <field
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container"
+                                name="./filters">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <name
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Name"
+                                        fieldDescription="SaaS Metadata field name"
+                                        name="name"
+                                        required="{Boolean}true">
+                                    </name>
+                                    <value
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Value"
+                                        fieldDescription="Indexed value for that field"
+                                        name="value"
+                                        required="{Boolean}true">
+                                    </value>
+                                </items>
+                            </field>
+                        </filters>
+                    </items>
+                </column>
+            </items>
+        </columns>
+    </items>
 </jcr:root>
