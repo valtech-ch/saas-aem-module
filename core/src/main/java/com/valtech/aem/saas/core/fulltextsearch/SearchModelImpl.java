@@ -15,16 +15,14 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
-import com.valtech.aem.saas.api.resource.PathTransformer;
-import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.SimpleFilter;
-import com.valtech.aem.saas.core.common.request.RequestWrapper;
+import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -207,13 +205,17 @@ public class SearchModelImpl implements SearchModel {
 
   private Set<Filter> getEffectiveFilters(Resource resource) {
     Set<Filter> effectiveFiltersList = getCaFilters(resource);
-    effectiveFiltersList.addAll(getConfigureFilters());
+    effectiveFiltersList.addAll(getConfiguredFilters());
     return effectiveFiltersList;
   }
 
-  private Set<Filter> getConfigureFilters() {
-    return Optional.ofNullable(filters).map(List::stream).orElse(Stream.empty())
-        .map(f -> new SimpleFilter(f.getName(), f.getValue())).collect(Collectors.toSet());
+  private Set<Filter> getConfiguredFilters() {
+    return Optional.ofNullable(filters)
+        .map(List::stream)
+        .orElse(Stream.empty())
+        .map(FilterModel::getFilter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
   }
 
   private Set<Filter> getCaFilters(Resource resource) {

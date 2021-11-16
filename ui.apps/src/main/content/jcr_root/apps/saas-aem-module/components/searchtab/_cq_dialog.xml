@@ -35,10 +35,6 @@
                                                 fieldLabel="Title"
                                                 name="./title"
                                                 required="{Boolean}true"/>
-                                            <filters
-                                                jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/coral/foundation/include"
-                                                path="/apps/saas-aem-module/shared/dialog/filters"/>
                                             <facets
                                                 jcr:primaryType="nt:unstructured"
                                                 fieldLabel="Facets"
@@ -74,6 +70,10 @@
                             </columns>
                         </items>
                     </properties>
+                    <filters
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/include"
+                        path="/apps/saas-aem-module/shared/dialog/filters"/>
                 </items>
             </tabs>
         </items>
