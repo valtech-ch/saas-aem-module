@@ -19,7 +19,7 @@
     <groupId>io.github.valtech-ch</groupId>
     <artifactId>saas-aem</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3</version>
     <name>Valtech AEM SAAS</name>
     <description>Valtech AEM SAAS</description>
 
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:valtech-ch/saas-aem-module.git</connection>
         <developerConnection>scm:git:ssh://github.com/valtech-ch/saas-aem-module.git</developerConnection>
         <url>https://github.com/valtech-ch/saas-aem-module/tree/main</url>
-      <tag>HEAD</tag>
+      <tag>v0.0.3</tag>
   </scm>
 
     <distributionManagement>
