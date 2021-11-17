@@ -14,8 +14,7 @@
  |  See the License for the specific language governing permissions and
  |  limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.valtech-ch</groupId>
     <artifactId>saas-aem</artifactId>
@@ -23,11 +22,31 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>Valtech AEM SAAS</name>
     <description>Valtech AEM SAAS</description>
+    <url>https://github.com/valtech-ch/saas-aem-module</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>support@valtech-ch.com</id>
+            <name>SaaS AEM Module Support</name>
+            <email>support@aem-module.com</email>
+            <organization>Valtech Swiss SaaS AEM Module</organization>
+            <organizationUrl>https://github.com/valtech-ch</organizationUrl>
+        </developer>
+    </developers>
+
 
     <scm>
         <connection>scm:git:git@github.com:valtech-ch/saas-aem-module.git</connection>
-        <developerConnection>scm:git:https://github.com/valtech-ch/saas-aem-module.git</developerConnection>
+        <developerConnection>scm:git:ssh://github.com/valtech-ch/saas-aem-module.git</developerConnection>
         <url>https://github.com/valtech-ch/saas-aem-module/tree/main</url>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
@@ -50,7 +69,7 @@
         <module>ui.apps.structure</module>
         <module>ui.config</module>
         <module>it.tests</module>
-        <module>ui.tests</module>
+<!--        <module>ui.tests</module>-->
     </modules>
 
     <properties>
@@ -105,7 +124,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
@@ -400,7 +419,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -414,7 +433,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -427,7 +446,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
