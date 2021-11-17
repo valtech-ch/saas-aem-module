@@ -22,8 +22,8 @@ class CompositeFilterTest {
         .joinOperator(FilterJoinOperator.AND)
         .build().getQueryString(), is("(foo:bar AND baz:quz)"));
     assertThat(CompositeFilter.builder()
-        .filter(CompositeFilter.builder().joinOperator(FilterJoinOperator.OR).filter("it", "is")
-            .filter("operator", "example").filter("it", "is not").build())
+        .filter(CompositeFilter.builder().joinOperator(FilterJoinOperator.OR).filter(new SimpleFilter("it", "is"))
+            .filter(new SimpleFilter("operator", "example")).filter(new SimpleFilter("it", "is not")).build())
         .filter(new SimpleFilter("baz", "quz"))
         .joinOperator(FilterJoinOperator.AND)
         .build().getQueryString(), is("((it:is OR operator:example OR it:is not) AND baz:quz)"));
