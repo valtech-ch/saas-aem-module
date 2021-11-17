@@ -35,13 +35,25 @@ import org.osgi.service.component.annotations.Reference;
     service = SearchRequestExecutorService.class)
 public class DefaultSearchRequestExecutorService implements SearchRequestExecutorService {
 
-  @Reference
-  private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
 
   @Reference
   private HttpClientBuilderFactory httpClientBuilderFactory;
 
+  private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
+
   private CloseableHttpClient httpClient;
+
+  @Reference
+  protected synchronized void bindSearchServiceConnectionConfigurationService(
+      SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService) {
+    this.searchServiceConnectionConfigurationService = searchServiceConnectionConfigurationService;
+  }
+
+  protected synchronized void updatedSearchServiceConnectionConfigurationService(
+      SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService) {
+    this.searchServiceConnectionConfigurationService = searchServiceConnectionConfigurationService;
+    activate();
+  }
 
   @Override
   public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
