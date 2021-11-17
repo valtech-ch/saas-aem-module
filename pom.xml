@@ -22,6 +22,7 @@
     <version>0.0.6-SNAPSHOT</version>
     <name>Valtech AEM SAAS</name>
     <description>Valtech AEM SAAS</description>
+    <url>https://github.com/valtech-ch/saas-aem-module</url>
 
     <licenses>
         <license>
@@ -105,8 +106,7 @@
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release-sign-artifacts</releaseProfiles>
-                    <arguments>-Dgpg.passphrase=${gpg.passphrase} -Dmaven.javadoc.skippedModules=saas-aem.ui.tests
-                    </arguments>
+                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
                     <goals>deploy</goals>
                 </configuration>
                 <dependencies>
@@ -653,6 +653,16 @@
                     <value>true</value>
                 </property>
             </activation>
+            <modules>
+                <module>all</module>
+                <module>api</module>
+                <module>core</module>
+                <module>ui.frontend</module>
+                <module>ui.apps</module>
+                <module>ui.apps.structure</module>
+                <module>ui.config</module>
+                <module>it.tests</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>
