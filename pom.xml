@@ -19,16 +19,35 @@
     <groupId>io.github.valtech-ch</groupId>
     <artifactId>saas-aem</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>Valtech AEM SAAS</name>
     <description>Valtech AEM SAAS</description>
+    <url>https://github.com/valtech-ch/saas-aem-module</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>support@valtech-ch.com</id>
+            <name>SaaS AEM Module Support</name>
+            <email>support@aem-module.com</email>
+            <organization>Valtech Swiss SaaS AEM Module</organization>
+            <organizationUrl>https://github.com/valtech-ch</organizationUrl>
+        </developer>
+    </developers>
+
 
     <scm>
         <connection>scm:git:git@github.com:valtech-ch/saas-aem-module.git</connection>
         <developerConnection>scm:git:ssh://github.com/valtech-ch/saas-aem-module.git</developerConnection>
         <url>https://github.com/valtech-ch/saas-aem-module/tree/main</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
@@ -50,7 +69,7 @@
         <module>ui.apps.structure</module>
         <module>ui.config</module>
         <module>it.tests</module>
-        <module>ui.tests</module>
+<!--        <module>ui.tests</module>-->
     </modules>
 
     <properties>
