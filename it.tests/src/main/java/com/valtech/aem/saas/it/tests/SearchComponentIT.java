@@ -31,6 +31,14 @@ public class SearchComponentIT {
   public static final String EXPECTED_SEARCH_MODEL_JSON = "search.model.json";
   @ClassRule
   public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+  public static final String RESULTS = "results";
+  public static final String RESULTS_TOTAL = "resultsTotal";
+  public static final String ITEMS = "items";
+  public static final String FACET_FILTERS = "facetFilters";
+  public static final String TEXT = "text";
+  public static final String SUGGESTION = "suggestion";
+  public static final String JSON_EXPORTER_MODEL = "model";
+  public static final String JSON_EXTENSION = "json";
 
   @Rule
   public SearchContentInstallRule content = new SearchContentInstallRule(cqBaseClassRule.authorRule);
@@ -105,26 +113,26 @@ public class SearchComponentIT {
   }
 
   private String getSuggestionText(JsonNode searchTab) {
-    JsonNode suggestion = searchTab.get("suggestion");
+    JsonNode suggestion = searchTab.get(SUGGESTION);
     assertTrue(suggestion.isObject());
-    JsonNode text = suggestion.get("text");
+    JsonNode text = suggestion.get(TEXT);
     assertNotNull(text);
     assertTrue(text.isTextual());
     return text.getTextValue();
   }
 
   private void hasFacetFilters(JsonNode searchTab) {
-    JsonNode facetFilters = searchTab.get("facetFilters");
+    JsonNode facetFilters = searchTab.get(FACET_FILTERS);
     assertNotNull(facetFilters);
     assertTrue(facetFilters.isObject());
-    JsonNode items = facetFilters.get("items");
+    JsonNode items = facetFilters.get(ITEMS);
     assertNotNull(items);
     assertTrue(items.isArray());
     assertTrue(items.size() > 0);
   }
 
   private int getResultsTotal(JsonNode searchTab) {
-    JsonNode resultsTotal = searchTab.get("resultsTotal");
+    JsonNode resultsTotal = searchTab.get(RESULTS_TOTAL);
     assertNotNull(resultsTotal);
     return resultsTotal.getIntValue();
   }
@@ -135,13 +143,13 @@ public class SearchComponentIT {
   }
 
   private void searchResultsExist(JsonNode searchTab) {
-    JsonNode results = searchTab.get("results");
+    JsonNode results = searchTab.get(RESULTS);
     assertNotNull(results);
     assertTrue(results.isArray());
     assertTrue(results.size() > 0);
   }
 
   private String getJsonModelPreparedUrl(String path) {
-    return path + ".model.json";
+    return String.format("%s.%s.%s", path, JSON_EXPORTER_MODEL, JSON_EXTENSION);
   }
 }
