@@ -1,7 +1,7 @@
 import { buildSearch } from './buildSearch'
 import { getSearchElement } from './searchElement'
 
-const initSearch = (): void => {
+exports.default = function initSearch(): void {
   window.addEventListener('load', () => {
     const searchElement = getSearchElement()
 
@@ -9,8 +9,6 @@ const initSearch = (): void => {
       return
     }
 
-    buildSearch(searchElement)
+    void buildSearch(searchElement)
   })
 }
-
-export default initSearch
