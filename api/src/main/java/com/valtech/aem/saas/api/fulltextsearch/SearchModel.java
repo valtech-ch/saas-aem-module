@@ -10,6 +10,8 @@ import java.util.Set;
  */
 public interface SearchModel extends ContainerExporter {
 
+  int AUTOCOMPLETE_THRESHOLD = 3;
+
   /**
    * Retrieves the title configurable for the search component.
    *
@@ -71,7 +73,9 @@ public interface SearchModel extends ContainerExporter {
    *
    * @return min number of chars typed before triggering the autocomplete.
    */
-  int getAutocompleteTriggerThreshold();
+  default int getAutocompleteTriggerThreshold() {
+    return AUTOCOMPLETE_THRESHOLD;
+  }
 
   /**
    * Gets list of search tabs;

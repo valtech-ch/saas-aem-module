@@ -15,6 +15,8 @@ import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
+import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -81,7 +83,7 @@ class SearchModelImplTest {
         "/search");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
-    context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "bar");
+    context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "bar");
     adaptRequest();
     testAdaptable();
     Map<String, ? extends ComponentExporter> exportedItemsMap = testee.getExportedItems();
@@ -108,7 +110,7 @@ class SearchModelImplTest {
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
     assertThat(testee.getFilters(), nullValue());
-    assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModelImpl.AUTOCOMPLETE_THRESHOLD));
+    assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
   }
 
   private void adaptRequest() {

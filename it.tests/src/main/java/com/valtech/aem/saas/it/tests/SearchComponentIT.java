@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.query.LanguageQuery;
-import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -62,7 +62,7 @@ public class SearchComponentIT {
 
   @Test
   public void testSearchResults() throws ClientException {
-    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModelImpl.SEARCH_TERM, "foo"),
+    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "foo"),
         new BasicNameValuePair(LanguageQuery.KEY, "en"));
 
     JsonNode searchTab1 = slingModelJsonExporterClient.doGetJsonNode(
@@ -90,7 +90,7 @@ public class SearchComponentIT {
   public void testAutocomplete() throws ClientException {
     JsonNode jsonNode = slingModelJsonExporterClient.doGetJsonNode(
         "/content/saas-aem-module/us/en/jcr:content/root/container/search.autocomplete.json",
-        Collections.singletonList(new BasicNameValuePair(SearchTabModelImpl.SEARCH_TERM, "foo")),
+        Collections.singletonList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "foo")),
         200);
     assertNotNull(jsonNode);
     assertTrue(jsonNode.isArray());
@@ -99,7 +99,7 @@ public class SearchComponentIT {
 
   @Test
   public void testAutosuggest() throws ClientException {
-    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModelImpl.SEARCH_TERM, "fooo"),
+    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "fooo"),
         new BasicNameValuePair(LanguageQuery.KEY, "en"));
 
     JsonNode searchTab1 = slingModelJsonExporterClient.doGetJsonNode(

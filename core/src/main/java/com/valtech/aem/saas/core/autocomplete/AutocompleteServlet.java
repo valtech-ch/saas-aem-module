@@ -3,11 +3,11 @@ package com.valtech.aem.saas.core.autocomplete;
 import com.google.gson.Gson;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.response.JsonResponseCommitter;
 import com.valtech.aem.saas.core.fulltextsearch.SearchModelImpl;
-import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
     if (requestWrapper == null) {
       throw new IllegalArgumentException("Can not adapt the request to RequestWrapper sling model.");
     }
-    String searchTerm = requestWrapper.getParameter(SearchTabModelImpl.SEARCH_TERM)
+    String searchTerm = requestWrapper.getParameter(SearchTabModel.SEARCH_TERM)
         .orElseThrow(() -> new IllegalArgumentException("Search term not specified."));
     SearchModel searchModel = getSearch(request.getResource()).orElseThrow(
         () -> new IllegalStateException("Can not resolve search model."));
