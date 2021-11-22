@@ -69,12 +69,9 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 public class SearchTabModelImpl implements SearchTabModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
-  public static final String QUERY_PARAM_START = "start";
   public static final int DEFAULT_START_PAGE = 0;
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
-  public static final String SEARCH_TERM = "q";
   public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL = "com.valtech.aem.saas.core.search.loadmore.button.label";
-  public static final String FACET_FILTER = "facetFilter";
 
   @Getter
   @JsonInclude(Include.NON_EMPTY)
@@ -172,11 +169,11 @@ public class SearchTabModelImpl implements SearchTabModel {
   }
 
   private Optional<String> getSearchTerm() {
-    return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SEARCH_TERM));
+    return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.SEARCH_TERM));
   }
 
   private int getStartPage(@NonNull RequestWrapper requestWrapper) {
-    return requestWrapper.getParameter(QUERY_PARAM_START)
+    return requestWrapper.getParameter(SearchTabModel.QUERY_PARAM_START)
         .map(start -> new StringToInteger(start).asInt())
         .map(OptionalInt::getAsInt)
         .orElse(DEFAULT_START_PAGE);
@@ -236,7 +233,8 @@ public class SearchTabModelImpl implements SearchTabModel {
       List<FacetFilterDTO> facetFilterDTOList = facetFieldResultsDTOList.stream()
           .map(facetFieldResultsDTO -> createFacetFilter(facetFieldToLabelMap, facetFieldResultsDTO))
           .collect(Collectors.toList());
-      return CollectionUtils.isNotEmpty(facetFilterDTOList) ? new FacetFiltersDTO(FACET_FILTER, facetFilterDTOList)
+      return CollectionUtils.isNotEmpty(facetFilterDTOList) ? new FacetFiltersDTO(SearchTabModel.FACET_FILTER,
+          facetFilterDTOList)
           : null;
     }
     return null;
@@ -283,7 +281,7 @@ public class SearchTabModelImpl implements SearchTabModel {
   }
 
   private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
-    return requestWrapper.getParameterValues(FACET_FILTER).stream()
+    return requestWrapper.getParameterValues(SearchTabModel.FACET_FILTER).stream()
         .map(this::createFilter)
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());

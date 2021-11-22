@@ -67,7 +67,6 @@ public class SearchModelImpl implements SearchModel {
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
   public static final String NODE_NAME_SEARCH_TABS_CONTAINER = "search-tabs";
   public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
-  public static final int AUTOCOMPLETE_THRESHOLD = 3;
   public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
 
 
@@ -169,11 +168,6 @@ public class SearchModelImpl implements SearchModel {
     return models.isEmpty()
         ? ArrayUtils.EMPTY_STRING_ARRAY
         : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-  }
-
-  @Override
-  public int getAutocompleteTriggerThreshold() {
-    return AUTOCOMPLETE_THRESHOLD;
   }
 
   private List<SearchTabModel> getSearchTabList() {
