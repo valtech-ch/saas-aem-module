@@ -68,6 +68,8 @@ public class SearchModelImpl implements SearchModel {
   public static final String NODE_NAME_SEARCH_TABS_CONTAINER = "search-tabs";
   public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
   public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
+  public static final String I18N_SEARCH_SUGGESTION_TEXT = "com.valtech.aem.saas.core.search.suggestion.text";
+  public static final String I18N_SEARCH_NO_RESULTS_TEXT = "com.valtech.aem.saas.core.search.noResults.text";
 
 
   @Getter
@@ -115,6 +117,12 @@ public class SearchModelImpl implements SearchModel {
   @Getter
   private String autosuggestUrl;
 
+  @Getter
+  private String autoSuggestText;
+
+  @Getter
+  private String noResultsText;
+
   @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
   private List<Resource> searchTabResources;
 
@@ -140,6 +148,8 @@ public class SearchModelImpl implements SearchModel {
   private void init() {
     createAutosuggestUrl().ifPresent(url -> autosuggestUrl = url);
     I18n i18n = i18nProvider.getI18n(getLocale());
+    autoSuggestText = i18n.get(I18N_SEARCH_SUGGESTION_TEXT);
+    noResultsText = i18n.get(I18N_SEARCH_NO_RESULTS_TEXT);
     effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
         ? searchFieldPlaceholderText
