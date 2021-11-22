@@ -113,7 +113,7 @@ public class SearchModelImpl implements SearchModel {
   private String exportedType;
 
   @Getter
-  private String autosuggestUrl;
+  private String autocompleteUrl;
 
   @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
   private List<Resource> searchTabResources;
@@ -138,7 +138,7 @@ public class SearchModelImpl implements SearchModel {
 
   @PostConstruct
   private void init() {
-    createAutosuggestUrl().ifPresent(url -> autosuggestUrl = url);
+    createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
     I18n i18n = i18nProvider.getI18n(getLocale());
     effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
@@ -180,7 +180,7 @@ public class SearchModelImpl implements SearchModel {
     return Collections.emptyList();
   }
 
-  private Optional<String> createAutosuggestUrl() {
+  private Optional<String> createAutocompleteUrl() {
     return Optional.ofNullable(request).map(r -> pathTransformer.map(r, resource.getPath()))
         .map(url -> String.format("%s.%s.%s",
             url,

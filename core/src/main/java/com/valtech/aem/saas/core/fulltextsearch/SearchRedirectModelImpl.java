@@ -5,34 +5,32 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchRedirectModelImpl.R
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
-import com.day.cq.i18n.I18n;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel;
+import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.i18n.I18nProvider;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
+import com.valtech.aem.saas.core.util.LoggedOptional;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.apache.sling.models.factory.ModelFactory;
 
 /**
  * Search redirect component sling model that handles component's rendering.
@@ -47,13 +45,22 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 public class SearchRedirectModelImpl implements SearchRedirectModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/searchredirect";
+  private static final String HTML_EXTENSION = ".html";
 
   @Getter
   @ValueMapValue
   private String searchFieldPlaceholderText;
 
   @Getter
-  @JsonInclude(Include.NON_EMPTY)
+  private String searchUrl;
+
+  @Getter
+  private String autocompleteUrl;
+
+  @Getter
+  @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+  private String exportedType;
+
   @ValueMapValue
   private String searchPagePath;
 
@@ -61,42 +68,39 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
   @Getter
   private String configJson;
 
-  @Getter
-  @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
-  private String exportedType;
+  @Self
+  private SlingHttpServletRequest request;
 
   @SlingObject
   private Resource resource;
 
+  @SlingObject
+  private ResourceResolver resourceResolver;
+
   @OSGiService
-  private I18nProvider i18nProvider;
+  private PathTransformer pathTransformer;
+
+  @OSGiService
+  private ModelFactory modelFactory;
+
+  private SearchModel searchModel;
+
+  private Resource searchPageResource;
 
   @PostConstruct
   private void init() {
-    I18n i18n = i18nProvider.getI18n(getLocale());
-    searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
-        ? searchFieldPlaceholderText
-        : i18n.get(SearchModelImpl.I18N_SEARCH_INPUT_PLACEHOLDER);
+    getSearchPageResource().ifPresent(r -> searchPageResource = r);
+    getSearchModel().ifPresent(search -> searchModel = search);
+    retrieveAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
+    resolveSearchFieldPlaceholderText().ifPresent(s -> searchFieldPlaceholderText = s);
+    createSearchPageUrl().ifPresent(s -> searchUrl = s);
     configJson = getSearchConfigJson();
   }
 
-  @NonNull
-  @Override
-  public Map<String, ? extends ComponentExporter> getExportedItems() {
-    return Collections.emptyMap();
-  }
-
-  @Override
-  public String @NonNull [] getExportedItemsOrder() {
-    Map<String, ? extends ComponentExporter> models = getExportedItems();
-    return models.isEmpty()
-        ? ArrayUtils.EMPTY_STRING_ARRAY
-        : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-  }
-
-  @Override
-  public int getAutocompleteTriggerThreshold() {
-    return SearchModelImpl.AUTOCOMPLETE_THRESHOLD;
+  private Optional<String> createSearchPageUrl() {
+    return Optional.ofNullable(searchPageResource)
+        .map(r -> pathTransformer.map(request, r.getPath()))
+        .map(s -> s + HTML_EXTENSION);
   }
 
   private String getSearchConfigJson() {
@@ -108,8 +112,33 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
     return StringUtils.EMPTY;
   }
 
-  private Locale getLocale() {
-    return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-        .orElse(Locale.getDefault());
+  private Optional<String> retrieveAutocompleteUrl() {
+    return Optional.ofNullable(searchModel).map(SearchModel::getAutocompleteUrl);
+  }
+
+  private Optional<SearchModel> getSearchModel() {
+    return LoggedOptional.of(searchPageResource, logger -> logger.error("Search page resource is not existing."))
+        .map(r -> r.adaptTo(ResourceWrapper.class))
+        .map(ResourceWrapper::getDescendents)
+        .orElse(Stream.empty())
+        .filter(r -> resourceResolver.isResourceType(r, SearchModelImpl.RESOURCE_TYPE))
+        .findFirst()
+        .flatMap(search -> LoggedOptional.of(search, logger -> logger.error("Search component not found.")))
+        .map(r -> modelFactory.getModelFromWrappedRequest(request, r, SearchModel.class));
+  }
+
+  private Optional<String> resolveSearchFieldPlaceholderText() {
+    if (StringUtils.isNotBlank(searchFieldPlaceholderText)) {
+      return Optional.of(searchFieldPlaceholderText);
+    }
+    return Optional.ofNullable(searchModel)
+        .map(SearchModel::getSearchFieldPlaceholderText);
+  }
+
+  private Optional<Resource> getSearchPageResource() {
+    return Optional.ofNullable(searchPagePath)
+        .filter(StringUtils::isNotBlank)
+        .flatMap(s -> LoggedOptional.of(s, logger -> logger.error("Search page path is not configured.")))
+        .map(pPath -> resourceResolver.getResource(pPath));
   }
 }

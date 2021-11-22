@@ -2,5 +2,5 @@
      data-sly-test.isEdit="${wcmmode.edit}"></sly>
 <sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
      data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
-<search-redirect data-sly-test="${!isEdit}"
-                 data-config="${model.configJson}"></search-redirect>
+<search data-sly-test="${!isEdit}"
+        data-search-config="${model.configJson}"></search>

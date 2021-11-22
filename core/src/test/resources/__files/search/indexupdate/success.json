@@ -1,6 +1,7 @@
 {
-  "url": "https://wknd.site/us/en/adventures/bali-surf-camp.html",
-  "site.id": 1,
-  "message": "Added URL to queue of site",
-  "id": "any_http://only.to.test/if/it/works"
+  "searchFieldPlaceholderText": "Type search term here...",
+  "searchUrl": "/content/saas-aem-module/us/en.html",
+  "autocompleteUrl": "/content/saas-aem-module/us/en/_jcr_content/root/container/search.autocomplete.json",
+  "autocompleteTriggerThreshold": 3,
+  ":type": "saas-aem-module/components/searchredirect"
 }

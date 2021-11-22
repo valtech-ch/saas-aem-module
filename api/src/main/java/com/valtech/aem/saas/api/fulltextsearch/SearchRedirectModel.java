@@ -1,11 +1,13 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-import com.adobe.cq.export.json.ContainerExporter;
+import static com.valtech.aem.saas.api.fulltextsearch.SearchModel.AUTOCOMPLETE_THRESHOLD;
+
+import com.adobe.cq.export.json.ComponentExporter;
 
 /**
  * Represents a model of the aem search redirect component.
  */
-public interface SearchRedirectModel extends ContainerExporter {
+public interface SearchRedirectModel extends ComponentExporter {
 
   /**
    * Gets an author configured value for component's  input field's placeholder.
@@ -19,7 +21,16 @@ public interface SearchRedirectModel extends ContainerExporter {
    *
    * @return min number of chars typed before triggering the autocomplete.
    */
-  int getAutocompleteTriggerThreshold();
+  default int getAutocompleteTriggerThreshold() {
+    return AUTOCOMPLETE_THRESHOLD;
+  }
+
+  /**
+   * Gets the auto suggest url of the search component.
+   *
+   * @return url string.
+   */
+  String getAutocompleteUrl();
 
   /**
    * Gets the search configuration in a json format. In this format, the configs are used by the FE.
@@ -29,10 +40,10 @@ public interface SearchRedirectModel extends ContainerExporter {
   String getConfigJson();
 
   /**
-   * Gets the search page's path which the component redirects to.
+   * Gets the search page's url which the component redirects to.
    *
-   * @return page path.
+   * @return page url.
    */
-  String getSearchPagePath();
+  String getSearchUrl();
 
 }
