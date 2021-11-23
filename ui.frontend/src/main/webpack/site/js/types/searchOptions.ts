@@ -13,6 +13,6 @@ export type SearchConfig = {
   searchButtonText: string
   autocompleteTriggerThreshold: number
   searchUrl?: string
-  autosuggestUrl: string
+  autocompleteUrl: string
   autoSuggestText: string
 }

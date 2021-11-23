@@ -3,7 +3,7 @@ import fetchAutoSuggest from '../utils/fetchAutoSuggest'
 
 type SearchInputOptions = {
   searchFieldPlaceholderText: string
-  autosuggestUrl: string
+  autocompleteUrl: string
   autocompleteTriggerThreshold: number
   autoSuggestionDebounceTime: number
 }
@@ -37,7 +37,7 @@ const removeSuggestionList = () => {
 const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   debounce(
     async (
-      autosuggestUrl: string,
+      autocompleteUrl: string,
       query: string,
       autocompleteTriggerThreshold: number,
       searchInput: HTMLInputElement,
@@ -46,7 +46,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       setSaasCurrentFocusSuggestion(searchInput, -1)
 
       if (query.length >= autocompleteTriggerThreshold) {
-        const results = await fetchAutoSuggest(autosuggestUrl, query)
+        const results = await fetchAutoSuggest(autocompleteUrl, query)
 
         if (results?.length) {
           const suggestionDropdown = document.createElement('div')
@@ -77,7 +77,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
 
 const buildSearchInput = ({
   searchFieldPlaceholderText,
-  autosuggestUrl,
+  autocompleteUrl,
   autocompleteTriggerThreshold,
   autoSuggestionDebounceTime = 500,
 }: SearchInputOptions): HTMLInputElement => {
@@ -92,7 +92,7 @@ const buildSearchInput = ({
 
   searchInput.addEventListener('input', (event) => {
     search(
-      autosuggestUrl,
+      autocompleteUrl,
       (event?.target as HTMLInputElement)?.value,
       autocompleteTriggerThreshold,
       searchInput,

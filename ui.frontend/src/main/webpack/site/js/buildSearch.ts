@@ -26,7 +26,7 @@ export const buildSearch = async (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
-    autosuggestUrl,
+    autocompleteUrl,
     autocompleteTriggerThreshold,
     autoSuggestText,
   } = searchConfig
@@ -41,7 +41,7 @@ export const buildSearch = async (
 
   const searchInputElement = buildSearchInput({
     searchFieldPlaceholderText,
-    autosuggestUrl,
+    autocompleteUrl,
     autocompleteTriggerThreshold,
     autoSuggestionDebounceTime,
   })
