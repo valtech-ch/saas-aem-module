@@ -193,9 +193,9 @@ class PageIndexUpdateHandlerTest {
     when(jobManager.createJob(anyString())).thenReturn(jobBuilder);
     when(jobBuilder.properties(anyMap())).thenReturn(jobBuilder);
     when(jobBuilder.add(anyList())).thenReturn(job);
-    when(pathTransformer.externalize(anyString())).thenReturn(Arrays.asList("foo", "bar"));
+    when(pathTransformer.externalizeList(anyString())).thenReturn(Arrays.asList("foo", "bar"));
     testee.handleEvent(event);
-    verify(pathTransformer, times(1)).externalize(anyString());
+    verify(pathTransformer, times(1)).externalizeList(anyString());
     verify(jobManager, times(2)).createJob(anyString());
   }
 }

@@ -2,6 +2,7 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.text.IsEmptyString.isEmptyString;
 import static org.mockito.Mockito.when;
 
 import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
@@ -32,21 +33,28 @@ class HighlightedDescriptionResolverTest {
   HighlightingDTO highlightingDto;
 
   @Test
-  void getMetaDescription_noHighlightEntryAvailable() {
+  void getDescription_noHighlightEntryAvailable() {
     setupInput_noHighlightEntryAvailable();
     assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(SEARCH_RESULT_META_DESCRIPTION));
   }
 
   @Test
-  void getMetaDescription_noResultIdAvailable() {
+  void getDescription_noNoMetaDescriptionAvailable() {
+    when(searchResultDto.getId()).thenReturn(SEARCH_RESULT_ID);
+    assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
+        isEmptyString());
+  }
+
+  @Test
+  void getDescription_noResultIdAvailable() {
     setupInput_noResultIdAvailable();
     assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
         is(SEARCH_RESULT_META_DESCRIPTION));
   }
 
   @Test
-  void getMetaDescription_metaDescriptionInHighlightingEntryAvailable() {
+  void getDescription_metaDescriptionInHighlightingEntryAvailable() {
     when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_metaDescriptionInHighlightingEntryAvailable();
     assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),
@@ -54,7 +62,7 @@ class HighlightedDescriptionResolverTest {
   }
 
   @Test
-  void getMetaDescription_noMetaDescriptionInHighlightingEntryAvailable() {
+  void getDescription_noMetaDescriptionInHighlightingEntryAvailable() {
     when(searchResultDto.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
     when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_noMetaDescriptionInHighlightingEntryAvailable();
@@ -63,8 +71,7 @@ class HighlightedDescriptionResolverTest {
   }
 
   @Test
-  void getMetaDescription_contentInHighlightingEntryAvailable() {
-    when(searchResultDto.getMetaDescription()).thenReturn(SEARCH_RESULT_META_DESCRIPTION);
+  void getDescription_contentInHighlightingEntryAvailable() {
     when(searchResultDto.getLanguage()).thenReturn(SEARCH_RESULT_LANGUAGE);
     setupInput_contentInHighlightingEntryAvailable();
     assertThat(new HighlightedDescriptionResolver(searchResultDto, highlightingDto).getDescription(),

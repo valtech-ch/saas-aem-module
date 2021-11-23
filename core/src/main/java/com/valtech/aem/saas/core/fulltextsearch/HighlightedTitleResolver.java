@@ -25,13 +25,17 @@ public final class HighlightedTitleResolver {
    */
   public String getTitle() {
     if (StringUtils.isBlank(searchResultDto.getId())) {
-      return searchResultDto.getTitle();
+      return getSafeTitle();
     }
     return Optional.ofNullable(highlightingDto.getItems().get(searchResultDto.getId()))
         .map(stringListMap -> stringListMap.get(TITLE_PREFIX + searchResultDto.getLanguage()))
         .map(list -> String.join(HIGHLIGHTED_ITEMS_DELIMITER, list))
         .filter(StringUtils::isNotBlank)
-        .orElse(searchResultDto.getTitle());
+        .orElseGet(this::getSafeTitle);
+  }
+
+  private String getSafeTitle() {
+    return StringUtils.defaultString(searchResultDto.getTitle());
   }
 
 }

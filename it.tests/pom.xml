@@ -18,13 +18,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.valtech.aem</groupId>
-        <artifactId>saas</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>io.github.valtech-ch</groupId>
+        <artifactId>saas-aem</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>saas.it.tests</artifactId>
+    <artifactId>saas-aem.it.tests</artifactId>
     <name>Valtech AEM SAAS - Integration Tests</name>
     <description>Integration Tests for Valtech AEM SAAS</description>
 
@@ -35,6 +35,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.valtech-ch</groupId>
+            <artifactId>saas-aem.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -54,6 +59,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.5.0</version>
         </dependency>
     </dependencies>
 

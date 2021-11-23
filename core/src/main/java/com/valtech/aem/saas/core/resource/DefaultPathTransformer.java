@@ -17,16 +17,23 @@ import org.osgi.service.component.annotations.Reference;
     service = PathTransformer.class)
 public class DefaultPathTransformer implements PathTransformer {
 
+  public static final String HTML_EXTENSION = ".html";
+
   @Reference
   private Externalizer externalizer;
 
   @Override
-  public List<String> externalize(SlingHttpServletRequest request, String resourcePath) {
-    return Collections.singletonList(externalizer.publishLink(request.getResourceResolver(), resourcePath));
+  public List<String> externalizeList(SlingHttpServletRequest request, String path) {
+    return Collections.singletonList(externalize(request, path));
   }
 
   @Override
-  public String map(SlingHttpServletRequest request, String resourcePath) {
-    return externalizer.relativeLink(request, resourcePath);
+  public String externalize(SlingHttpServletRequest request, String path) {
+    return externalizer.publishLink(request.getResourceResolver(), path) + HTML_EXTENSION;
+  }
+
+  @Override
+  public String map(SlingHttpServletRequest request, String path) {
+    return externalizer.relativeLink(request, path);
   }
 }

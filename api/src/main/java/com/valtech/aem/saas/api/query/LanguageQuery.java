@@ -11,7 +11,7 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public final class LanguageQuery implements Query {
 
-  private static final String KEY = "lang";
+  public static final String KEY = "lang";
 
   private final NameValuePair language;
 

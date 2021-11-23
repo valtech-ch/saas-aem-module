@@ -25,14 +25,17 @@ public final class HighlightedDescriptionResolver {
    */
   public String getDescription() {
     if (StringUtils.isBlank(searchResultDto.getId())) {
-      return searchResultDto.getMetaDescription();
+      return getSafeDescription();
     }
     return Optional.ofNullable(highlightingDto.getItems().get(searchResultDto.getId()))
         .map(stringListMap -> stringListMap.getOrDefault(META_DESCRIPTION_PREFIX + searchResultDto.getLanguage(),
             stringListMap.get(CONTENT_PREFIX + searchResultDto.getLanguage())))
         .map(list -> String.join(" ", list))
         .filter(StringUtils::isNotBlank)
-        .orElse(searchResultDto.getMetaDescription());
+        .orElseGet(this::getSafeDescription);
   }
 
+  private String getSafeDescription() {
+    return StringUtils.defaultString(searchResultDto.getMetaDescription());
+  }
 }
