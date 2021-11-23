@@ -8,12 +8,17 @@ import org.apache.sling.api.SlingHttpServletRequest;
 public class MockPathTransformer implements PathTransformer {
 
   @Override
-  public List<String> externalize(SlingHttpServletRequest request, String resourcePath) {
-    return Collections.singletonList(resourcePath);
+  public List<String> externalizeList(SlingHttpServletRequest request, String path) {
+    return Collections.singletonList(path);
   }
 
   @Override
-  public String map(SlingHttpServletRequest request, String resourcePath) {
-    return resourcePath;
+  public String externalize(SlingHttpServletRequest request, String path) {
+    return path;
+  }
+
+  @Override
+  public String map(SlingHttpServletRequest request, String path) {
+    return path;
   }
 }
