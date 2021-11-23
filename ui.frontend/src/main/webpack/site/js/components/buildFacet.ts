@@ -1,7 +1,9 @@
 import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FilterFieldOption } from '../types/facetFilter'
 import fetchSearch from '../utils/fetchSearch'
-import buildSearchResult from './searchResults'
+import buildFacetsGroup from './buildFacetsGroup'
+import buildLoadMoreButton from './loadMoreButton'
+import { generateSearchItemList } from './searchResults'
 
 interface BuildFacetOption extends FilterFieldOption {
   filterFieldName: string
@@ -9,6 +11,7 @@ interface BuildFacetOption extends FilterFieldOption {
   searchValue: string
   queryParameterName: string
   tabId: string
+  loadMoreButtonText: string
   onSearchItemClick?: OnSearchItemClickCallback
 }
 
@@ -21,7 +24,9 @@ const buildFacet = ({
   queryParameterName,
   tabId,
   onSearchItemClick,
-}: BuildFacetOption): HTMLDivElement => {
+  loadMoreButtonText,
+}: // eslint-disable-next-line sonarjs/cognitive-complexity
+BuildFacetOption): HTMLDivElement => {
   const facet = document.createElement('div')
   facet.classList.add('saas-facet')
 
@@ -30,6 +35,20 @@ const buildFacet = ({
   facetInput.type = 'checkbox'
   facetInput.id = value
 
+  const selectedTab = document.querySelector<HTMLDivElement>(
+    '[data-selected="true"]',
+  )
+
+  const selectedTabFacets = selectedTab?.dataset.facets
+    ? JSON.parse(selectedTab.dataset.facets)
+    : {}
+
+  const selectedTabFacetsFieldName = selectedTabFacets[filterFieldName]
+  facetInput.checked = selectedTabFacetsFieldName
+    ? selectedTabFacetsFieldName.includes(value)
+    : false
+
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   facetInput.addEventListener('change', async (event) => {
     const isChecked = (event?.target as HTMLInputElement).checked
 
@@ -37,17 +56,24 @@ const buildFacet = ({
       '[data-selected="true"]',
     )
 
+    if (!currentTab) {
+      return
+    }
+
     const selectedFacets = currentTab?.dataset.facets
       ? JSON.parse(currentTab.dataset.facets)
       : {}
 
-    const selectedFacetsFieldName = selectedFacets[filterFieldName]
+    const selectedFacetsFieldName = selectedFacets[filterFieldName] || []
+    const updatedSelectedFacetsFieldName = isChecked
+      ? [...selectedFacetsFieldName, value]
+      : selectedFacetsFieldName.filter(
+          (facetValue: string) => facetValue !== value,
+        )
 
     const newSelectedFacetsValue = {
       ...selectedFacets,
-      [filterFieldName]: selectedFacetsFieldName
-        ? [...selectedFacetsFieldName, value]
-        : [value],
+      [filterFieldName]: updatedSelectedFacetsFieldName,
     }
 
     if (currentTab) {
@@ -62,9 +88,6 @@ const buildFacet = ({
       newSelectedFacetsValue,
     )
 
-    // Update Facets
-
-    // clear existing results
     const currentTabResults = currentTab?.querySelectorAll('*')
 
     currentTabResults?.forEach((element) => {
@@ -72,13 +95,50 @@ const buildFacet = ({
     })
 
     if (results) {
-      const searchResults = buildSearchResult({
-        searchItems: results.results,
-        tabId,
-        onSearchItemClick,
+      const facetsGroups = document.createElement('div')
+      facetsGroups.classList.add('saas-facets-groups')
+
+      const { facetFilters } = results
+
+      facetFilters?.items.forEach((facetFilter) => {
+        const facetsGroup = buildFacetsGroup({
+          filterFieldLabel: facetFilter.filterFieldLabel,
+          filterFieldOptions: facetFilter.filterFieldOptions,
+          filterFieldName: facetFilter.filterFieldName,
+          tabUrl,
+          searchValue,
+          queryParameterName: facetFilters.queryParameterName,
+          tabId,
+          onSearchItemClick,
+          loadMoreButtonText,
+        })
+
+        facetsGroups?.appendChild(facetsGroup)
       })
 
-      currentTab?.appendChild(searchResults)
+      currentTab?.appendChild(facetsGroups)
+
+      const searchResultsItem = generateSearchItemList(
+        results.results,
+        onSearchItemClick,
+      )
+
+      searchResultsItem.forEach((element) => {
+        currentTab?.appendChild(element)
+      })
+
+      if (results.showLoadMoreButton) {
+        const loadMoreButton = buildLoadMoreButton({
+          loadMoreButtonText,
+          offset: 1,
+          tabUrl,
+          searchValue,
+          searchResultsElement: currentTab,
+          onLoadMoreButtonClick: undefined,
+          queryParameterName,
+        })
+        currentTab?.appendChild(loadMoreButton)
+      }
     }
   })
 

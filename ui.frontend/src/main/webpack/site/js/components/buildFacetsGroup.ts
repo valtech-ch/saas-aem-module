@@ -7,6 +7,7 @@ interface BuildFacetsGroup extends FacetItem {
   searchValue: string
   queryParameterName: string
   tabId: string
+  loadMoreButtonText: string
   onSearchItemClick?: OnSearchItemClickCallback
 }
 
@@ -19,6 +20,7 @@ const buildFacetsGroup = ({
   queryParameterName,
   tabId,
   onSearchItemClick,
+  loadMoreButtonText,
 }: BuildFacetsGroup): HTMLDivElement => {
   const facetItem = document.createElement('div')
   facetItem.classList.add('saas-facets-group')
@@ -39,6 +41,7 @@ const buildFacetsGroup = ({
       queryParameterName,
       tabId,
       onSearchItemClick,
+      loadMoreButtonText,
     })
 
     facetItem.appendChild(facet)

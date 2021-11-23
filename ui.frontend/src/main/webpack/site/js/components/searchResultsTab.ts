@@ -74,6 +74,7 @@ const buildSearchResultsTab = ({
         queryParameterName: facetFilters.queryParameterName,
         tabId,
         onSearchItemClick,
+        loadMoreButtonText,
       })
 
       facetsGroups?.appendChild(facetsGroup)

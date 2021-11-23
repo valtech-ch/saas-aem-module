@@ -7,6 +7,24 @@ type SearchResultsOptions = {
   onSearchItemClick?: OnSearchItemClickCallback
 }
 
+export const generateSearchItemList = (
+  searchItems: SearchItem[],
+  onSearchItemClick?: OnSearchItemClickCallback,
+): HTMLDivElement[] => {
+  return searchItems.map((searchItem) => {
+    const searchItemElement = buildSearchItem(searchItem)
+
+    if (onSearchItemClick) {
+      searchItemElement.addEventListener('click', (event) => {
+        event.preventDefault()
+
+        onSearchItemClick?.(searchItem.title)
+      })
+    }
+    return searchItemElement
+  })
+}
+
 const buildSearchResult = ({
   searchItems,
   tabId,
@@ -17,19 +35,11 @@ const buildSearchResult = ({
 
   searchResults.dataset.tab = tabId
 
-  searchItems.forEach((searchItem) => {
-    const searchItemElement = buildSearchItem(searchItem)
-
-    if (onSearchItemClick) {
-      searchItemElement.addEventListener('click', (event) => {
-        event.preventDefault()
-
-        onSearchItemClick?.(searchItem.title)
-      })
-    }
-
-    searchResults.appendChild(searchItemElement)
-  })
+  generateSearchItemList(searchItems, onSearchItemClick).forEach(
+    (searchItemElement) => {
+      searchResults.appendChild(searchItemElement)
+    },
+  )
 
   return searchResults
 }
