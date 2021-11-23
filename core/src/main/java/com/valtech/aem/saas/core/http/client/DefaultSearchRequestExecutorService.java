@@ -35,23 +35,20 @@ import org.osgi.service.component.annotations.Reference;
     service = SearchRequestExecutorService.class)
 public class DefaultSearchRequestExecutorService implements SearchRequestExecutorService {
 
-
   @Reference
   private HttpClientBuilderFactory httpClientBuilderFactory;
 
-  private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
+  private SearchServiceConnectionConfigurationService searchConnectionConfig;
 
   private CloseableHttpClient httpClient;
 
   @Reference
-  protected synchronized void bindSearchServiceConnectionConfigurationService(
-      SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService) {
-    this.searchServiceConnectionConfigurationService = searchServiceConnectionConfigurationService;
+  protected synchronized void bindSearchConnectionConfig(SearchServiceConnectionConfigurationService service) {
+    this.searchConnectionConfig = service;
   }
 
-  protected synchronized void updatedSearchServiceConnectionConfigurationService(
-      SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService) {
-    this.searchServiceConnectionConfigurationService = searchServiceConnectionConfigurationService;
+  protected synchronized void updatedSearchConnectionConfig(SearchServiceConnectionConfigurationService service) {
+    this.searchConnectionConfig = service;
     activate();
   }
 
@@ -104,19 +101,19 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
     log.debug("Http Client will be built with following request configuration {}", requestConfig);
     HttpClientBuilder httpClientBuilder = httpClientBuilderFactory.newBuilder()
         .setDefaultRequestConfig(requestConfig);
-    if (searchServiceConnectionConfigurationService.isBasicAuthenticationEnabled()) {
+    if (searchConnectionConfig.isBasicAuthenticationEnabled()) {
       log.debug("Basic Authentication is enabled.");
       getCredentialsProvider().ifPresent(credentialsProvider -> {
         log.debug("Setting basic authentication details for the http client.");
         httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
       });
     }
-    if (searchServiceConnectionConfigurationService.isIgnoreSslEnabled()) {
+    if (searchConnectionConfig.isIgnoreSslEnabled()) {
       log.warn("Initializing HttpService with ignoring SSL Certificate");
       setToIgnoredSsl(httpClientBuilder);
     }
-    httpClientBuilder.setMaxConnTotal(searchServiceConnectionConfigurationService.getHttpMaxTotalConnections());
-    httpClientBuilder.setMaxConnPerRoute(searchServiceConnectionConfigurationService.getHttpMaxConnectionsPerRoute());
+    httpClientBuilder.setMaxConnTotal(searchConnectionConfig.getHttpMaxTotalConnections());
+    httpClientBuilder.setMaxConnPerRoute(searchConnectionConfig.getHttpMaxConnectionsPerRoute());
     httpClient = httpClientBuilder.build();
   }
 
@@ -127,20 +124,20 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
 
   private RequestConfig createRequestConfig() {
     return RequestConfig.custom()
-        .setConnectTimeout(searchServiceConnectionConfigurationService.getHttpConnectionTimeout())
-        .setConnectionRequestTimeout(searchServiceConnectionConfigurationService.getHttpConnectionTimeout())
-        .setSocketTimeout(searchServiceConnectionConfigurationService.getHttpSocketTimeout())
+        .setConnectTimeout(searchConnectionConfig.getHttpConnectionTimeout())
+        .setConnectionRequestTimeout(searchConnectionConfig.getHttpConnectionTimeout())
+        .setSocketTimeout(searchConnectionConfig.getHttpSocketTimeout())
         .build();
   }
 
   private Optional<CredentialsProvider> getCredentialsProvider() {
-    return new HttpHostResolver(searchServiceConnectionConfigurationService.getBaseUrl()).getHost()
+    return new HttpHostResolver(searchConnectionConfig.getBaseUrl()).getHost()
         .map(httpHost -> {
           BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
           AuthScope authScope = new AuthScope(httpHost);
           UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
-              searchServiceConnectionConfigurationService.getBasicAuthenticationUser(),
-              searchServiceConnectionConfigurationService.getBasicAuthenticationPassword());
+              searchConnectionConfig.getBasicAuthenticationUser(),
+              searchConnectionConfig.getBasicAuthenticationPassword());
           log.debug("Creating basic credentials provider with authScope: {}, user: {}", authScope,
               usernamePasswordCredentials);
           basicCredentialsProvider.setCredentials(authScope, usernamePasswordCredentials
