@@ -28,6 +28,7 @@ export const triggerSearch = async (
   searchTabs: TabConfig[],
   loadMoreButtonText: string,
   autoSuggestText: string,
+  noResultsText: string,
   options?: SearchFormSubmitEventOption,
 ): Promise<void> => {
   if (searchInputElement.dataset.loading === 'true') {
@@ -69,13 +70,20 @@ export const triggerSearch = async (
 
   const hasResults = tabResultsArray.some((tab) => tab.resultsTotal)
 
-  if (!hasResults && tabResultsArray?.[0]?.suggestion) {
-    const autoSuggestElement = buildSearchSuggestion(
-      tabResultsArray[0].suggestion.text,
-      autoSuggestText,
-    )
+  if (!hasResults) {
+    if (tabResultsArray?.[0]?.suggestion) {
+      const autoSuggestElement = buildSearchSuggestion(
+        tabResultsArray[0].suggestion.text,
+        autoSuggestText,
+      )
 
-    searchFormParent?.append(autoSuggestElement)
+      searchFormParent?.append(autoSuggestElement)
+    }
+
+    const notFoundElement = document.createElement('div')
+    notFoundElement.classList.add('saas-not-found')
+    notFoundElement.innerText = noResultsText
+    searchFormParent?.appendChild(notFoundElement)
 
     return
   }
@@ -113,6 +121,7 @@ export const addEventToSearchForm = (
   searchTabs: TabConfig[],
   loadMoreButtonText: string,
   autoSuggestText: string,
+  noResultsText: string,
   options?: SearchFormSubmitEventOption,
 ): void => {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -126,6 +135,7 @@ export const addEventToSearchForm = (
       searchTabs,
       loadMoreButtonText,
       autoSuggestText,
+      noResultsText,
       options,
     )
   })

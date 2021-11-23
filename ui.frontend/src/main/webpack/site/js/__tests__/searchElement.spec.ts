@@ -42,6 +42,7 @@ describe('searchElement', () => {
       autocompleteUrl:
         '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
       autoSuggestText: 'Did you mean: ',
+      noResultsText: 'No results found.',
     }
 
     test('returns the correct attributes', () => {

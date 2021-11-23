@@ -15,4 +15,5 @@ export type SearchConfig = {
   searchUrl?: string
   autocompleteUrl: string
   autoSuggestText: string
+  noResultsText: string
 }

@@ -18,6 +18,7 @@ export const isSearchConfig = (
     autocompleteUrl,
     searchUrl,
     autoSuggestText,
+    noResultsText,
   } = searchConfig
 
   return (
@@ -33,7 +34,9 @@ export const isSearchConfig = (
     typeof autocompleteUrl === 'string' &&
     Boolean(autocompleteUrl) &&
     typeof autoSuggestText === 'string' &&
-    Boolean(autoSuggestText)
+    Boolean(autoSuggestText) &&
+    typeof noResultsText === 'string' &&
+    Boolean(noResultsText)
   )
 }
 

@@ -29,6 +29,7 @@ export const buildSearch = async (
     autocompleteUrl,
     autocompleteTriggerThreshold,
     autoSuggestText,
+    noResultsText,
   } = searchConfig
 
   const searchContainer = document.createElement('div')
@@ -57,6 +58,7 @@ export const buildSearch = async (
     searchTabs,
     loadMoreButtonText,
     autoSuggestText,
+    noResultsText,
     callbacks,
   )
 
@@ -84,6 +86,7 @@ export const buildSearch = async (
       searchTabs,
       loadMoreButtonText,
       autoSuggestText,
+      noResultsText,
       callbacks,
     )
   }
