@@ -62,7 +62,7 @@ public class PageIndexUpdateHandler implements EventHandler {
         .flatMap(Function.identity())
         .ifPresent(client -> {
           Map<String, Object> propertiesPrototype = getPropertiesPrototype(action, client);
-          pathTransformer.externalize(actionPath)
+          pathTransformer.externalizeList(actionPath)
               .forEach(s -> scheduleJobForPath(s, propertiesPrototype));
         });
   }

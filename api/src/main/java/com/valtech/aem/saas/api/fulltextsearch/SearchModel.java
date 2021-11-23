@@ -96,6 +96,6 @@ public interface SearchModel extends ContainerExporter {
    *
    * @return url string.
    */
-  String getAutosuggestUrl();
+  String getAutocompleteUrl();
 
 }
