@@ -76,9 +76,7 @@ BuildFacetOption): HTMLDivElement => {
       [filterFieldName]: updatedSelectedFacetsFieldName,
     }
 
-    if (currentTab) {
-      currentTab.dataset.facets = JSON.stringify(newSelectedFacetsValue)
-    }
+    currentTab.dataset.facets = JSON.stringify(newSelectedFacetsValue)
 
     const results = await fetchSearch(
       tabUrl,
@@ -88,7 +86,7 @@ BuildFacetOption): HTMLDivElement => {
       newSelectedFacetsValue,
     )
 
-    const currentTabResults = currentTab?.querySelectorAll('*')
+    const currentTabResults = currentTab.querySelectorAll('*')
 
     currentTabResults?.forEach((element) => {
       element.remove()
@@ -116,7 +114,7 @@ BuildFacetOption): HTMLDivElement => {
         facetsGroups?.appendChild(facetsGroup)
       })
 
-      currentTab?.appendChild(facetsGroups)
+      currentTab.appendChild(facetsGroups)
 
       const searchResultsItem = generateSearchItemList(
         results.results,
@@ -137,7 +135,7 @@ BuildFacetOption): HTMLDivElement => {
           onLoadMoreButtonClick: undefined,
           queryParameterName,
         })
-        currentTab?.appendChild(loadMoreButton)
+        currentTab.appendChild(loadMoreButton)
       }
     }
   })

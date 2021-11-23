@@ -28,19 +28,6 @@ const buildSearchUrl = (
         `${filter}:${filterValue}`,
       )
     })
-    /*
-    const filterParams = Object.keys(filterSearchParams).reduce(
-      (acc, filter) => {
-        const filterValue = filterSearchParams[filter].toString()
-
-        return `${acc}&${queryParameterName}=${filter}:${filterValue}`
-      },
-      '',
-    )
-
-    return urlElement.toString() + filterParams
-
-     */
   }
 
   return urlElement.toString()

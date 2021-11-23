@@ -9,7 +9,8 @@ const initSearch = (): void => {
       return
     }
 
-    buildSearch(searchElement)
+    // eslint-disable-next-line no-void
+    void buildSearch(searchElement)
   })
 }
 
