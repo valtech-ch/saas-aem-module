@@ -15,7 +15,9 @@ export const isSearchConfig = (
     searchTabs,
     searchButtonText,
     autocompleteTriggerThreshold,
+    autosuggestUrl,
     searchUrl,
+    autoSuggestText,
   } = searchConfig
 
   return (
@@ -27,7 +29,11 @@ export const isSearchConfig = (
     typeof searchButtonText === 'string' &&
     Boolean(searchButtonText) &&
     typeof autocompleteTriggerThreshold === 'number' &&
-    (!searchUrl || typeof searchUrl === 'string')
+    (!searchUrl || typeof searchUrl === 'string') &&
+    typeof autosuggestUrl === 'string' &&
+    Boolean(autosuggestUrl) &&
+    typeof autoSuggestText === 'string' &&
+    Boolean(autoSuggestText)
   )
 }
 

@@ -13,14 +13,21 @@ export type TabConfig = {
   url: string
 }
 
+export type Suggestion = {
+  hits: number
+  text: string
+}
+
 export type Tab = {
   tabId: string
   tabName: string
+  index: number
   resultsTotal: number
   results: SearchItem[]
   title: string
-  showLoadMoreButton: boolean
+  showLoadMoreButton?: boolean
   url: string
+  suggestion?: Suggestion
 }
 
 const buildSearchTab = ({
@@ -67,6 +74,13 @@ const buildSearchTab = ({
   })
 
   return searchTab
+}
+
+export const removeAutosuggest = (): void => {
+  const autoSuggestElement =
+    document.querySelector<HTMLDivElement>('.saas-autosuggest')
+
+  autoSuggestElement?.remove()
 }
 
 export const removeSearchTabs = (): void => {
