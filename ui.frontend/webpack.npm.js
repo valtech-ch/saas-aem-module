@@ -13,7 +13,7 @@ const resolve = {
   extensions: ['.js', '.ts'],
   plugins: [
     new TSConfigPathsPlugin({
-      configFile: './tsconfig.npm.json',
+      configFile: './tsconfig.json',
     }),
   ],
 }
@@ -27,16 +27,6 @@ module.exports = merge(
       site: SOURCE_ROOT + '/site/js/initSearch.ts',
     },
     devtool: 'source-map',
-    /*
-    output: {
-      path: path.resolve(__dirname, './package'),
-      library: 'saas',
-      filename: 'saas.js',
-      umdNamedDefine: true,
-      libraryTarget: 'umd',
-      globalObject: "(typeof self !== 'undefined' ? self : this)",
-    },
-       */
     output: {
       libraryTarget: 'umd',
       filename: 'saas.js',
