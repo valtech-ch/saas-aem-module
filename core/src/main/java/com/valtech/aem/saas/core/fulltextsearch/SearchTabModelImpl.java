@@ -69,7 +69,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 public class SearchTabModelImpl implements SearchTabModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
-  public static final int DEFAULT_START_PAGE = 0;
+  public static final int DEFAULT_START_PAGE = 1;
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
   public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL = "com.valtech.aem.saas.core.search.loadmore.button.label";
 
@@ -179,6 +179,10 @@ public class SearchTabModelImpl implements SearchTabModel {
         .orElse(DEFAULT_START_PAGE);
   }
 
+  private int resolveStartOffset(int startPage, int resultsPerPage) {
+    return (startPage - 1) * resultsPerPage;
+  }
+
   private Optional<FulltextSearchResultsDTO> getFulltextSearchResults() {
     if (isResourceOverriddenRequest()) {
       log.trace(
@@ -207,12 +211,13 @@ public class SearchTabModelImpl implements SearchTabModel {
           "Could not adapt the request to com.valtech.aem.saas.core.common.request.RequestWrapper. (This should never happen.)");
       return Optional.empty();
     }
+    int resultsPerPage = parentSearch.getResultsPerPage();
     return fulltextSearchService.getResults(
         searchCAConfigurationModel,
         searchTerm,
         requestWrapper.getLocale().getLanguage(),
-        getStartPage(requestWrapper),
-        getResultsPerPage(parentSearch),
+        resolveStartOffset(getStartPage(requestWrapper), resultsPerPage),
+        resultsPerPage,
         getEffectiveFilters(parentSearch, requestWrapper),
         Optional.ofNullable(facets).map(List::stream).orElse(
             Stream.empty()).map(FacetModel::getFieldName).collect(
@@ -221,10 +226,6 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   private boolean isResourceOverriddenRequest() {
     return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
-  }
-
-  private int getResultsPerPage(@NonNull SearchModel search) {
-    return search.getResultsPerPage();
   }
 
   private FacetFiltersDTO getFacetFilters(List<FacetFieldResultsDTO> facetFieldResultsDTOList) {
