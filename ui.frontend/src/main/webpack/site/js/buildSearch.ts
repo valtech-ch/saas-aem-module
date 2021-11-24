@@ -6,6 +6,7 @@ import buildSearchForm, {
 import buildSearchInput from './components/searchInput'
 import { getDataAttributeFromSearchElement } from './searchElement'
 import { SearchOptions } from './types/searchOptions'
+import initSaasStyle from './utils/saasStyle'
 
 export const buildSearch = async (
   searchElement: HTMLElement,
@@ -17,7 +18,7 @@ export const buildSearch = async (
     return
   }
 
-  const { callbacks } = options || {}
+  const { callbacks, autoSuggestionDebounceTime = 500 } = options || {}
 
   const {
     searchFieldPlaceholderText,
@@ -25,6 +26,9 @@ export const buildSearch = async (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
+    autosuggestUrl,
+    autocompleteTriggerThreshold,
+    autoSuggestText,
   } = searchConfig
 
   const searchContainer = document.createElement('div')
@@ -32,8 +36,14 @@ export const buildSearch = async (
 
   const searchFormElement = buildSearchForm()
 
+  const searchAutocompleteWrapper = document.createElement('div')
+  searchAutocompleteWrapper.classList.add('saas-autocomplete')
+
   const searchInputElement = buildSearchInput({
     searchFieldPlaceholderText,
+    autosuggestUrl,
+    autocompleteTriggerThreshold,
+    autoSuggestionDebounceTime,
   })
 
   const searchButtonElement = buildSearchButton({
@@ -46,10 +56,13 @@ export const buildSearch = async (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
+    autoSuggestText,
     callbacks,
   )
 
-  searchFormElement.appendChild(searchInputElement)
+  initSaasStyle()
+  searchAutocompleteWrapper.appendChild(searchInputElement)
+  searchFormElement.appendChild(searchAutocompleteWrapper)
   searchFormElement.appendChild(searchButtonElement)
 
   const searchElementParent = searchElement.parentElement
@@ -70,6 +83,7 @@ export const buildSearch = async (
       searchUrl,
       searchTabs,
       loadMoreButtonText,
+      autoSuggestText,
       callbacks,
     )
   }

@@ -115,7 +115,7 @@ public class SearchModelImpl implements SearchModel {
   private String exportedType;
 
   @Getter
-  private String autosuggestUrl;
+  private String autocompleteUrl;
 
   @Getter
   private String autoSuggestText;
@@ -146,7 +146,7 @@ public class SearchModelImpl implements SearchModel {
 
   @PostConstruct
   private void init() {
-    createAutosuggestUrl().ifPresent(url -> autosuggestUrl = url);
+    createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
     I18n i18n = i18nProvider.getI18n(getLocale());
     autoSuggestText = i18n.get(I18N_SEARCH_SUGGESTION_TEXT);
     noResultsText = i18n.get(I18N_SEARCH_NO_RESULTS_TEXT);
@@ -190,7 +190,7 @@ public class SearchModelImpl implements SearchModel {
     return Collections.emptyList();
   }
 
-  private Optional<String> createAutosuggestUrl() {
+  private Optional<String> createAutocompleteUrl() {
     return Optional.ofNullable(request).map(r -> pathTransformer.map(r, resource.getPath()))
         .map(url -> String.format("%s.%s.%s",
             url,

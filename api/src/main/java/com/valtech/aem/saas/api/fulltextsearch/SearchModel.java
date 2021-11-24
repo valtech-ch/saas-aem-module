@@ -96,7 +96,7 @@ public interface SearchModel extends ContainerExporter {
    *
    * @return url string.
    */
-  String getAutosuggestUrl();
+  String getAutocompleteUrl();
 
   /**
    * Gets the suggestion text, with placeholder, when a misspelled search term is entered.

@@ -39,6 +39,9 @@ describe('searchElement', () => {
       ],
       searchButtonText: 'Search',
       autocompleteTriggerThreshold: 3,
+      autosuggestUrl:
+        '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
+      autoSuggestText: 'Did you mean: ',
     }
 
     test('returns the correct attributes', () => {
