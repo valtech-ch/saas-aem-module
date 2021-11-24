@@ -73,7 +73,7 @@ class SearchTabModelImplTest {
         "foo");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
-    context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "bar");
+    context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "bar");
     testAdaptable();
     assertThat(testee.getResults(), nullValue());
     assertThat(testee.getResultsTotal(), is(0));
