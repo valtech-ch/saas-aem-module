@@ -1,13 +1,16 @@
 {
-  "name": "aem-maven-archetype",
-  "version": "1.0.0",
-  "description": "Generates an AEM Frontend project with Webpack",
+  "name": "@valtech-ch/saas",
+  "version": "0.0.1",
+  "description": "Frontend of the Valtech CH Search as a Service module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adobe/aem-project-archetype"
+    "url": "https://github.com/valtech-ch/saas-aem-module"
   },
-  "private": true,
-  "main": "src/main/webpack/site/main.ts",
+  "author": {
+    "name": "Valtech Switzerland AG",
+    "url": "https://www.valtech.com/"
+  },
+  "main": "package/saas.js",
   "license": "SEE LICENSE IN LICENSE.txt",
   "scripts": {
     "dev": "webpack -d --env dev --config ./webpack.dev.js && clientlib --verbose",
