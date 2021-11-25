@@ -17,7 +17,7 @@ export const isSearchConfig = (
     autocompleteTriggerThreshold,
     autosuggestUrl,
     searchUrl,
-    autoSuggestText = 'sdf',
+    autoSuggestText,
   } = searchConfig
 
   return (
