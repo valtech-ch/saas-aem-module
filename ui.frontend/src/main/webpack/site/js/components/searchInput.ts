@@ -1,5 +1,5 @@
 import debounce from '../utils/debounce'
-import fetchAutoSuggest from '../utils/fetchAutoSuggest'
+import fetchAutoComplete from '../utils/fetchAutoComplete'
 
 type SearchInputOptions = {
   searchFieldPlaceholderText: string
@@ -46,7 +46,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       setSaasCurrentFocusSuggestion(searchInput, -1)
 
       if (query.length >= autocompleteTriggerThreshold) {
-        const results = await fetchAutoSuggest(autocompleteUrl, query)
+        const results = await fetchAutoComplete(autocompleteUrl, query)
 
         if (results?.length) {
           const suggestionDropdown = document.createElement('div')
