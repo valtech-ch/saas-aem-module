@@ -8,3 +8,4 @@ jest.config.js
 .eslintrc.js
 babel.config.js
 coverage/
+package/
