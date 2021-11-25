@@ -1,6 +1,6 @@
 {
   "name": "@valtech-ch/saas",
-  "version": "0.0.2",
+  "version": "0.0.8",
   "description": "Frontend of the Valtech CH Search as a Service module",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "prepare": "cd .. && husky install",
     "lint-staged": "lint-staged",
     "package": "webpack --config ./webpack.npm.js",
-    "release": "release-it"
+    "release": "npm publish --access public"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
@@ -70,7 +70,6 @@
     "postcss": "^8.3.11",
     "postcss-loader": "6.2.0",
     "prettier": "^2.4.1",
-    "release-it": "^14.11.8",
     "sass": "^1.43.4",
     "sass-loader": "12.3.0",
     "style-loader": "3.3.1",
