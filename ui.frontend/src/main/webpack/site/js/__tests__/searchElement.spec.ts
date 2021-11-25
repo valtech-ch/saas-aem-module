@@ -78,7 +78,7 @@ describe('searchElement', () => {
       expect(output).toEqual(null)
     })
 
-    test.skip('returns null if the search config is invalid', () => {
+    test('returns null if the search config is invalid', () => {
       document.body.innerHTML = `
             <html lang="en">
                 <body>
@@ -97,7 +97,7 @@ describe('searchElement', () => {
       expect(output).toEqual(null)
     })
 
-    test.skip('returns null if the search config does not exist', () => {
+    test('returns null if the search config does not exist', () => {
       document.body.innerHTML = `
             <html lang="en">
                 <body>
