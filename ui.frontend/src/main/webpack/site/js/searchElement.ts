@@ -11,32 +11,18 @@ export const isSearchConfig = (
 ): searchConfig is SearchConfig => {
   const {
     searchFieldPlaceholderText,
-    loadMoreButtonText,
-    searchTabs,
-    searchButtonText,
     autocompleteTriggerThreshold,
     autocompleteUrl,
     searchUrl,
-    autoSuggestText,
-    noResultsText,
   } = searchConfig
 
   return (
     typeof searchFieldPlaceholderText === 'string' &&
     Boolean(searchFieldPlaceholderText) &&
-    typeof loadMoreButtonText === 'string' &&
-    Boolean(loadMoreButtonText) &&
-    Array.isArray(searchTabs) &&
-    typeof searchButtonText === 'string' &&
-    Boolean(searchButtonText) &&
     typeof autocompleteTriggerThreshold === 'number' &&
     (!searchUrl || typeof searchUrl === 'string') &&
     typeof autocompleteUrl === 'string' &&
-    Boolean(autocompleteUrl) &&
-    typeof autoSuggestText === 'string' &&
-    Boolean(autoSuggestText) &&
-    typeof noResultsText === 'string' &&
-    Boolean(noResultsText)
+    Boolean(autocompleteUrl)
   )
 }
 
@@ -53,6 +39,9 @@ export const getDataAttributeFromSearchElement = (
   const isSearchConfigValid = isSearchConfig(searchConfig)
 
   if (!isSearchConfigValid) {
+    // eslint-disable-next-line no-console
+    console.warn('SAAS: Invalid search config', searchConfig)
+
     return null
   }
 
