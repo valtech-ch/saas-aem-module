@@ -15,16 +15,14 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
-import com.valtech.aem.saas.api.resource.PathTransformer;
-import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.SimpleFilter;
-import com.valtech.aem.saas.core.common.request.RequestWrapper;
+import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,8 +67,9 @@ public class SearchModelImpl implements SearchModel {
   public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
   public static final String NODE_NAME_SEARCH_TABS_CONTAINER = "search-tabs";
   public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
-  public static final int AUTOCOMPLETE_THRESHOLD = 3;
   public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
+  public static final String I18N_SEARCH_SUGGESTION_TEXT = "com.valtech.aem.saas.core.search.suggestion.text";
+  public static final String I18N_SEARCH_NO_RESULTS_TEXT = "com.valtech.aem.saas.core.search.noResults.text";
 
 
   @Getter
@@ -116,7 +115,13 @@ public class SearchModelImpl implements SearchModel {
   private String exportedType;
 
   @Getter
-  private String autosuggestUrl;
+  private String autocompleteUrl;
+
+  @Getter
+  private String autoSuggestText;
+
+  @Getter
+  private String noResultsText;
 
   @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
   private List<Resource> searchTabResources;
@@ -141,8 +146,10 @@ public class SearchModelImpl implements SearchModel {
 
   @PostConstruct
   private void init() {
-    createAutosuggestUrl().ifPresent(url -> autosuggestUrl = url);
+    createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
     I18n i18n = i18nProvider.getI18n(getLocale());
+    autoSuggestText = i18n.get(I18N_SEARCH_SUGGESTION_TEXT);
+    noResultsText = i18n.get(I18N_SEARCH_NO_RESULTS_TEXT);
     effectiveFilters = getEffectiveFilters(resource);
     searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
         ? searchFieldPlaceholderText
@@ -173,11 +180,6 @@ public class SearchModelImpl implements SearchModel {
         : models.keySet().toArray(ArrayUtils.EMPTY_STRING_ARRAY);
   }
 
-  @Override
-  public int getAutocompleteTriggerThreshold() {
-    return AUTOCOMPLETE_THRESHOLD;
-  }
-
   private List<SearchTabModel> getSearchTabList() {
     if (request != null) {
       return searchTabResources.stream()
@@ -188,7 +190,7 @@ public class SearchModelImpl implements SearchModel {
     return Collections.emptyList();
   }
 
-  private Optional<String> createAutosuggestUrl() {
+  private Optional<String> createAutocompleteUrl() {
     return Optional.ofNullable(request).map(r -> pathTransformer.map(r, resource.getPath()))
         .map(url -> String.format("%s.%s.%s",
             url,
@@ -207,13 +209,17 @@ public class SearchModelImpl implements SearchModel {
 
   private Set<Filter> getEffectiveFilters(Resource resource) {
     Set<Filter> effectiveFiltersList = getCaFilters(resource);
-    effectiveFiltersList.addAll(getConfigureFilters());
+    effectiveFiltersList.addAll(getConfiguredFilters());
     return effectiveFiltersList;
   }
 
-  private Set<Filter> getConfigureFilters() {
-    return Optional.ofNullable(filters).map(List::stream).orElse(Stream.empty())
-        .map(f -> new SimpleFilter(f.getName(), f.getValue())).collect(Collectors.toSet());
+  private Set<Filter> getConfiguredFilters() {
+    return Optional.ofNullable(filters)
+        .map(List::stream)
+        .orElse(Stream.empty())
+        .map(FilterModel::getFilter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
   }
 
   private Set<Filter> getCaFilters(Resource resource) {

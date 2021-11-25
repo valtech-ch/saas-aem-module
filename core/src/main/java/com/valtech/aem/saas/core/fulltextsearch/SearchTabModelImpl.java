@@ -22,10 +22,8 @@ import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFiltersDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
-import com.valtech.aem.saas.api.query.CompositeFilter;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FilterFactory;
-import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
@@ -71,12 +69,9 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 public class SearchTabModelImpl implements SearchTabModel {
 
   public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
-  public static final String QUERY_PARAM_START = "start";
-  public static final int DEFAULT_START_PAGE = 0;
+  public static final int DEFAULT_START_PAGE = 1;
   public static final int DEFAULT_RESULTS_PER_PAGE = 10;
-  public static final String SEARCH_TERM = "q";
   public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL = "com.valtech.aem.saas.core.search.loadmore.button.label";
-  public static final String FACET_FILTER = "facetFilter";
 
   @Getter
   @JsonInclude(Include.NON_EMPTY)
@@ -174,14 +169,18 @@ public class SearchTabModelImpl implements SearchTabModel {
   }
 
   private Optional<String> getSearchTerm() {
-    return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SEARCH_TERM));
+    return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.SEARCH_TERM));
   }
 
   private int getStartPage(@NonNull RequestWrapper requestWrapper) {
-    return requestWrapper.getParameter(QUERY_PARAM_START)
+    return requestWrapper.getParameter(SearchTabModel.QUERY_PARAM_START)
         .map(start -> new StringToInteger(start).asInt())
         .map(OptionalInt::getAsInt)
         .orElse(DEFAULT_START_PAGE);
+  }
+
+  private int resolveStartOffset(int startPage, int resultsPerPage) {
+    return (startPage - 1) * resultsPerPage;
   }
 
   private Optional<FulltextSearchResultsDTO> getFulltextSearchResults() {
@@ -212,12 +211,13 @@ public class SearchTabModelImpl implements SearchTabModel {
           "Could not adapt the request to com.valtech.aem.saas.core.common.request.RequestWrapper. (This should never happen.)");
       return Optional.empty();
     }
+    int resultsPerPage = parentSearch.getResultsPerPage();
     return fulltextSearchService.getResults(
         searchCAConfigurationModel,
         searchTerm,
         requestWrapper.getLocale().getLanguage(),
-        getStartPage(requestWrapper),
-        getResultsPerPage(parentSearch),
+        resolveStartOffset(getStartPage(requestWrapper), resultsPerPage),
+        resultsPerPage,
         getEffectiveFilters(parentSearch, requestWrapper),
         Optional.ofNullable(facets).map(List::stream).orElse(
             Stream.empty()).map(FacetModel::getFieldName).collect(
@@ -228,17 +228,14 @@ public class SearchTabModelImpl implements SearchTabModel {
     return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
   }
 
-  private int getResultsPerPage(@NonNull SearchModel search) {
-    return search.getResultsPerPage();
-  }
-
   private FacetFiltersDTO getFacetFilters(List<FacetFieldResultsDTO> facetFieldResultsDTOList) {
     if (isFacetsConfigured()) {
       Map<String, String> facetFieldToLabelMap = getFacetFieldToLabelMap();
       List<FacetFilterDTO> facetFilterDTOList = facetFieldResultsDTOList.stream()
           .map(facetFieldResultsDTO -> createFacetFilter(facetFieldToLabelMap, facetFieldResultsDTO))
           .collect(Collectors.toList());
-      return CollectionUtils.isNotEmpty(facetFilterDTOList) ? new FacetFiltersDTO(FACET_FILTER, facetFilterDTOList)
+      return CollectionUtils.isNotEmpty(facetFilterDTOList) ? new FacetFiltersDTO(SearchTabModel.FACET_FILTER,
+          facetFilterDTOList)
           : null;
     }
     return null;
@@ -270,31 +267,22 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   private Set<Filter> getEffectiveFilters(SearchModel search, RequestWrapper requestWrapper) {
     Set<Filter> result = search.getEffectiveFilters();
-    getConfiguredFilter().ifPresent(result::add);
+    result.addAll(getConfiguredFilters());
     result.addAll(getSelectedFacetFilters(requestWrapper));
     return result;
   }
 
-  private Optional<Filter> getConfiguredFilter() {
-    if (CollectionUtils.isEmpty(filters)) {
-      return Optional.empty();
-    }
-    if (filters.size() == 1) {
-      return Optional.of(filters.get(0)).map(this::createFilterFrom);
-    }
-    return Optional.of(CompositeFilter.builder()
-        .filters(filters.stream()
-            .map(this::createFilterFrom)
-            .collect(Collectors.toList()))
-        .build());
-  }
-
-  private SimpleFilter createFilterFrom(FilterModel filterModel) {
-    return new SimpleFilter(filterModel.getName(), filterModel.getValue());
+  private Set<Filter> getConfiguredFilters() {
+    return Optional.ofNullable(filters)
+        .map(List::stream)
+        .orElse(Stream.empty())
+        .map(FilterModel::getFilter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
   }
 
   private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
-    return requestWrapper.getParameterValues(FACET_FILTER).stream()
+    return requestWrapper.getParameterValues(SearchTabModel.FACET_FILTER).stream()
         .map(this::createFilter)
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());

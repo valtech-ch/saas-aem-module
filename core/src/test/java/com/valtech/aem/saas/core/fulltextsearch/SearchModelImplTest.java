@@ -15,6 +15,8 @@ import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
+import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -57,6 +59,8 @@ class SearchModelImplTest {
     when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
     when(i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
     when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
+    when(i18n.get(SearchModelImpl.I18N_SEARCH_SUGGESTION_TEXT)).thenReturn("Did you mean");
+    when(i18n.get(SearchModelImpl.I18N_SEARCH_NO_RESULTS_TEXT)).thenReturn("No results.");
     context.registerService(FulltextSearchService.class, fulltextSearchService);
     context.registerService(PathTransformer.class, pathTransformer);
     context.registerService(I18nProvider.class, i18nProvider);
@@ -81,7 +85,7 @@ class SearchModelImplTest {
         "/search");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "foo");
-    context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "bar");
+    context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "bar");
     adaptRequest();
     testAdaptable();
     Map<String, ? extends ComponentExporter> exportedItemsMap = testee.getExportedItems();
@@ -93,7 +97,7 @@ class SearchModelImplTest {
     assertThat(testee.getFilters(), nullValue());
     assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
     assertThat(testee.getSearchTabs(), not(empty()));
-    assertThat(testee.getAutosuggestUrl(), is("/search.autocomplete.json"));
+    assertThat(testee.getAutocompleteUrl(), is("/search.autocomplete.json"));
   }
 
   @Test
@@ -108,7 +112,7 @@ class SearchModelImplTest {
     assertThat(testee.getResultsPerPage(), is(15));
     assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
     assertThat(testee.getFilters(), nullValue());
-    assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModelImpl.AUTOCOMPLETE_THRESHOLD));
+    assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
   }
 
   private void adaptRequest() {

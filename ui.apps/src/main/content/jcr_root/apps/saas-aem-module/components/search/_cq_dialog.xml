@@ -41,10 +41,12 @@
                                                 fieldLabel="Language"
                                                 fieldDescription="Optional override of context resolved language."
                                                 name="./language"/>
-                                            <filters
+                                            <searchFieldPlaceholderText
                                                 jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/coral/foundation/include"
-                                                path="/apps/saas-aem-module/shared/dialog/filters"/>
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                emptyText="com.valtech.aem.saas.core.search.input.placeholder.text"
+                                                fieldLabel="Search field placeholder text"
+                                                name="./searchFieldPlaceholderText"/>
                                             <resultsPerPage
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
@@ -53,18 +55,16 @@
                                                 min="1"
                                                 name="./resultsPerPage"
                                                 step="1"/>
-                                            <searchFieldPlaceholderText
-                                                jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                                                emptyText="com.valtech.aem.saas.core.search.input.placeholder.text"
-                                                fieldLabel="Search field placeholder text"
-                                                name="./searchFieldPlaceholderText"/>
                                         </items>
                                     </column>
                                 </items>
                             </columns>
                         </items>
                     </properties>
+                    <filters
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/include"
+                        path="/apps/saas-aem-module/shared/dialog/filters"/>
                 </items>
             </tabs>
         </items>

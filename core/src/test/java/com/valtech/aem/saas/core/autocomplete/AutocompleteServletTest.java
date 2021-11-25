@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -80,7 +80,7 @@ class AutocompleteServletTest {
   @Test
   void testAutocomplete() throws ServletException, IOException {
     when(i18nProvider.getI18n(any(Locale.class))).thenReturn(i18n);
-    context.request().addRequestParameter(SearchTabModelImpl.SEARCH_TERM, "foo");
+    context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "foo");
     MockContextAwareConfig.writeConfiguration(context, context.currentResource().getPath(), SearchConfiguration.class,
         "index", "bar");
     testee.doGet(context.request(), context.response());

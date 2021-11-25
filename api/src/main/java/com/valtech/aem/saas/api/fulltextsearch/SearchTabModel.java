@@ -11,6 +11,10 @@ import java.util.List;
  */
 public interface SearchTabModel extends ComponentExporter {
 
+  String SEARCH_TERM = "q";
+  String QUERY_PARAM_START = "start";
+  String FACET_FILTER = "facetFilter";
+
   /**
    * Retrieves the title configurable for the search tab component.
    *
@@ -63,7 +67,7 @@ public interface SearchTabModel extends ComponentExporter {
   /**
    * Retrieves the json export url.
    *
-   * @return
+   * @return url string
    */
   String getUrl();
 
