@@ -101,3 +101,5 @@ reports/
 
 # Others
 dispatcher/src/conf.d/variables/default.vars
+
+ui.frontend/package

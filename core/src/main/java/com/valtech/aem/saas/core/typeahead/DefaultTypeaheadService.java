@@ -12,7 +12,7 @@ import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfiguratio
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.http.response.TypeaheadDataExtractionStrategy;
-import com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService.Configuration;
+import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService.Configuration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;

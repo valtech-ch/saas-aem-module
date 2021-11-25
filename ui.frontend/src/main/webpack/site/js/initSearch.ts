@@ -1,7 +1,7 @@
 import { buildSearch } from './buildSearch'
 import { getSearchElement } from './searchElement'
 
-const initSearch = (): void => {
+function initSearch(): void {
   window.addEventListener('load', () => {
     const searchElement = getSearchElement()
 
@@ -9,7 +9,6 @@ const initSearch = (): void => {
       return
     }
 
-    // eslint-disable-next-line no-void
     void buildSearch(searchElement)
   })
 }
