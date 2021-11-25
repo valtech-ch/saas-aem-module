@@ -12,6 +12,7 @@ type BuildSearchResults = {
   onSearchItemClick?: OnSearchItemClickCallback
   onSwitchTab?: CallbackFunction
   onLoadMoreButtonClick?: CallbackFunction
+  searchContainer: HTMLDivElement
 }
 
 const buildSearchResultsTab = ({
@@ -23,14 +24,12 @@ const buildSearchResultsTab = ({
   onSearchItemClick,
   onSwitchTab,
   onLoadMoreButtonClick,
+  searchContainer,
 }: BuildSearchResults): void => {
   const { resultsTotal, showLoadMoreButton, tabId, title, results, url } =
     tabResult
 
   if (resultsTotal) {
-    const searchContainer =
-      document.querySelector<HTMLDivElement>('.saas-container')
-
     if (searchContainer && tabResult.index === 0) {
       searchContainer.dataset.selectedTab = tabResult.tabId
     }
@@ -40,6 +39,7 @@ const buildSearchResultsTab = ({
       tabNumberOfResults: resultsTotal,
       title,
       onSwitchTab,
+      searchContainer,
     })
 
     const searchResults = buildSearchResult({

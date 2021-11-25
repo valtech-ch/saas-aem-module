@@ -6,6 +6,12 @@ export const getSearchElement = (
   return document.querySelector(searchSelector)
 }
 
+export const getSearchElements = (
+  searchSelector = 'search',
+): NodeListOf<HTMLElement> | null => {
+  return document.querySelectorAll(searchSelector)
+}
+
 export const isSearchConfig = (
   searchConfig: SearchConfig | never,
 ): searchConfig is SearchConfig => {

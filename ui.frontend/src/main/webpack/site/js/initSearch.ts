@@ -1,15 +1,17 @@
 import { buildSearch } from './buildSearch'
-import { getSearchElement } from './searchElement'
+import { getSearchElements } from './searchElement'
 
 function initSearch(): void {
   window.addEventListener('load', () => {
-    const searchElement = getSearchElement()
+    const searchElements = getSearchElements()
 
-    if (!searchElement) {
+    if (!searchElements) {
       return
     }
 
-    void buildSearch(searchElement)
+    searchElements?.forEach((searchElement) => {
+      void buildSearch(searchElement as HTMLDivElement)
+    })
   })
 }
 

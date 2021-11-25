@@ -6,6 +6,7 @@ export type SearchTabOptions = {
   tabNumberOfResults: number
   title: string
   onSwitchTab?: OnSwitchTabCallback
+  searchContainer: HTMLDivElement
 }
 
 export type TabConfig = {
@@ -35,6 +36,7 @@ const buildSearchTab = ({
   title,
   tabNumberOfResults,
   onSwitchTab,
+  searchContainer,
 }: SearchTabOptions): HTMLButtonElement => {
   const searchTab = document.createElement('button')
   searchTab.classList.add('saas-container_tab')
@@ -51,15 +53,11 @@ const buildSearchTab = ({
   searchTab.addEventListener('click', () => {
     onSwitchTab?.()
 
-    const searchTabs = document.querySelectorAll<HTMLDivElement>(
+    const searchTabs = searchContainer.querySelectorAll<HTMLDivElement>(
       '.saas-container_results',
     )
-    const searchContainer =
-      document.querySelector<HTMLDivElement>('.saas-container')
 
-    if (searchContainer) {
-      searchContainer.dataset.selectedTab = tabId
-    }
+    searchContainer.dataset.selectedTab = tabId
 
     searchTabs?.forEach((tab) => {
       const tabElement = tab
@@ -76,15 +74,15 @@ const buildSearchTab = ({
   return searchTab
 }
 
-export const removeAutosuggest = (): void => {
+export const removeAutosuggest = (searchContainer: HTMLDivElement): void => {
   const autoSuggestElement =
-    document.querySelector<HTMLDivElement>('.saas-autosuggest')
+    searchContainer.querySelector<HTMLDivElement>('.saas-autosuggest')
 
   autoSuggestElement?.remove()
 }
 
-export const removeSearchTabs = (): void => {
-  const searchTabs = document.querySelectorAll<HTMLDivElement>(
+export const removeSearchTabs = (searchContainer: HTMLDivElement): void => {
+  const searchTabs = searchContainer.querySelectorAll<HTMLDivElement>(
     '.saas-container_tab',
   )
 
@@ -93,8 +91,8 @@ export const removeSearchTabs = (): void => {
   })
 }
 
-export const removeSearchResults = (): void => {
-  const searchResults = document.querySelectorAll<HTMLDivElement>(
+export const removeSearchResults = (searchContainer: HTMLDivElement): void => {
+  const searchResults = searchContainer.querySelectorAll<HTMLDivElement>(
     '.saas-container_results',
   )
 
@@ -103,13 +101,10 @@ export const removeSearchResults = (): void => {
   })
 }
 
-export const removeSelectedTabFromSearchContainer = (): void => {
-  const searchContainer =
-    document.querySelector<HTMLDivElement>('.saas-container')
-
-  if (searchContainer) {
-    searchContainer.removeAttribute('data-selected-tab')
-  }
+export const removeSelectedTabFromSearchContainer = (
+  searchContainer: HTMLDivElement,
+): void => {
+  searchContainer.removeAttribute('data-selected-tab')
 }
 
 export default buildSearchTab

@@ -28,6 +28,7 @@ export const triggerSearch = async (
   searchTabs: TabConfig[],
   loadMoreButtonText: string,
   autoSuggestText: string,
+  searchContainer: HTMLDivElement,
   options?: SearchFormSubmitEventOption,
 ): Promise<void> => {
   if (searchInputElement.dataset.loading === 'true') {
@@ -50,10 +51,10 @@ export const triggerSearch = async (
 
   updateUrl(searchValue)
 
-  removeAutosuggest()
-  removeSearchTabs()
-  removeSearchResults()
-  removeSelectedTabFromSearchContainer()
+  removeAutosuggest(searchContainer)
+  removeSearchTabs(searchContainer)
+  removeSearchResults(searchContainer)
+  removeSelectedTabFromSearchContainer(searchContainer)
 
   const tabResultsArray = await Promise.all(
     searchTabs.map(async (tab, index): Promise<Tab> => {
@@ -102,6 +103,7 @@ export const triggerSearch = async (
         onSearchItemClick,
         onSwitchTab,
         onLoadMoreButtonClick,
+        searchContainer,
       })
     })
 }
@@ -113,6 +115,7 @@ export const addEventToSearchForm = (
   searchTabs: TabConfig[],
   loadMoreButtonText: string,
   autoSuggestText: string,
+  searchContainer: HTMLDivElement,
   options?: SearchFormSubmitEventOption,
 ): void => {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -126,6 +129,7 @@ export const addEventToSearchForm = (
       searchTabs,
       loadMoreButtonText,
       autoSuggestText,
+      searchContainer,
       options,
     )
   })
