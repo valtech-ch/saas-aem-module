@@ -1,9 +1,10 @@
 package com.valtech.aem.saas.api.query;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -20,25 +21,23 @@ public class TypeaheadTextQuery implements Query {
   public static final String KEY_PREFIX = "prefix";
   public static final String SEARCH_ALL = "*";
 
-  private NameValuePair term;
+  private final NameValuePair term;
   private NameValuePair prefix;
 
   public TypeaheadTextQuery(String searchText) {
-    if (StringUtils.isNotBlank(searchText)) {
-      TypeaheadSearchTextParser parser = new TypeaheadSearchTextParser(sanitizeSearchText(searchText));
-      parser.getTerm().ifPresent(t -> {
-        term = new BasicNameValuePair(KEY_TERM, t + SEARCH_ALL);
-        prefix = new BasicNameValuePair(KEY_PREFIX, parser.getPrefix().orElse(StringUtils.EMPTY));
-      });
-    }
+    term = new BasicNameValuePair(KEY_TERM, SEARCH_ALL);
+    Optional.ofNullable(searchText)
+        .filter(StringUtils::isNotBlank)
+        .ifPresent(t -> prefix = new BasicNameValuePair(KEY_PREFIX, sanitizeSearchText(t)));
   }
+
 
   @Override
   public List<NameValuePair> getEntries() {
-    List<NameValuePair> entries = new ArrayList<>();
-    CollectionUtils.addIgnoreNull(entries, term);
-    CollectionUtils.addIgnoreNull(entries, prefix);
-    return entries;
+    if (prefix != null) {
+      return Arrays.asList(term, prefix);
+    }
+    return Collections.emptyList();
   }
 
   private String sanitizeSearchText(String searchText) {
