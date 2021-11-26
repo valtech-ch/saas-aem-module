@@ -18,6 +18,10 @@ export const buildSearchItem = ({
     searchItem.classList.add('saas-container_results_item--best-bet')
   }
 
+  const searchItemUrlCite = document.createElement("cite")
+  searchItemUrlCite.classList.add('saas-container_results_item_cite')
+  searchItemUrlCite.innerHTML = url
+
   const searchItemTitle = document.createElement('h3')
   searchItemTitle.classList.add('saas-container_results_item_title')
   searchItemTitle.innerHTML = title
@@ -30,6 +34,7 @@ export const buildSearchItem = ({
   searchItemUrl.classList.add('saas-container_results_item_url')
   searchItemUrl.href = url
 
+  searchItemUrl.appendChild(searchItemUrlCite)
   searchItemUrl.appendChild(searchItemTitle)
   searchItemUrl.appendChild(searchItemDescription)
   searchItem.appendChild(searchItemUrl)
