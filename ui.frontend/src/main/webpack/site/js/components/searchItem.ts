@@ -28,11 +28,10 @@ export const buildSearchItem = ({
 
   const searchItemUrl = document.createElement('a')
   searchItemUrl.classList.add('saas-container_results_item_url')
-  searchItemUrl.innerHTML = url
   searchItemUrl.href = url
 
-  searchItem.appendChild(searchItemTitle)
-  searchItem.appendChild(searchItemDescription)
+  searchItemUrl.appendChild(searchItemTitle)
+  searchItemUrl.appendChild(searchItemDescription)
   searchItem.appendChild(searchItemUrl)
 
   return searchItem
