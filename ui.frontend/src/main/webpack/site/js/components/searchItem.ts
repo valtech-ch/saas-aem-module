@@ -18,8 +18,8 @@ export const buildSearchItem = ({
     searchItem.classList.add('saas-container_results_item--best-bet')
   }
 
-  const searchItemUrlCite = document.createElement("cite")
-  searchItemUrlCite.classList.add('saas-container_results_item_cite')
+  const searchItemUrlCite = document.createElement("span")
+  searchItemUrlCite.classList.add('saas-container_results_item_link_text')
   searchItemUrlCite.innerHTML = url
 
   const searchItemTitle = document.createElement('h3')
