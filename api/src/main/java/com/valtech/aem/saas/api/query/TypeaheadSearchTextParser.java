@@ -18,15 +18,14 @@ public final class TypeaheadSearchTextParser {
   public Optional<String> getTerm() {
     Optional<String> safeText = getSafeText();
     if (safeText.filter(t -> StringUtils.contains(t, SEARCH_TEXT_DELIMITER)).isPresent()) {
-      return safeText.map(t -> StringUtils.substringAfterLast(t, SEARCH_TEXT_DELIMITER));
+      safeText = safeText
+          .map(t -> StringUtils.substringAfterLast(t, SEARCH_TEXT_DELIMITER));
     }
-    return safeText;
+    return safeText.map(s -> StringUtils.appendIfMissing(s, TypeaheadTextQuery.SEARCH_ALL));
   }
 
   public Optional<String> getPrefix() {
-    return getSafeText()
-        .filter(t -> StringUtils.contains(t, SEARCH_TEXT_DELIMITER))
-        .map(t -> StringUtils.substringBeforeLast(t, SEARCH_TEXT_DELIMITER));
+    return getSafeText();
   }
 
   private Optional<String> getSafeText() {
