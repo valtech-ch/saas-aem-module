@@ -57,7 +57,7 @@ const buildSearchResultsTab = ({
     if (showLoadMoreButton) {
       const loadMoreButton = buildLoadMoreButton({
         loadMoreButtonText,
-        offset: 1,
+        offset: 2,
         tabUrl: url,
         searchValue,
         searchResultsElement: searchResults,

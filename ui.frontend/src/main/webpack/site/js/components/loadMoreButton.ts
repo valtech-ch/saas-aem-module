@@ -36,7 +36,7 @@ const buildLoadMoreButton = ({
 
     const resultJSON = await fetchSearch(tabUrl, searchValue, +currentOffset)
 
-    loadMoreButton.dataset.offset = `${+currentOffset + offset}`
+    loadMoreButton.dataset.offset = `${+currentOffset + 1}`
 
     resultJSON?.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)
