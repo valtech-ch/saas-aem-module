@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -135,19 +134,27 @@ public class SearchTabModelImpl implements SearchTabModel {
 
   private RequestWrapper requestWrapper;
 
+  private int resultsPerPage;
+
   @PostConstruct
   private void init() {
     constructJsonExportUrl().ifPresent(u -> url = u);
     getRequestWrapper().ifPresent(rw -> requestWrapper = rw);
     getSearchTerm().ifPresent(s -> searchTerm = s);
     getParentSearchComponent().ifPresent(cmp -> parentSearch = cmp);
+    resultsPerPage = getConfiguredResultsPerPage().orElse(DEFAULT_RESULTS_PER_PAGE);
+    int start = getStartPage(requestWrapper);
     getFulltextSearchResults().ifPresent(fulltextSearchResults -> {
       results = fulltextSearchResults.getResults();
       resultsTotal = fulltextSearchResults.getTotalResultsFound();
-      showLoadMoreButton = !results.isEmpty() && results.size() < resultsTotal;
+      showLoadMoreButton = start * resultsPerPage < resultsTotal;
       suggestion = fulltextSearchResults.getSuggestion();
       facetFilters = getFacetFilters(fulltextSearchResults.getFacetFieldsResults());
     });
+  }
+
+  private Optional<Integer> getConfiguredResultsPerPage() {
+    return Optional.ofNullable(parentSearch).map(SearchModel::getResultsPerPage);
   }
 
   private Optional<String> constructJsonExportUrl() {
@@ -172,9 +179,10 @@ public class SearchTabModelImpl implements SearchTabModel {
     return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.SEARCH_TERM));
   }
 
-  private int getStartPage(@NonNull RequestWrapper requestWrapper) {
-    return requestWrapper.getParameter(SearchTabModel.QUERY_PARAM_START)
-        .map(start -> new StringToInteger(start).asInt())
+  private int getStartPage(RequestWrapper requestWrapper) {
+    return Optional.ofNullable(requestWrapper)
+        .flatMap(rw -> rw.getParameter(SearchTabModel.QUERY_PARAM_START))
+        .map(s -> new StringToInteger(s).asInt())
         .map(OptionalInt::getAsInt)
         .orElse(DEFAULT_START_PAGE);
   }
@@ -211,7 +219,6 @@ public class SearchTabModelImpl implements SearchTabModel {
           "Could not adapt the request to com.valtech.aem.saas.core.common.request.RequestWrapper. (This should never happen.)");
       return Optional.empty();
     }
-    int resultsPerPage = parentSearch.getResultsPerPage();
     return fulltextSearchService.getResults(
         searchCAConfigurationModel,
         searchTerm,
