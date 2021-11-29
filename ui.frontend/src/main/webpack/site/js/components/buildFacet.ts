@@ -128,7 +128,7 @@ BuildFacetOption): HTMLDivElement => {
       if (results.showLoadMoreButton) {
         const loadMoreButton = buildLoadMoreButton({
           loadMoreButtonText,
-          offset: 1,
+          offset: 2,
           tabUrl,
           searchValue,
           searchResultsElement: currentTab,
