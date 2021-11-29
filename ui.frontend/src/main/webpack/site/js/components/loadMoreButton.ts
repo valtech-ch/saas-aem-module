@@ -9,6 +9,7 @@ type SearchButtonOptions = {
   searchValue: string
   searchResultsElement: HTMLDivElement
   onLoadMoreButtonClick?: OnLoadMoreButtonClickCallback
+  queryParameterName?: string
 }
 
 const buildLoadMoreButton = ({
@@ -18,6 +19,7 @@ const buildLoadMoreButton = ({
   searchValue,
   searchResultsElement,
   onLoadMoreButtonClick,
+  queryParameterName,
 }: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
   loadMoreButton.classList.add('saas-load-more-button')
@@ -34,7 +36,17 @@ const buildLoadMoreButton = ({
 
     const currentOffset = loadMoreButton.dataset.offset || offset
 
-    const resultJSON = await fetchSearch(tabUrl, searchValue, +currentOffset)
+    const selectedFacets = searchResultsElement?.dataset.facets
+      ? JSON.parse(searchResultsElement.dataset.facets)
+      : {}
+
+    const resultJSON = await fetchSearch(
+      tabUrl,
+      searchValue,
+      +currentOffset,
+      queryParameterName,
+      selectedFacets,
+    )
 
     loadMoreButton.dataset.offset = `${+currentOffset + 1}`
 
