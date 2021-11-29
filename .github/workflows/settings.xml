@@ -18,6 +18,11 @@
 
     <servers>
         <server>
+            <id>ossrh</id>
+            <username>${env.MAVEN_USERNAME}</username>
+            <password>${env.MAVEN_PASSWORD}</password>
+        </server>
+        <server>
             <id>github</id>
             <username>${env.X_GITHUB_USERNAME}</username>
             <password>${env.X_GITHUB_PASSWORD}</password>
@@ -25,4 +30,3 @@
     </servers>
 
 </settings>
-
