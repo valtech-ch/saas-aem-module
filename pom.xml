@@ -43,8 +43,8 @@
 
 
     <scm>
-        <connection>scm:git:git@github.com:valtech-ch/saas-aem-module.git</connection>
-        <developerConnection>scm:git:ssh://github.com/valtech-ch/saas-aem-module.git</developerConnection>
+        <connection>scm:git:https@github.com:valtech-ch/saas-aem-module.git</connection>
+        <developerConnection>scm:git:https://github.com/valtech-ch/saas-aem-module.git</developerConnection>
         <url>https://github.com/valtech-ch/saas-aem-module/tree/main</url>
         <tag>HEAD</tag>
     </scm>
