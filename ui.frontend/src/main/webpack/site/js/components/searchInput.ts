@@ -6,6 +6,7 @@ type SearchInputOptions = {
   autocompleteUrl: string
   autocompleteTriggerThreshold: number
   autoSuggestionDebounceTime: number
+  searchContainer: HTMLDivElement
 }
 
 const SUGGESTION_ELEMENT_CLASS = 'saas-suggestions-element'
@@ -24,8 +25,8 @@ const getSaasCurrentFocusSuggestion = (
   return inputElement.getAttribute('saasCurrentFocusSuggestion') ?? '-1'
 }
 
-const removeSuggestionList = () => {
-  const existingDataList = document.querySelector(
+const removeSuggestionList = (searchContainer: HTMLDivElement) => {
+  const existingDataList = searchContainer.querySelector(
     '.saas-container_form #suggestions',
   )
 
@@ -41,8 +42,9 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       query: string,
       autocompleteTriggerThreshold: number,
       searchInput: HTMLInputElement,
+      searchContainer: HTMLDivElement,
     ) => {
-      removeSuggestionList()
+      removeSuggestionList(searchContainer)
       setSaasCurrentFocusSuggestion(searchInput, -1)
 
       if (query.length >= autocompleteTriggerThreshold) {
@@ -60,7 +62,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
             suggestionDropdownElement.addEventListener('click', () => {
               const searchInputElementCopy = searchInput
 
-              removeSuggestionList()
+              removeSuggestionList(searchContainer)
 
               searchInputElementCopy.value = result
             })
@@ -80,6 +82,7 @@ const buildSearchInput = ({
   autocompleteUrl,
   autocompleteTriggerThreshold,
   autoSuggestionDebounceTime = 500,
+  searchContainer,
 }: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
 
@@ -96,12 +99,13 @@ const buildSearchInput = ({
       (event?.target as HTMLInputElement)?.value,
       autocompleteTriggerThreshold,
       searchInput,
+      searchContainer,
     )
   })
 
   document.addEventListener('click', () => {
     /* Remove the autocomplete list from DOM when a click happens in the document */
-    removeSuggestionList()
+    removeSuggestionList(searchContainer)
   })
 
   searchInput.addEventListener('keydown', (e) => {
@@ -109,7 +113,7 @@ const buildSearchInput = ({
     const UP_ARROW = 'ArrowUp'
     const ENTER_KEY = 'Enter'
 
-    const suggestionElements = document.querySelectorAll<HTMLDivElement>(
+    const suggestionElements = searchContainer.querySelectorAll<HTMLDivElement>(
       `#suggestions .${SUGGESTION_ELEMENT_CLASS}`,
     )
 
