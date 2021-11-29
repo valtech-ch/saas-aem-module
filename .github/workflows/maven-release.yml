@@ -18,14 +18,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
-      - name: Setup SSH keys and known hosts
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v1
         with:
@@ -46,8 +38,6 @@ jobs:
         run: |
           git config user.email "jovan.stojanov@valtech.com"
           git config user.name "${X_GITHUB_USERNAME}"
-          git remote set-url origin https://x-access-token:${{ secrets.RELEASE_GITHUB_PASSWORD }}@github.com/valtech-ch/saas-aem-module
-
 
       - id: publish-to-central
         name: Publish to Central Repository
