@@ -1,4 +1,5 @@
 import { OnSwitchTabCallback } from '../types/callbacks'
+import { FacetFilters } from '../types/facetFilter'
 import { SearchItem } from './searchItem'
 
 export type SearchTabOptions = {
@@ -29,6 +30,7 @@ export type Tab = {
   showLoadMoreButton?: boolean
   url: string
   suggestion?: Suggestion
+  facetFilters?: FacetFilters
 }
 
 const buildSearchTab = ({
