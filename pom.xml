@@ -652,6 +652,7 @@
             </activation>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
+                <project.scm.id>github</project.scm.id>
             </properties>
             <distributionManagement>
                 <snapshotRepository>
