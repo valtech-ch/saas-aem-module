@@ -16,6 +16,7 @@ import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.response.BestBetIdDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -28,6 +29,7 @@ import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.testing.mock.caconfig.ContextPlugins;
 import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,10 +76,13 @@ class DefaultBestBetsServiceTest {
     MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
         "index", "foo", "client", "bar");
     searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+    JsonObject bestBetAddedResponse = new JsonObject();
+    bestBetAddedResponse.addProperty(BestBetIdDataExtractionStrategy.ID, 1);
     Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
-        Optional.of(new SearchResponse(new JsonObject(), true)));
-    assertDoesNotThrow(() -> testee.addBestBet(searchCAConfigurationModel,
-        new BestBetPayloadDTO("foo", "baz", "de")));
+        Optional.of(new SearchResponse(bestBetAddedResponse, true)));
+    assertThat(testee.addBestBet(searchCAConfigurationModel,
+            new BestBetPayloadDTO("foo", "baz", "de")),
+        Is.is(1));
   }
 
   @Test

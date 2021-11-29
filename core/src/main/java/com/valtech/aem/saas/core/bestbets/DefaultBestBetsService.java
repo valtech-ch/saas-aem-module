@@ -14,6 +14,7 @@ import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.request.SearchRequestPost;
 import com.valtech.aem.saas.core.http.request.SearchRequestPut;
+import com.valtech.aem.saas.core.http.response.BestBetIdDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.BestBetsDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.JsonObjectDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.ModifiedBestBetIdExtractionStrategy;
@@ -57,7 +58,7 @@ public class DefaultBestBetsService implements BestBetsService {
   private Configuration configuration;
 
   @Override
-  public void addBestBet(@NonNull SearchCAConfigurationModel searchConfiguration,
+  public int addBestBet(@NonNull SearchCAConfigurationModel searchConfiguration,
       @NonNull BestBetPayloadDTO bestBetPayloadDto) {
     if (StringUtils.isBlank(configuration.bestBetsService_apiAddBestBetAction())) {
       throw new IllegalStateException("Add best bet action path is not specified.");
@@ -72,6 +73,8 @@ public class DefaultBestBetsService implements BestBetsService {
     handleFailedRequestExecution(searchResponse);
     searchResponse
         .ifPresent(r -> handleSearchResponseError(r, String.format("Failed to add best bet: %s", bestBetPayloadDto)));
+    return searchResponse.flatMap(response -> response.get(new BestBetIdDataExtractionStrategy()))
+        .orElseThrow(() -> new BestBetsActionFailedException("Failed to extract best bet id from response."));
   }
 
   @Override

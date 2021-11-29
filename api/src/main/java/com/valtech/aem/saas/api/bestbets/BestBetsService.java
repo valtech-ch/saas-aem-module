@@ -16,12 +16,13 @@ public interface BestBetsService {
    *
    * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
    * @param bestBetPayload      object containing details for the best bet.
+   * @return best bet id
    * @throws IllegalArgumentException      exception thrown when blank client argument is passed
    * @throws IllegalStateException         exception thrown when according action is not specified
    * @throws BestBetsActionFailedException exception thrown when the add action has failed or request execution has
    *                                       failed
    */
-  void addBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull BestBetPayloadDTO bestBetPayload);
+  int addBestBet(@NonNull SearchCAConfigurationModel searchConfiguration, @NonNull BestBetPayloadDTO bestBetPayload);
 
 
   /**
