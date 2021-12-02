@@ -11,22 +11,25 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 public class BestBetPayloadDTO {
 
-  String url;
-  String term;
-  String language;
-  String index;
+    String url;
+    String term;
+    String language;
+    String index;
 
-  public BestBetPayloadDTO(String url, String term, String language) {
-    if (StringUtils.isAnyBlank(url, term, language)) {
-      throw new IllegalArgumentException("Set values for all payload properties.");
+    public BestBetPayloadDTO(
+            String url,
+            String term,
+            String language) {
+        if (StringUtils.isAnyBlank(url, term, language)) {
+            throw new IllegalArgumentException("Set values for all payload properties.");
+        }
+        this.url = url;
+        this.term = term;
+        this.language = language;
     }
-    this.url = url;
-    this.term = term;
-    this.language = language;
-  }
 
-  public BestBetPayloadDTO index(String index) {
-    this.index = index;
-    return this;
-  }
+    public BestBetPayloadDTO index(String index) {
+        this.index = index;
+        return this;
+    }
 }

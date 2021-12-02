@@ -11,6 +11,6 @@ import lombok.Value;
 @RequiredArgsConstructor
 public class FacetFilterOptionDTO {
 
-  String value;
-  int hits;
+    String value;
+    int hits;
 }

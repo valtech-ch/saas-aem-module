@@ -6,10 +6,10 @@ package com.valtech.aem.saas.api.query;
  */
 public interface Filter {
 
-  /**
-   * Gets query string.
-   *
-   * @return the query string
-   */
-  String getQueryString();
+    /**
+     * Gets query string.
+     *
+     * @return the query string
+     */
+    String getQueryString();
 }

@@ -1,12 +1,13 @@
 package com.valtech.aem.saas.api.query;
 
-import java.util.Set;
-import java.util.StringJoiner;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Set;
+import java.util.StringJoiner;
 
 
 /**
@@ -17,23 +18,23 @@ import org.apache.commons.lang3.StringUtils;
 @Builder
 public class CompositeFilter implements Filter {
 
-  public static final String PREFIX = "(";
-  public static final String SUFFIX = ")";
+    public static final String PREFIX = "(";
+    public static final String SUFFIX = ")";
 
-  @Singular
-  Set<Filter> filters;
+    @Singular
+    Set<Filter> filters;
 
-  @Default
-  FilterJoinOperator joinOperator = FilterJoinOperator.OR;
+    @Default
+    FilterJoinOperator joinOperator = FilterJoinOperator.OR;
 
-  @Override
-  public String getQueryString() {
-    StringJoiner stringJoiner = new StringJoiner(joinOperator.getText(), PREFIX, SUFFIX).setEmptyValue(
-        StringUtils.EMPTY);
-    filters.stream()
-        .map(Filter::getQueryString)
-        .filter(StringUtils::isNotBlank)
-        .forEach(stringJoiner::add);
-    return stringJoiner.toString();
-  }
+    @Override
+    public String getQueryString() {
+        StringJoiner stringJoiner = new StringJoiner(joinOperator.getText(), PREFIX, SUFFIX).setEmptyValue(
+                StringUtils.EMPTY);
+        filters.stream()
+               .map(Filter::getQueryString)
+               .filter(StringUtils::isNotBlank)
+               .forEach(stringJoiner::add);
+        return stringJoiner.toString();
+    }
 }

@@ -11,13 +11,12 @@ import lombok.Value;
 @ToString
 public class IndexUpdateResponseDTO {
 
-  String message;
+    String message;
 
-  String url;
+    String url;
 
-  @SerializedName("site.id")
-  String siteId;
+    @SerializedName("site.id")
+    String siteId;
 
-  //TODO: change field to index (https://tracking.valtech.swiss/browse/ICSAAS-356)
-  String id;
+    String id;
 }
