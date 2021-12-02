@@ -6,17 +6,17 @@ import java.util.Map;
 
 public class FallbackHighlightingDTO extends HighlightingDTO {
 
-  private static FallbackHighlightingDTO instance;
+    private static FallbackHighlightingDTO instance;
 
-  public static synchronized FallbackHighlightingDTO getInstance() {
-    if (instance == null) {
-      instance = new FallbackHighlightingDTO();
+    public static synchronized FallbackHighlightingDTO getInstance() {
+        if (instance == null) {
+            instance = new FallbackHighlightingDTO();
+        }
+        return instance;
     }
-    return instance;
-  }
 
-  @Override
-  public Map<String, Map<String, List<String>>> getItems() {
-    return Collections.emptyMap();
-  }
+    @Override
+    public Map<String, Map<String, List<String>>> getItems() {
+        return Collections.emptyMap();
+    }
 }

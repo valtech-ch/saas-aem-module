@@ -9,7 +9,7 @@ import lombok.Value;
 @AllArgsConstructor
 public class MockFilterModel implements FilterModel {
 
-  String name;
-  String value;
-  Filter filter;
+    String name;
+    String value;
+    Filter filter;
 }

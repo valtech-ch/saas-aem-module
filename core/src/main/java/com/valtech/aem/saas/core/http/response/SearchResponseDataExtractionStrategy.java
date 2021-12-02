@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.JsonElement;
+
 import java.util.Optional;
 
 /**
@@ -10,18 +11,18 @@ import java.util.Optional;
  */
 public interface SearchResponseDataExtractionStrategy<T> {
 
-  /**
-   * Returns the json property name containing the target data.
-   *
-   * @return json property name.
-   */
-  String propertyName();
+    /**
+     * Returns the json property name containing the target data.
+     *
+     * @return json property name.
+     */
+    String propertyName();
 
-  /**
-   * Performs the extraction logic and returns the data in a predefined object type.
-   *
-   * @param response the response of a search request.
-   * @return POJO containing the extracted data.
-   */
-  Optional<T> getData(JsonElement response);
+    /**
+     * Performs the extraction logic and returns the data in a predefined object type.
+     *
+     * @param response the response of a search request.
+     * @return POJO containing the extracted data.
+     */
+    Optional<T> getData(JsonElement response);
 }

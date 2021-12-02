@@ -12,8 +12,11 @@ import org.apache.sling.event.jobs.consumer.JobConsumer.JobResult;
 @NoArgsConstructor
 public class FallbackStrategy implements IndexUpdateJobProcessingStrategy {
 
-  @Override
-  public JobResult process(String client, String url, String repositoryPath) {
-    return JobResult.CANCEL;
-  }
+    @Override
+    public JobResult process(
+            String client,
+            String url,
+            String repositoryPath) {
+        return JobResult.CANCEL;
+    }
 }
