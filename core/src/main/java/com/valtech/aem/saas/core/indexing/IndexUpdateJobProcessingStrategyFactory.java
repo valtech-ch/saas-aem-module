@@ -10,22 +10,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class IndexUpdateJobProcessingStrategyFactory {
 
-  private final IndexUpdateService indexUpdateService;
+    private final IndexUpdateService indexUpdateService;
 
-  /**
-   * Gets the strategy associated to the passed index update action.
-   *
-   * @param action enum representing the index update action.
-   * @return index update strategy
-   */
-  public IndexUpdateJobProcessingStrategy getStrategy(IndexUpdateAction action) {
-    if (IndexUpdateAction.UPDATE == action) {
-      return new UpdateStrategy(indexUpdateService);
+    /**
+     * Gets the strategy associated to the passed index update action.
+     *
+     * @param action enum representing the index update action.
+     * @return index update strategy
+     */
+    public IndexUpdateJobProcessingStrategy getStrategy(IndexUpdateAction action) {
+        if (IndexUpdateAction.UPDATE == action) {
+            return new UpdateStrategy(indexUpdateService);
+        }
+        if (IndexUpdateAction.DELETE == action) {
+            return new DeleteStrategy(indexUpdateService);
+        }
+        return new FallbackStrategy();
     }
-    if (IndexUpdateAction.DELETE == action) {
-      return new DeleteStrategy(indexUpdateService);
-    }
-    return new FallbackStrategy();
-  }
 
 }

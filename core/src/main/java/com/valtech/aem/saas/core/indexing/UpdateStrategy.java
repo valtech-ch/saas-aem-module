@@ -2,10 +2,11 @@ package com.valtech.aem.saas.core.indexing;
 
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.event.jobs.consumer.JobConsumer.JobResult;
+
+import java.util.Optional;
 
 /**
  * Strategy for updating index content. It is associated with {@link IndexUpdateAction}.UPDATE. It guarantees execution
@@ -15,15 +16,18 @@ import org.apache.sling.event.jobs.consumer.JobConsumer.JobResult;
 @RequiredArgsConstructor
 public class UpdateStrategy implements IndexUpdateJobProcessingStrategy {
 
-  private final IndexUpdateService indexUpdateService;
+    private final IndexUpdateService indexUpdateService;
 
-  @Override
-  public JobResult process(String client, String url, String repositoryPath) {
-    Optional<IndexUpdateResponseDTO> response = indexUpdateService.indexUrl(client, url, repositoryPath);
-    if (response.isPresent()) {
-      log.debug("Index update successful: {}", response.get());
-      return JobResult.OK;
+    @Override
+    public JobResult process(
+            String client,
+            String url,
+            String repositoryPath) {
+        Optional<IndexUpdateResponseDTO> response = indexUpdateService.indexUrl(client, url, repositoryPath);
+        if (response.isPresent()) {
+            log.debug("Index update successful: {}", response.get());
+            return JobResult.OK;
+        }
+        return JobResult.FAILED;
     }
-    return JobResult.FAILED;
-  }
 }

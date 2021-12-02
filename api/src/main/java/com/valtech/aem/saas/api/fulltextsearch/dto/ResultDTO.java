@@ -11,11 +11,11 @@ import lombok.Value;
 @Builder
 public class ResultDTO {
 
-  String url;
+    String url;
 
-  String title;
+    String title;
 
-  String description;
+    String description;
 
-  boolean bestBet;
+    boolean bestBet;
 }

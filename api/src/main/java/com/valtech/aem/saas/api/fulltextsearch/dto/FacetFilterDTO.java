@@ -1,8 +1,9 @@
 package com.valtech.aem.saas.api.fulltextsearch.dto;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+
+import java.util.List;
 
 /**
  * Represents an object for deserializing the facet filter details in search results. The data are utilized to generate
@@ -12,7 +13,7 @@ import lombok.Value;
 @RequiredArgsConstructor
 public class FacetFilterDTO {
 
-  String filterFieldLabel;
-  String filterFieldName;
-  List<FacetFilterOptionDTO> filterFieldOptions;
+    String filterFieldLabel;
+    String filterFieldName;
+    List<FacetFilterOptionDTO> filterFieldOptions;
 }

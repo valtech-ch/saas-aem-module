@@ -14,16 +14,16 @@ import org.apache.commons.lang3.StringUtils;
 @EqualsAndHashCode
 public class SimpleFilter implements Filter {
 
-  private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
+    private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
 
-  private String name;
-  private String value;
+    private String name;
+    private String value;
 
-  @Override
-  public String getQueryString() {
-    if (StringUtils.isNoneBlank(name, value)) {
-      return String.join(FILTER_FIELD_VALUE_DELIMITER, name, value);
+    @Override
+    public String getQueryString() {
+        if (StringUtils.isNoneBlank(name, value)) {
+            return String.join(FILTER_FIELD_VALUE_DELIMITER, name, value);
+        }
+        return StringUtils.EMPTY;
     }
-    return StringUtils.EMPTY;
-  }
 }

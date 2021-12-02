@@ -8,8 +8,8 @@ import lombok.Value;
 @Value
 public class SuggestionDTO {
 
-  String text;
+    String text;
 
-  int hits;
+    int hits;
 
 }

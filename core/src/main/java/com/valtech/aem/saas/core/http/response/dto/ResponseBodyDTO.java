@@ -1,16 +1,17 @@
 package com.valtech.aem.saas.core.http.response.dto;
 
-import java.util.List;
 import lombok.Value;
+
+import java.util.List;
 
 @Value
 public class ResponseBodyDTO {
 
-  public static final String PN_RESPONSE = "response";
+    public static final String PN_RESPONSE = "response";
 
-  int numFound;
+    int numFound;
 
-  int start;
+    int start;
 
-  List<SearchResultDTO> docs;
+    List<SearchResultDTO> docs;
 }
