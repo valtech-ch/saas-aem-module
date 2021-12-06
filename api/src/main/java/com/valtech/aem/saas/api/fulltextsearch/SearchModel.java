@@ -112,4 +112,6 @@ public interface SearchModel extends ContainerExporter {
      * @return no results text.
      */
     String getNoResultsText();
+
+    String getId();
 }

@@ -46,4 +46,6 @@ public interface SearchRedirectModel extends ComponentExporter {
      */
     String getSearchUrl();
 
+    String getId();
+
 }

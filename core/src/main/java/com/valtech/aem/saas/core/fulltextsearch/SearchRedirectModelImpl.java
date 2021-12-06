@@ -11,6 +11,7 @@ import com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.util.LoggedOptional;
+import com.valtech.aem.saas.core.util.ResourceUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -143,5 +144,10 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
                        .flatMap(s -> LoggedOptional.of(s,
                                                        logger -> logger.error("Search page path is not configured.")))
                        .map(pPath -> resourceResolver.getResource(pPath));
+    }
+
+    @Override
+    public String getId() {
+        return ResourceUtil.generateId("saas", resource.getPath());
     }
 }

@@ -32,6 +32,7 @@ describe('searchElement', () => {
 
   describe('getDataAttributeFromSearchElement', () => {
     const mockConfig = {
+      id: 'saas-12345678',
       searchFieldPlaceholderText: 'Type search term here...',
       loadMoreButtonText: 'Load more',
       searchTabs: [
@@ -40,7 +41,7 @@ describe('searchElement', () => {
       searchButtonText: 'Search',
       autocompleteTriggerThreshold: 3,
       autocompleteUrl:
-        '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
+          '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
       autoSuggestText: 'Did you mean: ',
       noResultsText: 'No results found.',
     }
