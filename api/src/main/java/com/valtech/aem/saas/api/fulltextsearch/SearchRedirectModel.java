@@ -46,6 +46,11 @@ public interface SearchRedirectModel extends ComponentExporter {
      */
     String getSearchUrl();
 
+    /**
+     * Gets the unique id of the component, based on resource path.
+     *
+     * @return unique identifier
+     */
     String getId();
 
 }
