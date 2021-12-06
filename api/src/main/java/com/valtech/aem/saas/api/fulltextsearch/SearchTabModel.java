@@ -13,7 +13,7 @@ import java.util.List;
 public interface SearchTabModel extends ComponentExporter {
 
     String SEARCH_TERM = "q";
-    String QUERY_PARAM_START = "start";
+    String QUERY_PARAM_PAGE = "page";
     String FACET_FILTER = "facetFilter";
 
     /**

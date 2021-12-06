@@ -79,11 +79,11 @@ BuildFacetOption): HTMLDivElement => {
     currentTab.dataset.facets = JSON.stringify(newSelectedFacetsValue)
 
     const results = await fetchSearch(
-      tabUrl,
-      searchValue,
-      0,
-      queryParameterName,
-      newSelectedFacetsValue,
+        tabUrl,
+        searchValue,
+        1,
+        queryParameterName,
+        newSelectedFacetsValue,
     )
 
     const currentTabResults = currentTab.querySelectorAll('*')
@@ -128,7 +128,7 @@ BuildFacetOption): HTMLDivElement => {
       if (results.showLoadMoreButton) {
         const loadMoreButton = buildLoadMoreButton({
           loadMoreButtonText,
-          offset: 2,
+          page: 2,
           tabUrl,
           searchValue,
           searchResultsElement: currentTab,

@@ -4,7 +4,7 @@ import { buildSearchItem, SearchItem } from './searchItem'
 
 type SearchButtonOptions = {
   loadMoreButtonText: string
-  offset: number
+  page: number
   tabUrl: string
   searchValue: string
   searchResultsElement: HTMLDivElement
@@ -13,18 +13,18 @@ type SearchButtonOptions = {
 }
 
 const buildLoadMoreButton = ({
-  loadMoreButtonText,
-  offset,
-  tabUrl,
-  searchValue,
-  searchResultsElement,
-  onLoadMoreButtonClick,
-  queryParameterName,
-}: SearchButtonOptions): HTMLButtonElement => {
+                               loadMoreButtonText,
+                               page,
+                               tabUrl,
+                               searchValue,
+                               searchResultsElement,
+                               onLoadMoreButtonClick,
+                               queryParameterName,
+                             }: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
   loadMoreButton.classList.add('saas-load-more-button')
 
-  loadMoreButton.dataset.offset = `${offset}`
+  loadMoreButton.dataset.page = `${page}`
 
   loadMoreButton.innerText = loadMoreButtonText
 
@@ -34,21 +34,21 @@ const buildLoadMoreButton = ({
 
     event.preventDefault()
 
-    const currentOffset = loadMoreButton.dataset.offset || offset
+    const currentPage = loadMoreButton.dataset.page || page
 
     const selectedFacets = searchResultsElement?.dataset.facets
       ? JSON.parse(searchResultsElement.dataset.facets)
       : {}
 
     const resultJSON = await fetchSearch(
-      tabUrl,
-      searchValue,
-      +currentOffset,
-      queryParameterName,
-      selectedFacets,
+        tabUrl,
+        searchValue,
+        +currentPage,
+        queryParameterName,
+        selectedFacets,
     )
 
-    loadMoreButton.dataset.offset = `${+currentOffset + 1}`
+    loadMoreButton.dataset.page = `${+currentPage + 1}`
 
     resultJSON?.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)

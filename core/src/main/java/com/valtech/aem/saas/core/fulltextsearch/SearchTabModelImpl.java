@@ -117,6 +117,8 @@ public class SearchTabModelImpl implements SearchTabModel {
 
     private int resultsPerPage;
 
+    private int resultsPage;
+
     @PostConstruct
     private void init() {
         constructJsonExportUrl().ifPresent(u -> url = u);
@@ -124,11 +126,11 @@ public class SearchTabModelImpl implements SearchTabModel {
         getSearchTerm().ifPresent(s -> searchTerm = s);
         getParentSearchComponent().ifPresent(cmp -> parentSearch = cmp);
         resultsPerPage = getConfiguredResultsPerPage().orElse(DEFAULT_RESULTS_PER_PAGE);
-        int start = getStartPage(requestWrapper);
+        resultsPage = getResultsPage(requestWrapper);
         getFulltextSearchResults().ifPresent(fulltextSearchResults -> {
             results = fulltextSearchResults.getResults();
             resultsTotal = fulltextSearchResults.getTotalResultsFound();
-            showLoadMoreButton = start * resultsPerPage < resultsTotal;
+            showLoadMoreButton = resultsPage * resultsPerPage < resultsTotal;
             suggestion = fulltextSearchResults.getSuggestion();
             facetFilters = getFacetFilters(fulltextSearchResults.getFacetFieldsResults());
         });
@@ -160,18 +162,16 @@ public class SearchTabModelImpl implements SearchTabModel {
         return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.SEARCH_TERM));
     }
 
-    private int getStartPage(RequestWrapper requestWrapper) {
+    private int getResultsPage(RequestWrapper requestWrapper) {
         return Optional.ofNullable(requestWrapper)
-                       .flatMap(rw -> rw.getParameter(SearchTabModel.QUERY_PARAM_START))
+                       .flatMap(rw -> rw.getParameter(SearchTabModel.QUERY_PARAM_PAGE))
                        .map(s -> new StringToInteger(s).asInt())
                        .map(OptionalInt::getAsInt)
                        .orElse(DEFAULT_START_PAGE);
     }
 
-    private int resolveStartOffset(
-            int startPage,
-            int resultsPerPage) {
-        return (startPage - 1) * resultsPerPage;
+    private int resolveStartOffset() {
+        return (resultsPage - 1) * resultsPerPage;
     }
 
     private Optional<FulltextSearchResultsDTO> getFulltextSearchResults() {
@@ -206,7 +206,7 @@ public class SearchTabModelImpl implements SearchTabModel {
                 searchCAConfigurationModel,
                 searchTerm,
                 requestWrapper.getLocale().getLanguage(),
-                resolveStartOffset(getStartPage(requestWrapper), resultsPerPage),
+                resolveStartOffset(),
                 resultsPerPage,
                 getEffectiveFilters(parentSearch, requestWrapper),
                 Optional.ofNullable(facets).map(List::stream).orElse(
