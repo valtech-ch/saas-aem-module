@@ -5,18 +5,18 @@ type FilterSearchParams = {
 }
 
 const buildSearchUrl = (
-  url: string,
-  searchValue: string,
-  offset?: number,
-  queryParameterName?: string,
-  filterSearchParams?: FilterSearchParams,
+    url: string,
+    searchValue: string,
+    page?: number,
+    queryParameterName?: string,
+    filterSearchParams?: FilterSearchParams,
 ) => {
   const urlElement = new URL(`${window.location.origin}${url}`)
 
   urlElement.searchParams.set('q', searchValue)
 
-  if (offset) {
-    urlElement.searchParams.set('start', offset.toString())
+  if (page) {
+    urlElement.searchParams.set('page', page.toString())
   }
 
   if (queryParameterName && filterSearchParams) {
@@ -24,8 +24,8 @@ const buildSearchUrl = (
       const filterValue = filterSearchParams[filter].toString()
 
       urlElement.searchParams.append(
-        queryParameterName,
-        `${filter}:${filterValue}`,
+          queryParameterName,
+          `${filter}:${filterValue}`,
       )
     })
   }
@@ -34,19 +34,19 @@ const buildSearchUrl = (
 }
 
 const fetchSearch = async (
-  url: string,
-  searchValue: string,
-  offset?: number,
-  queryParameterName?: string,
-  filterSearchParams?: FilterSearchParams,
+    url: string,
+    searchValue: string,
+    page?: number,
+    queryParameterName?: string,
+    filterSearchParams?: FilterSearchParams,
 ): Promise<Tab | null> => {
   try {
     const searchURL = buildSearchUrl(
-      url,
-      searchValue,
-      offset,
-      queryParameterName,
-      filterSearchParams,
+        url,
+        searchValue,
+        page,
+        queryParameterName,
+        filterSearchParams,
     )
     const results = await fetch(searchURL)
 

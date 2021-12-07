@@ -86,7 +86,7 @@ const buildSearchResultsTab = ({
     if (showLoadMoreButton) {
       const loadMoreButton = buildLoadMoreButton({
         loadMoreButtonText,
-        offset: 2,
+        page: 2,
         tabUrl: url,
         searchValue,
         searchResultsElement: searchResults,
