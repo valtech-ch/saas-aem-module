@@ -49,13 +49,11 @@ export const triggerSearch = async (
 
   onSearch?.(searchValue)
 
-  if (searchUrl) {
-    if (searchUrl != window.location.pathname) {
-      const currentUrl = new URL(window.location.href)
-      const currentParams = new URLSearchParams(currentUrl.search)
-      currentParams.set("q", searchValue)
-      window.location.href = `${searchUrl}?${currentParams.toString()}`
-    }
+  if (searchUrl != window.location.pathname) {
+    const currentUrl = new URL(window.location.href)
+    const currentParams = new URLSearchParams(currentUrl.search)
+    currentParams.set("q", searchValue)
+    window.location.href = `${searchUrl}?${currentParams.toString()}`
   }
 
 
@@ -84,30 +82,32 @@ export const triggerSearch = async (
 
   const hasResults = tabResultsArray?.some((tab) => tab.resultsTotal)
 
-  if (hasSearchTabs) {
-    if (hasResults) {
-      searchFormParent?.querySelector('.saas-not-found')?.remove()
-    }
+  const suggestion = tabResultsArray?.[0]?.suggestion
+  const noResultsFound = hasSearchTabs && !hasResults
+  const isShowSuggestion = noResultsFound && suggestion
+  const isRemoveSaasNotFound = hasSearchTabs && hasResults
+  const isDisplayNotFound = noResultsFound && searchFormParent
 
-    if (!hasResults) {
-      if (tabResultsArray?.[0]?.suggestion) {
-        const autoSuggestElement = buildSearchSuggestion(
-            tabResultsArray[0].suggestion.text,
-            autoSuggestText,
-        )
+  if (isRemoveSaasNotFound) {
+    searchFormParent?.querySelector('.saas-not-found')?.remove()
+  }
 
-        searchFormParent?.append(autoSuggestElement)
-      }
+  if (isShowSuggestion) {
+    const autoSuggestElement = buildSearchSuggestion(
+        suggestion.text,
+        autoSuggestText)
+    searchFormParent?.append(autoSuggestElement)
+  }
 
-      if (searchFormParent) {
-        let notFoundElement = document.createElement('div')
-        notFoundElement.classList.add('saas-not-found')
-        notFoundElement.innerText = noResultsText
-        searchFormParent.appendChild(notFoundElement)
-      }
+  if (isDisplayNotFound) {
+    const notFoundElement = document.createElement('div')
+    notFoundElement.classList.add('saas-not-found')
+    notFoundElement.innerText = noResultsText
+    searchFormParent.appendChild(notFoundElement)
+  }
 
-      return
-    }
+  if (noResultsFound) {
+    return
   }
 
   if (tabResultsArray) {
