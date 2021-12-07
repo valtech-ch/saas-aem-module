@@ -86,15 +86,15 @@ export const buildSearch = async (
     searchInputElement.value = searchValue
 
     await triggerSearch(
-      searchFormElement,
-      searchInputElement,
-      searchUrl,
-      searchTabs,
-      loadMoreButtonText,
-      autoSuggestText,
-      searchElement,
-      noResultsText,
-      callbacks,
+        searchFormElement,
+        searchInputElement,
+        searchUrl,
+        searchTabs,
+        loadMoreButtonText,
+        autoSuggestText,
+        searchContainer,
+        noResultsText,
+        callbacks,
     )
   }
 }
