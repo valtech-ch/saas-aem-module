@@ -1,5 +1,7 @@
 package com.valtech.aem.saas.core.http.response.dto;
 
+import lombok.Synchronized;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,8 @@ public class FallbackHighlightingDTO extends HighlightingDTO {
 
     private static FallbackHighlightingDTO instance;
 
-    public static synchronized FallbackHighlightingDTO getInstance() {
+    @Synchronized
+    public static FallbackHighlightingDTO getInstance() {
         if (instance == null) {
             instance = new FallbackHighlightingDTO();
         }
