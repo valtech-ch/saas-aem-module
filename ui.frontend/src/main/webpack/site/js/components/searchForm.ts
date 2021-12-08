@@ -1,8 +1,10 @@
 import type { SearchCallbacks } from '../types/callbacks'
 import fetchSearch from '../utils/fetchSearch'
-import buildLoadMoreButton from './loadMoreButton'
-import buildSearchResult from './searchResults'
-import buildSearchTab, {
+import updateUrl from '../utils/updateUrl'
+import buildSearchResultsTab from './searchResultsTab'
+import buildSearchSuggestion from './searchSuggestion'
+import {
+  removeAutosuggest,
   removeSearchResults,
   removeSearchTabs,
   removeSelectedTabFromSearchContainer,
@@ -25,8 +27,18 @@ export const triggerSearch = async (
   searchUrl: string | undefined,
   searchTabs: TabConfig[],
   loadMoreButtonText: string,
+  autoSuggestText: string,
+  searchContainer: HTMLDivElement,
+  noResultsText: string,
   options?: SearchFormSubmitEventOption,
 ): Promise<void> => {
+  if (searchInputElement.dataset.loading === 'true') {
+    return
+  }
+  const searchInputElementCopy = searchInputElement
+
+  searchInputElementCopy.dataset.loading = 'true'
+
   const searchValue = searchInputElement.value
   const { onSearch, onSwitchTab, onSearchItemClick, onLoadMoreButtonClick } =
     options || {}
@@ -38,78 +50,70 @@ export const triggerSearch = async (
     return
   }
 
-  const currentUrl = new URL(window.location.href)
-  const currentParams = new URLSearchParams(currentUrl.search)
-  currentParams.set('q', searchValue)
+  updateUrl(searchValue)
 
-  window.history.replaceState(
-    {},
-    '',
-    `${window.location.pathname}?${currentParams.toString()}`,
-  )
-
-  removeSearchTabs()
-  removeSearchResults()
-  removeSelectedTabFromSearchContainer()
+  removeAutosuggest(searchContainer)
+  removeSearchTabs(searchContainer)
+  removeSearchResults(searchContainer)
+  removeSelectedTabFromSearchContainer(searchContainer)
 
   const tabResultsArray = await Promise.all(
-    searchTabs.map(async (tab): Promise<Tab> => {
+    searchTabs.map(async (tab, index): Promise<Tab> => {
       const tabResultsJSON = await fetchSearch(tab.url, searchValue)
 
-      return { ...tabResultsJSON, tabId: tab.title } as Tab
+      return { ...tabResultsJSON, tabId: tab.title, index } as Tab
     }),
-  )
+  ).finally(() => {
+    searchInputElementCopy.dataset.loading = 'false'
+  })
 
   const searchFormParent = searchForm.parentElement
 
-  tabResultsArray.forEach((tabResult) => {
-    const { resultsTotal, showLoadMoreButton, tabId, title, results, url } =
-      tabResult
+  const hasResults = tabResultsArray.some((tab) => tab.resultsTotal)
 
-    if (resultsTotal) {
-      const searchContainer =
-        document.querySelector<HTMLDivElement>('.saas-container')
-
-      if (searchContainer && !searchContainer.dataset.selectedTab) {
-        searchContainer.dataset.selectedTab = tabResult.tabId
-      }
-
-      const searchTabElement = buildSearchTab({
-        tabId,
-        tabNumberOfResults: resultsTotal,
-        title,
-        onSwitchTab,
-      })
-
-      const searchResults = buildSearchResult({
-        searchItems: results,
-        tabId,
-        onSearchItemClick,
-      })
-
-      searchForm?.parentNode?.insertBefore(
-        searchTabElement,
-        searchForm.nextSibling,
+  if (!hasResults) {
+    if (tabResultsArray?.[0]?.suggestion) {
+      const autoSuggestElement = buildSearchSuggestion(
+        tabResultsArray[0].suggestion.text,
+        autoSuggestText,
       )
-      searchFormParent?.appendChild(searchResults)
 
-      if (showLoadMoreButton) {
-        const loadMoreButton = buildLoadMoreButton({
-          loadMoreButtonText,
-          offset: 1,
-          tabUrl: url,
-          searchValue,
-          searchResultsElement: searchResults,
-          onLoadMoreButtonClick,
-        })
-        searchResults?.appendChild(loadMoreButton)
-      }
-
-      if (searchContainer?.dataset.selectedTab !== tabId) {
-        searchResults.style.display = 'none'
-      }
+      searchFormParent?.append(autoSuggestElement)
     }
-  })
+
+    const notFoundElement = document.createElement('div')
+    notFoundElement.classList.add('saas-not-found')
+    notFoundElement.innerText = noResultsText
+    searchFormParent?.appendChild(notFoundElement)
+
+    return
+  }
+
+  tabResultsArray
+    .sort((tab1, tab2) => {
+      if (tab1.index < tab2.index) {
+        return 1
+      }
+
+      if (tab2.index < tab1.index) {
+        return -1
+      }
+
+      return 0
+    })
+    .forEach((tabResult) => {
+      buildSearchResultsTab({
+        tabResult,
+        searchValue,
+        searchForm,
+        searchFormParent,
+        loadMoreButtonText,
+        onSearchItemClick,
+        onSwitchTab,
+        onLoadMoreButtonClick,
+        searchContainer,
+      })
+    })
 }
 
 export const addEventToSearchForm = (
@@ -118,9 +122,12 @@ export const addEventToSearchForm = (
   searchUrl: string | undefined,
   searchTabs: TabConfig[],
   loadMoreButtonText: string,
+  autoSuggestText: string,
+  searchContainer: HTMLDivElement,
+  noResultsText: string,
   options?: SearchFormSubmitEventOption,
 ): void => {
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises,sonarjs/cognitive-complexity
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   return searchForm.addEventListener('submit', (event) => {
     event.preventDefault()
 
@@ -130,6 +137,9 @@ export const addEventToSearchForm = (
       searchUrl,
       searchTabs,
       loadMoreButtonText,
+      autoSuggestText,
+      searchContainer,
+      noResultsText,
       options,
     )
   })

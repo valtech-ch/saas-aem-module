@@ -5,11 +5,13 @@ package com.valtech.aem.saas.api.bestbets;
  */
 public class BestBetsActionFailedException extends RuntimeException {
 
-  public BestBetsActionFailedException(String message) {
-    super(message);
-  }
+    public BestBetsActionFailedException(String message) {
+        super(message);
+    }
 
-  public BestBetsActionFailedException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public BestBetsActionFailedException(
+            String message,
+            Throwable cause) {
+        super(message, cause);
+    }
 }

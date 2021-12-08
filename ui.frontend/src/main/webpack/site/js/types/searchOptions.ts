@@ -3,6 +3,7 @@ import { SearchCallbacks } from './callbacks'
 
 export type SearchOptions = {
   callbacks: SearchCallbacks
+  autoSuggestionDebounceTime: number
 }
 
 export type SearchConfig = {
@@ -12,4 +13,7 @@ export type SearchConfig = {
   searchButtonText: string
   autocompleteTriggerThreshold: number
   searchUrl?: string
+  autocompleteUrl: string
+  autoSuggestText: string
+  noResultsText: string
 }

@@ -10,6 +10,6 @@ import lombok.Value;
 @Value
 public class FacetFieldResultDTO {
 
-  String text;
-  int count;
+    String text;
+    int count;
 }

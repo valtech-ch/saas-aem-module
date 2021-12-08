@@ -9,18 +9,18 @@ import lombok.Value;
 @Value
 public class BestBetDTO {
 
-  public static final String PN_PROJECT_ID = "project_id";
+    public static final String PN_PROJECT_ID = "project_id";
 
-  int id;
+    int id;
 
-  String language;
+    String language;
 
-  String term;
+    String term;
 
-  String url;
+    String url;
 
-  @SerializedName(PN_PROJECT_ID)
-  int projectId;
+    @SerializedName(PN_PROJECT_ID)
+    int projectId;
 
-  int identifier;
+    int index;
 }

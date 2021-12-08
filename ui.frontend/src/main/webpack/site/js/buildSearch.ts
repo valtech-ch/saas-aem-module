@@ -6,9 +6,10 @@ import buildSearchForm, {
 import buildSearchInput from './components/searchInput'
 import { getDataAttributeFromSearchElement } from './searchElement'
 import { SearchOptions } from './types/searchOptions'
+import initSaasStyle from './utils/saasStyle'
 
 export const buildSearch = async (
-  searchElement: HTMLElement,
+  searchElement: HTMLDivElement,
   options?: SearchOptions,
 ): Promise<void> => {
   const searchConfig = getDataAttributeFromSearchElement(searchElement)
@@ -17,7 +18,7 @@ export const buildSearch = async (
     return
   }
 
-  const { callbacks } = options || {}
+  const { callbacks, autoSuggestionDebounceTime = 500 } = options || {}
 
   const {
     searchFieldPlaceholderText,
@@ -25,6 +26,10 @@ export const buildSearch = async (
     searchUrl,
     searchTabs,
     loadMoreButtonText,
+    autocompleteUrl,
+    autocompleteTriggerThreshold,
+    autoSuggestText,
+    noResultsText,
   } = searchConfig
 
   const searchContainer = document.createElement('div')
@@ -32,25 +37,41 @@ export const buildSearch = async (
 
   const searchFormElement = buildSearchForm()
 
+  const searchAutocompleteWrapper = document.createElement('div')
+  searchAutocompleteWrapper.classList.add('saas-autocomplete')
+
   const searchInputElement = buildSearchInput({
     searchFieldPlaceholderText,
+    autocompleteUrl,
+    autocompleteTriggerThreshold,
+    autoSuggestionDebounceTime,
+    searchContainer,
   })
 
-  const searchButtonElement = buildSearchButton({
-    searchButtonText,
-  })
+  const searchButtonElement = searchButtonText
+      ? buildSearchButton({
+        searchButtonText,
+      })
+      : null
 
   addEventToSearchForm(
-    searchFormElement,
-    searchInputElement,
-    searchUrl,
-    searchTabs,
-    loadMoreButtonText,
-    callbacks,
+      searchFormElement,
+      searchInputElement,
+      searchUrl,
+      searchTabs,
+      loadMoreButtonText,
+      autoSuggestText,
+      searchContainer,
+      noResultsText,
+      callbacks,
   )
 
-  searchFormElement.appendChild(searchInputElement)
-  searchFormElement.appendChild(searchButtonElement)
+  initSaasStyle()
+  searchAutocompleteWrapper.appendChild(searchInputElement)
+  searchFormElement.appendChild(searchAutocompleteWrapper)
+  if (searchButtonElement) {
+    searchFormElement.appendChild(searchButtonElement)
+  }
 
   const searchElementParent = searchElement.parentElement
   searchElementParent?.replaceChild(searchContainer, searchElement)
@@ -65,12 +86,15 @@ export const buildSearch = async (
     searchInputElement.value = searchValue
 
     await triggerSearch(
-      searchFormElement,
-      searchInputElement,
-      searchUrl,
-      searchTabs,
-      loadMoreButtonText,
-      callbacks,
+        searchFormElement,
+        searchInputElement,
+        searchUrl,
+        searchTabs,
+        loadMoreButtonText,
+        autoSuggestText,
+        searchContainer,
+        noResultsText,
+        callbacks,
     )
   }
 }

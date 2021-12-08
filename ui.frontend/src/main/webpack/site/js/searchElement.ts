@@ -6,28 +6,29 @@ export const getSearchElement = (
   return document.querySelector(searchSelector)
 }
 
+export const getSearchElements = (
+  searchSelector = 'search',
+): NodeListOf<HTMLElement> | null => {
+  return document.querySelectorAll(searchSelector)
+}
+
 export const isSearchConfig = (
   searchConfig: SearchConfig | never,
 ): searchConfig is SearchConfig => {
   const {
     searchFieldPlaceholderText,
-    loadMoreButtonText,
-    searchTabs,
-    searchButtonText,
     autocompleteTriggerThreshold,
+    autocompleteUrl,
     searchUrl,
   } = searchConfig
 
   return (
     typeof searchFieldPlaceholderText === 'string' &&
     Boolean(searchFieldPlaceholderText) &&
-    typeof loadMoreButtonText === 'string' &&
-    Boolean(loadMoreButtonText) &&
-    Array.isArray(searchTabs) &&
-    typeof searchButtonText === 'string' &&
-    Boolean(searchButtonText) &&
     typeof autocompleteTriggerThreshold === 'number' &&
-    (!searchUrl || typeof searchUrl === 'string')
+    (!searchUrl || typeof searchUrl === 'string') &&
+    typeof autocompleteUrl === 'string' &&
+    Boolean(autocompleteUrl)
   )
 }
 
@@ -44,6 +45,9 @@ export const getDataAttributeFromSearchElement = (
   const isSearchConfigValid = isSearchConfig(searchConfig)
 
   if (!isSearchConfigValid) {
+    // eslint-disable-next-line no-console
+    console.warn('SAAS: Invalid search config', searchConfig)
+
     return null
   }
 

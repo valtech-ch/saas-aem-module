@@ -1,33 +1,63 @@
 package com.valtech.aem.saas.api.resource;
 
-import java.util.List;
 import org.apache.sling.api.SlingHttpServletRequest;
+
+import java.util.List;
 
 /**
  * Service interface for resource path mapping and externalizing.
  */
 public interface PathTransformer {
 
-  /**
-   * Gets one or more externalized links for the passed path argument. It retrieves more than one item in case an
-   * internal path can be represented by more than 1 url. (e.g. for indexing)
-   *
-   * @param request      sling request used for context.
-   * @param resourcePath resource/page path to be externalized.
-   * @return list of externalized paths
-   */
-  List<String> externalize(SlingHttpServletRequest request, String resourcePath);
+    /**
+     * Returns one or more externalized URLs for the passed path argument. It returns more than one URL in case a path can
+     * be represented by more than one url (e.g. for indexing). In the core implementation a path to an AEM page will be
+     * appended with the html extension and the Day CQ Link externalizer is used. For custom rewriting requirements, e.g.
+     * extensionless URLs, a custom PathTransformer which higher service ranking than 0 is required.
+     *
+     * @param request sling request used for context.
+     * @param path    resource/page path to be externalized.
+     * @return list of externalized paths
+     */
+    List<String> externalizeList(
+            SlingHttpServletRequest request,
+            String path);
 
-  default List<String> externalize(String resourcePath) {
-    return externalize(null, resourcePath);
-  }
+    /**
+     * Returns one or more externalized URLs for the passed path argument. It returns more than one URL in case a path can
+     * be represented by more than one url (e.g. for indexing). In the core implementation a path to an AEM page will be
+     * appended with the html extension and the Day CQ Link externalizer is used. For custom rewriting requirements, e.g.
+     * extensionless URLs, a custom PathTransformer which higher service ranking than 0 is required.
+     *
+     * @param path resource/page path to be externalized.
+     * @return list of externalized paths
+     */
+    default List<String> externalizeList(String path) {
+        return externalizeList(null, path);
+    }
 
-  /**
-   * Retrieves a path that is product of the applied mapping rules.
-   *
-   * @param request      sling request used for context.
-   * @param resourcePath the resource's path on which the mapping rules are applied.
-   * @return mapped path.
-   */
-  String map(SlingHttpServletRequest request, String resourcePath);
+    /**
+     * Returns a URL for the passed path argument. In the core implementation a path to an AEM page will be appended with
+     * the html extension and the Day CQ Link externalizer is used. For custom rewriting requirements, e.g. extensionless
+     * URL, a custom PathTransformer which higher service ranking than 0 is required.
+     *
+     * @param request sling request used for context.
+     * @param path    resource/page path to be externalized.
+     * @return externalized path
+     */
+    String externalize(
+            SlingHttpServletRequest request,
+            String path);
+
+    /**
+     * Retrieves a path that is a result of the applied mapping rules. By default, the implementation uses
+     * resourceResolver::map. If customization is required a higher service ranking than 0 should be used
+     *
+     * @param request sling request used for context.
+     * @param path    the resource's path on which the mapping rules are applied.
+     * @return mapped path.
+     */
+    String map(
+            SlingHttpServletRequest request,
+            String path);
 }

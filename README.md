@@ -1,8 +1,20 @@
-# AEM Module to integrates Valtech's Search as a Service
+# AEM Module to integrate Valtech's Search as a Service
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valtech-ch_saas-aem-module&metric=alert_status)](https://sonarcloud.io/dashboard?id=valtech-ch_saas-aem-module)
 
-This is a project template for AEM-based applications. It is intended as a best-practice set of examples as well as a potential starting point to develop your own functionality.
+## Introduction
+SAAS (Search as a Service) is continuously improved by Valtech Switzerland in cooperation with its clients. This service allows Valtech clients to jointly benefit from a constantly evolving and improved search service for digital experience platforms. Improvements are continuously rolled out as updates become available without any downtime. The offering consists of the following main components:
+
+* SAAS Crawler - Web page crawling, extraction of relevant content areas, and metadata.
+* SAAS Administration UI - Interface for controlling and configuring the crawlers.
+* SAAS Engine - Collection of APIs for full text or typeahead content queries.
+* SAAS AEM Search Component - this very component for integrating SAAS into AEM within a very short timeframe through configuration and styling
+
+## Approach
+The AEM Search Component can be installed and connected to SAAS through configuration. Content Authors then configure content pages that act as Search Result Pages (SERP). The author configures the behaviour like filters or tabs according to the specific needs of the SERP.
+
+On top of that, AEM developers can extend the AEM Search Component to implement custom requirements that are not covered out-of-the-box. The component follows the architectural patterns of Adobe Core Component. Therefore, the approach is known and straight forward to extend while ensuring maintainability of the core module.
+In the SAAS Administration UI the SAAS Crawler can be configured. A recommended approach is to use Sitemaps (although raw crawling works as well) in order to indicate which pages should be shown in the Search Admin. To generate Sitemaps, the Apache Sling Sitemap module can be used described on the AEM documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem 
 
 ## Modules
 
