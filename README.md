@@ -2,148 +2,249 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valtech-ch_saas-aem-module&metric=alert_status)](https://sonarcloud.io/dashboard?id=valtech-ch_saas-aem-module)
 
-## Introduction
-SAAS (Search as a Service) is continuously improved by Valtech Switzerland in cooperation with its clients. This service allows Valtech clients to jointly benefit from a constantly evolving and improved search service for digital experience platforms. Improvements are continuously rolled out as updates become available without any downtime. The offering consists of the following main components:
+# Table of contents
+
+- [Introduction](#introduction)
+- [Approach](#approach)
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [Full](#full)
+    - [Clientlibs](#clientlibs)
+  - [Api with default implementation](#api-with-default-implementation)
+  - [Uninstall](#uninstall)
+- [AEM APIs](#aem-apis)
+- [Configurations](#configurations)
+  - [OSGi configurations](#osgi-configurations)
+  - [Context Aware configurations](#context-aware-configurations)
+- [Components](#components)
+  - [New approach](#new-approach)
+  - [Available components](#available-components)
+    - [Search](#search)
+    - [Search Tab](#search-tab)
+    - [Search Redirect](#search-redirect)
+- [License](#license)
+- [Developers](#developers)
+
+# Introduction
+
+SAAS (Search as a Service) is continuously improved by Valtech Switzerland in cooperation with its clients. This service
+allows Valtech clients to jointly benefit from a constantly evolving and improved search service for digital experience
+platforms. Improvements are continuously rolled out as updates become available without any downtime. The offering
+consists of the following main components:
 
 * SAAS Crawler - Web page crawling, extraction of relevant content areas, and metadata.
 * SAAS Administration UI - Interface for controlling and configuring the crawlers.
 * SAAS Engine - Collection of APIs for full text or typeahead content queries.
-* SAAS AEM Search Component - this very component for integrating SAAS into AEM within a very short timeframe through configuration and styling
+* SAAS AEM Search Component - this very component for integrating SAAS into AEM within a very short timeframe through
+  configuration and styling
 
-## Approach
-The AEM Search Component can be installed and connected to SAAS through configuration. Content Authors then configure content pages that act as Search Result Pages (SERP). The author configures the behaviour like filters or tabs according to the specific needs of the SERP.
+# Approach
 
-On top of that, AEM developers can extend the AEM Search Component to implement custom requirements that are not covered out-of-the-box. The component follows the architectural patterns of Adobe Core Component. Therefore, the approach is known and straight forward to extend while ensuring maintainability of the core module.
-In the SAAS Administration UI the SAAS Crawler can be configured. A recommended approach is to use Sitemaps (although raw crawling works as well) in order to indicate which pages should be shown in the Search Admin. To generate Sitemaps, the Apache Sling Sitemap module can be used described on the AEM documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem 
+The AEM Search Component can be installed and connected to SAAS through configuration. Content Authors then configure
+content pages that act as Search Result Pages (SERP). The author configures the behaviour like filters or tabs according
+to the specific needs of the SERP.
 
-## Modules
+On top of that, AEM developers can extend the AEM Search Component to implement custom requirements that are not covered
+out-of-the-box. The component follows the architectural patterns of Adobe Core Component. Therefore, the approach is
+known and straight forward to extend while ensuring maintainability of the core module. In the SAAS Administration UI
+the SAAS Crawler can be configured. A recommended approach is to use Sitemaps (although raw crawling works as well) in
+order to indicate which pages should be shown in the Search Admin. To generate Sitemaps, the Apache Sling Sitemap module
+can be used described on the AEM
+documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem
 
-The main parts of the template are:
+<a name="requirements"></a>
 
-* core: Java bundle containing all core functionality like OSGi services, listeners or schedulers, as well as component-related Java code such as servlets or request filters.
-* it.tests: Java based integration tests
-* ui.apps: contains the /apps (and /etc) parts of the project, ie JS&CSS clientlibs, components, and templates
-* ui.content: contains sample content using the components from the ui.apps
-* ui.config: contains runmode specific OSGi configs for the project
-* ui.frontend: an optional dedicated front-end build mechanism (Angular, React or general Webpack project)
-* ui.tests: Selenium based UI tests
-* all: a single content package that embeds all of the compiled modules (bundles and content packages) including any vendor dependencies
-* analyse: this module runs analysis on the project which provides additional validation for deploying into AEMaaCS
+# Requirements
 
-## How to build
+| AEM | JDK |
+| --- | --- |
+| 6.5 / Cloud | 8, 11 |
 
-To build all the modules run in the project root directory the following command with Maven 3:
+# Installation
 
-    mvn clean install
+You can download the bundles from [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/).
 
-To build all the modules and deploy the `all` package to a local instance of AEM, run in the project root directory the following command:
+## Full
 
-    mvn clean install -PautoInstallSinglePackage
+```xml
 
-Or to deploy it to a publish instance, run
+<dependency>
+  <groupId>io.github.valtech-ch</groupId>
+  <artifactId>saas-aem.all</artifactId>
+  <version>${project.version}</version>
+</dependency>
+```
 
-    mvn clean install -PautoInstallSinglePackagePublish
+### Clientlibs
 
-Or alternatively
+To use the OOTB components, the following client libraries should be included:
 
-    mvn clean install -PautoInstallSinglePackage -Daem.port=4503
+* saas.dependencies
+* saas.site
 
-Or to deploy only the bundle to the author, run
+Add them as entries in the multifield _**Client Libraries JavaScript Page Head**_, in the page policy for the editable
+template where the components would be used.
 
-    mvn clean install -PautoInstallBundle
+## Api with default implementation
 
-Or to deploy only a single content package, run in the sub-module directory (i.e `ui.apps`)
+```xml
 
-    mvn clean install -PautoInstallPackage
+<dependency>
+  <groupId>io.github.valtech-ch</groupId>
+  <artifactId>saas-aem.api</artifactId>
+  <version>${project.version}</version>
+</dependency>
 
-## Testing
+<dependency>
+<groupId>io.github.valtech-ch</groupId>
+<artifactId>saas-aem.core</artifactId>
+<version>${project.version}</version>
+</dependency>
+```
 
-There are three levels of testing contained in the project:
+## Uninstall
 
-### Unit tests
+To uninstall the module, delete the following subtrees:
 
-This show-cases classic unit testing of the code contained in the bundle. To
-test, execute:
+* /apps/saas-aem-module
+* /apps/saas-aem-module-packages
+* /home/users/system/saas
 
-    mvn clean test
+# AEM APIs
 
-### Integration tests
+Aem APIs are interfaces exported by `saas-aem.api` module, that provide consumption of SaaS REST APIs.
+The `saas-aem.core` module offers a default implementation for each of these interfaces. However, the client project,
+utilizing this module, has the possibility to provide a custom implementation by specifying a higher `service.ranking`
+property.
 
-This allows running integration tests that exercise the capabilities of AEM via
-HTTP calls to its API. To run the integration tests, run:
+| Interface | Default implementation |
+| --- | ---: |
+|[FulltextSearchService](api/src/main/java/com/valtech/aem/saas/api/fulltextsearch/FulltextSearchService.java) | [DefaultFulltextSearchService](core/src/main/java/com/valtech/aem/saas/core/fulltextsearch/DefaultFulltextSearchService.java) |
+|[TypeaheadService](api/src/main/java/com/valtech/aem/saas/api/typeahead/TypeaheadService.java) | [DefaultTypeaheadService](core/src/main/java/com/valtech/aem/saas/core/typeahead/DefaultTypeaheadService.java) |
+|[BestBetsService](api/src/main/java/com/valtech/aem/saas/api/bestbets/BestBetsService.java) | [DefaultBestBetsService](core/src/main/java/com/valtech/aem/saas/core/bestbets/DefaultBestBetsService.java) |
+|[IndexUpdateService](api/src/main/java/com/valtech/aem/saas/api/indexing/IndexUpdateService.java) | [DefaultIndexUpdateService](core/src/main/java/com/valtech/aem/saas/core/indexing/DefaultIndexUpdateService.java) |
 
-    mvn clean verify -Plocal
+# Configurations
 
-Test classes must be saved in the `src/main/java` directory (or any of its
-subdirectories), and must be contained in files matching the pattern `*IT.java`.
+Compared to V1 module, the configurations are refactored. Redundant config fields are extracted in a single
+configuration service. Some configurations, that could/should change depending on the resource's context, are moved in
+Context Aware configurations.
 
-The configuration provides sensible defaults for a typical local installation of
-AEM. If you want to point the integration tests to different AEM author and
-publish instances, you can use the following system properties via Maven's `-D`
-flag.
+## OSGi configurations
 
-| Property | Description | Default value |
-| --- | --- | --- |
-| `it.author.url` | URL of the author instance | `http://localhost:4502` |
-| `it.author.user` | Admin user for the author instance | `admin` |
-| `it.author.password` | Password of the admin user for the author instance | `admin` |
-| `it.publish.url` | URL of the publish instance | `http://localhost:4503` |
-| `it.publish.user` | Admin user for the publish instance | `admin` |
-| `it.publish.password` | Password of the admin user for the publish instance | `admin` |
+1. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Search%20Service%20Connection%20Configuration%20Service)
+2. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Fulltext%20Search%20Service)
+3. [Search as a Service - Typeahead Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Typeahead%20Service)
+4. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Best%20Bets%20Service)
+5. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Index%20Update%20Service)
 
-The integration tests in this archetype use the [AEM Testing
-Clients](https://github.com/adobe/aem-testing-clients) and showcase some
-recommended [best
-practices](https://github.com/adobe/aem-testing-clients/wiki/Best-practices) to
-be put in use when writing integration tests for AEM.
+## Context Aware configurations
 
-## Static Analysis
+| Label | Name | Description | Required |
+| --- | :--- | :--- | :---:|
+| Search Index | index | Index defined in SaaS admin | x |
+| Search Client | client | Client identifier defined in SaaS admin | x |
+| Search Project Id | projectId | Project identifier defined in SaaS admin | x |
+| Search Filters | searchFilters | Key/value pairs of **field name** and **value**
+| Search Templates | templates | List of custom query templates' names, defined in SaaS admin, for specialized/different field boosting strategies. (Optional)
+| Search result highlight tag name | highlightTagName | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`)
+| Enable Best Bets | enableBestBets | Flag that enables displaying best bets on the top of the search results. Defaults to `false`
+| Enable Auto Suggest | enableAutoSuggest | Flag that enables auto suggest feature in the search component. Defaults to `true`
 
-The `analyse` module performs static analysis on the project for deploying into AEMaaCS. It is automatically
-run when executing
+# Components
 
-    mvn clean install
+## New approach
 
-from the project root directory. Additional information about this analysis and how to further configure it
-can be found here https://github.com/adobe/aemanalyser-maven-plugin
+Conceptually what differs from the standard way of developing aem components (with HTL) is that the markup rendering is
+now moved in the `ui.frontend` module, and is dynamically generated with javascript. The HTL script is only rendering a
+placeholder in **wcmmode = edit**. The components are utilizing `org.apache.sling.models.jacksonexporter` to export the
+sling model into json. The exported json is then consumed by the FE and the actual component markup is generated.
 
-### UI tests
+## Available components
 
-They will test the UI layer of your AEM application using Selenium technology. 
+* Search Redirect
+* Search
+* Search Tab
 
-To run them locally:
+**Component group:** _Search as a Service - Content_
 
-    mvn clean verify -Pui-tests-local-execution
+### Search
 
-This default command requires:
-* an AEM author instance available at http://localhost:4502 (with the whole project built and deployed on it, see `How to build` section above)
-* Chrome browser installed at default location
+This is a container that accepts Search Tab components.
 
-Check README file in `ui.tests` module for more details.
+#### Purpose
 
-## ClientLibs
+To integrate search input and search results in a page.
 
-The frontend module is made available using an [AEM ClientLib](https://helpx.adobe.com/experience-manager/6-5/sites/developing/using/clientlibs.html). When executing the NPM build script, the app is built and the [`aem-clientlib-generator`](https://github.com/wcm-io-frontend/aem-clientlib-generator) package takes the resulting build output and transforms it into such a ClientLib.
+#### Dialog
 
-A ClientLib will consist of the following files and directories:
+The component can be configured with:
 
-- `css/`: CSS files which can be requested in the HTML
-- `css.txt` (tells AEM the order and names of files in `css/` so they can be merged)
-- `js/`: JavaScript files which can be requested in the HTML
-- `js.txt` (tells AEM the order and names of files in `js/` so they can be merged
-- `resources/`: Source maps, non-entrypoint code chunks (resulting from code splitting), static assets (e.g. icons), etc.
+* Title - text that is displayed on the top of the component (it is optional)
+* Language - defines the language of the search results (it is optional, it overrides the context language)
+* Search field placeholder text (it is optional. it has a default value defined as i18n entry.)
+* Number of results per page (it is optional. it overrides the default value of 10 results per page)
+* Search Filter entries
 
-## Maven settings
+#### Usage
 
-The project comes with the auto-public repository configured. To setup the repository in your Maven settings, refer to:
+This component can be included on any page (fix or inside a parsys/responsive-grid). By default, it includes one Search
+Tab component.
 
-    http://helpx.adobe.com/experience-manager/kb/SetUpTheAdobeMavenRepository.html
+### Search Tab
 
+This is a component that is placed in the responsive-grid of the Search component.
 
-## SonarCloud integration
+#### Purpose
 
-In order to scan code to detect bugs, vulnerabilities and code smells we integrated this project with SonarCloud. The GitHub action for Sonarcloud analysis runs each time when there is a Pull Request created or commit to main branch.
+To execute search query and display results in a tab separated/navigated container.
 
-### Example of pull request analysis
+#### Dialog
 
-<img src="./images/SonarCloud-analysis-in-Checks.png">
+The component can be configured with:
+
+* Title - Text that is used as the tab label; It is required;
+* Facets - Defines list of (label, index field name). This enables filtering of the search results by index fields.
+* Search Filter entries
+
+#### Usage
+
+This component is exclusively placed inside a Search component's responsive grid. The configuration fields that the
+component offers, enable the author to define filter entries per tab.
+
+#### Query parameters
+
+| Name | Description | Example |
+| --- | :--- | :--- |
+| q | Full text query | q=foo bar |
+| page | Results page to be shown. First page is set as **page=1** | page=2 |
+| facetFilter | Search filter from selected facet options | facetFilter=domain:www.valtech.com&facetFilter=contentType:pdf,xml |
+
+### Search Redirect
+
+#### Purpose
+
+To integrate easily accessible search input field that redirects the user to the search page. This component is intended
+to be used as part of a page header or in the content of an error handling page.
+
+#### Dialog
+
+The component can be configured with:
+
+* Search page path - the location of the search page (required)
+* Search field placeholder text - overrides the placeholder text from search component found on the above configured
+  search page
+
+#### Usage
+
+This component should be utilized to redirect the user to the page where the search component is placed. It offers a
+search input with autocomplete feature. With submission of the search term, the user is redirected to a search page
+displaying the according search results.
+
+# License
+
+The AECU tool is licensed under the [MIT LICENSE](LICENSE).
+
+# Developers
+
+See our [developer zone](docs/developers.md).
