@@ -10,7 +10,7 @@
 - [Installation](#installation)
   - [Full](#full)
     - [Clientlibs](#clientlibs)
-  - [Api with default implementation](#api-with-default-implementation)
+  - [Api with default implementation and osgi configurations](#api-with-default-implementation)
   - [Uninstall](#uninstall)
 - [AEM APIs](#aem-apis)
 - [Configurations](#configurations)
@@ -85,7 +85,7 @@ To use the OOTB components, the following client libraries should be included:
 Add them as entries in the multifield _**Client Libraries JavaScript Page Head**_, in the page policy for the editable
 template where the components would be used.
 
-## Api with default implementation
+## Api with default implementation and osgi configurations
 
 ```xml
 
@@ -98,6 +98,12 @@ template where the components would be used.
 <dependency>
 <groupId>io.github.valtech-ch</groupId>
 <artifactId>saas-aem.core</artifactId>
+<version>${project.version}</version>
+</dependency>
+
+<dependency>
+<groupId>io.github.valtech-ch</groupId>
+<artifactId>saas-aem.ui.config</artifactId>
 <version>${project.version}</version>
 </dependency>
 ```
