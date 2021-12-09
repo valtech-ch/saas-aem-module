@@ -49,7 +49,7 @@ export const triggerSearch = async (
 
   onSearch?.(searchValue)
 
-  if (searchUrl != window.location.pathname) {
+  if (searchUrl && searchUrl != window.location.pathname) {
     const currentUrl = new URL(window.location.href)
     const currentParams = new URLSearchParams(currentUrl.search)
     currentParams.set("q", searchValue)
