@@ -21,6 +21,7 @@ export const buildSearch = async (
   const { callbacks, autoSuggestionDebounceTime = 500 } = options || {}
 
   const {
+    id,
     searchFieldPlaceholderText,
     searchButtonText,
     searchUrl,
@@ -41,6 +42,7 @@ export const buildSearch = async (
   searchAutocompleteWrapper.classList.add('saas-autocomplete')
 
   const searchInputElement = buildSearchInput({
+    id,
     searchFieldPlaceholderText,
     autocompleteUrl,
     autocompleteTriggerThreshold,

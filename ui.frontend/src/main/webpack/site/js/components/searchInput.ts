@@ -2,6 +2,7 @@ import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
 
 type SearchInputOptions = {
+  id: string
   searchFieldPlaceholderText: string
   autocompleteUrl: string
   autocompleteTriggerThreshold: number
@@ -78,16 +79,17 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   )
 
 const buildSearchInput = ({
-  searchFieldPlaceholderText,
-  autocompleteUrl,
-  autocompleteTriggerThreshold,
-  autoSuggestionDebounceTime = 500,
-  searchContainer,
-}: SearchInputOptions): HTMLInputElement => {
+                            id,
+                            searchFieldPlaceholderText,
+                            autocompleteUrl,
+                            autocompleteTriggerThreshold,
+                            autoSuggestionDebounceTime = 500,
+                            searchContainer,
+                          }: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
 
   searchInput.placeholder = searchFieldPlaceholderText
-  searchInput.id = 'saas-search-input'
+  searchInput.id = id
   searchInput.autocomplete = 'off'
   setSaasCurrentFocusSuggestion(searchInput, -1)
 

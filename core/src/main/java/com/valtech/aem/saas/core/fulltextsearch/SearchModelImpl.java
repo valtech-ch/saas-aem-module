@@ -19,6 +19,7 @@ import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
+import com.valtech.aem.saas.core.util.ResourceUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -154,6 +155,11 @@ public class SearchModelImpl implements SearchModel {
     @Override
     public String getLanguage() {
         return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
+    }
+
+    @Override
+    public String getId() {
+        return ResourceUtil.generateId("saas", resource.getPath());
     }
 
     @NonNull

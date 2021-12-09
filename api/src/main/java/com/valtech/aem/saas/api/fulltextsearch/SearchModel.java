@@ -112,4 +112,11 @@ public interface SearchModel extends ContainerExporter {
      * @return no results text.
      */
     String getNoResultsText();
+
+    /**
+     * Gets the unique id of the component, based on resource path.
+     *
+     * @return unique identifier
+     */
+    String getId();
 }

@@ -16,6 +16,7 @@ export const isSearchConfig = (
   searchConfig: SearchConfig | never,
 ): searchConfig is SearchConfig => {
   const {
+    id,
     searchFieldPlaceholderText,
     autocompleteTriggerThreshold,
     autocompleteUrl,
@@ -23,12 +24,13 @@ export const isSearchConfig = (
   } = searchConfig
 
   return (
-    typeof searchFieldPlaceholderText === 'string' &&
-    Boolean(searchFieldPlaceholderText) &&
-    typeof autocompleteTriggerThreshold === 'number' &&
-    (!searchUrl || typeof searchUrl === 'string') &&
-    typeof autocompleteUrl === 'string' &&
-    Boolean(autocompleteUrl)
+      typeof id === 'string' && Boolean(id)
+      && typeof searchFieldPlaceholderText === 'string' &&
+      Boolean(searchFieldPlaceholderText) &&
+      typeof autocompleteTriggerThreshold === 'number' &&
+      (!searchUrl || typeof searchUrl === 'string') &&
+      typeof autocompleteUrl === 'string' &&
+      Boolean(autocompleteUrl)
   )
 }
 
