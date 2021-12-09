@@ -96,15 +96,15 @@ template where the components would be used.
 </dependency>
 
 <dependency>
-<groupId>io.github.valtech-ch</groupId>
-<artifactId>saas-aem.core</artifactId>
-<version>${project.version}</version>
+  <groupId>io.github.valtech-ch</groupId>
+  <artifactId>saas-aem.core</artifactId>
+  <version>${project.version}</version>
 </dependency>
 
 <dependency>
-<groupId>io.github.valtech-ch</groupId>
-<artifactId>saas-aem.ui.config</artifactId>
-<version>${project.version}</version>
+  <groupId>io.github.valtech-ch</groupId>
+  <artifactId>saas-aem.ui.config</artifactId>
+  <version>${project.version}</version>
 </dependency>
 ```
 
@@ -123,7 +123,7 @@ The `saas-aem.core` module offers a default implementation for each of these int
 utilizing this module, has the possibility to provide a custom implementation by specifying a higher `service.ranking`
 property.
 
-| Interface | Default implementation |
+| Interface | Default implementation in `saas-aem.core` |
 | --- | ---: |
 |[FulltextSearchService](api/src/main/java/com/valtech/aem/saas/api/fulltextsearch/FulltextSearchService.java) | [DefaultFulltextSearchService](core/src/main/java/com/valtech/aem/saas/core/fulltextsearch/DefaultFulltextSearchService.java) |
 |[TypeaheadService](api/src/main/java/com/valtech/aem/saas/api/typeahead/TypeaheadService.java) | [DefaultTypeaheadService](core/src/main/java/com/valtech/aem/saas/core/typeahead/DefaultTypeaheadService.java) |
@@ -196,6 +196,13 @@ The component can be configured with:
 
 This component can be included on any page (fix or inside a parsys/responsive-grid). By default, it includes one Search
 Tab component.
+
+#### Autocomplete
+
+When requesting the search component resource with a selector: **autocomplete** and extension: **json** (e.g.
+/content/saas/us/en/searach-page/jcr:content/search.**autocomplete**.**json**), then the search component uses the
+typeahead api, to retrieve options for auto complete of the term query (**q**). The search query performed for the
+typeahead considers the component's configured filter entries.
 
 ### Search Tab
 
