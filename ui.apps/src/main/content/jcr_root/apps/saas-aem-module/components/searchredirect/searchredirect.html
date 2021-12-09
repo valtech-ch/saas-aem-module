@@ -3,4 +3,5 @@
 <sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
      data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
 <search data-sly-test="${!isEdit}"
+        data-sly-test="${model.render}"
         data-search-config="${model.configJson}"></search>

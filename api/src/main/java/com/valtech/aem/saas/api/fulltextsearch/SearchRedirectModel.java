@@ -46,4 +46,10 @@ public interface SearchRedirectModel extends ComponentExporter {
      */
     String getSearchUrl();
 
+    /**
+     * Returns a boolean flag whether to render the cmp's markup
+     *
+     * @return true when it should be rendered
+     */
+    boolean render();
 }
