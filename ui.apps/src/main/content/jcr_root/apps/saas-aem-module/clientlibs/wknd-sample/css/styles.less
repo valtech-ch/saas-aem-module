@@ -2,19 +2,23 @@
 
   .saas-container_form {
     height: 2rem;
-    padding-bottom: 20px;
-    margin: auto;
-    width: 50%;
+    padding-bottom: 45px;
   }
 
   .saas-container_results_item {
     border-bottom: 1px solid #ebebeb;
-    padding-bottom: 10px;
+    padding: 15px 17px;
+  }
+
+  .saas-container_results_item:hover {
+    background-color: #ffea00;
   }
 
   .saas-container_results_item_description {
     color: #696969;
     font-size: 14px;
+    line-height: inherit;
+    margin-bottom: 0;
   }
 
   .saas-container_results_item_title {
@@ -22,6 +26,8 @@
     font-size: 18px;
     font-family: Source Sans Pro, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   .saas-container_results_item_url {
@@ -30,11 +36,21 @@
     font-family: Source Sans Pro, Helvetica Neue, Helvetica, Arial, sans-serif;
   }
 
+  .saas-container_results_item_link_text {
+    display: block;
+    margin-top: 10px;
+  }
+
   .saas-container_form input[placeholder] {
     background-color: hsla(0, 0%, 92.2%, .5411764705882353);
     color: #202020;
     font-size: 18px;
-    min-width: 500px;
+    padding: 10px 10px;
+    outline: none !important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid #696969;
+    min-width: 550px;
   }
 
   .saas-container_form input[placeholder]:focus {
@@ -43,6 +59,7 @@
     -webkit-box-shadow: none;
     box-shadow: none;
     border: 1px solid #696969;
+
   }
 
   .saas-container_tab {
@@ -63,6 +80,7 @@
     font-size: 18px;
     margin-left: 10px;
     border: 1px solid #696969;
+    padding: 10px 10px;
   }
 
   .saas-load-more-button {
@@ -98,6 +116,14 @@
     input[placeholder] {
       padding: 10px 10px;
       color: #202020;
+      background-color: hsla(0, 0%, 92.2%, .5411764705882353);
+      outline: none !important;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      border: 1px solid #696969;
+    }
+
+    input[placeholder]:focus {
       background-color: #fff;
       outline: none !important;
       -webkit-box-shadow: none;
