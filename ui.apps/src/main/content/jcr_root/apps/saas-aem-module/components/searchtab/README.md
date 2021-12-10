@@ -10,7 +10,7 @@ The Search Tab component uses the `com.valtech.aem.saas.api.fulltextsearch.Searc
 ### Behavior
 On submit of entered search term the children search tab components perform a search query and display the results.  
 
-###Authoring
+### Authoring
 This is a component that is placed in the responsive-grid of the [Search](../search/README.md) component.
 
 #### Edit Dialog Properties

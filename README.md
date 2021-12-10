@@ -170,7 +170,7 @@ sling model into json. The exported json is then consumed by the FE and the actu
 
 # License
 
-The AECU tool is licensed under the [MIT LICENSE](LICENSE).
+The SaaS AEM tool is licensed under the [MIT LICENSE](LICENSE).
 
 # Developers
 

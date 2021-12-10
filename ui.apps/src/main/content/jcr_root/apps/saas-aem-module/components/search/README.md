@@ -10,7 +10,7 @@ The Search component uses the `com.valtech.aem.saas.api.fulltextsearch.SearchMod
 ### Behavior
 The user enters search term in the text input field. On submit, the children search tab components perform a search query and display the results.  
 
-###Authoring
+### Authoring
 This is a container that accepts [Search Tab](../searchtab/README.md) components. It can be included on any page (fix or inside a parsys/responsive-grid). By default, it includes one Search
 Tab component.
 

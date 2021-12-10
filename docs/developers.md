@@ -22,7 +22,6 @@ The main parts of the template are:
   included by using the maven profile "installSampleContent")
 * ui.config: contains runmode specific OSGi configs for the project
 * ui.frontend: contains the FE implementation of search components (markup and js)
-* ui.tests: Selenium based UI tests
 * all: a single content package that embeds all of the compiled modules (bundles and content packages) including any
   vendor dependencies
 * analyse: this module runs analysis on the project which provides additional validation for deploying into AEMaaCS

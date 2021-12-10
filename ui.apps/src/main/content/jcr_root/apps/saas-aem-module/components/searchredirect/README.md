@@ -11,7 +11,7 @@ The Search component uses the `com.valtech.aem.saas.api.fulltextsearch.SearchRed
 The user enters search term in the text input field. While entering the search term, user is prompted with autocomplete options.
 On submit of search term, the user is redirected to the search page, that is configured in the component's dialog, with prefilled search term in the existing [Search](../search/README.md) component.  
 
-###Authoring
+### Authoring
 This component is intended to be used as part of a page header or in the content of an error handling page.
 
 #### Edit Dialog Properties
