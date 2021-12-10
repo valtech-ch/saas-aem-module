@@ -132,9 +132,7 @@ property.
 
 # Configurations
 
-Compared to V1 module, the configurations are refactored. Redundant config fields are extracted in a single
-configuration service. Some configurations, that could/should change depending on the resource's context, are moved in
-Context Aware configurations.
+Configurations are split in OSGi and Context-Aware.
 
 ## OSGi configurations
 
@@ -168,91 +166,11 @@ sling model into json. The exported json is then consumed by the FE and the actu
 
 ## Available components
 
-* Search Redirect
-* Search
-* Search Tab
+* [Search Redirect](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchredirect/README.md)
+* [Search](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)
+* [Search Tab](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)
 
 **Component group:** _Search as a Service - Content_
-
-### Search
-
-This is a container that accepts Search Tab components.
-
-#### Purpose
-
-To integrate search input and search results in a page.
-
-#### Dialog
-
-The component can be configured with:
-
-* Title - text that is displayed on the top of the component (it is optional)
-* Language - defines the language of the search results (it is optional, it overrides the context language)
-* Search field placeholder text (it is optional. it has a default value defined as i18n entry.)
-* Number of results per page (it is optional. it overrides the default value of 10 results per page)
-* Search Filter entries
-
-#### Usage
-
-This component can be included on any page (fix or inside a parsys/responsive-grid). By default, it includes one Search
-Tab component.
-
-#### Autocomplete
-
-When requesting the search component resource with a selector: **autocomplete** and extension: **json** (e.g.
-/content/saas/us/en/searach-page/jcr:content/search.**autocomplete**.**json**), then the search component uses the
-typeahead api, to retrieve options for auto complete of the term query (**q**). The search query performed for the
-typeahead considers the component's configured filter entries.
-
-### Search Tab
-
-This is a component that is placed in the responsive-grid of the Search component.
-
-#### Purpose
-
-To execute search query and display results in a tab separated/navigated container.
-
-#### Dialog
-
-The component can be configured with:
-
-* Title - Text that is used as the tab label; It is required;
-* Facets - Defines list of (label, index field name). This enables filtering of the search results by index fields.
-* Search Filter entries
-
-#### Usage
-
-This component is exclusively placed inside a Search component's responsive grid. The configuration fields that the
-component offers, enable the author to define filter entries per tab.
-
-#### Query parameters
-
-| Name | Description | Example |
-| --- | :--- | :--- |
-| q | Full text query | q=foo bar |
-| page | Results page to be shown. First page is set as **page=1** | page=2 |
-| facetFilter | Search filter from selected facet options | facetFilter=domain:www.valtech.com&facetFilter=contentType:pdf,xml |
-
-### Search Redirect
-
-#### Purpose
-
-To integrate easily accessible search input field that redirects the user to the search page. This component is intended
-to be used as part of a page header or in the content of an error handling page.
-
-#### Dialog
-
-The component can be configured with:
-
-* Search page path - the location of the search page (required)
-* Search field placeholder text - overrides the placeholder text from search component found on the above configured
-  search page
-
-#### Usage
-
-This component should be utilized to redirect the user to the page where the search component is placed. It offers a
-search input with autocomplete feature. With submission of the search term, the user is redirected to a search page
-displaying the according search results.
 
 # License
 
