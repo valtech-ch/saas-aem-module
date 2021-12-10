@@ -3,6 +3,7 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
+import com.day.cq.wcm.api.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.util.LoggedOptional;
+import com.valtech.aem.saas.core.util.ResourceUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,10 +23,7 @@ import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-import org.apache.sling.models.annotations.injectorspecific.OSGiService;
-import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.apache.sling.models.annotations.injectorspecific.SlingObject;
-import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.apache.sling.models.annotations.injectorspecific.*;
 import org.apache.sling.models.factory.ModelFactory;
 
 import javax.annotation.PostConstruct;
@@ -84,6 +83,9 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
     @OSGiService
     private ModelFactory modelFactory;
 
+    @ScriptVariable
+    private Page currentPage;
+
     private SearchModel searchModel;
 
     private Resource searchPageResource;
@@ -96,6 +98,16 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
         resolveSearchFieldPlaceholderText().ifPresent(s -> searchFieldPlaceholderText = s);
         createSearchPageUrl().ifPresent(s -> searchUrl = s);
         configJson = getSearchConfigJson();
+    }
+
+    @Override
+    public boolean render() {
+        return Optional.ofNullable(currentPage)
+                       .map(Page::getContentResource)
+                       .map(r -> r.adaptTo(ResourceWrapper.class))
+                       .map(ResourceWrapper::getDescendents)
+                       .orElse(Stream.empty())
+                       .noneMatch(r -> r.isResourceType(SearchModelImpl.RESOURCE_TYPE));
     }
 
     private Optional<String> createSearchPageUrl() {
@@ -143,5 +155,10 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
                        .flatMap(s -> LoggedOptional.of(s,
                                                        logger -> logger.error("Search page path is not configured.")))
                        .map(pPath -> resourceResolver.getResource(pPath));
+    }
+
+    @Override
+    public String getId() {
+        return ResourceUtil.generateId("saas", resource.getPath());
     }
 }

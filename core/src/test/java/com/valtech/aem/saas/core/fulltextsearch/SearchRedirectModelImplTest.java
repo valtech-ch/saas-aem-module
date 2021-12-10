@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -56,6 +58,7 @@ class SearchRedirectModelImplTest {
                    is("/content/saas-aem-module/us/en/jcr:content/root/container/container/search.autocomplete.json"));
         assertThat(testee.getSearchUrl(), is("/content/saas-aem-module/us/en.html"));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here...(overridden)"));
+        assertThat(testee.getId(), not(isEmptyString()));
     }
 
     @Test

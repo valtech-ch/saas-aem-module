@@ -7,6 +7,7 @@ export type SearchOptions = {
 }
 
 export type SearchConfig = {
+  id: string
   searchFieldPlaceholderText: string
   loadMoreButtonText: string
   searchTabs: TabConfig[]

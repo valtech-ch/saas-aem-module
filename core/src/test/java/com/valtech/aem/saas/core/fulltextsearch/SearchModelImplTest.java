@@ -114,6 +114,7 @@ class SearchModelImplTest {
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
         assertThat(testee.getFilters(), nullValue());
         assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
+        assertThat(testee.getId(), not(isEmptyString()));
     }
 
     private void adaptRequest() {
