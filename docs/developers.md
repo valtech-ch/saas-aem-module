@@ -79,7 +79,7 @@ mvn clean install -PautoInstallPackagePublish
 
 # ClientLibs
 
-The frontend module is made available using
+The [frontend module](../ui.frontend/README.md) is made available using
 an [AEM ClientLib](https://helpx.adobe.com/experience-manager/6-5/sites/developing/using/clientlibs.html). When
 executing the NPM build script, the app is built and
 the [`aem-clientlib-generator`](https://github.com/wcm-io-frontend/aem-clientlib-generator) package takes the resulting
