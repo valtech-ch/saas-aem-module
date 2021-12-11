@@ -27,6 +27,12 @@ class BestBetsDataExtractionStrategyTest {
         assertThat(bestBets.isPresent(), is(true));
         assertThat(bestBets.get(), instanceOf(List.class));
         assertThat(bestBets.get().size(), is(3));
+        assertThat(bestBets.get().get(0).getLanguage(), is("en"));
+        assertThat(bestBets.get().get(0).getId(), is(1));
+        assertThat(bestBets.get().get(0).getIndex(), is("icweb"));
+        assertThat(bestBets.get().get(0).getProjectId(), is(1));
+        assertThat(bestBets.get().get(0).getTerm(), is("foo"));
+        assertThat(bestBets.get().get(0).getUrl(), is("foo/bar"));
     }
 
 }
