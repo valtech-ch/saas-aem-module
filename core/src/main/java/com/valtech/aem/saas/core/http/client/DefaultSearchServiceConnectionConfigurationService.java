@@ -12,6 +12,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(name = "Search as a Service - Search Service Connection Configuration Service",
         immediate = true,
+        configurationPid = "com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService",
         service = SearchServiceConnectionConfigurationService.class)
 @Designate(ocd = Configuration.class)
 @Slf4j

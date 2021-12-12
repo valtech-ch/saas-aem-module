@@ -29,7 +29,7 @@ import java.util.function.Function;
         immediate = true,
         service = {EventHandler.class},
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        configurationPid = "com.valtech.aem.saas.core.indexing.IndexUpdateHandler",
+        configurationPid = "com.valtech.aem.saas.core.indexing.PageIndexUpdateHandler",
         property = {
                 EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC,
                 EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC

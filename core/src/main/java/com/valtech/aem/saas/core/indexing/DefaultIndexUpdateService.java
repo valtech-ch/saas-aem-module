@@ -34,6 +34,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component(name = "Search as a Service - Index Update Service",
+        configurationPid = "com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService",
         service = IndexUpdateService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultIndexUpdateService implements IndexUpdateService {

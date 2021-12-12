@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component(name = "Search as a Service - Best Bets Service",
+        configurationPid = "com.valtech.aem.saas.core.bestbets.DefaultBestBetsService",
         service = BestBetsService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultBestBetsService implements BestBetsService {

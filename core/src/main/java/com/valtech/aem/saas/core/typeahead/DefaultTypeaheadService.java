@@ -28,6 +28,7 @@ import java.util.Set;
 
 @Slf4j
 @Component(name = "Search as a Service - Typeahead Service",
+        configurationPid = "com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService",
         service = TypeaheadService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultTypeaheadService implements TypeaheadService {
