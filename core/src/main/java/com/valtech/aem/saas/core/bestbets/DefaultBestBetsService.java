@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component(name = "Search as a Service - Best Bets Service",
+        configurationPid = DefaultBestBetsService.CONFIGURATION_PID,
         service = BestBetsService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultBestBetsService implements BestBetsService {
@@ -45,6 +46,7 @@ public class DefaultBestBetsService implements BestBetsService {
     public static final String URL_PATH_DELIMITER = "/";
     public static final String STRING_FORMAT_PLACEHOLDER = "%s";
     public static final String FAILED_REQUEST_EXECUTION = "Failed to execute request to best bets api.";
+    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.bestbets.DefaultBestBetsService";
 
     @Reference
     private SearchRequestExecutorService searchRequestExecutorService;
