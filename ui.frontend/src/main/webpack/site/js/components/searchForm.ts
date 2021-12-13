@@ -89,7 +89,7 @@ export const triggerSearch = async (
   const isDisplayNotFound = noResultsFound && searchFormParent
 
   if (isRemoveSaasNotFound) {
-    searchFormParent?.querySelector('.saas-not-found')?.remove()
+    searchFormParent?.querySelectorAll('.saas-not-found')?.forEach((item) => item.remove())
   }
 
   if (isShowSuggestion) {
@@ -98,8 +98,8 @@ export const triggerSearch = async (
         autoSuggestText)
     searchFormParent?.append(autoSuggestElement)
   }
-
-  if (isDisplayNotFound) {
+  const notFoundElementExists = searchFormParent?.querySelector('.saas-not-found')
+  if (isDisplayNotFound && !notFoundElementExists) {
     const notFoundElement = document.createElement('div')
     notFoundElement.classList.add('saas-not-found')
     notFoundElement.innerText = noResultsText
