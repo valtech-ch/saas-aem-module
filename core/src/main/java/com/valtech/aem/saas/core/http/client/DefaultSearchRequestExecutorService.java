@@ -66,13 +66,11 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
             log.info("Status Code: {}", response.getStatusLine().getStatusCode());
             log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
             boolean isSuccess = isRequestSuccessful(searchRequest, response);
-            if (isSuccess) {
-                HttpResponseParser httpResponseParser = new HttpResponseParser(response);
-                if (log.isDebugEnabled()) {
-                    log.debug("Response content: {}", httpResponseParser.getContentString());
-                }
+            HttpResponseParser httpResponseParser = new HttpResponseParser(response);
+            if (isSuccess && log.isDebugEnabled()) {
+                log.debug("Response content: {}", httpResponseParser.getContentString());
             }
-            JsonElement jsonResponse = new HttpResponseParser(response).toGsonModel(JsonElement.class);
+            JsonElement jsonResponse = httpResponseParser.toGsonModel(JsonElement.class);
             if (jsonResponse != null) {
                 return Optional.of(new SearchResponse(jsonResponse, isSuccess));
             }

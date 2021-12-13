@@ -2,7 +2,7 @@ package com.valtech.aem.saas.core.http.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,10 +15,15 @@ import java.nio.charset.StandardCharsets;
  * Helper class for parsing http response.
  */
 @Slf4j
-@RequiredArgsConstructor
 public final class HttpResponseParser {
 
     private final HttpResponse response;
+    private final ByteArrayOutputStream responseContentCopy;
+
+    public HttpResponseParser(@NonNull HttpResponse response) {
+        this.response = response;
+        this.responseContentCopy = copyToOutputStream();
+    }
 
     /**
      * Gets the response content.
@@ -26,7 +31,7 @@ public final class HttpResponseParser {
      * @return response content string.
      */
     public String getContentString() {
-        InputStream contentInputStream = getContentInputStream();
+        InputStream contentInputStream = getCopy();
         if (contentInputStream != null) {
             try {
                 return IOUtils.toString(contentInputStream, StandardCharsets.UTF_8.name());
@@ -45,7 +50,7 @@ public final class HttpResponseParser {
      * @return POJO of specified type.
      */
     public <T> T toGsonModel(Class<T> gsonModel) {
-        InputStream in = getContentInputStream();
+        InputStream in = getCopy();
         if (in != null) {
             try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8.name())) {
                 return new Gson().fromJson(reader, gsonModel);
@@ -56,18 +61,21 @@ public final class HttpResponseParser {
         return null;
     }
 
-    private InputStream getContentInputStream() {
-        try {
-            return getCopy(response.getEntity().getContent());
-        } catch (IOException e) {
-            log.error("Error while fetching content input stream.", e);
+    private InputStream getCopy() {
+        if (responseContentCopy != null) {
+            return new ByteArrayInputStream(responseContentCopy.toByteArray());
         }
         return null;
     }
 
-    private InputStream getCopy(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        IOUtils.copy(inputStream, baos);
-        return new ByteArrayInputStream(baos.toByteArray());
+    private ByteArrayOutputStream copyToOutputStream() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOUtils.copy(response.getEntity().getContent(), baos);
+            return baos;
+        } catch (IOException e) {
+            log.error("Error while fetching content input stream.", e);
+        }
+        return null;
     }
 }
