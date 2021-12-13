@@ -22,5 +22,5 @@ public class BestBetDTO {
     @SerializedName(PN_PROJECT_ID)
     int projectId;
 
-    int index;
+    String index;
 }

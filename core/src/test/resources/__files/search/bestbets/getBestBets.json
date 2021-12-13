@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "identifier": 1,
+    "index": "icweb",
     "language": "en",
     "project_id": 1,
     "term": "foo",
@@ -9,7 +9,7 @@
   },
   {
     "id": 4,
-    "identifier": 1,
+    "index": "icweb",
     "language": "de",
     "project_id": 1,
     "term": "baz",
@@ -17,7 +17,7 @@
   },
   {
     "id": 5,
-    "identifier": 1,
+    "index": "icweb",
     "language": "test123",
     "project_id": 1,
     "term": "qux",
