@@ -34,13 +34,14 @@ import java.util.Optional;
 
 @Slf4j
 @Component(name = "Search as a Service - Index Update Service",
-        configurationPid = "com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService",
+        configurationPid = DefaultIndexUpdateService.CONFIGURATION_PID,
         service = IndexUpdateService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultIndexUpdateService implements IndexUpdateService {
 
     public static final String REQUEST_PARAMETER_URL = "url";
     public static final String REQUEST_PARAMETER_REPOSITORY_PATH = "repository_path";
+    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService";
 
     @Reference
     private SearchRequestExecutorService searchRequestExecutorService;

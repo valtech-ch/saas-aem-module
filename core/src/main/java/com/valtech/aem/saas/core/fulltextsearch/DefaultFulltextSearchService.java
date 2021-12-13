@@ -33,10 +33,12 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Component(name = "Search as a Service - Fulltext Search Service",
-        configurationPid = "com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService",
+        configurationPid = DefaultFulltextSearchService.CONFIGURATION_PID,
         service = FulltextSearchService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultFulltextSearchService implements FulltextSearchService {
+
+    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService";
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;

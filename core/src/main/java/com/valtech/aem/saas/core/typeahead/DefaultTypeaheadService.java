@@ -28,10 +28,12 @@ import java.util.Set;
 
 @Slf4j
 @Component(name = "Search as a Service - Typeahead Service",
-        configurationPid = "com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService",
+        configurationPid = DefaultTypeaheadService.CONFIGURATION_PID,
         service = TypeaheadService.class)
 @Designate(ocd = Configuration.class)
 public class DefaultTypeaheadService implements TypeaheadService {
+
+    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService";
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
