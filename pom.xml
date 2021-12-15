@@ -33,9 +33,8 @@
 
     <developers>
         <developer>
-            <id>support@valtech-ch.com</id>
             <name>SaaS AEM Module Support</name>
-            <email>support@aem-module.com</email>
+            <email>contact.ch@valtech.com</email>
             <organization>Valtech Swiss SaaS AEM Module</organization>
             <organizationUrl>https://github.com/valtech-ch</organizationUrl>
         </developer>
