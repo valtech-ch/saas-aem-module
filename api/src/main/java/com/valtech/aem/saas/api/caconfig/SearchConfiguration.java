@@ -28,10 +28,6 @@ public @interface SearchConfiguration {
             description = "Base Filters (Optional)")
     SearchFilterConfiguration[] searchFilters() default {};
 
-    @Property(label = "Search Templates",
-            description = "List of custom query templates' names, for specialized/different field boosting strategies. (Optional)")
-    String[] templates() default {};
-
     @Property(label = "Search result highlight tag name", description = "The name of the tag that will be used to highlight portions of text in the search results. (Optional)")
     String highlightTagName() default DEFAULT_HIGHLIHGT_TAG_NAME;
 

@@ -54,16 +54,21 @@
                                                             required="{Boolean}true">
                                                         </label>
                                                         <fieldName
-                                                            jcr:primaryType="nt:unstructured"
-                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                                                            fieldLabel="Field name"
-                                                            fieldDescription="This is an existing index field in SaaS."
-                                                            name="fieldName"
-                                                            required="{Boolean}true">
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Field name"
+                                                                fieldDescription="This is an existing index field in SaaS."
+                                                                name="fieldName"
+                                                                required="{Boolean}true">
                                                         </fieldName>
                                                     </items>
                                                 </field>
                                             </facets>
+                                            <template
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                    fieldLabel="Search Template Name"
+                                                    name="./template"/>
                                         </items>
                                     </column>
                                 </items>
