@@ -21,13 +21,13 @@ const resolve = {
 module.exports = {
   resolve: resolve,
   entry: {
-    site: SOURCE_ROOT + '/site/main.ts',
+    base: SOURCE_ROOT + '/site/main.ts',
   },
   output: {
     filename: (chunkData) => {
       return chunkData.chunk.name === 'dependencies'
-        ? 'clientlib-dependencies/[name].js'
-        : 'clientlib-site/[name].js'
+          ? 'clientlib-dependencies/[name].js'
+          : 'clientlib-base/[name].js'
     },
     path: path.resolve(__dirname, 'dist'),
   },
@@ -86,7 +86,7 @@ module.exports = {
       patterns: [
         {
           from: path.resolve(__dirname, SOURCE_ROOT + '/resources'),
-          to: './clientlib-site/',
+          to: './clientlib-base/',
         },
       ],
     }),
