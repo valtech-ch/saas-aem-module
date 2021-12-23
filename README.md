@@ -75,8 +75,7 @@ You can download the bundles from [Maven Central](https://repo1.maven.org/maven2
 
 To use the OOTB components, the following client libraries should be included:
 
-* saas.dependencies
-* saas.site
+* saas-aem-module.site
 
 Add them as entries in the multifield _**Client Libraries JavaScript Page Head**_, in the page policy for the editable
 template where the components would be used.
