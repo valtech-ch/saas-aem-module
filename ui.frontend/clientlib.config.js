@@ -45,7 +45,7 @@ module.exports = {
     {
       ...libsBaseConfig,
       name: 'clientlib-dependencies',
-      categories: ['saas.dependencies'],
+      categories: ['saas-aem-module.dependencies'],
       assets: {
         // Copy entrypoint scripts and stylesheets into the respective ClientLib
         // directories
@@ -63,26 +63,26 @@ module.exports = {
     },
     {
       ...libsBaseConfig,
-      name: 'clientlib-site',
-      categories: ['saas.site'],
-      dependencies: ['saas.dependencies'],
+      name: 'clientlib-base',
+      categories: ['saas-aem-module.base'],
+      dependencies: ['saas-aem-module.dependencies'],
       assets: {
         // Copy entrypoint scripts and stylesheets into the respective ClientLib
         // directories
         js: {
-          cwd: 'clientlib-site',
+          cwd: 'clientlib-base',
           files: ['**/*.js'],
           flatten: false
         },
         css: {
-          cwd: 'clientlib-site',
+          cwd: 'clientlib-base',
           files: ['**/*.css'],
           flatten: false
         },
 
         // Copy all other files into the `resources` ClientLib directory
         resources: {
-          cwd: 'clientlib-site',
+          cwd: 'clientlib-base',
           files: ['**/*.*'],
           flatten: false,
           ignore: ['**/*.js', '**/*.css']

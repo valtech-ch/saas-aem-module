@@ -26,12 +26,11 @@
         <components jcr:primaryType="nt:unstructured">
             <page jcr:primaryType="nt:unstructured">
                 <policy
-                    jcr:description="Includes the required client libraries."
-                    jcr:primaryType="nt:unstructured"
-                    jcr:title="Generic Page"
-                    sling:resourceType="wcm/core/components/policy/policy"
-                    clientlibs="[saas.dependencies,saas.site]"
-                    clientlibsJsHead="saas.dependencies">
+                        jcr:description="Includes the required client libraries."
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Generic Page"
+                        sling:resourceType="wcm/core/components/policy/policy"
+                        clientlibs="[saas-aem-module.site]">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy>
             </page>
