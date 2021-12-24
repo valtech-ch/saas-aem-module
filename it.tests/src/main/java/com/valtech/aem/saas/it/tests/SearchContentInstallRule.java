@@ -2,7 +2,6 @@ package com.valtech.aem.saas.it.tests;
 
 import com.adobe.cq.testing.client.PackageManagerClient;
 import com.adobe.cq.testing.client.PackageManagerClient.Package;
-import java.io.InputStream;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.ResourceUtil;
 import org.apache.sling.testing.junit.rules.instance.Instance;
@@ -10,9 +9,11 @@ import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
+
 public class SearchContentInstallRule extends ExternalResource {
 
-  public static final String PACKAGE_NAME = "saas.ui.content-1.0.0-SNAPSHOT.zip";
+  public static final String PACKAGE_NAME = "it.test.content.zip";
   private Logger logger = LoggerFactory.getLogger(SearchContentInstallRule.class);
 
   private final Instance quickstartRule;

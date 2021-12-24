@@ -2,7 +2,6 @@ package com.valtech.aem.saas.api.caconfig;
 
 import com.valtech.aem.saas.api.query.Filter;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,13 +39,6 @@ public interface SearchCAConfigurationModel {
      * @return set of filter entries.
      */
     Set<Filter> getFilters();
-
-    /**
-     * Retrieves a list of predefined query templates.
-     *
-     * @return template names list
-     */
-    List<String> getTemplates();
 
     /**
      * Retrieves the name of the tag which will be used to highlight text matches in resulting search content.

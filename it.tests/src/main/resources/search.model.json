@@ -10,12 +10,17 @@
       ":type": "saas-aem-module/components/searchtab"
     },
     {
-      "title": "ZIP Only",
+      "title": "PDF Only",
       "url": "/content/saas-aem-module/us/en/_jcr_content/root/container/search/search-tabs/searchtab_765476375.model.json",
+      ":type": "saas-aem-module/components/searchtab"
+    },
+    {
+      "title": "Search tab with tmpl",
+      "url": "/content/saas-aem-module/us/en/_jcr_content/root/container/search/search-tabs/searchtab_copy.model.json",
       ":type": "saas-aem-module/components/searchtab"
     }
   ],
-  "autosuggestUrl": "/content/saas-aem-module/us/en/_jcr_content/root/container/search.autocomplete.json",
+  "autocompleteUrl": "/content/saas-aem-module/us/en/_jcr_content/root/container/search.autocomplete.json",
   "autocompleteTriggerThreshold": 3,
   ":type": "saas-aem-module/components/search",
   ":items": {},

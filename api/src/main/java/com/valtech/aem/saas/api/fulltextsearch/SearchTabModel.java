@@ -72,4 +72,12 @@ public interface SearchTabModel extends ComponentExporter {
      */
     String getUrl();
 
+    /**
+     * Gets a name of template, defined in SaaS admin, which when specified in the search query, it utilizes a specific
+     * set of query params that could also contain specific boost values.
+     *
+     * @return template name
+     */
+    String getTemplate();
+
 }

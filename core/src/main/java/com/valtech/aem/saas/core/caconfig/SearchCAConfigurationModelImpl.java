@@ -13,7 +13,6 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,12 +70,6 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
                 .map(searchFilterConfiguration -> new SimpleFilter(searchFilterConfiguration.name(),
                                                                    searchFilterConfiguration.value()))
                 .collect(Collectors.toSet());
-    }
-
-    @Override
-    public List<String> getTemplates() {
-        return asStream(searchConfiguration.templates())
-                .collect(Collectors.toList());
     }
 
     @Override

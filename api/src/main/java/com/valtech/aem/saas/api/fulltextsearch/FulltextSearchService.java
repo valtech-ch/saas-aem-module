@@ -48,7 +48,7 @@ public interface FulltextSearchService {
             int start,
             int rows) {
         return getResults(searchConfiguration, searchText, language, start, rows, Collections.emptySet(),
-                          Collections.emptySet());
+                          Collections.emptySet(), null);
     }
 
     /**
@@ -69,7 +69,14 @@ public interface FulltextSearchService {
             int start,
             int rows,
             Set<Filter> filters) {
-        return getResults(searchConfiguration, searchText, language, start, rows, filters, Collections.emptySet());
+        return getResults(searchConfiguration,
+                          searchText,
+                          language,
+                          start,
+                          rows,
+                          filters,
+                          Collections.emptySet(),
+                          null);
     }
 
     /**
@@ -108,7 +115,7 @@ public interface FulltextSearchService {
             int rows,
             Set<Filter> filters,
             Set<String> facets) {
-        return getResults(searchConfiguration, null, language, start, rows, filters, facets);
+        return getResults(searchConfiguration, null, language, start, rows, filters, facets, null);
     }
 
     /**
@@ -121,6 +128,7 @@ public interface FulltextSearchService {
      * @param facets              list of field names.
      * @return search results object
      */
+    @SuppressWarnings("java:S107")
     Optional<FulltextSearchResultsDTO> getResults(
             @NonNull SearchCAConfigurationModel searchConfiguration,
             String searchText,
@@ -128,6 +136,7 @@ public interface FulltextSearchService {
             int start,
             int rows,
             Set<Filter> filters,
-            Set<String> facets);
+            Set<String> facets,
+            String template);
 
 }

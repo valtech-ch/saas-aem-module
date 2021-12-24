@@ -18,6 +18,7 @@ import com.valtech.aem.saas.core.util.LoggedOptional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -56,7 +57,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
             int start,
             int rows,
             Set<Filter> filters,
-            Set<String> facets) {
+            Set<String> facets,
+            String template) {
         String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
                                           createQueryString(searchText,
                                                             language,
@@ -64,7 +66,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
                                                             rows,
                                                             getEffectiveFilters(searchConfiguration.getFilters(),
                                                                                 filters),
-                                                            facets));
+                                                            facets,
+                                                            template));
         log.debug("Search GET Request: {}", requestUrl);
         Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
         if (searchResponse.isPresent()) {
@@ -87,19 +90,24 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
             int start,
             int rows,
             Set<Filter> filters,
-            Set<String> facets) {
-        return GetQueryStringConstructor.builder()
-                                        .query(new TermQuery(term))
-                                        .query(new LanguageQuery(language))
-                                        .query(new PaginationQuery(start, rows))
-                                        .query(FiltersQuery.builder()
-                                                           .filters(CollectionUtils.emptyIfNull(filters))
-                                                           .build())
-                                        .query(FacetsQuery.builder()
-                                                          .fields(CollectionUtils.emptyIfNull(facets))
-                                                          .build())
-                                        .build()
-                                        .getQueryString();
+            Set<String> facets,
+            String template) {
+        GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
+                GetQueryStringConstructor.builder()
+                                         .query(new TermQuery(term))
+                                         .query(new LanguageQuery(language))
+                                         .query(new PaginationQuery(start, rows))
+                                         .query(FiltersQuery.builder()
+                                                            .filters(CollectionUtils.emptyIfNull(filters))
+                                                            .build())
+                                         .query(FacetsQuery.builder()
+                                                           .fields(CollectionUtils.emptyIfNull(facets))
+                                                           .build());
+        if (StringUtils.isNotBlank(template)) {
+            builder.query(new SearchTemplateQuery(template));
+        }
+        return builder.build()
+                      .getQueryString();
     }
 
     private String getRequestUrl(

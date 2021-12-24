@@ -80,6 +80,11 @@ public class SearchTabModelImpl implements SearchTabModel {
 
     @JsonIgnore
     @Getter
+    @ValueMapValue
+    private String template;
+
+    @JsonIgnore
+    @Getter
     @ChildResource
     private List<FilterModel> filters;
 
@@ -211,7 +216,8 @@ public class SearchTabModelImpl implements SearchTabModel {
                 getEffectiveFilters(parentSearch, requestWrapper),
                 Optional.ofNullable(facets).map(List::stream).orElse(
                         Stream.empty()).map(FacetModel::getFieldName).collect(
-                        Collectors.toSet()));
+                        Collectors.toSet()),
+                template);
     }
 
     private boolean isResourceOverriddenRequest() {

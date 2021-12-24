@@ -77,7 +77,7 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
             description = "URL and credentials to connect to Search as a Service (SAAS).")
     public @interface Configuration {
 
-        String DEFAULT_WEB_SERVICE_URL = "https://test-search-admin.infocentric.swiss";
+        String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss";
         int DEFAULT_TIMEOUT = 10000;
         boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
         boolean DEFAULT_IGNORE_SSL = false;
