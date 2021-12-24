@@ -1,18 +1,8 @@
 package com.valtech.aem.saas.it.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.query.LanguageQuery;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -22,15 +12,25 @@ import org.codehaus.jackson.JsonNode;
 import org.json.JSONException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class SearchComponentIT {
 
   public static final String EXPECTED_SEARCH_MODEL_JSON = "search.model.json";
   @ClassRule
   public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+  @ClassRule
+  public static final SearchContentInstallRule content = new SearchContentInstallRule(cqBaseClassRule.authorRule);
+
   public static final String RESULTS = "results";
   public static final String RESULTS_TOTAL = "resultsTotal";
   public static final String ITEMS = "items";
@@ -40,8 +40,7 @@ public class SearchComponentIT {
   public static final String JSON_EXPORTER_MODEL = "model";
   public static final String JSON_EXTENSION = "json";
 
-  @Rule
-  public SearchContentInstallRule content = new SearchContentInstallRule(cqBaseClassRule.authorRule);
+
 
   static SlingModelJsonExporterClient slingModelJsonExporterClient;
 
@@ -62,28 +61,40 @@ public class SearchComponentIT {
 
   @Test
   public void testSearchResults() throws ClientException {
-    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "foo"),
-        new BasicNameValuePair(LanguageQuery.KEY, "en"));
+    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "uk"),
+                                                     new BasicNameValuePair(LanguageQuery.KEY, "en"));
 
     JsonNode searchTab1 = slingModelJsonExporterClient.doGetJsonNode(
-        getJsonModelPreparedUrl(
-            "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab"), searchParams,
-        200);
+            getJsonModelPreparedUrl(
+                    "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab"),
+            searchParams,
+            200);
 
     JsonNode searchTab2 = slingModelJsonExporterClient.doGetJsonNode(
-        getJsonModelPreparedUrl(
-            "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab_765476375"),
-        searchParams, 200);
+            getJsonModelPreparedUrl(
+                    "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab_765476375"),
+            searchParams, 200);
+
+    JsonNode searchTab3CopyOfSearchTab1WithTmplSet = slingModelJsonExporterClient.doGetJsonNode(
+            getJsonModelPreparedUrl(
+                    "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab_copy"),
+            searchParams, 200);
 
     validateSearchTabJson(searchTab1);
     validateSearchTabJson(searchTab2);
+    validateSearchTabJson(searchTab3CopyOfSearchTab1WithTmplSet);
 
     searchResultsExist(searchTab1);
     searchResultsExist(searchTab2);
+    searchResultsExist(searchTab3CopyOfSearchTab1WithTmplSet);
 
     hasFacetFilters(searchTab1);
+    hasFacetFilters(searchTab3CopyOfSearchTab1WithTmplSet);
 
     assertNotEquals(getResultsTotal(searchTab1), getResultsTotal(searchTab2));
+
+    //check that setting a tmpl param retrieves different results
+    assertNotEquals(getResultsTotal(searchTab1), getResultsTotal(searchTab3CopyOfSearchTab1WithTmplSet));
   }
 
   @Test
