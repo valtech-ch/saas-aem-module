@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
+import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.query.Filter;
@@ -135,6 +137,9 @@ public class SearchModelImpl implements SearchModel {
     @OSGiService
     private PathTransformer pathTransformer;
 
+    @OSGiService
+    private FulltextSearchPingService fulltextSearchPingService;
+
     @PostConstruct
     private void init() {
         createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
@@ -150,6 +155,16 @@ public class SearchModelImpl implements SearchModel {
         searchTabs = getSearchTabList();
         configJson = getSearchConfigJson();
     }
+
+    public boolean isConnectingToSearchApi() {
+        SearchCAConfigurationModel searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
+        if (searchCAConfigurationModel == null) {
+            log.warn("Can not resolve context aware search configuration model.");
+            return false;
+        }
+        return fulltextSearchPingService.ping(searchCAConfigurationModel);
+    }
+
 
     @JsonIgnore
     @Override

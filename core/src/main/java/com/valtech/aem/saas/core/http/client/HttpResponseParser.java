@@ -69,12 +69,14 @@ public final class HttpResponseParser {
     }
 
     private ByteArrayOutputStream copyToOutputStream() {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IOUtils.copy(response.getEntity().getContent(), baos);
-            return baos;
-        } catch (IOException e) {
-            log.error("Error while fetching content input stream.", e);
+        if (response.getEntity() != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                IOUtils.copy(response.getEntity().getContent(), baos);
+                return baos;
+            } catch (IOException e) {
+                log.error("Error while fetching content input stream.", e);
+            }
         }
         return null;
     }

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
+import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
@@ -45,6 +46,8 @@ class DefaultFulltextSearchServiceTest {
     SearchRequestExecutorService searchRequestExecutorService;
 
     FulltextSearchService testee;
+
+    FulltextSearchPingService pingService;
 
     Resource currentResource;
 
@@ -99,13 +102,35 @@ class DefaultFulltextSearchServiceTest {
     @Test
     void testGetResults_ok() {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "bar");
+                "index", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(getClass().getResourceAsStream("/__files/search/fulltext/response.json")))
+                        .getAsJsonObject(), true)));
         assertThat(testee.getResults(searchCAConfigurationModel, "de", 0, 10).isPresent(), is(true));
+    }
+
+
+    @Test
+    void testPingApi_ok() {
+        pingService = context.registerInjectActivateService(new DefaultFulltextSearchService());
+        MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
+                "index", "bar");
+        searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+        when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
+                Optional.of(new SearchResponse(null, true)));
+        assertThat(pingService.ping(searchCAConfigurationModel), is(true));
+    }
+
+    @Test
+    void testPingApi_nok() {
+        pingService = context.registerInjectActivateService(new DefaultFulltextSearchService());
+        MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
+                "index", "bar");
+        searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
+        when(searchRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(Optional.empty());
+        assertThat(pingService.ping(searchCAConfigurationModel), is(false));
     }
 
 }

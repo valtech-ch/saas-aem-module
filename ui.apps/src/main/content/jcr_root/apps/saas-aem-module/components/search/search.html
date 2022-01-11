@@ -1,5 +1,10 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchModel"
-     data-sly-test.isEdit="${wcmmode.edit}"></sly>
+     data-sly-test.isEdit="${wcmmode.edit}"
+     data-sly-test.isConnectingToSearchApi="${model.isConnectingToSearchApi}"></sly>
+<coral-alert data-sly-test="${isEdit && !isConnectingToSearchApi}"
+             variant="warning">
+    <coral-alert-header>Can not communicate to Search API.</coral-alert-header>
+</coral-alert>
 <sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
      data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
 <div data-sly-test="${isEdit}"
