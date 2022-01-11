@@ -34,6 +34,20 @@ public interface SearchServiceConnectionConfigurationService {
     boolean isBasicAuthenticationEnabled();
 
     /**
+     * Gets the jwt authentication token.
+     *
+     * @return jwt.
+     */
+    String getJwtAuthenticationToken();
+
+    /**
+     * Checks whether JWT Authentication is enabled.
+     *
+     * @return {@code true} if enabled.
+     */
+    boolean isJWTAuthenticationEnabled();
+
+    /**
      * Checks whether Ignore SSL is enabled.
      *
      * @return {@code true} if enabled.

@@ -103,8 +103,10 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
         RequestConfig requestConfig = createRequestConfig();
         log.debug("Http Client will be built with following request configuration {}", requestConfig);
         HttpClientBuilder httpClientBuilder = httpClientBuilderFactory.newBuilder()
-                                                                      .setDefaultRequestConfig(requestConfig);
-        if (getSearchConnectionConfig().isBasicAuthenticationEnabled()) {
+                .setDefaultRequestConfig(requestConfig);
+        if (getSearchConnectionConfig().isJWTAuthenticationEnabled()) {
+            httpClientBuilder.setRequestExecutor(new JWTHttpRequestExecutor(getSearchConnectionConfig().getJwtAuthenticationToken()));
+        } else if (getSearchConnectionConfig().isBasicAuthenticationEnabled()) {
             log.debug("Basic Authentication is enabled.");
             getCredentialsProvider().ifPresent(credentialsProvider -> {
                 log.debug("Setting basic authentication details for the http client.");
