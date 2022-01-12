@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.bestbets;
 
+import com.day.cq.i18n.I18n;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -12,6 +13,7 @@ import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfi
 import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.BestBetIdDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -30,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,6 +40,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
 class DefaultBestBetsServiceTest {
@@ -51,6 +55,12 @@ class DefaultBestBetsServiceTest {
     @Mock
     SearchRequestExecutorService searchRequestExecutorService;
 
+    @Mock
+    I18nProvider i18nProvider;
+
+    @Mock
+    I18n i18n;
+
     DefaultBestBetsService testee;
 
     Resource currentResource;
@@ -59,12 +69,14 @@ class DefaultBestBetsServiceTest {
 
     @BeforeEach
     void setUp() {
+        when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
         context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
         context.create().page("/content/saas-aem-module/us");
         context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
         context.currentPage("/content/saas-aem-module/us/en");
         context.currentResource("/content/saas-aem-module/us/en/jcr:content");
         MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
+        context.registerService(I18nProvider.class, i18nProvider);
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
         context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
