@@ -24,16 +24,13 @@ class SearchRequestHeadTest {
         assertThrows(IllegalArgumentException.class, emptySearchRequestHead::getRequest);
         SearchRequestHead incorrectUriSyntaxSearchRequestHead = new SearchRequestHead("$%^&*");
         assertThrows(IllegalArgumentException.class, incorrectUriSyntaxSearchRequestHead::getRequest);
-        assertThat(new SearchRequestHead("https://wknd.site/us/en/adventures/bali-surf-camp.html").getRequest(),
-                IsInstanceOf.instanceOf(
-                        HttpUriRequest.class));
+        assertThat(new SearchRequestHead("https://wknd.site/us/en/adventures/bali-surf-camp.html").getRequest(), IsInstanceOf.instanceOf(HttpUriRequest.class));
     }
 
     @Test
     void getSuccessStatusCodes() {
         List<Integer> statusCodes = new SearchRequestHead("").getSuccessStatusCodes();
         assertThat(statusCodes.size(), is(1));
-        assertThat(statusCodes.get(0), is(
-                HttpServletResponse.SC_OK));
+        assertThat(statusCodes.get(0), is(HttpServletResponse.SC_OK));
     }
 }

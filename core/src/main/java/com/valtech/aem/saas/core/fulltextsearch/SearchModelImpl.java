@@ -176,6 +176,7 @@ public class SearchModelImpl implements SearchModel {
                 return new ConnectionFailedAlert(AlertVariant.ERROR, Arrays.asList(i18n.get(I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION), i18n.get(I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
             }
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return new ConnectionFailedAlert(AlertVariant.WARNING, Collections.singletonList(e.getMessage()));
         }
         return null;
