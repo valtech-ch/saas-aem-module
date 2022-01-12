@@ -6,6 +6,9 @@ import org.apache.http.protocol.HttpRequestExecutor;
 
 import java.io.IOException;
 
+/**
+ * Extension of {@link HttpRequestExecutor} that adds authorization header prior to request execution.
+ */
 public class JWTHttpRequestExecutor extends HttpRequestExecutor {
     String jwtToken;
 
