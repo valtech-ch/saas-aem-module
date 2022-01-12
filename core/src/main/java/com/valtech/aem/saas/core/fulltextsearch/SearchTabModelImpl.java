@@ -14,7 +14,6 @@ import com.valtech.aem.saas.api.query.FilterFactory;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
-import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -97,9 +96,6 @@ public class SearchTabModelImpl implements SearchTabModel {
 
     @SlingObject
     private Resource resource;
-
-    @OSGiService
-    private I18nProvider i18nProvider;
 
     @OSGiService
     private FulltextSearchService fulltextSearchService;
