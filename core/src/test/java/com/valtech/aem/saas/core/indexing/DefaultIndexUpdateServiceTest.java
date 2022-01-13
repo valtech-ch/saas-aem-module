@@ -8,7 +8,7 @@ import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -35,20 +35,20 @@ class DefaultIndexUpdateServiceTest {
     public static final String SAMPLE_URL = "https://wknd.site/us/en/adventures/bali-surf-camp.html";
     public static final String SAMPLE_REPO_PATH = "/content/wknd/(?!www)";
     @Mock
-    SearchRequestExecutorService searchRequestExecutorService;
+    SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     IndexUpdateService testee;
 
     @BeforeEach
     void setUp(AemContext context) {
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-        context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
+        context.registerService(SearchApiRequestExecutorService.class, searchApiRequestExecutorService);
         testee = context.registerInjectActivateService(new DefaultIndexUpdateService());
     }
 
     @Test
     void testIndexUrl() {
-        when(searchRequestExecutorService.execute(any(SearchRequest.class)))
+        when(searchApiRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
         Optional<IndexUpdateResponseDTO> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(true));
@@ -57,7 +57,7 @@ class DefaultIndexUpdateServiceTest {
 
     @Test
     void testIndexUrl_exceptionDuringExecution() {
-        when(searchRequestExecutorService.execute(any(SearchRequest.class)))
+        when(searchApiRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.empty());
         Optional<IndexUpdateResponseDTO> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(false));
@@ -75,7 +75,7 @@ class DefaultIndexUpdateServiceTest {
 
     @Test
     void testIndexContent() {
-        when(searchRequestExecutorService.execute(any(SearchRequest.class)))
+        when(searchApiRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
         IndexContentPayloadDTO indexContentPayload = getCompleteDefaultIndexContentPayload();
         Optional<IndexUpdateResponseDTO> response = testee.indexContent("/foo", indexContentPayload);
@@ -93,7 +93,7 @@ class DefaultIndexUpdateServiceTest {
 
     @Test
     void testIndexContent_exceptionDuringExecution() {
-        when(searchRequestExecutorService.execute(any(SearchRequest.class)))
+        when(searchApiRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.empty());
         Optional<IndexUpdateResponseDTO> response = testee.indexContent("/foo",
                                                                         getCompleteDefaultIndexContentPayload());
@@ -102,7 +102,7 @@ class DefaultIndexUpdateServiceTest {
 
     @Test
     void testDeleteIndexedUrl() {
-        when(searchRequestExecutorService.execute(any(SearchRequest.class)))
+        when(searchApiRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
         Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(true));
@@ -111,7 +111,7 @@ class DefaultIndexUpdateServiceTest {
 
     @Test
     void testDeleteIndexedUrl_exceptionDuringExecution() {
-        when(searchRequestExecutorService.execute(any(SearchRequest.class)))
+        when(searchApiRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.empty());
         Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(false));

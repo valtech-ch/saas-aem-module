@@ -3,7 +3,7 @@ package com.valtech.aem.saas.core.typeahead;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.query.*;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
@@ -39,7 +39,7 @@ public class DefaultTypeaheadService implements TypeaheadService {
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
 
     @Reference
-    private SearchRequestExecutorService searchRequestExecutorService;
+    private SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     private Configuration configuration;
 
@@ -58,11 +58,11 @@ public class DefaultTypeaheadService implements TypeaheadService {
         String index = searchConfiguration.getIndex();
         SearchRequestGet searchRequestGet = new SearchRequestGet(
                 getApiUrl(index) + getQueryString(text, language, filters));
-        return searchRequestExecutorService.execute(searchRequestGet)
-                                           .filter(SearchResponse::isSuccess)
-                                           .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
-                                                   language)))
-                                           .orElse(Collections.emptyList());
+        return searchApiRequestExecutorService.execute(searchRequestGet)
+                .filter(SearchResponse::isSuccess)
+                .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
+                        language)))
+                .orElse(Collections.emptyList());
     }
 
     private String getQueryString(
@@ -80,10 +80,10 @@ public class DefaultTypeaheadService implements TypeaheadService {
 
     private String getApiUrl(String index) {
         return String.format("%s%s/%s%s",
-                             searchServiceConnectionConfigurationService.getBaseUrl(),
-                             configuration.typeaheadService_apiVersionPath(),
-                             index,
-                             configuration.typeaheadService_apiAction());
+                searchApiRequestExecutorService.getBaseUrl(),
+                configuration.typeaheadService_apiVersionPath(),
+                index,
+                configuration.typeaheadService_apiAction());
     }
 
     @Activate
@@ -97,7 +97,7 @@ public class DefaultTypeaheadService implements TypeaheadService {
     public @interface Configuration {
 
         String DEFAULT_API_ACTION = "/typeahead";
-        String DEFAULT_API_VERSION_PATH = "/api/v3";  // NOSONAR
+        String DEFAULT_API_VERSION_PATH = "/v3";  // NOSONAR
 
         @AttributeDefinition(name = "Api version path",
                 description = "Path designating the api version",

@@ -9,7 +9,14 @@ import java.util.Optional;
 /**
  * Represents a service for executing search requests on SaaS.
  */
-public interface SearchRequestExecutorService {
+public interface SearchApiRequestExecutorService {
+
+    /**
+     * Gets the base url/domain of the search api.
+     *
+     * @return
+     */
+    String getBaseUrl();
 
     /**
      * Returns the response from SaaS.

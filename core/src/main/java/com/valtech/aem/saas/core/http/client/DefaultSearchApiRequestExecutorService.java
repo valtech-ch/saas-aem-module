@@ -10,19 +10,19 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.osgi.service.component.annotations.*;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -30,10 +30,18 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+import static com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService.CONFIGURATION_PID;
+
+
 @Slf4j
-@Component(name = "Search as a Service - Search Request Executor Service",
-        service = SearchRequestExecutorService.class)
-public class DefaultSearchRequestExecutorService implements SearchRequestExecutorService {
+@Component(name = "Search as a Service - Search Api Request Executor Service",
+        service = SearchApiRequestExecutorService.class,
+        immediate = true,
+        configurationPid = CONFIGURATION_PID)
+@Designate(ocd = DefaultSearchApiRequestExecutorService.Configuration.class)
+public class DefaultSearchApiRequestExecutorService implements SearchApiRequestExecutorService {
+
+    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService";
 
     @Reference
     private HttpClientBuilderFactory httpClientBuilderFactory;
@@ -42,6 +50,8 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
     private SearchServiceConnectionConfigurationService searchConnectionConfig;
 
     private CloseableHttpClient httpClient;
+
+    private Configuration configuration;
 
     @Reference
     @Synchronized
@@ -52,7 +62,12 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
     @Synchronized
     protected void updatedSearchConnectionConfig(SearchServiceConnectionConfigurationService service) {
         this.searchConnectionConfig = service;
-        activate();
+        initHttpClient();
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return configuration.searchApiRequestExecutorService_baseurl();
     }
 
     @Override
@@ -98,20 +113,19 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
 
     @Activate
     @Modified
-    private void activate() {
+    private void activate(Configuration configuration) {
+        this.configuration = configuration;
+        initHttpClient();
+    }
+
+    private void initHttpClient() {
         log.debug("Configuring new Http Client Builder for Search Service requests.");
         RequestConfig requestConfig = createRequestConfig();
         log.debug("Http Client will be built with following request configuration {}", requestConfig);
         HttpClientBuilder httpClientBuilder = httpClientBuilderFactory.newBuilder()
                 .setDefaultRequestConfig(requestConfig);
-        if (getSearchConnectionConfig().isJWTAuthenticationEnabled()) {
-            httpClientBuilder.setRequestExecutor(new JWTHttpRequestExecutor(getSearchConnectionConfig().getJwtAuthenticationToken()));
-        } else if (getSearchConnectionConfig().isBasicAuthenticationEnabled()) {
-            log.debug("Basic Authentication is enabled.");
-            getCredentialsProvider().ifPresent(credentialsProvider -> {
-                log.debug("Setting basic authentication details for the http client.");
-                httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-            });
+        if (configuration.searchApiRequestExecutorService_jwtAuthentication_enable()) {
+            httpClientBuilder.setRequestExecutor(new JWTHttpRequestExecutor(configuration.searchApiRequestExecutorService_jwtAuthentication_token()));
         }
         if (getSearchConnectionConfig().isIgnoreSslEnabled()) {
             log.warn("Initializing HttpService with ignoring SSL Certificate");
@@ -129,31 +143,10 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
 
     private RequestConfig createRequestConfig() {
         return RequestConfig.custom()
-                            .setConnectTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                            .setConnectionRequestTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                            .setSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
-                            .build();
-    }
-
-    private Optional<CredentialsProvider> getCredentialsProvider() {
-        return new HttpHostResolver(getSearchConnectionConfig().getBaseUrl()).getHost()
-                                                                             .map(httpHost -> {
-                                                                                 BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
-                                                                                 AuthScope authScope = new AuthScope(
-                                                                                         httpHost);
-                                                                                 UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
-                                                                                         getSearchConnectionConfig().getBasicAuthenticationUser(),
-                                                                                         getSearchConnectionConfig().getBasicAuthenticationPassword());
-                                                                                 log.debug(
-                                                                                         "Creating basic credentials provider with authScope: {}, user: {}",
-                                                                                         authScope,
-                                                                                         usernamePasswordCredentials);
-                                                                                 basicCredentialsProvider.setCredentials(
-                                                                                         authScope,
-                                                                                         usernamePasswordCredentials
-                                                                                 );
-                                                                                 return basicCredentialsProvider;
-                                                                             });
+                .setConnectTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
+                .setConnectionRequestTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
+                .setSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
+                .build();
     }
 
     private void setToIgnoredSsl(HttpClientBuilder httpClientBuilder) {
@@ -167,4 +160,26 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
         }
     }
 
+    @ObjectClassDefinition(name = "Search as a Service - Search Api Request Executor Service Configuration",
+            description = "URL and authentication details for connect to Search Api Endpoint.")
+    public @interface Configuration {
+
+        String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss/api";
+        boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
+
+        @AttributeDefinition(name = "Base URL",
+                description = "The protocol + url for the search service")
+        String searchApiRequestExecutorService_baseurl() default DEFAULT_WEB_SERVICE_URL; // NOSONAR
+
+        @AttributeDefinition(name = "JWT authentication token",
+                description = "Token string",
+                type = AttributeType.PASSWORD)
+        String searchApiRequestExecutorService_jwtAuthentication_token(); // NOSONAR
+
+        @AttributeDefinition(name = "Use JWT authentication",
+                description = "Set above authorization token in search service request.",
+                type = AttributeType.BOOLEAN)
+        boolean searchApiRequestExecutorService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
+
+    }
 }

@@ -23,36 +23,6 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
     private Configuration configuration;
 
     @Override
-    public String getBaseUrl() {
-        return configuration.searchService_baseurl();
-    }
-
-    @Override
-    public String getBasicAuthenticationUser() {
-        return configuration.searchService_basicAuthentication_user();
-    }
-
-    @Override
-    public String getBasicAuthenticationPassword() {
-        return configuration.searchService_basicAuthentication_password();
-    }
-
-    @Override
-    public boolean isBasicAuthenticationEnabled() {
-        return configuration.searchService_basicAuthentication_enable();
-    }
-
-    @Override
-    public String getJwtAuthenticationToken() {
-        return configuration.searchService_jwtAuthentication_token();
-    }
-
-    @Override
-    public boolean isJWTAuthenticationEnabled() {
-        return configuration.searchService_jwtAuthentication_enable();
-    }
-
-    @Override
     public boolean isIgnoreSslEnabled() {
         return configuration.searchService_ignoreSSL();
     }
@@ -84,44 +54,13 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
     }
 
     @ObjectClassDefinition(name = "Search as a Service - Search Service HTTP Connection Configuration",
-            description = "URL and credentials to connect to Search as a Service (SAAS).")
+            description = "Connect details for SaaS APIs.")
     public @interface Configuration {
 
-        String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss";
         int DEFAULT_TIMEOUT = 10000;
-        boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
-        boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
         boolean DEFAULT_IGNORE_SSL = false;
         int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
         int DEFAULT_MAX_TOTAL_CONNECTIONS_PER_ROUTE = 50;
-
-        @AttributeDefinition(name = "Base URL",
-                description = "The protocol + url for the search service")
-        String searchService_baseurl() default DEFAULT_WEB_SERVICE_URL; // NOSONAR
-
-        @AttributeDefinition(name = "Basic authentication - User",
-                description = "User for basic authentication to the search service")
-        String searchService_basicAuthentication_user(); // NOSONAR
-
-        @AttributeDefinition(name = "Basic authentication - Password",
-                description = "Password for basic authentication to the search service",
-                type = AttributeType.PASSWORD)
-        String searchService_basicAuthentication_password(); // NOSONAR
-
-        @AttributeDefinition(name = "Use basic authentication",
-                description = "Submit the above user + password to the search service",
-                type = AttributeType.BOOLEAN)
-        boolean searchService_basicAuthentication_enable() default DEFAULT_BASIC_AUTHENTICATION_ENABLE; // NOSONAR
-
-        @AttributeDefinition(name = "JWT authentication token",
-                description = "Token string",
-                type = AttributeType.PASSWORD)
-        String searchService_jwtAuthentication_token(); // NOSONAR
-
-        @AttributeDefinition(name = "Use JWT authentication",
-                description = "Set above authorization token in search service request.",
-                type = AttributeType.BOOLEAN)
-        boolean searchService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
 
         @AttributeDefinition(name = "Ignore invalid SSL certificate",
                 description = "This setting should not be activated on a Production. Use for self-signed certificates if not in the trust store or for invalid certificates",

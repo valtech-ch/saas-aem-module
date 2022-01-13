@@ -7,18 +7,15 @@ public final class BestBetsApiCommonPathConstructor {
     public static final String URL_PATH_DELIMITER = "/";
 
     private final String baseUrl;
-    private final String basePath;
     private final String apiVersionPath;
 
     public BestBetsApiCommonPathConstructor(
             String baseUrl,
-            String basePath,
             String apiVersionPath) {
-        if (StringUtils.isAnyBlank(baseUrl, basePath, apiVersionPath)) {
+        if (StringUtils.isAnyBlank(baseUrl, apiVersionPath)) {
             throw new IllegalArgumentException("Constructor's params should not be blank.");
         }
         this.baseUrl = baseUrl;
-        this.basePath = basePath;
         this.apiVersionPath = apiVersionPath;
     }
 
@@ -28,7 +25,6 @@ public final class BestBetsApiCommonPathConstructor {
         }
         return StringUtils.join(
                 baseUrl,
-                basePath,
                 URL_PATH_DELIMITER + client,
                 apiVersionPath);
     }

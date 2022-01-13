@@ -6,7 +6,7 @@ import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.query.*;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.*;
@@ -45,7 +45,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
 
     @Reference
-    private SearchRequestExecutorService searchRequestExecutorService;
+    private SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     private Configuration configuration;
 
@@ -69,7 +69,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
                                                             facets,
                                                             template));
         log.debug("Search GET Request: {}", requestUrl);
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
+        Optional<SearchResponse> searchResponse = searchApiRequestExecutorService.execute(new SearchRequestGet(requestUrl));
         if (searchResponse.isPresent()) {
             printResponseHeaderInLog(searchResponse.get());
             return getFulltextSearchResults(searchResponse.get(), searchConfiguration.isAutoSuggestEnabled(),
@@ -179,10 +179,10 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
 
     private String getApiUrl(String index) {
         return String.format("%s%s/%s%s",
-                             searchServiceConnectionConfigurationService.getBaseUrl(),
-                             configuration.fulltextSearchService_apiVersion(),
-                             index,
-                             configuration.fulltextSearchService_apiAction());
+                searchApiRequestExecutorService.getBaseUrl(),
+                configuration.fulltextSearchService_apiVersion(),
+                index,
+                configuration.fulltextSearchService_apiAction());
     }
 
     @Activate
@@ -196,10 +196,10 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
     public @interface Configuration {
 
         String DEFAULT_API_ACTION = "/search";
-        String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
+        String DEFAULT_API_VERSION_PATH = "/v3"; // NOSONAR
 
-        @AttributeDefinition(name = "Api base path",
-                description = "Api base path",
+        @AttributeDefinition(name = "Api version path",
+                description = "Api version path",
                 type = AttributeType.STRING)
         String fulltextSearchService_apiVersion() default DEFAULT_API_VERSION_PATH; // NOSONAR
 

@@ -8,7 +8,7 @@ import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.bestbets.DefaultBestBetsService.Configuration;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
@@ -49,7 +49,7 @@ public class DefaultBestBetsService implements BestBetsService {
     static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.bestbets.DefaultBestBetsService";
 
     @Reference
-    private SearchRequestExecutorService searchRequestExecutorService;
+    private SearchAdminRequestExecutorService searchAdminRequestExecutorService;
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -65,12 +65,12 @@ public class DefaultBestBetsService implements BestBetsService {
         }
 
         SearchRequest searchRequest = SearchRequestPost.builder()
-                                                       .uri(createApiCommonPath(searchConfiguration.getClient())
-                                                                    + configuration.bestBetsService_apiAddBestBetAction())
-                                                       .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(
-                                                               searchConfiguration.getIndex())))
-                                                       .build();
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+                .uri(createApiCommonPath(searchConfiguration.getClient())
+                        + configuration.bestBetsService_apiAddBestBetAction())
+                .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(
+                        searchConfiguration.getIndex())))
+                .build();
+        Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
         searchResponse
                 .ifPresent(r -> handleSearchResponseError(r,
@@ -89,15 +89,15 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Add best bets action path is not specified.");
         }
         SearchRequest searchRequest = SearchRequestPost.builder()
-                                                       .uri(createApiCommonPath(searchConfiguration.getClient())
-                                                                    + configuration.bestBetsService_apiAddBestBetsAction())
-                                                       .httpEntity(createJsonPayloadEntity(bestBetPayloadList.stream()
-                                                                                                             .map(bestBetPayloadDTO -> bestBetPayloadDTO.index(
-                                                                                                                     searchConfiguration.getIndex()))
-                                                                                                             .collect(
-                                                                                                                     Collectors.toList())))
-                                                       .build();
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+                .uri(createApiCommonPath(searchConfiguration.getClient())
+                        + configuration.bestBetsService_apiAddBestBetsAction())
+                .httpEntity(createJsonPayloadEntity(bestBetPayloadList.stream()
+                        .map(bestBetPayloadDTO -> bestBetPayloadDTO.index(
+                                searchConfiguration.getIndex()))
+                        .collect(
+                                Collectors.toList())))
+                .build();
+        Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
         searchResponse
                 .ifPresent(r -> handleSearchResponseError(r,
@@ -114,13 +114,13 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Update best bet action path is not specified.");
         }
         SearchRequest searchRequest = SearchRequestPut.builder()
-                                                      .uri(createApiCommonPath(searchConfiguration.getClient())
-                                                                   + configuration.bestBetsService_apiUpdateBestBetAction() + URL_PATH_DELIMITER
-                                                                   + bestBetId)
-                                                      .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(
-                                                              searchConfiguration.getIndex())))
-                                                      .build();
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+                .uri(createApiCommonPath(searchConfiguration.getClient())
+                        + configuration.bestBetsService_apiUpdateBestBetAction() + URL_PATH_DELIMITER
+                        + bestBetId)
+                .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(
+                        searchConfiguration.getIndex())))
+                .build();
+        Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
         searchResponse.ifPresent(r -> handleSearchResponseError(r,
                                                                 String.format(
@@ -144,11 +144,11 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Delete best bet action path is not specified.");
         }
         SearchRequest searchRequest = SearchRequestDelete.builder()
-                                                         .uri(createApiCommonPath(searchConfiguration.getClient())
-                                                                      + configuration.bestBetsService_apiDeleteBestBetAction() + URL_PATH_DELIMITER
-                                                                      + bestBetId)
-                                                         .build();
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+                .uri(createApiCommonPath(searchConfiguration.getClient())
+                        + configuration.bestBetsService_apiDeleteBestBetAction() + URL_PATH_DELIMITER
+                        + bestBetId)
+                .build();
+        Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
         searchResponse.ifPresent(r -> handleSearchResponseError(r,
                                                                 String.format("Failed to delete best bet with id %s",
@@ -175,7 +175,7 @@ public class DefaultBestBetsService implements BestBetsService {
         }
         SearchRequest searchRequest = new SearchRequestGet(
                 getPreparePublishBestBetsAction(searchConfiguration.getClient(), projectId));
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+        Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
         searchResponse.ifPresent(
                 r -> handleSearchResponseError(r,
@@ -191,12 +191,12 @@ public class DefaultBestBetsService implements BestBetsService {
         SearchRequest searchRequest = new SearchRequestGet(
                 createApiCommonPath(searchConfiguration.getClient())
                         + configuration.bestBetsService_apiGetAllBestBetsAction());
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(searchRequest);
+        Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
-        return searchRequestExecutorService.execute(searchRequest)
-                                           .filter(SearchResponse::isSuccess)
-                                           .flatMap(response -> response.get(new BestBetsDataExtractionStrategy()))
-                                           .orElse(Collections.emptyList());
+        return searchAdminRequestExecutorService.execute(searchRequest)
+                .filter(SearchResponse::isSuccess)
+                .flatMap(response -> response.get(new BestBetsDataExtractionStrategy()))
+                .orElse(Collections.emptyList());
     }
 
     private String getPreparePublishBestBetsAction(
@@ -236,9 +236,8 @@ public class DefaultBestBetsService implements BestBetsService {
     }
 
     private String createApiCommonPath(String client) {
-        return new BestBetsApiCommonPathConstructor(searchServiceConnectionConfigurationService.getBaseUrl(),
-                                                    configuration.bestBetsService_apiBasePath(),
-                                                    configuration.bestBetsService_apiVersionPath())
+        return new BestBetsApiCommonPathConstructor(searchAdminRequestExecutorService.getBaseUrl(),
+                configuration.bestBetsService_apiVersionPath())
                 .getPath(client);
     }
 
@@ -256,13 +255,7 @@ public class DefaultBestBetsService implements BestBetsService {
         String DEFAULT_API_BEST_BET_ACTION = "/bestbet";
         String DEFAULT_API_BEST_BETS_ACTION = "/bestbets";
         String DEFAULT_API_PROJECT_BEST_BETS_PUBLISH_ACTION = DEFAULT_API_BEST_BETS_ACTION + "/%s/publish";
-        String DEFAULT_API_BASE_PATH = "/admin"; // NOSONAR
         String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
-
-        @AttributeDefinition(name = "Api base path",
-                description = "Base path of the api.",
-                type = AttributeType.STRING)
-        String bestBetsService_apiBasePath() default DEFAULT_API_BASE_PATH; // NOSONAR
 
         @AttributeDefinition(name = "Api version path",
                 description = "Path designating the api version.",

@@ -9,7 +9,7 @@ import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.BestBetIdDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -49,7 +49,7 @@ class DefaultBestBetsServiceTest {
     HttpClientBuilderFactory httpClientBuilderFactory;
 
     @Mock
-    SearchRequestExecutorService searchRequestExecutorService;
+    SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     DefaultBestBetsService testee;
 
@@ -67,7 +67,7 @@ class DefaultBestBetsServiceTest {
         MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-        context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
+        context.registerService(SearchApiRequestExecutorService.class, searchApiRequestExecutorService);
         testee = context.registerInjectActivateService(new DefaultBestBetsService());
         currentResource = context.currentResource();
     }
@@ -79,7 +79,7 @@ class DefaultBestBetsServiceTest {
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         JsonObject bestBetAddedResponse = new JsonObject();
         bestBetAddedResponse.addProperty(BestBetIdDataExtractionStrategy.ID, 1);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Mockito.when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(bestBetAddedResponse, true)));
         assertThat(testee.addBestBet(searchCAConfigurationModel,
                                      new BestBetPayloadDTO("foo", "baz", "de")),
@@ -133,7 +133,7 @@ class DefaultBestBetsServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Mockito.when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonObject(), true)));
         assertDoesNotThrow(() -> testee.addBestBets(searchCAConfigurationModel, Collections.singletonList(
                 new BestBetPayloadDTO("foo", "baz", "de"))));
@@ -155,11 +155,11 @@ class DefaultBestBetsServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Mockito.when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(
-                                                                               getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(
+                                        getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
+                        .getAsJsonObject(), true)));
         assertDoesNotThrow(() -> testee.updateBestBet(searchCAConfigurationModel, 1,
                                                       new BestBetPayloadDTO("foo", "baz", "de")));
     }
@@ -191,11 +191,11 @@ class DefaultBestBetsServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Mockito.when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(
-                                                                               getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(
+                                        getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
+                        .getAsJsonObject(), true)));
         assertDoesNotThrow(() -> testee.deleteBestBet(searchCAConfigurationModel, 1));
     }
 
@@ -222,7 +222,7 @@ class DefaultBestBetsServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Mockito.when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonObject(), true)));
         assertDoesNotThrow(() -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
     }
@@ -253,10 +253,10 @@ class DefaultBestBetsServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        Mockito.when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
-                                                               .getAsJsonArray(), true)));
+                                new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
+                        .getAsJsonArray(), true)));
         assertThat(testee.getBestBets(searchCAConfigurationModel), not(empty()));
     }
 

@@ -6,7 +6,7 @@ import com.valtech.aem.saas.api.indexing.IndexUpdateService;
 import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
 import com.valtech.aem.saas.api.request.SearchRequest;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
 import com.valtech.aem.saas.core.http.request.SearchRequestPost;
@@ -44,7 +44,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService";
 
     @Reference
-    private SearchRequestExecutorService searchRequestExecutorService;
+    private SearchAdminRequestExecutorService searchAdminRequestExecutorService;
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -93,9 +93,9 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
                                                        .httpEntity(createIndexUpdatePayloadEntity(url, repositoryPath))
                                                        .build();
 
-        return searchRequestExecutorService.execute(searchRequest)
-                                           .filter(SearchResponse::isSuccess)
-                                           .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
+        return searchAdminRequestExecutorService.execute(searchRequest)
+                .filter(SearchResponse::isSuccess)
+                .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
     }
 
     @Override
@@ -110,9 +110,9 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
                                                          .httpEntity(createIndexUpdatePayloadEntity(url,
                                                                                                     repositoryPath))
                                                          .build();
-        return searchRequestExecutorService.execute(searchRequest)
-                                           .filter(SearchResponse::isSuccess)
-                                           .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
+        return searchAdminRequestExecutorService.execute(searchRequest)
+                .filter(SearchResponse::isSuccess)
+                .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
     }
 
     @Override
@@ -127,9 +127,9 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
                                                                indexContentPayloadDto))
                                                        .build();
 
-        return searchRequestExecutorService.execute(searchRequest)
-                                           .filter(SearchResponse::isSuccess)
-                                           .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
+        return searchAdminRequestExecutorService.execute(searchRequest)
+                .filter(SearchResponse::isSuccess)
+                .flatMap(response -> response.get(new DefaultIndexUpdateDataExtractionStrategy()));
     }
 
     private HttpEntity createIndexUpdatePayloadEntity(
@@ -153,12 +153,11 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
     private String getRequestUri(
             String client,
             String action) {
-        return String.format("%s%s/%s%s%s",
-                             searchServiceConnectionConfigurationService.getBaseUrl(),
-                             configuration.indexUpdateService_apiBasePath(),
-                             client,
-                             configuration.indexUpdateService_apiVersionPath(),
-                             action);
+        return String.format("%s/%s%s%s",
+                searchAdminRequestExecutorService.getBaseUrl(),
+                client,
+                configuration.indexUpdateService_apiVersionPath(),
+                action);
     }
 
     private void validateInput(
@@ -186,13 +185,7 @@ public class DefaultIndexUpdateService implements IndexUpdateService {
 
         String DEFAULT_API_INDEX_TRIGGER_ACTION = "/index/trigger";
         String DEFAULT_API_PUSH_CONTENT_ACTION = "/content";
-        String DEFAULT_API_BASE_PATH = "/admin"; // NOSONAR
         String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
-
-        @AttributeDefinition(name = "Api base path",
-                description = "Base path of the api",
-                type = AttributeType.STRING)
-        String indexUpdateService_apiBasePath() default DEFAULT_API_BASE_PATH; // NOSONAR
 
         @AttributeDefinition(name = "Api version path",
                 description = "Path designating the api version",

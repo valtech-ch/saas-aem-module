@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, AemContextExtension.class})
-class DefaultSearchRequestExecutorServiceTest {
+class DefaultSearchApiRequestExecutorServiceTest {
 
     @Mock
     SearchRequest searchRequest;
@@ -52,7 +52,7 @@ class DefaultSearchRequestExecutorServiceTest {
     @Mock
     CloseableHttpResponse response;
 
-    SearchRequestExecutorService testee;
+    SearchApiRequestExecutorService testee;
 
     @BeforeEach
     void setUp(AemContext context) {
@@ -61,7 +61,7 @@ class DefaultSearchRequestExecutorServiceTest {
         when(httpClientBuilder.build()).thenReturn(httpClient);
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-        testee = context.registerInjectActivateService(new DefaultSearchRequestExecutorService());
+        testee = context.registerInjectActivateService(new DefaultSearchApiRequestExecutorService());
     }
 
     @Test
