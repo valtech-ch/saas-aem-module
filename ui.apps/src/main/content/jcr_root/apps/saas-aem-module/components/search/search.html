@@ -1,16 +1,19 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchModel"
      data-sly-test.isEdit="${wcmmode.edit}"
      data-sly-test.connectionFailedAlert="${model.connectionFailedAlert}"></sly>
-<coral-alert data-sly-test="${isEdit && connectionFailedAlert}"
-             size="L"
-             variant="${connectionFailedAlert.variant.value}">
-    <coral-alert-header>${'com.valtech.aem.saas.core.search.apiConnectionFail.text' @ i18n}</coral-alert-header>
-    <coral-alert-content data-sly-test.messages="${connectionFailedAlert.messages}">
-        <ul data-sly-list.message="${messages}">
-            <li>${message}</li>
-        </ul>
-    </coral-alert-content>
-</coral-alert>
+<sly data-sly-test="${isEdit && connectionFailedAlert}">
+    <sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
+         data-sly-call="${clientlib.all @ categories='coralui3'}"></sly>
+    <coral-alert size="L"
+                 variant="${connectionFailedAlert.variant.value}">
+        <coral-alert-header>${'com.valtech.aem.saas.core.search.apiConnectionFail.text' @ i18n}</coral-alert-header>
+        <coral-alert-content data-sly-test.messages="${connectionFailedAlert.messages}">
+            <ul data-sly-list.message="${messages}">
+                <li>${message}</li>
+            </ul>
+        </coral-alert-content>
+    </coral-alert>
+</sly>
 <sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
      data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
 <div data-sly-test="${isEdit}"

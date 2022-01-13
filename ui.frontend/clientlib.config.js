@@ -65,7 +65,7 @@ module.exports = {
       ...libsBaseConfig,
       name: 'clientlib-base',
       categories: ['saas-aem-module.base'],
-      dependencies: ['saas-aem-module.dependencies', 'coralui3'],
+      dependencies: ['saas-aem-module.dependencies'],
       assets: {
         // Copy entrypoint scripts and stylesheets into the respective ClientLib
         // directories
