@@ -43,6 +43,16 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
     }
 
     @Override
+    public String getJwtAuthenticationToken() {
+        return configuration.searchService_jwtAuthentication_token();
+    }
+
+    @Override
+    public boolean isJWTAuthenticationEnabled() {
+        return configuration.searchService_jwtAuthentication_enable();
+    }
+
+    @Override
     public boolean isIgnoreSslEnabled() {
         return configuration.searchService_ignoreSSL();
     }
@@ -80,6 +90,7 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
         String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss";
         int DEFAULT_TIMEOUT = 10000;
         boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
+        boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
         boolean DEFAULT_IGNORE_SSL = false;
         int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
         int DEFAULT_MAX_TOTAL_CONNECTIONS_PER_ROUTE = 50;
@@ -101,6 +112,16 @@ public class DefaultSearchServiceConnectionConfigurationService implements Searc
                 description = "Submit the above user + password to the search service",
                 type = AttributeType.BOOLEAN)
         boolean searchService_basicAuthentication_enable() default DEFAULT_BASIC_AUTHENTICATION_ENABLE; // NOSONAR
+
+        @AttributeDefinition(name = "JWT authentication token",
+                description = "Token string",
+                type = AttributeType.PASSWORD)
+        String searchService_jwtAuthentication_token(); // NOSONAR
+
+        @AttributeDefinition(name = "Use JWT authentication",
+                description = "Set above authorization token in search service request.",
+                type = AttributeType.BOOLEAN)
+        boolean searchService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
 
         @AttributeDefinition(name = "Ignore invalid SSL certificate",
                 description = "This setting should not be activated on a Production. Use for self-signed certificates if not in the trust store or for invalid certificates",
