@@ -196,7 +196,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
     public @interface Configuration {
 
         String DEFAULT_API_ACTION = "/search";
-        String DEFAULT_API_VERSION_PATH = "/v3"; // NOSONAR
+        String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
 
         @AttributeDefinition(name = "Api version path",
                 description = "Api version path",

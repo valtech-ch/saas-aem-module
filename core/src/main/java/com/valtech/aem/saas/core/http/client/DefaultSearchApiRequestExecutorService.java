@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.http.client;
 
-import com.google.gson.JsonElement;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import lombok.AccessLevel;
@@ -9,10 +8,7 @@ import lombok.NonNull;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -24,7 +20,6 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -72,43 +67,7 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
 
     @Override
     public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
-        HttpUriRequest request = searchRequest.getRequest();
-        CloseableHttpResponse response = null;
-        try {
-            response = httpClient.execute(request);
-            log.info("Executing {} request on search api {}", request.getMethod(), request.getURI());
-            log.info("Success status codes: {}", searchRequest.getSuccessStatusCodes());
-            log.info("Status Code: {}", response.getStatusLine().getStatusCode());
-            log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
-            boolean isSuccess = isRequestSuccessful(searchRequest, response);
-            HttpResponseParser httpResponseParser = new HttpResponseParser(response);
-            if (isSuccess && log.isDebugEnabled()) {
-                log.debug("Response content: {}", httpResponseParser.getContentString());
-            }
-            JsonElement jsonResponse = httpResponseParser.toGsonModel(JsonElement.class);
-            if (jsonResponse != null) {
-                return Optional.of(new SearchResponse(jsonResponse, isSuccess));
-            }
-        } catch (IOException e) {
-            log.error("Error while executing request", e);
-        } finally {
-            if (response != null) {
-                IOUtils.closeQuietly(response, e -> log.error("Could not close response.", e));
-            }
-        }
-        return Optional.empty();
-    }
-
-    private boolean isRequestSuccessful(
-            SearchRequest searchRequest,
-            HttpResponse httpResponse) {
-        boolean success = searchRequest.getSuccessStatusCodes().contains(httpResponse.getStatusLine().getStatusCode());
-        if (success) {
-            log.debug("Request is successful.");
-        } else {
-            log.debug("Request has failed.");
-        }
-        return success;
+        return new SearchRequestExecutor(httpClient).execute(searchRequest);
     }
 
     @Activate
@@ -164,7 +123,7 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
             description = "URL and authentication details for connect to Search Api Endpoint.")
     public @interface Configuration {
 
-        String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss/api";
+        String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss";
         boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
 
         @AttributeDefinition(name = "Base URL",

@@ -65,7 +65,7 @@ public class DefaultBestBetsService implements BestBetsService {
         }
 
         SearchRequest searchRequest = SearchRequestPost.builder()
-                .uri(createApiCommonPath(searchConfiguration.getClient())
+                .uri(createApiCommonPath()
                         + configuration.bestBetsService_apiAddBestBetAction())
                 .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(
                         searchConfiguration.getIndex())))
@@ -89,7 +89,7 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Add best bets action path is not specified.");
         }
         SearchRequest searchRequest = SearchRequestPost.builder()
-                .uri(createApiCommonPath(searchConfiguration.getClient())
+                .uri(createApiCommonPath()
                         + configuration.bestBetsService_apiAddBestBetsAction())
                 .httpEntity(createJsonPayloadEntity(bestBetPayloadList.stream()
                         .map(bestBetPayloadDTO -> bestBetPayloadDTO.index(
@@ -114,7 +114,7 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Update best bet action path is not specified.");
         }
         SearchRequest searchRequest = SearchRequestPut.builder()
-                .uri(createApiCommonPath(searchConfiguration.getClient())
+                .uri(createApiCommonPath()
                         + configuration.bestBetsService_apiUpdateBestBetAction() + URL_PATH_DELIMITER
                         + bestBetId)
                 .httpEntity(createJsonPayloadEntity(bestBetPayloadDto.index(
@@ -144,7 +144,7 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Delete best bet action path is not specified.");
         }
         SearchRequest searchRequest = SearchRequestDelete.builder()
-                .uri(createApiCommonPath(searchConfiguration.getClient())
+                .uri(createApiCommonPath()
                         + configuration.bestBetsService_apiDeleteBestBetAction() + URL_PATH_DELIMITER
                         + bestBetId)
                 .build();
@@ -174,7 +174,7 @@ public class DefaultBestBetsService implements BestBetsService {
                     "Publish Best Bets For Project Action is of illegal format. It should contain a wildcard/placeholder for project id.");
         }
         SearchRequest searchRequest = new SearchRequestGet(
-                getPreparePublishBestBetsAction(searchConfiguration.getClient(), projectId));
+                getPreparePublishBestBetsAction(projectId));
         Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
         searchResponse.ifPresent(
@@ -189,7 +189,7 @@ public class DefaultBestBetsService implements BestBetsService {
             throw new IllegalStateException("Get best bets action path is not specified.");
         }
         SearchRequest searchRequest = new SearchRequestGet(
-                createApiCommonPath(searchConfiguration.getClient())
+                createApiCommonPath()
                         + configuration.bestBetsService_apiGetAllBestBetsAction());
         Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
         handleFailedRequestExecution(searchResponse);
@@ -199,20 +199,18 @@ public class DefaultBestBetsService implements BestBetsService {
                 .orElse(Collections.emptyList());
     }
 
-    private String getPreparePublishBestBetsAction(
-            @NonNull String client,
-            int projectId) {
-        return createApiCommonPath(client) + String.format(configuration.bestBetsService_apiPublishProjectBestBetsAction(),
-                                                           projectId);
+    private String getPreparePublishBestBetsAction(int projectId) {
+        return createApiCommonPath() + String.format(configuration.bestBetsService_apiPublishProjectBestBetsAction(),
+                projectId);
     }
 
 
     private <T> HttpEntity createJsonPayloadEntity(T jsonPayload) {
         return EntityBuilder.create()
-                            .setText(new Gson().toJson(jsonPayload))
-                            .setContentType(ContentType.APPLICATION_JSON)
-                            .setContentEncoding(StandardCharsets.UTF_8.name())
-                            .build();
+                .setText(new Gson().toJson(jsonPayload))
+                .setContentType(ContentType.APPLICATION_JSON)
+                .setContentEncoding(StandardCharsets.UTF_8.name())
+                .build();
     }
 
     private void handleSearchResponseError(
@@ -235,10 +233,10 @@ public class DefaultBestBetsService implements BestBetsService {
         }
     }
 
-    private String createApiCommonPath(String client) {
-        return new BestBetsApiCommonPathConstructor(searchAdminRequestExecutorService.getBaseUrl(),
-                configuration.bestBetsService_apiVersionPath())
-                .getPath(client);
+    private String createApiCommonPath() {
+        return StringUtils.join(
+                searchAdminRequestExecutorService.getBaseUrl(),
+                configuration.bestBetsService_apiVersionPath());
     }
 
     @Activate

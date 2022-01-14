@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.http.client;
 
-import com.google.gson.JsonElement;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import lombok.AccessLevel;
@@ -9,13 +8,10 @@ import lombok.NonNull;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -28,7 +24,6 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -75,43 +70,8 @@ public class DefaultSearchAdminRequestExecutorService implements SearchAdminRequ
 
     @Override
     public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
-        HttpUriRequest request = searchRequest.getRequest();
-        CloseableHttpResponse response = null;
-        try {
-            response = httpClient.execute(request);
-            log.info("Executing {} request on search api {}", request.getMethod(), request.getURI());
-            log.info("Success status codes: {}", searchRequest.getSuccessStatusCodes());
-            log.info("Status Code: {}", response.getStatusLine().getStatusCode());
-            log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
-            boolean isSuccess = isRequestSuccessful(searchRequest, response);
-            HttpResponseParser httpResponseParser = new HttpResponseParser(response);
-            if (isSuccess && log.isDebugEnabled()) {
-                log.debug("Response content: {}", httpResponseParser.getContentString());
-            }
-            JsonElement jsonResponse = httpResponseParser.toGsonModel(JsonElement.class);
-            if (jsonResponse != null) {
-                return Optional.of(new SearchResponse(jsonResponse, isSuccess));
-            }
-        } catch (IOException e) {
-            log.error("Error while executing request", e);
-        } finally {
-            if (response != null) {
-                IOUtils.closeQuietly(response, e -> log.error("Could not close response.", e));
-            }
-        }
-        return Optional.empty();
-    }
+        return new SearchRequestExecutor(httpClient).execute(searchRequest);
 
-    private boolean isRequestSuccessful(
-            SearchRequest searchRequest,
-            HttpResponse httpResponse) {
-        boolean success = searchRequest.getSuccessStatusCodes().contains(httpResponse.getStatusLine().getStatusCode());
-        if (success) {
-            log.debug("Request is successful.");
-        } else {
-            log.debug("Request has failed.");
-        }
-        return success;
     }
 
     @Activate
