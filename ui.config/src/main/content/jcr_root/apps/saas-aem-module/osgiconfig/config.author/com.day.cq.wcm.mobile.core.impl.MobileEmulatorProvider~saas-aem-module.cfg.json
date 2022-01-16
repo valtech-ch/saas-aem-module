@@ -1,6 +1,0 @@
-{
-  "mobile.resourceTypes": [
-    "saas-aem-module/components/page"
-  ],
-  "README": "Indicate which page resource types should display the mobile emulators."
-}
