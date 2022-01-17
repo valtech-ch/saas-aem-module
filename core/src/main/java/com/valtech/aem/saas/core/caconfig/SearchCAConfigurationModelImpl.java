@@ -33,7 +33,6 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
 
     public static final String I18N_SEARCH_CA_CONFIGURATION_INDEX_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage";
     public static final String I18N_SEARCH_CA_CONFIGURATION_CLIENT_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.clientRequiredMessage";
-    public static final String I18N_SEARCH_CA_CONFIGURATION_PROJECT_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.projectRequiredMessage";
 
     @Self
     private Resource resource;
@@ -73,14 +72,7 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
 
     @Override
     public int getProjectId() {
-        if (!isValidProjectValue(searchConfiguration.projectId())) {
-            throw new IllegalStateException(i18n.get(I18N_SEARCH_CA_CONFIGURATION_PROJECT_REQUIRED));
-        }
         return searchConfiguration.projectId();
-    }
-
-    private boolean isValidProjectValue(int value) {
-        return value > SearchConfiguration.DEFAULT_PROJECT_ID;
     }
 
     @Override
