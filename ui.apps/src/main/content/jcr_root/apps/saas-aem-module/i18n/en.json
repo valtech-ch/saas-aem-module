@@ -7,7 +7,7 @@
   "com.valtech.aem.saas.core.search.apiConnectionFail.text": "Can not communicate to Search API.",
   "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkLogFiles.text": "Check log files.",
   "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkOsgiConfigurations.text": "Check OSGi Configurations.",
-  "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage": "Failed to resolve CA Search Configuration for resource: {}",
+  "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage": "Failed to resolve Context Aware Search Configuration for resource: {}",
   "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage": "Search Index must be configured.",
   "com.valtech.aem.saas.core.search.caConfiguration.clientRequiredMessage": "Search Client must be configured.",
   "com.valtech.aem.saas.core.search.caConfiguration.projectRequiredMessage": "Project Id must be configured and should be a non-negative integer."
