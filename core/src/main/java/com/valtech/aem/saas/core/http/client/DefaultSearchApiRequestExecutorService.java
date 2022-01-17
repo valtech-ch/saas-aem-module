@@ -8,21 +8,14 @@ import lombok.NonNull;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import static com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService.CONFIGURATION_PID;
@@ -78,45 +71,23 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
     }
 
     private void initHttpClient() {
-        log.debug("Configuring new Http Client Builder for Search Service requests.");
-        RequestConfig requestConfig = createRequestConfig();
-        log.debug("Http Client will be built with following request configuration {}", requestConfig);
-        HttpClientBuilder httpClientBuilder = httpClientBuilderFactory.newBuilder()
-                .setDefaultRequestConfig(requestConfig);
-        if (configuration.searchApiRequestExecutorService_jwtAuthentication_enable()) {
-            httpClientBuilder.setRequestExecutor(new JWTHttpRequestExecutor(configuration.searchApiRequestExecutorService_jwtAuthentication_token()));
-        }
-        if (getSearchConnectionConfig().isIgnoreSslEnabled()) {
-            log.warn("Initializing HttpService with ignoring SSL Certificate");
-            setToIgnoredSsl(httpClientBuilder);
-        }
-        httpClientBuilder.setMaxConnTotal(getSearchConnectionConfig().getHttpMaxTotalConnections());
-        httpClientBuilder.setMaxConnPerRoute(getSearchConnectionConfig().getHttpMaxConnectionsPerRoute());
-        httpClient = httpClientBuilder.build();
+        httpClient = SearchHttpClientFactory
+                .builder()
+                .httpClientBuilderFactory(httpClientBuilderFactory)
+                .httpConnectionTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
+                .httpSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
+                .jwtAuthenticationEnabled(configuration.searchApiRequestExecutorService_jwtAuthentication_enable())
+                .jwtToken(configuration.searchApiRequestExecutorService_jwtAuthentication_token())
+                .ignoreSslEnabled(getSearchConnectionConfig().isIgnoreSslEnabled())
+                .httpMaxTotalConnections(getSearchConnectionConfig().getHttpMaxTotalConnections())
+                .httpMaxConnectionsPerRoute(getSearchConnectionConfig().getHttpMaxConnectionsPerRoute())
+                .build()
+                .create();
     }
 
     @Deactivate
     private void deactivate() {
         IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
-    }
-
-    private RequestConfig createRequestConfig() {
-        return RequestConfig.custom()
-                .setConnectTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                .setConnectionRequestTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                .setSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
-                .build();
-    }
-
-    private void setToIgnoredSsl(HttpClientBuilder httpClientBuilder) {
-        try {
-            SSLContextBuilder builder = new SSLContextBuilder();
-            builder.loadTrustMaterial(null, (chain, authType) -> true);
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
-            httpClientBuilder.setSSLSocketFactory(sslsf);
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-            log.error("Error occurred while setting ignore ssl flag.", e);
-        }
     }
 
     @ObjectClassDefinition(name = "Search as a Service - Search Api Request Executor Service Configuration",
