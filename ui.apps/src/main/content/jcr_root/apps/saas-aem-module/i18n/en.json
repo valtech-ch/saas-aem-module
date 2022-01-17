@@ -4,7 +4,7 @@
   "com.valtech.aem.saas.core.search.suggestion.text": "Did you mean:",
   "com.valtech.aem.saas.core.search.input.placeholder.text": "Type search term here...",
   "com.valtech.aem.saas.core.search.noResults.text": "No results found.",
-  "com.valtech.aem.saas.core.search.apiConnectionFail.text": "Can not communicate to Search API.",
+  "com.valtech.aem.saas.core.search.apiConnectionFail.text": "Can not communicate with Search API.",
   "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkLogFiles.text": "Please check log files for further details.",
   "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkOsgiConfigurations.text": "Please check the OSGi Configuration Settings (starting with 'Search as a Service').",
   "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage": "Failed to resolve Context Aware Search Configuration for resource: {}",
