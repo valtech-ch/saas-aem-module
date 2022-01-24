@@ -1,14 +1,9 @@
 package com.valtech.aem.saas.core.http.client;
 
-import com.valtech.aem.saas.api.request.SearchRequest;
-import com.valtech.aem.saas.core.http.response.SearchResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -16,51 +11,40 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.Optional;
-
 import static com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService.CONFIGURATION_PID;
 
 
 @Slf4j
 @Component(name = "Search as a Service - Search Api Request Executor Service",
-        service = SearchApiRequestExecutorService.class,
-        immediate = true,
-        configurationPid = CONFIGURATION_PID)
+           service = SearchApiRequestExecutorService.class,
+           immediate = true,
+           configurationPid = CONFIGURATION_PID)
 @Designate(ocd = DefaultSearchApiRequestExecutorService.Configuration.class)
-public class DefaultSearchApiRequestExecutorService implements SearchApiRequestExecutorService {
+public class DefaultSearchApiRequestExecutorService extends AbstractSearchRequestExecutorService implements SearchApiRequestExecutorService {
 
     static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService";
 
+    @Getter(AccessLevel.PROTECTED)
     @Reference
     private HttpClientBuilderFactory httpClientBuilderFactory;
-
-    @Getter(value = AccessLevel.PRIVATE, onMethod_ = {@Synchronized})
-    private SearchServiceConnectionConfigurationService searchConnectionConfig;
-
-    private CloseableHttpClient httpClient;
 
     private Configuration configuration;
 
     @Reference
     @Synchronized
     protected void bindSearchConnectionConfig(SearchServiceConnectionConfigurationService service) {
-        this.searchConnectionConfig = service;
+        setSearchConnectionConfig(service);
     }
 
     @Synchronized
     protected void updatedSearchConnectionConfig(SearchServiceConnectionConfigurationService service) {
-        this.searchConnectionConfig = service;
+        setSearchConnectionConfig(service);
         initHttpClient();
     }
 
     @Override
     public String getBaseUrl() {
         return configuration.searchApiRequestExecutorService_baseurl();
-    }
-
-    @Override
-    public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
-        return new SearchRequestExecutor(httpClient).execute(searchRequest);
     }
 
     @Activate
@@ -70,45 +54,36 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
         initHttpClient();
     }
 
-    private void initHttpClient() {
-        httpClient = SearchHttpClientFactory
-                .builder()
-                .httpClientBuilderFactory(httpClientBuilderFactory)
-                .httpConnectionTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                .httpSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
-                .jwtAuthenticationEnabled(configuration.searchApiRequestExecutorService_jwtAuthentication_enable())
-                .jwtToken(configuration.searchApiRequestExecutorService_jwtAuthentication_token())
-                .ignoreSslEnabled(getSearchConnectionConfig().isIgnoreSslEnabled())
-                .httpMaxTotalConnections(getSearchConnectionConfig().getHttpMaxTotalConnections())
-                .httpMaxConnectionsPerRoute(getSearchConnectionConfig().getHttpMaxConnectionsPerRoute())
-                .build()
-                .create();
+    @Override
+    protected void prepareHttpClientFactoryBuilder(SearchHttpClientFactory.SearchHttpClientFactoryBuilder searchHttpClientFactoryBuilder) {
+        searchHttpClientFactoryBuilder.jwtAuthenticationEnabled(configuration.searchApiRequestExecutorService_jwtAuthentication_enable())
+                                      .jwtToken(configuration.searchApiRequestExecutorService_jwtAuthentication_token());
     }
 
     @Deactivate
     private void deactivate() {
-        IOUtils.closeQuietly(httpClient, e -> log.error("Could not close client.", e));
+        closeClient();
     }
 
     @ObjectClassDefinition(name = "Search as a Service - Search Api Request Executor Service Configuration",
-            description = "URL and authentication details for connect to Search Api Endpoint.")
+                           description = "URL and authentication details for connect to Search Api Endpoint.")
     public @interface Configuration {
 
         String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss";
         boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
 
         @AttributeDefinition(name = "Base URL",
-                description = "The protocol + url for the search service")
+                             description = "The protocol + url for the search service")
         String searchApiRequestExecutorService_baseurl() default DEFAULT_WEB_SERVICE_URL; // NOSONAR
 
         @AttributeDefinition(name = "JWT authentication token",
-                description = "Token string",
-                type = AttributeType.PASSWORD)
+                             description = "Token string",
+                             type = AttributeType.PASSWORD)
         String searchApiRequestExecutorService_jwtAuthentication_token(); // NOSONAR
 
         @AttributeDefinition(name = "Use JWT authentication",
-                description = "Set above authorization token in search service request.",
-                type = AttributeType.BOOLEAN)
+                             description = "Set above authorization token in search service request.",
+                             type = AttributeType.BOOLEAN)
         boolean searchApiRequestExecutorService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
 
     }
