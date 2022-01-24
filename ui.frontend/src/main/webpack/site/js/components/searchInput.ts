@@ -54,6 +54,10 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       }
 
       if (query.length >= autocompleteTriggerThreshold) {
+        const regexp = new RegExp(query, 'gi')
+        const searchButtonElement = document.getElementsByClassName(
+          'saas-container_button',
+        )?.[0] as HTMLElement
         const results = await fetchAutoComplete(autocompleteUrl, query)
         let suggestionDropdown: any = null
         const existingSuggestions = searchContainer.querySelector(
@@ -73,7 +77,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
           results.forEach((result) => {
             const suggestionDropdownElement = document.createElement('div')
             suggestionDropdownElement.innerHTML = result.replace(
-              RegExp(query, 'gi'),
+              regexp,
               `<b>${query}</b>`,
             )
             suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
@@ -84,9 +88,6 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
               removeSuggestionList(searchContainer)
 
               searchInputElementCopy.value = result
-              const searchButtonElement = document.getElementsByClassName(
-                'saas-container_button',
-              )?.[0] as HTMLElement
 
               if (searchButtonElement) {
                 searchButtonElement.click()
