@@ -71,9 +71,7 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
                 log.debug("Response content: {}", httpResponseParser.getContentString());
             }
             JsonElement jsonResponse = httpResponseParser.toGsonModel(JsonElement.class);
-            if (jsonResponse != null) {
-                return Optional.of(new SearchResponse(jsonResponse, isSuccess));
-            }
+            return Optional.of(new SearchResponse(jsonResponse, isSuccess));
         } catch (IOException e) {
             log.error("Error while executing request", e);
         } finally {
@@ -129,31 +127,31 @@ public class DefaultSearchRequestExecutorService implements SearchRequestExecuto
 
     private RequestConfig createRequestConfig() {
         return RequestConfig.custom()
-                            .setConnectTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                            .setConnectionRequestTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                            .setSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
-                            .build();
+                .setConnectTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
+                .setConnectionRequestTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
+                .setSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
+                .build();
     }
 
     private Optional<CredentialsProvider> getCredentialsProvider() {
         return new HttpHostResolver(getSearchConnectionConfig().getBaseUrl()).getHost()
-                                                                             .map(httpHost -> {
-                                                                                 BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
-                                                                                 AuthScope authScope = new AuthScope(
-                                                                                         httpHost);
-                                                                                 UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
-                                                                                         getSearchConnectionConfig().getBasicAuthenticationUser(),
-                                                                                         getSearchConnectionConfig().getBasicAuthenticationPassword());
-                                                                                 log.debug(
-                                                                                         "Creating basic credentials provider with authScope: {}, user: {}",
-                                                                                         authScope,
-                                                                                         usernamePasswordCredentials);
-                                                                                 basicCredentialsProvider.setCredentials(
-                                                                                         authScope,
-                                                                                         usernamePasswordCredentials
-                                                                                 );
-                                                                                 return basicCredentialsProvider;
-                                                                             });
+                .map(httpHost -> {
+                    BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+                    AuthScope authScope = new AuthScope(
+                            httpHost);
+                    UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
+                            getSearchConnectionConfig().getBasicAuthenticationUser(),
+                            getSearchConnectionConfig().getBasicAuthenticationPassword());
+                    log.debug(
+                            "Creating basic credentials provider with authScope: {}, user: {}",
+                            authScope,
+                            usernamePasswordCredentials);
+                    basicCredentialsProvider.setCredentials(
+                            authScope,
+                            usernamePasswordCredentials
+                    );
+                    return basicCredentialsProvider;
+                });
     }
 
     private void setToIgnoredSsl(HttpClientBuilder httpClientBuilder) {

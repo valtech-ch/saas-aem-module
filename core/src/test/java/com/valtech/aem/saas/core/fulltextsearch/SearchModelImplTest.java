@@ -3,7 +3,7 @@ package com.valtech.aem.saas.core.fulltextsearch;
 import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
+import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
@@ -39,7 +39,7 @@ class SearchModelImplTest {
             .build();
 
     @Mock
-    FulltextSearchService fulltextSearchService;
+    FulltextSearchPingService fulltextSearchPingService;
 
     @Mock
     PathTransformer pathTransformer;
@@ -59,7 +59,7 @@ class SearchModelImplTest {
         when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
         when(i18n.get(SearchModelImpl.I18N_SEARCH_SUGGESTION_TEXT)).thenReturn("Did you mean");
         when(i18n.get(SearchModelImpl.I18N_SEARCH_NO_RESULTS_TEXT)).thenReturn("No results.");
-        context.registerService(FulltextSearchService.class, fulltextSearchService);
+        context.registerService(FulltextSearchPingService.class, fulltextSearchPingService);
         context.registerService(PathTransformer.class, pathTransformer);
         context.registerService(I18nProvider.class, i18nProvider);
         context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
