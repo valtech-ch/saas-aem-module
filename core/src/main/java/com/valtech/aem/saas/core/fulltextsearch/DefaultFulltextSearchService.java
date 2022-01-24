@@ -98,23 +98,24 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                                      Set<Filter> filters,
                                      Set<String> facets,
                                      String template) {
-        GetQueryStringConstructor.GetQueryStringConstructorBuilder builder = GetQueryStringConstructor.builder()
-                                                                                                      .query(new TermQuery(
-                                                                                                              term))
-                                                                                                      .query(new LanguageQuery(
-                                                                                                              language))
-                                                                                                      .query(new PaginationQuery(
-                                                                                                              start,
-                                                                                                              rows))
-                                                                                                      .query(FiltersQuery.builder()
-                                                                                                                         .filters(
-                                                                                                                                 CollectionUtils.emptyIfNull(
-                                                                                                                                         filters))
-                                                                                                                         .build())
-                                                                                                      .query(FacetsQuery.builder()
-                                                                                                                        .fields(CollectionUtils.emptyIfNull(
-                                                                                                                                facets))
-                                                                                                                        .build());
+        GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
+                GetQueryStringConstructor.builder()
+                                         .query(new TermQuery(
+                                                 term))
+                                         .query(new LanguageQuery(
+                                                 language))
+                                         .query(new PaginationQuery(
+                                                 start,
+                                                 rows))
+                                         .query(FiltersQuery.builder()
+                                                            .filters(
+                                                                    CollectionUtils.emptyIfNull(
+                                                                            filters))
+                                                            .build())
+                                         .query(FacetsQuery.builder()
+                                                           .fields(CollectionUtils.emptyIfNull(
+                                                                   facets))
+                                                           .build());
         if (StringUtils.isNotBlank(template)) {
             builder.query(new SearchTemplateQuery(template));
         }
@@ -150,7 +151,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                 searchResponse.get(new SuggestionDataExtractionStrategy())
                               .flatMap(suggestion -> LoggedOptional.of(suggestion,
                                                                        logger -> logger.debug(
-                                                                               "No suggestion has been found in search response")))
+                                                                               "No suggestion has been found in " +
+                                                                                       "search response")))
                               .ifPresent(fulltextSearchResultsBuilder::suggestion);
             }
             return Optional.of(fulltextSearchResultsBuilder.build());
