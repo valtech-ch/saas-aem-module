@@ -26,10 +26,12 @@ import java.util.Optional;
 @Designate(ocd = DefaultSearchAdminRequestExecutorService.Configuration.class)
 public class DefaultSearchAdminRequestExecutorService implements SearchAdminRequestExecutorService {
 
-    @Reference private HttpClientBuilderFactory httpClientBuilderFactory;
+    @Reference
+    private HttpClientBuilderFactory httpClientBuilderFactory;
 
     @Getter(value = AccessLevel.PRIVATE,
-            onMethod_ = {@Synchronized}) private SearchServiceConnectionConfigurationService searchConnectionConfig;
+            onMethod_ = {@Synchronized})
+    private SearchServiceConnectionConfigurationService searchConnectionConfig;
 
     private CloseableHttpClient httpClient;
 
