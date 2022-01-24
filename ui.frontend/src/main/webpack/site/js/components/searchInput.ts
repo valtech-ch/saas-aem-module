@@ -49,7 +49,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
     ) => {
       setSaasCurrentFocusSuggestion(searchInput, -1)
 
-      if (!query?.length) {
+      if (!query?.length || query.length < autocompleteTriggerThreshold) {
         removeSuggestionList(searchContainer)
       }
 
