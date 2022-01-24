@@ -1,14 +1,17 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
+import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.query.*;
+import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
+import com.valtech.aem.saas.core.http.request.SearchRequestHead;
 import com.valtech.aem.saas.core.http.response.*;
 import com.valtech.aem.saas.core.http.response.dto.FallbackHighlightingDTO;
 import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
@@ -34,10 +37,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-@Component(service = FulltextSearchService.class)
+@Component(service = {FulltextSearchService.class, FulltextSearchPingService.class})
 @ServiceDescription("Search as a Service - Fulltext Search Service")
 @Designate(ocd = Configuration.class)
-public class DefaultFulltextSearchService implements FulltextSearchService {
+public class DefaultFulltextSearchService implements FulltextSearchService, FulltextSearchPingService {
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -71,9 +74,16 @@ public class DefaultFulltextSearchService implements FulltextSearchService {
         if (searchResponse.isPresent()) {
             printResponseHeaderInLog(searchResponse.get());
             return getFulltextSearchResults(searchResponse.get(), searchConfiguration.isAutoSuggestEnabled(),
-                                            searchConfiguration.isBestBetsEnabled());
+                    searchConfiguration.isBestBetsEnabled());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public boolean ping(@NonNull SearchCAConfigurationModel searchConfiguration) {
+        String url = getApiUrl(searchConfiguration.getIndex());
+        SearchRequest pingRequest = new SearchRequestHead(url);
+        return searchRequestExecutorService.execute(pingRequest).map(SearchResponse::isSuccess).orElse(false);
     }
 
     private Set<Filter> getEffectiveFilters(

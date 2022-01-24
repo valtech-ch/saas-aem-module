@@ -1,18 +1,23 @@
 package com.valtech.aem.saas.core.caconfig;
 
+import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.SimpleFilter;
+import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,16 +31,25 @@ import java.util.stream.Stream;
         adapters = SearchCAConfigurationModel.class)
 public final class SearchCAConfigurationModelImpl implements SearchCAConfigurationModel {
 
+    public static final String I18N_SEARCH_CA_CONFIGURATION_INDEX_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage";
+    public static final String I18N_SEARCH_CA_CONFIGURATION_CLIENT_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.clientRequiredMessage";
+
     @Self
     private Resource resource;
 
     private SearchConfiguration searchConfiguration;
 
+    @OSGiService
+    private I18nProvider i18nProvider;
+
+    private I18n i18n;
+
     @PostConstruct
     private void init() {
+        i18n = i18nProvider.getI18n(getLocale());
         ConfigurationBuilder configurationBuilder = resource.adaptTo(ConfigurationBuilder.class);
         if (configurationBuilder == null) {
-            throw new IllegalStateException("Failed to resolve search configuration from adapted resource.");
+            throw new IllegalStateException(String.format("Failed to resolve '%s' from resource: %s.", SearchConfiguration.class.getName(), resource.getPath()));
         }
         searchConfiguration = configurationBuilder.as(SearchConfiguration.class);
     }
@@ -43,7 +57,7 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
     @Override
     public String getIndex() {
         if (StringUtils.isBlank(searchConfiguration.index())) {
-            throw new IllegalStateException("Search Index must be configured.");
+            throw new IllegalStateException(i18n.get(I18N_SEARCH_CA_CONFIGURATION_INDEX_REQUIRED));
         }
         return searchConfiguration.index();
     }
@@ -51,16 +65,13 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
     @Override
     public String getClient() {
         if (StringUtils.isBlank(searchConfiguration.client())) {
-            throw new IllegalStateException("Search Client must be configured.");
+            throw new IllegalStateException(i18n.get(I18N_SEARCH_CA_CONFIGURATION_CLIENT_REQUIRED));
         }
         return searchConfiguration.client();
     }
 
     @Override
     public int getProjectId() {
-        if (searchConfiguration.projectId() <= SearchConfiguration.DEFAULT_PROJECT_ID) {
-            throw new IllegalStateException("Project Id must be configured and should be a non-negative integer.");
-        }
         return searchConfiguration.projectId();
     }
 
@@ -68,7 +79,7 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
     public Set<Filter> getFilters() {
         return asStream(searchConfiguration.searchFilters())
                 .map(searchFilterConfiguration -> new SimpleFilter(searchFilterConfiguration.name(),
-                                                                   searchFilterConfiguration.value()))
+                        searchFilterConfiguration.value()))
                 .collect(Collectors.toSet());
     }
 
@@ -91,4 +102,8 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
         return Optional.ofNullable(array).map(Arrays::stream).orElse(Stream.empty());
     }
 
+    private Locale getLocale() {
+        return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
+                .orElse(Locale.getDefault());
+    }
 }

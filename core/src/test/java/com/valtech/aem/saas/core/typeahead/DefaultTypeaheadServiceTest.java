@@ -1,5 +1,6 @@
 package com.valtech.aem.saas.core.typeahead;
 
+import com.day.cq.i18n.I18n;
 import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
@@ -9,6 +10,7 @@ import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
+import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -26,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,6 +51,12 @@ class DefaultTypeaheadServiceTest {
     @Mock
     HttpClientBuilderFactory httpClientBuilderFactory;
 
+    @Mock
+    I18nProvider i18nProvider;
+
+    @Mock
+    I18n i18n;
+
     TypeaheadService service;
 
     Resource currentResource;
@@ -56,12 +65,14 @@ class DefaultTypeaheadServiceTest {
 
     @BeforeEach
     void setUp() {
+        when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
         context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
         context.create().page("/content/saas-aem-module/us");
         context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
         context.currentPage("/content/saas-aem-module/us/en");
         context.currentResource("/content/saas-aem-module/us/en/jcr:content");
         MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
+        context.registerService(I18nProvider.class, i18nProvider);
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
         context.registerService(SearchApiRequestExecutorService.class, searchApiRequestExecutorService);

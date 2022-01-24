@@ -10,7 +10,7 @@ public @interface SearchConfiguration {
     boolean DEFAULT_ENABLE_BEST_BETS = false;
     boolean DEFAULT_ENABLE_AUTO_SUGGEST = true;
     String DEFAULT_HIGHLIHGT_TAG_NAME = "em";
-    int DEFAULT_PROJECT_ID = -1;
+    int DEFAULT_PROJECT_ID = 1;
 
     @Property(label = "Search Index",
             description = "SaaS index (Required)")

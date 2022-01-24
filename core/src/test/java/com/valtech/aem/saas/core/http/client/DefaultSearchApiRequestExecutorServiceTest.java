@@ -79,7 +79,7 @@ class DefaultSearchApiRequestExecutorServiceTest {
         HttpEntity httpEntity = mock(HttpEntity.class);
         when(response.getEntity()).thenReturn(httpEntity);
         when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        assertThat(testee.execute(searchRequest).isPresent(), is(false));
+        assertThat(testee.execute(searchRequest).filter(SearchResponse::isSuccess).isPresent(), is(false));
     }
 
     @Test
@@ -119,6 +119,6 @@ class DefaultSearchApiRequestExecutorServiceTest {
         when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_OK);
         HttpEntity httpEntity = new StringEntity("{{}");
         when(response.getEntity()).thenReturn(httpEntity);
-        assertThat(testee.execute(searchRequest).isPresent(), is(false));
+        assertThat(testee.execute(searchRequest).filter(SearchResponse::isSuccess).isPresent(), is(false));
     }
 }
