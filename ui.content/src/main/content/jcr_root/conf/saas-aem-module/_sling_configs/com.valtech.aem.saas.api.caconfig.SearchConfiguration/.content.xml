@@ -3,8 +3,9 @@
     xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
-        jcr:primaryType="cq:PageContent"
-        index="icweb">
+            jcr:primaryType="cq:PageContent"
+            client="ic"
+            index="icweb">
         <searchFilters
             jcr:primaryType="nt:unstructured">
             <item1
