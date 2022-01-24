@@ -5,20 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(name = "Search as a Service - Search Service Connection Configuration Service",
-        immediate = true,
-        configurationPid = DefaultSearchServiceConnectionConfigurationService.CONFIGURATION_PID,
-        service = SearchServiceConnectionConfigurationService.class)
+@Component(immediate = true,
+           service = SearchServiceConnectionConfigurationService.class)
+@ServiceDescription("Search as a Service - Search Service Connection Configuration Service")
 @Designate(ocd = Configuration.class)
 @Slf4j
 public class DefaultSearchServiceConnectionConfigurationService implements SearchServiceConnectionConfigurationService {
-
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService";
 
     private Configuration configuration;
 

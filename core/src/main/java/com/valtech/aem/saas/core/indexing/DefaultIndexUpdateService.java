@@ -24,6 +24,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -33,15 +34,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
-@Component(name = "Search as a Service - Index Update Service",
-        configurationPid = DefaultIndexUpdateService.CONFIGURATION_PID,
-        service = IndexUpdateService.class)
+@Component(service = IndexUpdateService.class)
+@ServiceDescription("Search as a Service - Index Update Service")
 @Designate(ocd = Configuration.class)
 public class DefaultIndexUpdateService implements IndexUpdateService {
 
     public static final String REQUEST_PARAMETER_URL = "url";
     public static final String REQUEST_PARAMETER_REPOSITORY_PATH = "repository_path";
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService";
 
     @Reference
     private SearchAdminRequestExecutorService searchAdminRequestExecutorService;

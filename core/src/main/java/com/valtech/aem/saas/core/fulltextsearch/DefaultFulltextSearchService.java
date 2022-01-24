@@ -23,6 +23,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -33,13 +34,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-@Component(name = "Search as a Service - Fulltext Search Service",
-        configurationPid = DefaultFulltextSearchService.CONFIGURATION_PID,
-        service = FulltextSearchService.class)
+@Component(service = FulltextSearchService.class)
+@ServiceDescription("Search as a Service - Fulltext Search Service")
 @Designate(ocd = Configuration.class)
 public class DefaultFulltextSearchService implements FulltextSearchService {
-
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService";
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;

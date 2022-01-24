@@ -25,6 +25,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -37,16 +38,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component(name = "Search as a Service - Best Bets Service",
-        configurationPid = DefaultBestBetsService.CONFIGURATION_PID,
-        service = BestBetsService.class)
+@Component(service = BestBetsService.class)
+@ServiceDescription("Search as a Service - Best Bets Service")
 @Designate(ocd = Configuration.class)
 public class DefaultBestBetsService implements BestBetsService {
 
     public static final String URL_PATH_DELIMITER = "/";
     public static final String STRING_FORMAT_PLACEHOLDER = "%s";
     public static final String FAILED_REQUEST_EXECUTION = "Failed to execute request to best bets api.";
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.bestbets.DefaultBestBetsService";
 
     @Reference
     private SearchAdminRequestExecutorService searchAdminRequestExecutorService;

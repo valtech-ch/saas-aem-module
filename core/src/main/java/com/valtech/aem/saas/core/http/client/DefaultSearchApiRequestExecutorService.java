@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -18,24 +19,18 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.util.Optional;
 
-import static com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService.CONFIGURATION_PID;
-
 
 @Slf4j
-@Component(name = "Search as a Service - Search Api Request Executor Service",
-        service = SearchApiRequestExecutorService.class,
-        immediate = true,
-        configurationPid = CONFIGURATION_PID)
+@Component(service = SearchApiRequestExecutorService.class,
+           immediate = true)
+@ServiceDescription("Search as a Service - Search Api Request Executor Service")
 @Designate(ocd = DefaultSearchApiRequestExecutorService.Configuration.class)
 public class DefaultSearchApiRequestExecutorService implements SearchApiRequestExecutorService {
 
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService";
+    @Reference private HttpClientBuilderFactory httpClientBuilderFactory;
 
-    @Reference
-    private HttpClientBuilderFactory httpClientBuilderFactory;
-
-    @Getter(value = AccessLevel.PRIVATE, onMethod_ = {@Synchronized})
-    private SearchServiceConnectionConfigurationService searchConnectionConfig;
+    @Getter(value = AccessLevel.PRIVATE,
+            onMethod_ = {@Synchronized}) private SearchServiceConnectionConfigurationService searchConnectionConfig;
 
     private CloseableHttpClient httpClient;
 
@@ -71,18 +66,17 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
     }
 
     private void initHttpClient() {
-        httpClient = SearchHttpClientFactory
-                .builder()
-                .httpClientBuilderFactory(httpClientBuilderFactory)
-                .httpConnectionTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
-                .httpSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
-                .jwtAuthenticationEnabled(configuration.searchApiRequestExecutorService_jwtAuthentication_enable())
-                .jwtToken(configuration.searchApiRequestExecutorService_jwtAuthentication_token())
-                .ignoreSslEnabled(getSearchConnectionConfig().isIgnoreSslEnabled())
-                .httpMaxTotalConnections(getSearchConnectionConfig().getHttpMaxTotalConnections())
-                .httpMaxConnectionsPerRoute(getSearchConnectionConfig().getHttpMaxConnectionsPerRoute())
-                .build()
-                .create();
+        httpClient = SearchHttpClientFactory.builder()
+                                            .httpClientBuilderFactory(httpClientBuilderFactory)
+                                            .httpConnectionTimeout(getSearchConnectionConfig().getHttpConnectionTimeout())
+                                            .httpSocketTimeout(getSearchConnectionConfig().getHttpSocketTimeout())
+                                            .jwtAuthenticationEnabled(configuration.searchApiRequestExecutorService_jwtAuthentication_enable())
+                                            .jwtToken(configuration.searchApiRequestExecutorService_jwtAuthentication_token())
+                                            .ignoreSslEnabled(getSearchConnectionConfig().isIgnoreSslEnabled())
+                                            .httpMaxTotalConnections(getSearchConnectionConfig().getHttpMaxTotalConnections())
+                                            .httpMaxConnectionsPerRoute(getSearchConnectionConfig().getHttpMaxConnectionsPerRoute())
+                                            .build()
+                                            .create();
     }
 
     @Deactivate
@@ -91,24 +85,24 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
     }
 
     @ObjectClassDefinition(name = "Search as a Service - Search Api Request Executor Service Configuration",
-            description = "URL and authentication details for connect to Search Api Endpoint.")
+                           description = "URL and authentication details for connect to Search Api Endpoint.")
     public @interface Configuration {
 
-        String DEFAULT_WEB_SERVICE_URL = "https://ic-test-search-api.valtech.swiss";
+        String DEFAULT_WEB_SERVICE_URL = "https://search-api.infocentric.swiss";
         boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
 
         @AttributeDefinition(name = "Base URL",
-                description = "The protocol + url for the search service")
+                             description = "The protocol + url for the search service")
         String searchApiRequestExecutorService_baseurl() default DEFAULT_WEB_SERVICE_URL; // NOSONAR
 
         @AttributeDefinition(name = "JWT authentication token",
-                description = "Token string",
-                type = AttributeType.PASSWORD)
+                             description = "Token string",
+                             type = AttributeType.PASSWORD)
         String searchApiRequestExecutorService_jwtAuthentication_token(); // NOSONAR
 
         @AttributeDefinition(name = "Use JWT authentication",
-                description = "Set above authorization token in search service request.",
-                type = AttributeType.BOOLEAN)
+                             description = "Set above authorization token in search service request.",
+                             type = AttributeType.BOOLEAN)
         boolean searchApiRequestExecutorService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
 
     }

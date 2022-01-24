@@ -7,6 +7,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,8 +16,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Slf4j
-@Component(name = "Search as a Service - ResourceResolver Provider Service",
-        service = ResourceResolverProvider.class)
+@Component(service = ResourceResolverProvider.class)
+@ServiceDescription("Search as a Service - ResourceResolver Provider Service")
 public class ResourceResolverProviderService implements ResourceResolverProvider {
 
     public static final String SERVICE_USER = "saas-aem-module-service-user";
