@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
-public class SearchRequestExecutor {
+public final class SearchRequestExecutor {
     private final CloseableHttpClient httpClient;
 
     public Optional<SearchResponse> execute(@NonNull SearchRequest searchRequest) {
@@ -35,9 +35,7 @@ public class SearchRequestExecutor {
                 log.debug("Response content: {}", httpResponseParser.getContentString());
             }
             JsonElement jsonResponse = httpResponseParser.toGsonModel(JsonElement.class);
-            if (jsonResponse != null) {
-                return Optional.of(new SearchResponse(jsonResponse, isSuccess));
-            }
+            return Optional.of(new SearchResponse(jsonResponse, isSuccess));
         } catch (IOException e) {
             log.error("Error while executing request", e);
         } finally {
