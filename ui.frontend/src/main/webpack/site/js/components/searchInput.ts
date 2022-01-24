@@ -10,6 +10,8 @@ type SearchInputOptions = {
   searchContainer: HTMLDivElement
 }
 
+const SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS =
+  '.saas-container_form #suggestions'
 const SUGGESTION_ELEMENT_CLASS = 'saas-suggestions-element'
 const ACTIVE_SUGGESTION_ELEMENT_CLASS = `${SUGGESTION_ELEMENT_CLASS}--active`
 
@@ -28,7 +30,7 @@ const getSaasCurrentFocusSuggestion = (
 
 const removeSuggestionList = (searchContainer: HTMLDivElement) => {
   const existingDataList = searchContainer.querySelector(
-    '.saas-container_form #suggestions',
+    SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
   )
 
   if (existingDataList) {
@@ -45,19 +47,35 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       searchInput: HTMLInputElement,
       searchContainer: HTMLDivElement,
     ) => {
-      removeSuggestionList(searchContainer)
       setSaasCurrentFocusSuggestion(searchInput, -1)
+
+      if (!query?.length) {
+        removeSuggestionList(searchContainer)
+      }
 
       if (query.length >= autocompleteTriggerThreshold) {
         const results = await fetchAutoComplete(autocompleteUrl, query)
+        let suggestionDropdown: any = null
+        const existingSuggestions = searchContainer.querySelector(
+          SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
+        )
+
+        if (!existingSuggestions) {
+          suggestionDropdown = document.createElement('div')
+          suggestionDropdown.id = 'suggestions'
+        } else {
+          suggestionDropdown = existingSuggestions
+        }
+
+        suggestionDropdown.innerHTML = ''
 
         if (results?.length) {
-          const suggestionDropdown = document.createElement('div')
-          suggestionDropdown.id = 'suggestions'
-
           results.forEach((result) => {
             const suggestionDropdownElement = document.createElement('div')
-            suggestionDropdownElement.innerText = result
+            suggestionDropdownElement.innerHTML = result.replace(
+              RegExp(query, 'gi'),
+              `<b>${query}</b>`,
+            )
             suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
 
             suggestionDropdownElement.addEventListener('click', () => {
@@ -66,6 +84,13 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
               removeSuggestionList(searchContainer)
 
               searchInputElementCopy.value = result
+              const searchButtonElement = document.getElementsByClassName(
+                'saas-container_button',
+              )?.[0] as HTMLElement
+
+              if (searchButtonElement) {
+                searchButtonElement.click()
+              }
             })
 
             suggestionDropdown.appendChild(suggestionDropdownElement)
@@ -79,13 +104,13 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   )
 
 const buildSearchInput = ({
-                            id,
-                            searchFieldPlaceholderText,
-                            autocompleteUrl,
-                            autocompleteTriggerThreshold,
-                            autoSuggestionDebounceTime = 500,
-                            searchContainer,
-                          }: SearchInputOptions): HTMLInputElement => {
+  id,
+  searchFieldPlaceholderText,
+  autocompleteUrl,
+  autocompleteTriggerThreshold,
+  autoSuggestionDebounceTime = 500,
+  searchContainer,
+}: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
 
   searchInput.placeholder = searchFieldPlaceholderText
