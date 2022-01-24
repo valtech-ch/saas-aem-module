@@ -100,21 +100,15 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                                      String template) {
         GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
                 GetQueryStringConstructor.builder()
-                                         .query(new TermQuery(
-                                                 term))
-                                         .query(new LanguageQuery(
-                                                 language))
-                                         .query(new PaginationQuery(
-                                                 start,
-                                                 rows))
+                                         .query(new TermQuery(term))
+                                         .query(new LanguageQuery(language))
+                                         .query(new PaginationQuery(start,
+                                                                    rows))
                                          .query(FiltersQuery.builder()
-                                                            .filters(
-                                                                    CollectionUtils.emptyIfNull(
-                                                                            filters))
+                                                            .filters(CollectionUtils.emptyIfNull(filters))
                                                             .build())
                                          .query(FacetsQuery.builder()
-                                                           .fields(CollectionUtils.emptyIfNull(
-                                                                   facets))
+                                                           .fields(CollectionUtils.emptyIfNull(facets))
                                                            .build());
         if (StringUtils.isNotBlank(template)) {
             builder.query(new SearchTemplateQuery(template));
