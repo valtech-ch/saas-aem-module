@@ -30,8 +30,16 @@ const initSaasStyle = (): void => {
             #suggestions .saas-suggestions-element {
               padding: 10px;
               cursor: pointer;
-              border-bottom: 1px solid #d4d4d4;
               background: #fff;
+            }
+          `,
+    0,
+  )
+
+  document.styleSheets[0].insertRule(
+    `
+            #suggestions .saas-suggestions-element:last-child {
+              border-bottom: 1px solid #d4d4d4;
             }
           `,
     0,
