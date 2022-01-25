@@ -54,11 +54,12 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       }
 
       if (query.length >= autocompleteTriggerThreshold) {
-        const regexp = new RegExp(query, 'gi')
+        const trimmedQuery = query.trim()
+        const regexp = new RegExp(trimmedQuery, 'gi')
         const searchButtonElement = document.getElementsByClassName(
           'saas-container_button',
         )?.[0] as HTMLElement
-        const results = await fetchAutoComplete(autocompleteUrl, query)
+        const results = await fetchAutoComplete(autocompleteUrl, trimmedQuery)
         let suggestionDropdown: any = null
         const existingSuggestions = searchContainer.querySelector(
           SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
