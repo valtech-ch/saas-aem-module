@@ -1,3 +1,4 @@
+import cleanString from '../utils/cleanString'
 import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
 
@@ -54,16 +55,16 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       }
 
       if (query.length >= autocompleteTriggerThreshold) {
-        const trimmedQuery = query.trim()
-        const regexp = new RegExp(trimmedQuery, 'gi')
+        const cleanedQuery = cleanString(query)
+        const regexp = new RegExp(cleanedQuery, 'gi')
         const searchButtonElement = document.getElementsByClassName(
           'saas-container_button',
         )?.[0] as HTMLElement
-        const results = await fetchAutoComplete(autocompleteUrl, trimmedQuery)
-        let suggestionDropdown: any = null
+        const results = await fetchAutoComplete(autocompleteUrl, cleanedQuery)
         const existingSuggestions = searchContainer.querySelector(
           SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
         )
+        let suggestionDropdown: Element | null = null
 
         if (!existingSuggestions) {
           suggestionDropdown = document.createElement('div')
@@ -76,11 +77,12 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
 
         if (results?.length) {
           results.forEach((result) => {
-            const suggestionDropdownElement = document.createElement('div')
-            suggestionDropdownElement.innerHTML = result.replace(
+            const cleanAndFormatResult = cleanString(result).replace(
               regexp,
               `<b>${query}</b>`,
             )
+            const suggestionDropdownElement = document.createElement('div')
+            suggestionDropdownElement.innerHTML = cleanAndFormatResult
             suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
 
             suggestionDropdownElement.addEventListener('click', () => {
