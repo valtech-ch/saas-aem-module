@@ -99,26 +99,32 @@ public class DefaultSearchAdminRequestExecutorService implements SearchAdminRequ
         boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
 
         @AttributeDefinition(name = "Base URL",
-                             description = "The protocol + url for the search service") String searchAdminRequestExecutorService_baseurl() default DEFAULT_WEB_SERVICE_URL; // NOSONAR
+                             description = "The protocol + url for the search service")
+        String searchAdminRequestExecutorService_baseurl() default DEFAULT_WEB_SERVICE_URL; // NOSONAR
 
         @AttributeDefinition(name = "Basic authentication - User",
-                             description = "User for basic authentication to the search service") String searchAdminRequestExecutorService_basicAuthentication_user(); // NOSONAR
+                             description = "User for basic authentication to the search service")
+        String searchAdminRequestExecutorService_basicAuthentication_user(); // NOSONAR
 
         @AttributeDefinition(name = "Basic authentication - Password",
                              description = "Password for basic authentication to the search service",
-                             type = AttributeType.PASSWORD) String searchAdminRequestExecutorService_basicAuthentication_password(); // NOSONAR
+                             type = AttributeType.PASSWORD)
+        String searchAdminRequestExecutorService_basicAuthentication_password(); // NOSONAR
 
         @AttributeDefinition(name = "Use basic authentication",
                              description = "Submit the above user + password to the search service",
-                             type = AttributeType.BOOLEAN) boolean searchAdminRequestExecutorService_basicAuthentication_enable() default DEFAULT_BASIC_AUTHENTICATION_ENABLE; // NOSONAR
+                             type = AttributeType.BOOLEAN)
+        boolean searchAdminRequestExecutorService_basicAuthentication_enable() default DEFAULT_BASIC_AUTHENTICATION_ENABLE; // NOSONAR
 
         @AttributeDefinition(name = "JWT authentication token",
                              description = "Token string",
-                             type = AttributeType.PASSWORD) String searchAdminRequestExecutorService_jwtAuthentication_token(); // NOSONAR
+                             type = AttributeType.PASSWORD)
+        String searchAdminRequestExecutorService_jwtAuthentication_token(); // NOSONAR
 
         @AttributeDefinition(name = "Use JWT authentication",
                              description = "Set above authorization token in search service request.",
-                             type = AttributeType.BOOLEAN) boolean searchAdminRequestExecutorService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
+                             type = AttributeType.BOOLEAN)
+        boolean searchAdminRequestExecutorService_jwtAuthentication_enable() default DEFAULT_JWT_AUTHENTICATION_ENABLE; // NOSONAR
 
     }
 }
