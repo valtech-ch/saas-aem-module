@@ -67,8 +67,8 @@
         <module>ui.apps</module>
         <module>ui.apps.structure</module>
         <module>ui.config</module>
+        <module>ui.content</module>
         <module>it.tests</module>
-        <!--        <module>ui.tests</module>-->
     </modules>
 
     <properties>
@@ -115,17 +115,6 @@
                         <version>1.9.5</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <!--Nexus Staging Plugin-->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
             </plugin>
             <!-- Maven Source Plugin -->
             <plugin>
@@ -624,7 +613,7 @@
         </profile>
 
         <profile>
-            <id>installSampleContent</id>
+            <id>skipUiContent</id>
             <modules>
                 <module>all</module>
                 <module>api</module>
@@ -633,9 +622,7 @@
                 <module>ui.apps</module>
                 <module>ui.apps.structure</module>
                 <module>ui.config</module>
-                <module>ui.content</module>
                 <module>it.tests</module>
-                <module>ui.tests</module>
             </modules>
         </profile>
 
@@ -668,7 +655,6 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
