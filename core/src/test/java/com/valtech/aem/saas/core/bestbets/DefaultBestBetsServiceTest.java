@@ -9,8 +9,9 @@ import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.request.SearchRequest;
+import com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.BestBetIdDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStreamReader;
@@ -40,6 +40,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
@@ -53,7 +54,7 @@ class DefaultBestBetsServiceTest {
     HttpClientBuilderFactory httpClientBuilderFactory;
 
     @Mock
-    SearchRequestExecutorService searchRequestExecutorService;
+    SearchAdminRequestExecutorService searchAdminRequestExecutorService;
 
     @Mock
     I18nProvider i18nProvider;
@@ -79,19 +80,20 @@ class DefaultBestBetsServiceTest {
         context.registerService(I18nProvider.class, i18nProvider);
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-        context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
+        context.registerService(SearchAdminRequestExecutorService.class, searchAdminRequestExecutorService);
         testee = context.registerInjectActivateService(new DefaultBestBetsService());
         currentResource = context.currentResource();
     }
 
     @Test
     void testAddBestBet() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         JsonObject bestBetAddedResponse = new JsonObject();
         bestBetAddedResponse.addProperty(BestBetIdDataExtractionStrategy.ID, 1);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchAdminRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(bestBetAddedResponse, true)));
         assertThat(testee.addBestBet(searchCAConfigurationModel,
                                      new BestBetPayloadDTO("foo", "baz", "de")),
@@ -99,27 +101,10 @@ class DefaultBestBetsServiceTest {
     }
 
     @Test
-    void testClientMissing() {
-        MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo");
-        searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
-        assertThrows(IllegalStateException.class, () -> testee.addBestBet(searchCAConfigurationModel, payload));
-        List<BestBetPayloadDTO> bestBetsPayload = Collections.singletonList(payload);
-        assertThrows(IllegalStateException.class,
-                     () -> testee.addBestBets(searchCAConfigurationModel, bestBetsPayload));
-        assertThrows(IllegalStateException.class, () -> testee.updateBestBet(searchCAConfigurationModel, 1,
-                                                                             payload));
-        assertThrows(IllegalStateException.class, () -> testee.deleteBestBet(searchCAConfigurationModel, 1));
-        assertThrows(IllegalStateException.class,
-                     () -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
-        assertThrows(IllegalStateException.class, () -> testee.getBestBets(searchCAConfigurationModel));
-    }
-
-    @Test
     void testIndexMissing() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "client", "bar");
+                "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
         List<BestBetPayloadDTO> bestBetsPayload = Collections.singletonList(payload);
@@ -133,8 +118,9 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testAddBestBet_failed() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
         assertThrows(BestBetsActionFailedException.class, () -> testee.addBestBet(searchCAConfigurationModel, payload));
@@ -142,10 +128,11 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testAddBestBets() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchAdminRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonObject(), true)));
         assertDoesNotThrow(() -> testee.addBestBets(searchCAConfigurationModel, Collections.singletonList(
                 new BestBetPayloadDTO("foo", "baz", "de"))));
@@ -153,8 +140,9 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testAddBestBets_failed() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         List<BestBetPayloadDTO> payload = Collections.singletonList(
                 new BestBetPayloadDTO("foo", "baz", "de"));
@@ -164,14 +152,15 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testUpdateBestBet() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchAdminRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(
-                                                                               getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(
+                                        getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
+                        .getAsJsonObject(), true)));
         assertDoesNotThrow(() -> testee.updateBestBet(searchCAConfigurationModel, 1,
                                                       new BestBetPayloadDTO("foo", "baz", "de")));
     }
@@ -190,8 +179,9 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testUpdateBestBet_failed() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
         assertThrows(BestBetsActionFailedException.class,
@@ -200,14 +190,15 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testDeleteBestBet() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchAdminRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(
-                                                                               getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(
+                                        getClass().getResourceAsStream("/__files/search/bestbets/modifiedBestBetResponse.json")))
+                        .getAsJsonObject(), true)));
         assertDoesNotThrow(() -> testee.deleteBestBet(searchCAConfigurationModel, 1));
     }
 
@@ -223,18 +214,20 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testDeleteBestBet_failed() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         assertThrows(BestBetsActionFailedException.class, () -> testee.deleteBestBet(searchCAConfigurationModel, 1));
     }
 
     @Test
     void testPublishBestBetsForProject() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchAdminRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonObject(), true)));
         assertDoesNotThrow(() -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
     }
@@ -253,8 +246,9 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testPublishBestBetsForProject_failed() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         assertThrows(BestBetsActionFailedException.class,
                      () -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
@@ -262,13 +256,14 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testGetBestBets() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        Mockito.when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchAdminRequestExecutorService.execute(any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
-                                                               .getAsJsonArray(), true)));
+                                new InputStreamReader(getClass().getResourceAsStream("/__files/search/bestbets/getBestBets.json")))
+                        .getAsJsonArray(), true)));
         assertThat(testee.getBestBets(searchCAConfigurationModel), not(empty()));
     }
 
@@ -284,8 +279,9 @@ class DefaultBestBetsServiceTest {
 
     @Test
     void testGetBestBets_failed() {
+        when(searchAdminRequestExecutorService.getBaseUrl()).thenReturn(DefaultSearchAdminRequestExecutorService.Configuration.DEFAULT_WEB_SERVICE_URL);
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "foo", "client", "bar");
+                "index", "foo", "client", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         assertThrows(BestBetsActionFailedException.class, () -> testee.getBestBets(searchCAConfigurationModel));
     }

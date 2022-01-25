@@ -6,48 +6,6 @@ package com.valtech.aem.saas.core.http.client;
 public interface SearchServiceConnectionConfigurationService {
 
     /**
-     * Gets the base url/domain of the search api.
-     *
-     * @return
-     */
-    String getBaseUrl();
-
-    /**
-     * Gets the username for basic authentication.
-     *
-     * @return username.
-     */
-    String getBasicAuthenticationUser();
-
-    /**
-     * Gets the password for basic authentication.
-     *
-     * @return password.
-     */
-    String getBasicAuthenticationPassword();
-
-    /**
-     * Checks whether Basic Authentication is enabled.
-     *
-     * @return {@code true} if enabled.
-     */
-    boolean isBasicAuthenticationEnabled();
-
-    /**
-     * Gets the jwt authentication token.
-     *
-     * @return jwt.
-     */
-    String getJwtAuthenticationToken();
-
-    /**
-     * Checks whether JWT Authentication is enabled.
-     *
-     * @return {@code true} if enabled.
-     */
-    boolean isJWTAuthenticationEnabled();
-
-    /**
      * Checks whether Ignore SSL is enabled.
      *
      * @return {@code true} if enabled.

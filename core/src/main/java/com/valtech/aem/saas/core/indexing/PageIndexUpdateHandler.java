@@ -17,6 +17,7 @@ import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
@@ -25,19 +26,13 @@ import java.util.*;
 import java.util.function.Function;
 
 
-@Component(name = "Search as a Service - Page Replication Event Handler",
-        immediate = true,
-        service = {EventHandler.class},
-        configurationPolicy = ConfigurationPolicy.REQUIRE,
-        configurationPid = PageIndexUpdateHandler.CONFIGURATION_PID,
-        property = {
-                EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC,
-                EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC
-        })
+@Component(service = {EventHandler.class},
+           immediate = true,
+           configurationPolicy = ConfigurationPolicy.REQUIRE,
+           property = {EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC, EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC})
+@ServiceDescription("Search as a Service - Page Replication Event Handler")
 @Slf4j
 public class PageIndexUpdateHandler implements EventHandler {
-
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.indexing.PageIndexUpdateHandler";
 
     @Reference
     private JobManager jobManager;

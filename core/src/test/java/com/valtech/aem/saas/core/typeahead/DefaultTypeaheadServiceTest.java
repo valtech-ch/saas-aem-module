@@ -8,7 +8,7 @@ import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -46,7 +46,7 @@ class DefaultTypeaheadServiceTest {
             .build();
 
     @Mock
-    SearchRequestExecutorService searchRequestExecutorService;
+    SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     @Mock
     HttpClientBuilderFactory httpClientBuilderFactory;
@@ -75,7 +75,7 @@ class DefaultTypeaheadServiceTest {
         context.registerService(I18nProvider.class, i18nProvider);
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
-        context.registerService(SearchRequestExecutorService.class, searchRequestExecutorService);
+        context.registerService(SearchApiRequestExecutorService.class, searchApiRequestExecutorService);
         service = context.registerInjectActivateService(new DefaultTypeaheadService());
         currentResource = context.currentResource();
     }
@@ -99,10 +99,10 @@ class DefaultTypeaheadServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
+                        .getAsJsonObject(), true)));
         assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "en",
                                       new HashSet<>(Collections.singletonList(new SimpleFilter("foo", "bar")))),
                    is(not(empty())));
@@ -113,10 +113,10 @@ class DefaultTypeaheadServiceTest {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
                                                   "index", "bar");
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        when(searchRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
+        when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(
-                                                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/empty.json")))
-                                                               .getAsJsonObject(), true)));
+                                new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/empty.json")))
+                        .getAsJsonObject(), true)));
         assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "en",
                                       new HashSet<>(Collections.singletonList(new SimpleFilter("foo", "bar")))),
                    is(empty()));

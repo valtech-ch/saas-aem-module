@@ -8,7 +8,7 @@ import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.query.*;
 import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.request.SearchRequestHead;
@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -36,32 +37,28 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-@Component(name = "Search as a Service - Fulltext Search Service",
-        configurationPid = DefaultFulltextSearchService.CONFIGURATION_PID,
-        service = {FulltextSearchService.class, FulltextSearchPingService.class})
+@Component(service = {FulltextSearchService.class, FulltextSearchPingService.class})
+@ServiceDescription("Search as a Service - Fulltext Search Service")
 @Designate(ocd = Configuration.class)
 public class DefaultFulltextSearchService implements FulltextSearchService, FulltextSearchPingService {
-
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService";
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
 
     @Reference
-    private SearchRequestExecutorService searchRequestExecutorService;
+    private SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     private Configuration configuration;
 
     @Override
-    public Optional<FulltextSearchResultsDTO> getResults(
-            @NonNull SearchCAConfigurationModel searchConfiguration,
-            String searchText,
-            @NonNull String language,
-            int start,
-            int rows,
-            Set<Filter> filters,
-            Set<String> facets,
-            String template) {
+    public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
+                                                         String searchText,
+                                                         @NonNull String language,
+                                                         int start,
+                                                         int rows,
+                                                         Set<Filter> filters,
+                                                         Set<String> facets,
+                                                         String template) {
         String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
                                           createQueryString(searchText,
                                                             language,
@@ -72,11 +69,13 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                                                             facets,
                                                             template));
         log.debug("Search GET Request: {}", requestUrl);
-        Optional<SearchResponse> searchResponse = searchRequestExecutorService.execute(new SearchRequestGet(requestUrl));
+        Optional<SearchResponse> searchResponse =
+                searchApiRequestExecutorService.execute(new SearchRequestGet(requestUrl));
         if (searchResponse.isPresent()) {
             printResponseHeaderInLog(searchResponse.get());
-            return getFulltextSearchResults(searchResponse.get(), searchConfiguration.isAutoSuggestEnabled(),
-                    searchConfiguration.isBestBetsEnabled());
+            return getFulltextSearchResults(searchResponse.get(),
+                                            searchConfiguration.isAutoSuggestEnabled(),
+                                            searchConfiguration.isBestBetsEnabled());
         }
         return Optional.empty();
     }
@@ -85,28 +84,26 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
     public boolean ping(@NonNull SearchCAConfigurationModel searchConfiguration) {
         String url = getApiUrl(searchConfiguration.getIndex());
         SearchRequest pingRequest = new SearchRequestHead(url);
-        return searchRequestExecutorService.execute(pingRequest).map(SearchResponse::isSuccess).orElse(false);
+        return searchApiRequestExecutorService.execute(pingRequest).map(SearchResponse::isSuccess).orElse(false);
     }
 
-    private Set<Filter> getEffectiveFilters(
-            Set<Filter> contextFilters,
-            Set<Filter> specifiedFilters) {
+    private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters) {
         return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
     }
 
-    private String createQueryString(
-            String term,
-            String language,
-            int start,
-            int rows,
-            Set<Filter> filters,
-            Set<String> facets,
-            String template) {
+    private String createQueryString(String term,
+                                     String language,
+                                     int start,
+                                     int rows,
+                                     Set<Filter> filters,
+                                     Set<String> facets,
+                                     String template) {
         GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
                 GetQueryStringConstructor.builder()
                                          .query(new TermQuery(term))
                                          .query(new LanguageQuery(language))
-                                         .query(new PaginationQuery(start, rows))
+                                         .query(new PaginationQuery(start,
+                                                                    rows))
                                          .query(FiltersQuery.builder()
                                                             .filters(CollectionUtils.emptyIfNull(filters))
                                                             .build())
@@ -116,20 +113,16 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         if (StringUtils.isNotBlank(template)) {
             builder.query(new SearchTemplateQuery(template));
         }
-        return builder.build()
-                      .getQueryString();
+        return builder.build().getQueryString();
     }
 
-    private String getRequestUrl(
-            String apiUrl,
-            String queryString) {
+    private String getRequestUrl(String apiUrl, String queryString) {
         return String.format("%s%s", apiUrl, queryString);
     }
 
-    private Optional<FulltextSearchResultsDTO> getFulltextSearchResults(
-            SearchResponse searchResponse,
-            boolean enableAutoSuggest,
-            boolean enableBestBets) {
+    private Optional<FulltextSearchResultsDTO> getFulltextSearchResults(SearchResponse searchResponse,
+                                                                        boolean enableAutoSuggest,
+                                                                        boolean enableBestBets) {
         Optional<ResponseBodyDTO> responseBody = searchResponse.get(new ResponseBodyDataExtractionStrategy());
         if (responseBody.isPresent()) {
             HighlightingDTO highlightingDto = searchResponse.get(new HighlightingDataExtractionStrategy())
@@ -145,15 +138,15 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                                             .totalResultsFound(responseBody.get().getNumFound())
                                             .currentResultPage(responseBody.get().getStart())
                                             .results(results.collect(Collectors.toList()))
-                                            .facetFieldsResults(
-                                                    searchResponse.get(new FacetFieldsDataExtractionStrategy())
-                                                                  .orElse(Collections.emptyList()));
+                                            .facetFieldsResults(searchResponse.get(new FacetFieldsDataExtractionStrategy())
+                                                                              .orElse(Collections.emptyList()));
             if (enableAutoSuggest) {
                 log.debug("Auto suggest is enabled.");
                 searchResponse.get(new SuggestionDataExtractionStrategy())
                               .flatMap(suggestion -> LoggedOptional.of(suggestion,
                                                                        logger -> logger.debug(
-                                                                               "No suggestion has been found in search response")))
+                                                                               "No suggestion has been found in " +
+                                                                                       "search response")))
                               .ifPresent(fulltextSearchResultsBuilder::suggestion);
             }
             return Optional.of(fulltextSearchResultsBuilder.build());
@@ -163,16 +156,12 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         return Optional.empty();
     }
 
-    private Stream<ResultDTO> getProcessedResults(
-            List<SearchResultDTO> searchResultDtos,
-            HighlightingDTO highlightingDto) {
-        return searchResultDtos.stream()
-                               .map(searchResult -> getResult(searchResult, highlightingDto));
+    private Stream<ResultDTO> getProcessedResults(List<SearchResultDTO> searchResultDtos,
+                                                  HighlightingDTO highlightingDto) {
+        return searchResultDtos.stream().map(searchResult -> getResult(searchResult, highlightingDto));
     }
 
-    private ResultDTO getResult(
-            SearchResultDTO searchResultDto,
-            HighlightingDTO highlightingDto) {
+    private ResultDTO getResult(SearchResultDTO searchResultDto, HighlightingDTO highlightingDto) {
         return ResultDTO.builder()
                         .url(searchResultDto.getUrl())
                         .title(new HighlightedTitleResolver(searchResultDto, highlightingDto).getTitle())
@@ -189,7 +178,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
 
     private String getApiUrl(String index) {
         return String.format("%s%s/%s%s",
-                             searchServiceConnectionConfigurationService.getBaseUrl(),
+                             searchApiRequestExecutorService.getBaseUrl(),
                              configuration.fulltextSearchService_apiVersion(),
                              index,
                              configuration.fulltextSearchService_apiAction());
@@ -202,21 +191,19 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
     }
 
     @ObjectClassDefinition(name = "Search as a Service - Fulltext Search Service Configuration",
-            description = "Fulltext Search Api specific details.")
+                           description = "Fulltext Search Api specific details.")
     public @interface Configuration {
 
         String DEFAULT_API_ACTION = "/search";
         String DEFAULT_API_VERSION_PATH = "/api/v3"; // NOSONAR
 
-        @AttributeDefinition(name = "Api base path",
-                description = "Api base path",
-                type = AttributeType.STRING)
-        String fulltextSearchService_apiVersion() default DEFAULT_API_VERSION_PATH; // NOSONAR
+        @AttributeDefinition(name = "Api version path",
+                             description = "Api version path",
+                             type = AttributeType.STRING) String fulltextSearchService_apiVersion() default DEFAULT_API_VERSION_PATH; // NOSONAR
 
         @AttributeDefinition(name = "Api action",
-                description = "What kind of action should be defined",
-                type = AttributeType.STRING)
-        String fulltextSearchService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
+                             description = "What kind of action should be defined",
+                             type = AttributeType.STRING) String fulltextSearchService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
 
     }
 }

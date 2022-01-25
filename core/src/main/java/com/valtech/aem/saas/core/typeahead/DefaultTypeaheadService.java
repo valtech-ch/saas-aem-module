@@ -3,7 +3,7 @@ package com.valtech.aem.saas.core.typeahead;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.query.*;
 import com.valtech.aem.saas.api.typeahead.TypeaheadService;
-import com.valtech.aem.saas.core.http.client.SearchRequestExecutorService;
+import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
@@ -17,6 +17,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -27,19 +28,16 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-@Component(name = "Search as a Service - Typeahead Service",
-        configurationPid = DefaultTypeaheadService.CONFIGURATION_PID,
-        service = TypeaheadService.class)
+@Component(service = TypeaheadService.class)
+@ServiceDescription("Search as a Service - Typeahead Service")
 @Designate(ocd = Configuration.class)
 public class DefaultTypeaheadService implements TypeaheadService {
-
-    static final String CONFIGURATION_PID = "com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService";
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
 
     @Reference
-    private SearchRequestExecutorService searchRequestExecutorService;
+    private SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     private Configuration configuration;
 
@@ -58,11 +56,11 @@ public class DefaultTypeaheadService implements TypeaheadService {
         String index = searchConfiguration.getIndex();
         SearchRequestGet searchRequestGet = new SearchRequestGet(
                 getApiUrl(index) + getQueryString(text, language, filters));
-        return searchRequestExecutorService.execute(searchRequestGet)
-                                           .filter(SearchResponse::isSuccess)
-                                           .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
-                                                   language)))
-                                           .orElse(Collections.emptyList());
+        return searchApiRequestExecutorService.execute(searchRequestGet)
+                .filter(SearchResponse::isSuccess)
+                .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
+                        language)))
+                .orElse(Collections.emptyList());
     }
 
     private String getQueryString(
@@ -80,10 +78,10 @@ public class DefaultTypeaheadService implements TypeaheadService {
 
     private String getApiUrl(String index) {
         return String.format("%s%s/%s%s",
-                             searchServiceConnectionConfigurationService.getBaseUrl(),
-                             configuration.typeaheadService_apiVersionPath(),
-                             index,
-                             configuration.typeaheadService_apiAction());
+                searchApiRequestExecutorService.getBaseUrl(),
+                configuration.typeaheadService_apiVersionPath(),
+                index,
+                configuration.typeaheadService_apiAction());
     }
 
     @Activate
