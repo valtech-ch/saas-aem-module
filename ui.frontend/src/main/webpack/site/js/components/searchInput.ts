@@ -1,6 +1,11 @@
 import cleanString from '../utils/cleanString'
 import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
+import {
+  cleanSessionStorage,
+  STORAGE_QUERY_STRING_KEY,
+  STORAGE_SUGGESTIONS_KEY,
+} from '../utils/sessionStorage'
 
 type SearchInputOptions = {
   id: string
@@ -10,7 +15,8 @@ type SearchInputOptions = {
   autoSuggestionDebounceTime: number
   searchContainer: HTMLDivElement
 }
-
+const SUGGESTION_DROPDOWN_ID = 'suggestions'
+const SEARCH_INPUT_CLASS = 'search-input'
 const SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS =
   '.saas-container_form #suggestions'
 const SUGGESTION_ELEMENT_CLASS = 'saas-suggestions-element'
@@ -39,6 +45,59 @@ const removeSuggestionList = (searchContainer: HTMLDivElement) => {
   }
 }
 
+const buildSuggestionElements = ({
+  results,
+  regexp,
+  query,
+  searchInput,
+  searchContainer,
+  suggestionDropdown,
+}: {
+  results: string[]
+  regexp: RegExp
+  query: string
+  searchInput: HTMLInputElement
+  searchContainer: HTMLDivElement
+  suggestionDropdown: Element
+}): void => {
+  const searchButtonElement = document.getElementsByClassName(
+    'saas-container_button',
+  )?.[0] as HTMLButtonElement | undefined
+  results.forEach((result) => {
+    const cleanAndFormatResult = cleanString(result).replace(
+      regexp,
+      `<b>${query}</b>`,
+    )
+    const suggestionDropdownElement = document.createElement('div')
+    suggestionDropdownElement.innerHTML = cleanAndFormatResult
+    suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
+
+    suggestionDropdownElement.addEventListener('click', () => {
+      const searchInputElementCopy = searchInput
+      cleanSessionStorage()
+      removeSuggestionList(searchContainer)
+
+      searchInputElementCopy.value = result
+
+      if (searchButtonElement) {
+        searchButtonElement.click()
+      }
+    })
+
+    suggestionDropdown.appendChild(suggestionDropdownElement)
+  })
+  searchInput.after(suggestionDropdown)
+}
+
+const getCleanedQueryAndRegex = (
+  query: string,
+): { cleanedQuery: string; regexp: RegExp } => {
+  const cleanedQuery = cleanString(query)
+  const regexp = new RegExp(cleanedQuery, 'gi')
+
+  return { cleanedQuery, regexp }
+}
+
 const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   debounce(
     async (
@@ -52,23 +111,22 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
 
       if (!query?.length || query.length < autocompleteTriggerThreshold) {
         removeSuggestionList(searchContainer)
+        cleanSessionStorage()
       }
 
       if (query.length >= autocompleteTriggerThreshold) {
-        const cleanedQuery = cleanString(query)
-        const regexp = new RegExp(cleanedQuery, 'gi')
-        const searchButtonElement = document.getElementsByClassName(
-          'saas-container_button',
-        )?.[0] as HTMLElement
+        const { cleanedQuery, regexp } = getCleanedQueryAndRegex(query)
         const results = await fetchAutoComplete(autocompleteUrl, cleanedQuery)
         const existingSuggestions = searchContainer.querySelector(
           SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
         )
         let suggestionDropdown: Element | null = null
 
+        sessionStorage.setItem(STORAGE_QUERY_STRING_KEY, query)
+
         if (!existingSuggestions) {
           suggestionDropdown = document.createElement('div')
-          suggestionDropdown.id = 'suggestions'
+          suggestionDropdown.id = SUGGESTION_DROPDOWN_ID
         } else {
           suggestionDropdown = existingSuggestions
         }
@@ -76,31 +134,19 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
         suggestionDropdown.innerHTML = ''
 
         if (results?.length) {
-          results.forEach((result) => {
-            const cleanAndFormatResult = cleanString(result).replace(
-              regexp,
-              `<b>${query}</b>`,
-            )
-            const suggestionDropdownElement = document.createElement('div')
-            suggestionDropdownElement.innerHTML = cleanAndFormatResult
-            suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
+          sessionStorage.setItem(
+            STORAGE_SUGGESTIONS_KEY,
+            JSON.stringify(results),
+          )
 
-            suggestionDropdownElement.addEventListener('click', () => {
-              const searchInputElementCopy = searchInput
-
-              removeSuggestionList(searchContainer)
-
-              searchInputElementCopy.value = result
-
-              if (searchButtonElement) {
-                searchButtonElement.click()
-              }
-            })
-
-            suggestionDropdown.appendChild(suggestionDropdownElement)
+          buildSuggestionElements({
+            results,
+            regexp,
+            query,
+            searchInput,
+            searchContainer,
+            suggestionDropdown,
           })
-
-          searchInput.after(suggestionDropdown)
         }
       }
     },
@@ -116,6 +162,7 @@ const buildSearchInput = ({
   searchContainer,
 }: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
+  searchInput.classList.add(SEARCH_INPUT_CLASS)
 
   searchInput.placeholder = searchFieldPlaceholderText
   searchInput.id = id
@@ -123,6 +170,26 @@ const buildSearchInput = ({
   setSaasCurrentFocusSuggestion(searchInput, -1)
 
   const search = debouncedSearch(autoSuggestionDebounceTime)
+
+  searchInput.addEventListener('focus', () => {
+    const query = sessionStorage.getItem(STORAGE_QUERY_STRING_KEY) || ''
+    const results: String[] = JSON.parse(
+      sessionStorage.getItem(STORAGE_SUGGESTIONS_KEY) || '[]',
+    )
+    const { regexp } = getCleanedQueryAndRegex(query)
+
+    const suggestionDropdown = document.createElement('div')
+    suggestionDropdown.id = SUGGESTION_DROPDOWN_ID
+
+    buildSuggestionElements({
+      results,
+      regexp,
+      query,
+      searchInput,
+      searchContainer,
+      suggestionDropdown,
+    })
+  })
 
   searchInput.addEventListener('input', (event) => {
     search(
@@ -134,9 +201,13 @@ const buildSearchInput = ({
     )
   })
 
-  document.addEventListener('click', () => {
-    /* Remove the autocomplete list from DOM when a click happens in the document */
-    removeSuggestionList(searchContainer)
+  document.addEventListener('click', (event) => {
+    /* Remove the autocomplete list from DOM when a click happens in the document, except if it is on the search input element */
+    if (
+      !(event.target as HTMLInputElement).classList.contains(SEARCH_INPUT_CLASS)
+    ) {
+      removeSuggestionList(searchContainer)
+    }
   })
 
   searchInput.addEventListener('keydown', (e) => {
