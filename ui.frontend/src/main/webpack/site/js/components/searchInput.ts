@@ -131,6 +131,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
           suggestionDropdown = existingSuggestions
         }
 
+        cleanSessionStorage([STORAGE_SUGGESTIONS_KEY])
         suggestionDropdown.innerHTML = ''
 
         if (results?.length) {
