@@ -119,22 +119,15 @@ BuildFacetOption): HTMLDivElement => {
       const resultsItems = document.createElement('div')
       resultsItems.classList.add('saas-container_results_items')
 
-      const resultsPage = document.createElement('div')
-      resultsPage.classList.add(
-        'saas-container_results_page',
-        'saas-container_results_page--1',
-      )
-
       const searchResultsItem = generateSearchItemList(
         results.results,
         onSearchItemClick,
       )
 
       searchResultsItem.forEach((element) => {
-        resultsPage.appendChild(element)
+        resultsItems.appendChild(element)
       })
 
-      resultsItems.appendChild(resultsPage)
       currentTab?.appendChild(resultsItems)
 
       if (results.showLoadMoreButton) {

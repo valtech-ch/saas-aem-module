@@ -55,19 +55,13 @@ const buildLoadMoreButton = ({
       searchResultsElement.getElementsByClassName(
         'saas-container_results_items',
       )?.[0]
-    const resultsPage = document.createElement('div')
-    resultsPage.classList.add(
-      'saas-container_results_page',
-      `saas-container_results_page--${currentPage}`,
-    )
 
     resultJSON?.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)
-      resultsPage.appendChild(searchItemElement)
+      searchResultsItemsWrapper.appendChild(searchItemElement)
     })
 
     if (searchResultsItemsWrapper) {
-      searchResultsItemsWrapper.appendChild(resultsPage)
       searchResultsElement.insertBefore(
         searchResultsItemsWrapper,
         loadMoreButton,
