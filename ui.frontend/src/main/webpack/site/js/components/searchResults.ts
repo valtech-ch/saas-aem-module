@@ -36,14 +36,21 @@ const buildSearchResult = ({
   const resultsItems = document.createElement('div')
   resultsItems.classList.add('saas-container_results_items')
 
+  const resultsPage = document.createElement('div')
+  resultsPage.classList.add(
+    'saas-container_results_page',
+    'saas-container_results_page--1',
+  )
+
   searchResults.dataset.tab = tabId
 
   generateSearchItemList(searchItems, onSearchItemClick).forEach(
     (searchItemElement) => {
-      resultsItems.appendChild(searchItemElement)
+      resultsPage.appendChild(searchItemElement)
     },
   )
 
+  resultsItems.appendChild(resultsPage)
   searchResults.appendChild(resultsItems)
 
   return searchResults

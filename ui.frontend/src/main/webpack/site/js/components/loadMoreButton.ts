@@ -13,14 +13,14 @@ type SearchButtonOptions = {
 }
 
 const buildLoadMoreButton = ({
-                               loadMoreButtonText,
-                               page,
-                               tabUrl,
-                               searchValue,
-                               searchResultsElement,
-                               onLoadMoreButtonClick,
-                               queryParameterName,
-                             }: SearchButtonOptions): HTMLButtonElement => {
+  loadMoreButtonText,
+  page,
+  tabUrl,
+  searchValue,
+  searchResultsElement,
+  onLoadMoreButtonClick,
+  queryParameterName,
+}: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
   loadMoreButton.classList.add('saas-load-more-button')
 
@@ -41,20 +41,38 @@ const buildLoadMoreButton = ({
       : {}
 
     const resultJSON = await fetchSearch(
-        tabUrl,
-        searchValue,
-        +currentPage,
-        queryParameterName,
-        selectedFacets,
+      tabUrl,
+      searchValue,
+      +currentPage,
+      queryParameterName,
+      selectedFacets,
     )
 
     loadMoreButton.dataset.page = `${+currentPage + 1}`
 
+    // we must search the results items wrapper from the current 'active' results element.
+    const searchResultsItemsWrapper =
+      searchResultsElement.getElementsByClassName(
+        'saas-container_results_items',
+      )?.[0] || undefined
+    const resultsPage = document.createElement('div')
+    resultsPage.classList.add(
+      'saas-container_results_page',
+      `saas-container_results_page--${currentPage}`,
+    )
+
     resultJSON?.results.forEach((resultItem: SearchItem) => {
       const searchItemElement = buildSearchItem(resultItem)
-
-      searchResultsElement.insertBefore(searchItemElement, loadMoreButton)
+      resultsPage.appendChild(searchItemElement)
     })
+
+    if (searchResultsItemsWrapper) {
+      searchResultsItemsWrapper.appendChild(resultsPage)
+      searchResultsElement.insertBefore(
+        searchResultsItemsWrapper,
+        loadMoreButton,
+      )
+    }
 
     if (!resultJSON?.showLoadMoreButton) {
       loadMoreButton.remove()
