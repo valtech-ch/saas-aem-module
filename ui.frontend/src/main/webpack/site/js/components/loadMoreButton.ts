@@ -54,7 +54,7 @@ const buildLoadMoreButton = ({
     const searchResultsItemsWrapper =
       searchResultsElement.getElementsByClassName(
         'saas-container_results_items',
-      )?.[0] || undefined
+      )?.[0]
     const resultsPage = document.createElement('div')
     resultsPage.classList.add(
       'saas-container_results_page',
