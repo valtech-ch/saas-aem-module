@@ -53,7 +53,7 @@ const buildSuggestionElements = ({
   searchContainer,
   suggestionDropdown,
 }: {
-  results: String[]
+  results: string[]
   regexp: RegExp
   query: string
   searchInput: HTMLInputElement
@@ -62,10 +62,9 @@ const buildSuggestionElements = ({
 }): void => {
   const searchButtonElement = document.getElementsByClassName(
     'saas-container_button',
-  )?.[0] as HTMLButtonElement
+  )?.[0] as HTMLButtonElement | undefined
   results.forEach((result) => {
-    const resultString = result as string
-    const cleanAndFormatResult = cleanString(resultString).replace(
+    const cleanAndFormatResult = cleanString(result).replace(
       regexp,
       `<b>${query}</b>`,
     )
@@ -78,7 +77,7 @@ const buildSuggestionElements = ({
       cleanSessionStorage()
       removeSuggestionList(searchContainer)
 
-      searchInputElementCopy.value = resultString
+      searchInputElementCopy.value = result
 
       if (searchButtonElement) {
         searchButtonElement.click()
