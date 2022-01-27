@@ -79,11 +79,11 @@ BuildFacetOption): HTMLDivElement => {
     currentTab.dataset.facets = JSON.stringify(newSelectedFacetsValue)
 
     const results = await fetchSearch(
-        tabUrl,
-        searchValue,
-        1,
-        queryParameterName,
-        newSelectedFacetsValue,
+      tabUrl,
+      searchValue,
+      1,
+      queryParameterName,
+      newSelectedFacetsValue,
     )
 
     const currentTabResults = currentTab.querySelectorAll('*')
@@ -116,14 +116,26 @@ BuildFacetOption): HTMLDivElement => {
 
       currentTab.appendChild(facetsGroups)
 
+      const resultsItems = document.createElement('div')
+      resultsItems.classList.add('saas-container_results_items')
+
+      const resultsPage = document.createElement('div')
+      resultsPage.classList.add(
+        'saas-container_results_page',
+        'saas-container_results_page--1',
+      )
+
       const searchResultsItem = generateSearchItemList(
         results.results,
         onSearchItemClick,
       )
 
       searchResultsItem.forEach((element) => {
-        currentTab?.appendChild(element)
+        resultsPage.appendChild(element)
       })
+
+      resultsItems.appendChild(resultsPage)
+      currentTab?.appendChild(resultsItems)
 
       if (results.showLoadMoreButton) {
         const loadMoreButton = buildLoadMoreButton({
