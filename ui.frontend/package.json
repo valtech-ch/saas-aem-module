@@ -13,7 +13,7 @@
   "main": "package/saas.js",
   "license": "SEE LICENSE IN LICENSE.txt",
   "scripts": {
-    "dev": "webpack -d --env dev --config ./webpack.dev.js && clientlib --verbose",
+    "dev": "webpack --env dev --config ./webpack.dev.js && clientlib --verbose",
     "prod": "webpack --config ./webpack.prod.js && clientlib --verbose",
     "start": "webpack-dev-server --open --config ./webpack.dev.js",
     "sync": "aemsync -d -p ../ui.apps/src/main/content",
