@@ -80,7 +80,10 @@ const buildSearchResultsTab = ({
       facetsGroups?.appendChild(facetsGroup)
     })
 
-    searchResults.prepend(facetsGroups)
+    if (facetFilters) {
+      searchResults.prepend(facetsGroups)
+    }
+
     searchFormParent?.appendChild(searchResults)
 
     if (showLoadMoreButton) {
