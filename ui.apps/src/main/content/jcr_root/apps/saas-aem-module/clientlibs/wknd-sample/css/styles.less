@@ -65,6 +65,8 @@
   .search .saas-container_results_item {
     margin: 0 0 15px 15px;
   }
+}
+@media only screen and (min-width: 992px) {
   .search .saas-container_results_item:hover {
     -webkit-box-shadow: 0 0 0 1px #ffea00;
     box-shadow: 0 0 0 1px #ffea00;
@@ -192,8 +194,10 @@
   width: 0;
   z-index: -1;
 }
-.search .saas-container_button:hover:before {
-  width: 100%;
+@media only screen and (min-width: 992px) {
+  .search .saas-container_button:hover:before {
+    width: 100%;
+  }
 }
 .search .saas-load-more-button {
   background-color: unset;
@@ -242,8 +246,10 @@
   width: 0;
   z-index: -1;
 }
-.search .saas-load-more-button:hover:before {
-  width: 100%;
+@media only screen and (min-width: 992px) {
+  .search .saas-load-more-button:hover:before {
+    width: 100%;
+  }
 }
 .search .saas-container_button,
 .search .saas-container button {
@@ -274,9 +280,11 @@
 .search #suggestions .saas-suggestions-element:last-child {
   border-bottom: 1px solid #d4d4d4;
 }
-.search #suggestions .saas-suggestions-element:hover {
-  background-color: #202020;
-  color: #e9e9e9;
+@media only screen and (min-width: 992px) {
+  .search #suggestions .saas-suggestions-element:hover {
+    background-color: #202020;
+    color: #e9e9e9;
+  }
 }
 .search #suggestions .saas-suggestions-element--active {
   background-color: #1e90ff !important;
