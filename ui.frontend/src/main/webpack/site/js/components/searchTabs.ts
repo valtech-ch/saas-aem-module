@@ -69,7 +69,8 @@ const buildSearchTab = ({
         return
       }
 
-      tabElement.style.display = 'none'
+      // overwrite display: grid !important set on .saas-container_results
+      tabElement.style.setProperty('display', 'none', 'important')
     })
   })
 

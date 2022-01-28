@@ -4,12 +4,12 @@ type SearchButtonOptions = {
 
 const buildSearchButton = ({
   searchButtonText,
-}: SearchButtonOptions): HTMLInputElement => {
-  const searchButton = document.createElement('input')
+}: SearchButtonOptions): HTMLButtonElement => {
+  const searchButton = document.createElement('button')
   searchButton.classList.add('saas-container_button')
 
   searchButton.type = 'submit'
-  searchButton.value = searchButtonText
+  searchButton.textContent = searchButtonText
 
   return searchButton
 }

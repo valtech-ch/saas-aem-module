@@ -60,6 +60,10 @@ const buildSuggestionElements = ({
   searchContainer: HTMLDivElement
   suggestionDropdown: Element
 }): void => {
+  if (!query) {
+    return
+  }
+
   const searchButtonElement = document.getElementsByClassName(
     'saas-container_button',
   )?.[0] as HTMLButtonElement | undefined
@@ -174,7 +178,7 @@ const buildSearchInput = ({
 
   searchInput.addEventListener('focus', () => {
     const query = sessionStorage.getItem(STORAGE_QUERY_STRING_KEY) || ''
-    const results: String[] = JSON.parse(
+    const results: string[] = JSON.parse(
       sessionStorage.getItem(STORAGE_SUGGESTIONS_KEY) || '[]',
     )
     const { regexp } = getCleanedQueryAndRegex(query)

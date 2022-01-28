@@ -114,7 +114,9 @@ BuildFacetOption): HTMLDivElement => {
         facetsGroups?.appendChild(facetsGroup)
       })
 
-      currentTab.appendChild(facetsGroups)
+      if (facetFilters) {
+        currentTab.appendChild(facetsGroups)
+      }
 
       const resultsItems = document.createElement('div')
       resultsItems.classList.add('saas-container_results_items')

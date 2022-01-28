@@ -80,7 +80,10 @@ const buildSearchResultsTab = ({
       facetsGroups?.appendChild(facetsGroup)
     })
 
-    searchResults.prepend(facetsGroups)
+    if (facetFilters) {
+      searchResults.prepend(facetsGroups)
+    }
+
     searchFormParent?.appendChild(searchResults)
 
     if (showLoadMoreButton) {
@@ -97,7 +100,8 @@ const buildSearchResultsTab = ({
 
     searchResults.dataset.selected = 'true'
     if (searchContainer?.dataset.selectedTab !== tabId) {
-      searchResults.style.display = 'none'
+      // overwrite display: grid !important set on .saas-container_results
+      searchResults.style.setProperty('display', 'none', 'important')
       searchResults.dataset.selected = 'false'
     }
   }
