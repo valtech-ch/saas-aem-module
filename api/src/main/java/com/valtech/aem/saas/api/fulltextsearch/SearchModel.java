@@ -30,16 +30,9 @@ public interface SearchModel extends ContainerExporter {
     /**
      * Retrieves a list of dialog configured search filter items.
      *
-     * @return list of filter details.
-     */
-    List<FilterModel> getFilters();
-
-    /**
-     * Retrieves a list of effective search filter items (union of context aware and dialog config).
-     *
      * @return set of filter details.
      */
-    Set<Filter> getEffectiveFilters();
+    Set<Filter> getFilters();
 
     /**
      * Retrieves an author configured value for the max limit of results per request/page

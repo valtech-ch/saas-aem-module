@@ -10,13 +10,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.query.Filter;
-import com.valtech.aem.saas.api.query.SimpleFilter;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
@@ -29,7 +27,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.jcr.resource.api.JcrResourceConstants;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
@@ -63,19 +60,20 @@ public class SearchModelImpl implements SearchModel {
     public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
     public static final String I18N_SEARCH_SUGGESTION_TEXT = "com.valtech.aem.saas.core.search.suggestion.text";
     public static final String I18N_SEARCH_NO_RESULTS_TEXT = "com.valtech.aem.saas.core.search.noResults.text";
-    public static final String I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE = "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage";
-    public static final String I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES = "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkLogFiles.text";
-    public static final String I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION = "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkOsgiConfigurations.text";
+    public static final String I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE =
+            "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage";
+    public static final String I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES =
+            "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkLogFiles.text";
+    public static final String I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION =
+            "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkOsgiConfigurations.text";
 
     @Getter
     @JsonInclude(Include.NON_EMPTY)
     @ValueMapValue
     private String title;
 
-    @JsonIgnore
-    @Getter
-    @ChildResource
-    private List<FilterModel> filters;
+    @ChildResource(name = "filters")
+    private List<FilterModel> configuredFilters;
 
     @JsonIgnore
     @Getter
@@ -90,7 +88,7 @@ public class SearchModelImpl implements SearchModel {
 
     @JsonIgnore
     @Getter
-    private Set<Filter> effectiveFilters;
+    private Set<Filter> filters;
 
     @Getter
     private String searchButtonText;
@@ -154,7 +152,7 @@ public class SearchModelImpl implements SearchModel {
         connectionFailedAlert = resolveConnectionFailedAlert();
         autoSuggestText = i18n.get(I18N_SEARCH_SUGGESTION_TEXT);
         noResultsText = i18n.get(I18N_SEARCH_NO_RESULTS_TEXT);
-        effectiveFilters = getEffectiveFilters(resource);
+        filters = getConfiguredFilters();
         searchFieldPlaceholderText = StringUtils.isNotBlank(searchFieldPlaceholderText)
                 ? searchFieldPlaceholderText
                 : i18n.get(I18N_SEARCH_INPUT_PLACEHOLDER);
@@ -237,30 +235,13 @@ public class SearchModelImpl implements SearchModel {
         return StringUtils.EMPTY;
     }
 
-    private Set<Filter> getEffectiveFilters(Resource resource) {
-        Set<Filter> effectiveFiltersList = getCaFilters(resource);
-        effectiveFiltersList.addAll(getConfiguredFilters());
-        return effectiveFiltersList;
-    }
-
     private Set<Filter> getConfiguredFilters() {
-        return Optional.ofNullable(filters)
-                .map(List::stream)
-                .orElse(Stream.empty())
-                .map(FilterModel::getFilter)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<Filter> getCaFilters(Resource resource) {
-        return Optional.ofNullable(resource.adaptTo(ConfigurationBuilder.class))
-                .map(configurationBuilder -> configurationBuilder.as(SearchConfiguration.class))
-                .map(SearchConfiguration::searchFilters)
-                .map(Arrays::stream)
-                .orElse(Stream.empty())
-                .map(searchFilterConfiguration -> new SimpleFilter(searchFilterConfiguration.name(),
-                        searchFilterConfiguration.value()))
-                .collect(Collectors.toSet());
+        return Optional.ofNullable(configuredFilters)
+                       .map(List::stream)
+                       .orElse(Stream.empty())
+                       .filter(FilterModel::isValid)
+                       .map(FilterModel::getFilter)
+                       .collect(Collectors.toSet());
     }
 
     private Locale getLocale() {

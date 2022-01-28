@@ -41,16 +41,18 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl.RESOUR
  */
 @Slf4j
 @Model(adaptables = SlingHttpServletRequest.class,
-        adapters = {SearchTabModel.class, ComponentExporter.class},
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        resourceType = RESOURCE_TYPE)
-@Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME, extensions = ExporterConstants.SLING_MODEL_EXTENSION)
+       adapters = {SearchTabModel.class, ComponentExporter.class},
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       resourceType = RESOURCE_TYPE)
+@Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
+          extensions = ExporterConstants.SLING_MODEL_EXTENSION)
 public class SearchTabModelImpl implements SearchTabModel {
 
     public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
     public static final int DEFAULT_START_PAGE = 1;
     public static final int DEFAULT_RESULTS_PER_PAGE = 10;
-    public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL = "com.valtech.aem.saas.core.search.loadmore.button.label";
+    public static final String I18N_KEY_LOAD_MORE_BUTTON_LABEL =
+            "com.valtech.aem.saas.core.search.loadmore.button.label";
 
     @Getter
     @JsonInclude(Include.NON_EMPTY)
@@ -82,8 +84,6 @@ public class SearchTabModelImpl implements SearchTabModel {
     @ValueMapValue
     private String template;
 
-    @JsonIgnore
-    @Getter
     @ChildResource
     private List<FilterModel> filters;
 
@@ -167,6 +167,7 @@ public class SearchTabModelImpl implements SearchTabModel {
         return Optional.ofNullable(requestWrapper)
                        .flatMap(rw -> rw.getParameter(SearchTabModel.QUERY_PARAM_PAGE))
                        .map(s -> new StringToInteger(s).asInt())
+                       .filter(OptionalInt::isPresent)
                        .map(OptionalInt::getAsInt)
                        .orElse(DEFAULT_START_PAGE);
     }
@@ -179,9 +180,12 @@ public class SearchTabModelImpl implements SearchTabModel {
         if (isResourceOverriddenRequest()) {
             log.trace(
                     String.join(StringUtils.EMPTY,
-                                "Skip querying for search results in case this sling model is initialized with a request",
-                                " when request.getRequestPathInfo().getResourcePath() != request.getResource().getPath().",
-                                " (Possible when the request is of type org.apache.sling.models.impl.ResourceOverridingRequestWrapper)"));
+                                "Skip querying for search results in case this sling model is initialized with a " +
+                                        "request",
+                                " when request.getRequestPathInfo().getResourcePath() != request.getResource()" +
+                                        ".getPath().",
+                                " (Possible when the request is of type org.apache.sling.models.impl" +
+                                        ".ResourceOverridingRequestWrapper)"));
             return Optional.empty();
         }
         if (StringUtils.isBlank(searchTerm)) {
@@ -194,13 +198,13 @@ public class SearchTabModelImpl implements SearchTabModel {
             return Optional.empty();
         }
         if (parentSearch == null) {
-            log.error(
-                    "Could not resolve the parent search component. (This is highly unlikely. It suggests content corruption.)");
+            log.error("Could not resolve the parent search component. (This is highly unlikely. It suggests content " +
+                              "corruption.)");
             return Optional.empty();
         }
         if (requestWrapper == null) {
-            log.error(
-                    "Could not adapt the request to com.valtech.aem.saas.core.common.request.RequestWrapper. (This should never happen.)");
+            log.error("Could not adapt the request to com.valtech.aem.saas.core.common.request.RequestWrapper. (This " +
+                              "should never happen.)");
             return Optional.empty();
         }
         return fulltextSearchService.getResults(
@@ -263,16 +267,17 @@ public class SearchTabModelImpl implements SearchTabModel {
     private Set<Filter> getEffectiveFilters(
             SearchModel search,
             RequestWrapper requestWrapper) {
-        Set<Filter> result = search.getEffectiveFilters();
-        result.addAll(getConfiguredFilters());
+        Set<Filter> result = search.getFilters();
+        result.addAll(getFilters());
         result.addAll(getSelectedFacetFilters(requestWrapper));
         return result;
     }
 
-    private Set<Filter> getConfiguredFilters() {
+    private Set<Filter> getFilters() {
         return Optional.ofNullable(filters)
                        .map(List::stream)
                        .orElse(Stream.empty())
+                       .filter(FilterModel::isValid)
                        .map(FilterModel::getFilter)
                        .filter(Objects::nonNull)
                        .collect(Collectors.toSet());

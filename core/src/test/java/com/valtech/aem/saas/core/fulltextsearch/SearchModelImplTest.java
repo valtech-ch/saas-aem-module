@@ -14,6 +14,7 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.testing.mock.caconfig.ContextPlugins;
 import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,7 +96,7 @@ class SearchModelImplTest {
         assertThat(testee.getLoadMoreButtonText(), is("load more"));
         assertThat(testee.getResultsPerPage(), is(15));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
-        assertThat(testee.getFilters(), nullValue());
+        assertThat(testee.getFilters(), IsEmptyCollection.empty());
         assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
         assertThat(testee.getSearchTabs(), not(empty()));
         assertThat(testee.getAutocompleteUrl(), is("/search.autocomplete.json"));
@@ -112,7 +113,7 @@ class SearchModelImplTest {
         assertThat(order.length, is(0));
         assertThat(testee.getResultsPerPage(), is(15));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
-        assertThat(testee.getFilters(), nullValue());
+        assertThat(testee.getFilters(), IsEmptyCollection.empty());
         assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
         assertThat(testee.getId(), not(isEmptyString()));
     }
