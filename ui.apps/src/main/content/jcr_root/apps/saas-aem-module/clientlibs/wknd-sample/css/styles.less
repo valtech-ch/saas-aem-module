@@ -38,13 +38,15 @@
   .search .saas-container_results {
     display: grid !important;
     grid-template: 'facetsGroup resultsItems' '. loadMoreButton';
-    grid-template-columns: 200px auto;
+    grid-template-columns: -webkit-max-content auto;
+    grid-template-columns: max-content auto;
   }
 }
 .search .saas-container_results_item {
   border-radius: 4px;
   -webkit-box-shadow: 0 0 0 1px #eaeaea;
   box-shadow: 0 0 0 1px #eaeaea;
+  min-height: 200px;
   position: relative;
   -webkit-transition: 0.08s ease-in;
   transition: 0.08s ease-in;
@@ -296,6 +298,7 @@
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
+  min-width: 150px;
   overflow: visible;
   padding: 1rem;
   -webkit-user-select: none;
