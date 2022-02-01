@@ -25,8 +25,8 @@ import java.util.Optional;
 
 @Component(service = Servlet.class)
 @SlingServletResourceTypes(resourceTypes = SearchModelImpl.RESOURCE_TYPE,
-        selectors = AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
-        extensions = AutocompleteServlet.EXTENSION_JSON)
+                           selectors = AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
+                           extensions = AutocompleteServlet.EXTENSION_JSON)
 public class AutocompleteServlet extends SlingSafeMethodsServlet {
 
     public static final String AUTOCOMPLETE_SELECTOR = "autocomplete";
@@ -36,9 +36,8 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
     private transient AutocompleteService autocompleteService;
 
     @Override
-    protected void doGet(
-            @NonNull SlingHttpServletRequest request,
-            @NonNull SlingHttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(@NonNull SlingHttpServletRequest request,
+                         @NonNull SlingHttpServletResponse response) throws ServletException, IOException {
         RequestWrapper requestWrapper = request.adaptTo(RequestWrapper.class);
         if (requestWrapper == null) {
             throw new IllegalArgumentException("Can not adapt the request to RequestWrapper sling model.");
@@ -46,17 +45,14 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
         String searchTerm = requestWrapper.getParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM)
                                           .orElseThrow(() -> new IllegalArgumentException("Search term not specified" +
                                                                                                   "."));
-        SearchModel searchModel = getSearch(request.getResource()).orElseThrow(
-                () -> new IllegalStateException("Can not resolve search model."));
-        SearchCAConfigurationModel searchCAConfigurationModel = Optional.ofNullable(request.getResource()
-                                                                                           .adaptTo(
-                                                                                                   SearchCAConfigurationModel.class))
-                                                                        .orElseThrow(
-                                                                                () -> new IllegalArgumentException(
-                                                                                        "Could not access search CA " +
-                                                                                                "configurations from " +
-                                                                                                "current resource."));
-        List<String> results = autocompleteService.getResults(searchCAConfigurationModel, searchTerm,
+        SearchModel searchModel = getSearch(request.getResource()).orElseThrow(() -> new IllegalStateException(
+                "Can not resolve search model."));
+        SearchCAConfigurationModel searchCAConfigurationModel =
+                Optional.ofNullable(request.getResource().adaptTo(SearchCAConfigurationModel.class))
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Could not access search CA configurations from current resource."));
+        List<String> results = autocompleteService.getResults(searchCAConfigurationModel,
+                                                              searchTerm,
                                                               searchModel.getLanguage(),
                                                               searchModel.getFilters());
         new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));
