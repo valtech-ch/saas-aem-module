@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface SearchTabModel {
 
-    String SEARCH_TERM = "q";
+    String QUERY_PARAM_SEARCH_TERM = "q";
     String QUERY_PARAM_PAGE = "page";
-    String FACET_FILTER = "facetFilter";
+    String QUERY_PARAM_FACET_FILTER = "facetFilter";
 
     /**
      * Retrieves the title configurable for the search tab component.

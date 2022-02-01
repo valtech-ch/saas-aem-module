@@ -84,7 +84,7 @@ class SearchTabModelImplTest {
                                                   "foo");
         context.requestPathInfo().setResourcePath(
                 "/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab");
-        context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "bar");
+        context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "bar");
         context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_PAGE, "2");
         ArgumentCaptor<Integer> startParam = ArgumentCaptor.forClass(Integer.class);
         testAdaptable();

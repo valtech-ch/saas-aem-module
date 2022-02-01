@@ -78,7 +78,7 @@ class AutocompleteServletTest {
     @Test
     void testAutocomplete() throws ServletException, IOException {
         when(i18nProvider.getI18n(any(Locale.class))).thenReturn(i18n);
-        context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "foo");
+        context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "foo");
         MockContextAwareConfig.writeConfiguration(context,
                                                   context.currentResource().getPath(),
                                                   SearchConfiguration.class,

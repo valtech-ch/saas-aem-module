@@ -43,8 +43,9 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
         if (requestWrapper == null) {
             throw new IllegalArgumentException("Can not adapt the request to RequestWrapper sling model.");
         }
-        String searchTerm = requestWrapper.getParameter(SearchTabModel.SEARCH_TERM)
-                                          .orElseThrow(() -> new IllegalArgumentException("Search term not specified."));
+        String searchTerm = requestWrapper.getParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM)
+                                          .orElseThrow(() -> new IllegalArgumentException("Search term not specified" +
+                                                                                                  "."));
         SearchModel searchModel = getSearch(request.getResource()).orElseThrow(
                 () -> new IllegalStateException("Can not resolve search model."));
         SearchCAConfigurationModel searchCAConfigurationModel = Optional.ofNullable(request.getResource()

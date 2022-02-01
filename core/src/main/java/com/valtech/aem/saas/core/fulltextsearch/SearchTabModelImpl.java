@@ -160,7 +160,7 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
     }
 
     private Optional<String> getSearchTerm() {
-        return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.SEARCH_TERM));
+        return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM));
     }
 
     private int getResultsPage(RequestWrapper requestWrapper) {
@@ -233,7 +233,7 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
                                                                                       facetFieldResultsDTO))
                                                                               .collect(Collectors.toList());
             return CollectionUtils.isNotEmpty(facetFilterDTOList)
-                    ? new FacetFiltersDTO(SearchTabModel.FACET_FILTER,
+                    ? new FacetFiltersDTO(SearchTabModel.QUERY_PARAM_FACET_FILTER,
                                           facetFilterDTOList)
                     : null;
         }
@@ -285,7 +285,7 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
     }
 
     private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
-        return requestWrapper.getParameterValues(SearchTabModel.FACET_FILTER).stream()
+        return requestWrapper.getParameterValues(SearchTabModel.QUERY_PARAM_FACET_FILTER).stream()
                              .map(this::createFilter)
                              .filter(Objects::nonNull)
                              .collect(Collectors.toSet());
