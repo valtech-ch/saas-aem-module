@@ -1,7 +1,12 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
+/**
+ * Interface of a component containing search input field.
+ */
 public interface SearchInputModel {
-
+    /**
+     * The minimum search term length for which autocomplete is performed
+     */
     int AUTOCOMPLETE_THRESHOLD = 3;
 
     /**

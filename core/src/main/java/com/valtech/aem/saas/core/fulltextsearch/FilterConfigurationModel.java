@@ -8,7 +8,7 @@ import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 import javax.inject.Inject;
 
 /**
- * A POJO that represents a search filter entry and provides sling resource binding.
+ * A POJO for a multi-value filter entry resource.
  */
 @Model(adaptables = Resource.class,
        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)

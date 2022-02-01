@@ -8,7 +8,7 @@ import com.valtech.aem.saas.api.query.Filter;
 public interface FilterConfiguration {
 
     /**
-     * Gets a {@link Filter} object constructed from the name and value
+     * Gets a {@link Filter} object constructed from the configured filter name and filter value.
      *
      * @return query filter object.
      */

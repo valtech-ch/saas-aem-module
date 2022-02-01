@@ -8,6 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
+/**
+ * Abstract implementation of multi-value filer configuration.
+ */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class MultiValueFilterConfiguration implements FilterConfiguration {
     private final String name;
