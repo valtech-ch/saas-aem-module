@@ -51,7 +51,7 @@ class SearchTabModelImplTest {
     @Mock
     I18n i18n;
 
-    SearchTabModel testee;
+    SearchTabModelImpl testee;
 
     @BeforeEach
     void setUp() {
@@ -98,7 +98,7 @@ class SearchTabModelImplTest {
     }
 
     private void testAdaptable() {
-        testee = context.request().adaptTo(SearchTabModel.class);
+        testee = context.request().adaptTo(SearchTabModelImpl.class);
         assertThat(testee, notNullValue());
         assertThat(testee, instanceOf(SearchTabModel.class));
     }

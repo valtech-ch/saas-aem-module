@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-import com.adobe.cq.export.json.ComponentExporter;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FacetFiltersDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.SuggestionDTO;
@@ -10,7 +9,7 @@ import java.util.List;
 /**
  * Represents a model of the aem search results component.
  */
-public interface SearchTabModel extends ComponentExporter {
+public interface SearchTabModel {
 
     String SEARCH_TERM = "q";
     String QUERY_PARAM_PAGE = "page";
@@ -64,13 +63,5 @@ public interface SearchTabModel extends ComponentExporter {
      * @return url string
      */
     String getUrl();
-
-    /**
-     * Gets a name of template, defined in SaaS admin, which when specified in the search query, it utilizes a specific
-     * set of query params that could also contain specific boost values.
-     *
-     * @return template name
-     */
-    String getTemplate();
 
 }

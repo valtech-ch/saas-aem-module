@@ -8,7 +8,7 @@ import lombok.NonNull;
 import java.util.List;
 
 /**
- * Represents a service that manages best bets.
+ * Service that manages best bets.
  */
 public interface BestBetsService {
 

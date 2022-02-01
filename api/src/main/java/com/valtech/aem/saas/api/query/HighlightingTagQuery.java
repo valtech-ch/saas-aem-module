@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class HighlightingTagQuery implements OptionalQuery {
+public class HighlightingTagQuery implements Query {
 
     static final String HIGHLIGHT_PRE_TAG = "hlpre";
     static final String HIGHLIGHT_POST_TAG = "hlpost";

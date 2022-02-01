@@ -3,9 +3,9 @@ package com.valtech.aem.saas.core.caconfig;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.fulltextsearch.FilterConfiguration;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -78,9 +78,9 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
     @Override
     public Set<Filter> getFilters() {
         return asStream(searchConfiguration.searchFilters())
-                .map(CaFilterModelImpl::new)
-                .filter(FilterModel::isValid)
-                .map(FilterModel::getFilter)
+                .map(CaFilterConfigurationModel::new)
+                .filter(FilterConfiguration::isValid)
+                .map(FilterConfiguration::getFilter)
                 .collect(Collectors.toSet());
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
  * Implementation of {@link Query} that specifies pagination parameters: "start" and "rows".
  */
 @Slf4j
-public final class PaginationQuery implements OptionalQuery {
+public final class PaginationQuery implements Query {
     static final String START_PARAMETER_KEY = "start";
     static final String ROWS_PARAMETER_KEY = "rows";
     private static final int START_MIN_VALUE = 0;

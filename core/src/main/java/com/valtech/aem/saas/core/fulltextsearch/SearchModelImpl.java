@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
@@ -47,17 +46,18 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchModelImpl.RESOURCE_
  */
 @Slf4j
 @Model(adaptables = {SlingHttpServletRequest.class, Resource.class},
-        adapters = {SearchModel.class, ComponentExporter.class, ContainerExporter.class},
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        resourceType = RESOURCE_TYPE)
+       adapters = {SearchModel.class, ComponentExporter.class, ContainerExporter.class},
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-        extensions = ExporterConstants.SLING_MODEL_EXTENSION)
-public class SearchModelImpl implements SearchModel {
+          extensions = ExporterConstants.SLING_MODEL_EXTENSION)
+public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
     public static final String NODE_NAME_SEARCH_TABS_CONTAINER = "search-tabs";
     public static final String I18N_KEY_SEARCH_BUTTON_LABEL = "com.valtech.aem.saas.core.search.submit.button.label";
-    public static final String I18N_SEARCH_INPUT_PLACEHOLDER = "com.valtech.aem.saas.core.search.input.placeholder.text";
+    public static final String I18N_SEARCH_INPUT_PLACEHOLDER =
+            "com.valtech.aem.saas.core.search.input.placeholder.text";
     public static final String I18N_SEARCH_SUGGESTION_TEXT = "com.valtech.aem.saas.core.search.suggestion.text";
     public static final String I18N_SEARCH_NO_RESULTS_TEXT = "com.valtech.aem.saas.core.search.noResults.text";
     public static final String I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE =
@@ -67,13 +67,10 @@ public class SearchModelImpl implements SearchModel {
     public static final String I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION =
             "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkOsgiConfigurations.text";
 
-    @Getter
     @JsonInclude(Include.NON_EMPTY)
+    @Getter
     @ValueMapValue
     private String title;
-
-    @ChildResource(name = "filters")
-    private List<FilterModel> configuredFilters;
 
     @JsonIgnore
     @Getter
@@ -81,14 +78,14 @@ public class SearchModelImpl implements SearchModel {
     @Default(intValues = SearchTabModelImpl.DEFAULT_RESULTS_PER_PAGE)
     private int resultsPerPage;
 
-    @Getter
     @JsonInclude(Include.NON_EMPTY)
+    @Getter
     @ValueMapValue
     private String searchFieldPlaceholderText;
 
-    @JsonIgnore
     @Getter
-    private Set<Filter> filters;
+    @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+    private String exportedType;
 
     @Getter
     private String searchButtonText;
@@ -98,14 +95,6 @@ public class SearchModelImpl implements SearchModel {
 
     @Getter
     private List<SearchTabModel> searchTabs;
-
-    @JsonIgnore
-    @Getter
-    private String configJson;
-
-    @Getter
-    @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
-    private String exportedType;
 
     @Getter
     private String autocompleteUrl;
@@ -118,6 +107,17 @@ public class SearchModelImpl implements SearchModel {
 
     @Getter
     private ConnectionFailedAlert connectionFailedAlert;
+
+    @JsonIgnore
+    @Getter
+    private String configJson;
+
+    @JsonIgnore
+    @Getter
+    private Set<Filter> filters;
+
+    @ChildResource(name = "filters")
+    private List<FilterConfigurationModel> configuredFilters;
 
     @ChildResource(name = NODE_NAME_SEARCH_TABS_CONTAINER)
     private List<Resource> searchTabResources;
@@ -182,7 +182,6 @@ public class SearchModelImpl implements SearchModel {
 
 
     @JsonIgnore
-    @Override
     public String getLanguage() {
         return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
     }
@@ -239,8 +238,8 @@ public class SearchModelImpl implements SearchModel {
         return Optional.ofNullable(configuredFilters)
                        .map(List::stream)
                        .orElse(Stream.empty())
-                       .filter(FilterModel::isValid)
-                       .map(FilterModel::getFilter)
+                       .filter(FilterConfiguration::isValid)
+                       .map(FilterConfiguration::getFilter)
                        .collect(Collectors.toSet());
     }
 

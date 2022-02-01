@@ -1,4 +1,4 @@
-package com.valtech.aem.saas.api.typeahead;
+package com.valtech.aem.saas.api.autocomplete;
 
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.query.Filter;
@@ -8,18 +8,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Represents a service that consumes the SaaS typeahead api.
+ * Service that consumes the SaaS typeahead (autocomplete) api.
  */
-public interface TypeaheadService {
+public interface AutocompleteService {
 
     /**
-     * Retrieves typeahead results
+     * Retrieves typeahead (autocomplete) results
      *
      * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
      * @param text                search term.
      * @param language            search language scope.
      * @param filters             search filters
-     * @return List of string represented typeahead options. Empty list if no options are found.
+     * @return List of string represented autocomplete options. Empty list if no options are found.
      */
     List<String> getResults(
             @NonNull SearchCAConfigurationModel searchConfiguration,

@@ -1,11 +1,11 @@
-package com.valtech.aem.saas.api.fulltextsearch;
+package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.valtech.aem.saas.api.query.Filter;
 
 /**
  * Represents a sling resource that contains pre-configurable search filter details.
  */
-public interface FilterModel {
+public interface FilterConfiguration {
 
     /**
      * Gets a {@link Filter} object constructed from the name and value

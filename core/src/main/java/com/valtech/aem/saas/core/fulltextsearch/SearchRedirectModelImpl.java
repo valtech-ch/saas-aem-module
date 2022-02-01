@@ -37,12 +37,12 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchRedirectModelImpl.R
  */
 @Slf4j
 @Model(adaptables = SlingHttpServletRequest.class,
-        adapters = {SearchRedirectModel.class, ComponentExporter.class},
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        resourceType = RESOURCE_TYPE)
+       adapters = {SearchRedirectModel.class, ComponentExporter.class},
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-        extensions = ExporterConstants.SLING_MODEL_EXTENSION)
-public class SearchRedirectModelImpl implements SearchRedirectModel {
+          extensions = ExporterConstants.SLING_MODEL_EXTENSION)
+public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentExporter {
 
     public static final String RESOURCE_TYPE = "saas-aem-module/components/searchredirect";
     private static final String HTML_EXTENSION = ".html";
@@ -52,21 +52,21 @@ public class SearchRedirectModelImpl implements SearchRedirectModel {
     private String searchFieldPlaceholderText;
 
     @Getter
+    @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+    private String exportedType;
+
+    @Getter
     private String searchUrl;
 
     @Getter
     private String autocompleteUrl;
 
-    @Getter
-    @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
-    private String exportedType;
-
-    @ValueMapValue
-    private String searchPagePath;
-
     @JsonIgnore
     @Getter
     private String configJson;
+
+    @ValueMapValue
+    private String searchPagePath;
 
     @Self
     private SlingHttpServletRequest request;

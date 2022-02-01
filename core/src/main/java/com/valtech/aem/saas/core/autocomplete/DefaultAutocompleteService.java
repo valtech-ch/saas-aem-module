@@ -1,14 +1,14 @@
-package com.valtech.aem.saas.core.typeahead;
+package com.valtech.aem.saas.core.autocomplete;
 
+import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.query.*;
-import com.valtech.aem.saas.api.typeahead.TypeaheadService;
+import com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.http.response.TypeaheadDataExtractionStrategy;
-import com.valtech.aem.saas.core.typeahead.DefaultTypeaheadService.Configuration;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,10 +26,10 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import java.util.*;
 
 @Slf4j
-@Component(service = TypeaheadService.class)
-@ServiceDescription("Search as a Service - Typeahead Service")
+@Component(service = AutocompleteService.class)
+@ServiceDescription("Search as a Service - Autocomplete Service")
 @Designate(ocd = Configuration.class)
-public class DefaultTypeaheadService implements TypeaheadService {
+public class DefaultAutocompleteService implements AutocompleteService {
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;

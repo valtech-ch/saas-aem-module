@@ -1,14 +1,14 @@
-package com.valtech.aem.saas.core.typeahead;
+package com.valtech.aem.saas.core.autocomplete;
 
 import com.day.cq.i18n.I18n;
 import com.google.gson.JsonParser;
+import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.query.SimpleFilter;
-import com.valtech.aem.saas.api.request.SearchRequest;
-import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
+import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
-class DefaultTypeaheadServiceTest {
+class DefaultAutocompleteServiceTest {
 
     private final AemContext context = new AemContextBuilder()
             .plugin(ContextPlugins.CACONFIG)
@@ -57,7 +57,7 @@ class DefaultTypeaheadServiceTest {
     @Mock
     I18n i18n;
 
-    TypeaheadService service;
+    AutocompleteService service;
 
     Resource currentResource;
 
@@ -76,7 +76,7 @@ class DefaultTypeaheadServiceTest {
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
         context.registerService(SearchApiRequestExecutorService.class, searchApiRequestExecutorService);
-        service = context.registerInjectActivateService(new DefaultTypeaheadService());
+        service = context.registerInjectActivateService(new DefaultAutocompleteService());
         currentResource = context.currentResource();
     }
 
