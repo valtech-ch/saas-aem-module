@@ -21,7 +21,8 @@ The following properties are written to JCR for the Search component and are exp
 2`./language` - Defines the search results language. It overrides the language resolved from resource context.
 2. `./searchFieldPlaceholderText` - Defines the text to be displayed as placeholder in the input field. It has a default value defined as i18n entry.
 3. `./resultsPerPage` - defines the number of results per page. It overrides the default value of 10 results per page.
-4. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a binary 'AND' operator. 
+4. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
+   operator.
 
 #### Autocomplete
 

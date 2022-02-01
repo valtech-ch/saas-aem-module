@@ -6,14 +6,10 @@ import com.valtech.aem.saas.api.bestbets.BestBetsService;
 import com.valtech.aem.saas.api.bestbets.dto.BestBetDTO;
 import com.valtech.aem.saas.api.bestbets.dto.BestBetPayloadDTO;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.request.SearchRequest;
 import com.valtech.aem.saas.core.bestbets.DefaultBestBetsService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
-import com.valtech.aem.saas.core.http.request.SearchRequestDelete;
-import com.valtech.aem.saas.core.http.request.SearchRequestGet;
-import com.valtech.aem.saas.core.http.request.SearchRequestPost;
-import com.valtech.aem.saas.core.http.request.SearchRequestPut;
+import com.valtech.aem.saas.core.http.request.*;
 import com.valtech.aem.saas.core.http.response.*;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -153,7 +149,8 @@ public class DefaultBestBetsService implements BestBetsService {
         if (!StringUtils.contains(configuration.bestBetsService_apiPublishProjectBestBetsAction(),
                                   STRING_FORMAT_PLACEHOLDER)) {
             throw new IllegalArgumentException(
-                    "Publish Best Bets For Project Action is of illegal format. It should contain a wildcard/placeholder for project id.");
+                    "Publish Best Bets For Project Action is of illegal format. It should contain a " +
+                            "wildcard/placeholder for project id.");
         }
         SearchRequest searchRequest = new SearchRequestGet(getPreparePublishBestBetsAction(projectId));
         Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);

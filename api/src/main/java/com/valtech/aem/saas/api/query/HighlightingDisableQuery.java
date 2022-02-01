@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Implementation of {@link Query} that, when used, disables the highlighting feature.
  */
-public final class HighlightingDisableQuery implements OptionalQuery {
+public final class HighlightingDisableQuery implements Query {
 
     private static final String HIGHLIGHT_SWITCH = "hl";
 

@@ -61,8 +61,9 @@ public class SearchComponentIT {
 
   @Test
   public void testSearchResults() throws ClientException {
-    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "uk"),
-                                                     new BasicNameValuePair(LanguageQuery.KEY, "en"));
+    List<NameValuePair> searchParams =
+            Arrays.asList(new BasicNameValuePair(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "uk"),
+                          new BasicNameValuePair(LanguageQuery.KEY, "en"));
 
     JsonNode searchTab1 = slingModelJsonExporterClient.doGetJsonNode(
             getJsonModelPreparedUrl(
@@ -100,9 +101,9 @@ public class SearchComponentIT {
   @Test
   public void testAutocomplete() throws ClientException {
     JsonNode jsonNode = slingModelJsonExporterClient.doGetJsonNode(
-        "/content/saas-aem-module/us/en/jcr:content/root/container/search.autocomplete.json",
-        Collections.singletonList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "foo")),
-        200);
+            "/content/saas-aem-module/us/en/jcr:content/root/container/search.autocomplete.json",
+            Collections.singletonList(new BasicNameValuePair(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "foo")),
+            200);
     assertNotNull(jsonNode);
     assertTrue(jsonNode.isArray());
     assertTrue(jsonNode.size() > 0);
@@ -110,8 +111,9 @@ public class SearchComponentIT {
 
   @Test
   public void testAutosuggest() throws ClientException {
-    List<NameValuePair> searchParams = Arrays.asList(new BasicNameValuePair(SearchTabModel.SEARCH_TERM, "fooo"),
-        new BasicNameValuePair(LanguageQuery.KEY, "en"));
+    List<NameValuePair> searchParams =
+            Arrays.asList(new BasicNameValuePair(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "fooo"),
+                          new BasicNameValuePair(LanguageQuery.KEY, "en"));
 
     JsonNode searchTab1 = slingModelJsonExporterClient.doGetJsonNode(
         getJsonModelPreparedUrl(

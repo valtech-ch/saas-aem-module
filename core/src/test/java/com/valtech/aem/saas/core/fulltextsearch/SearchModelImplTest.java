@@ -87,7 +87,7 @@ class SearchModelImplTest {
                                                   SearchConfiguration.class,
                                                   "index",
                                                   "foo");
-        context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "bar");
+        context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "bar");
         adaptRequest();
         testAdaptable();
         Map<String, ? extends ComponentExporter> exportedItemsMap = testee.getExportedItems();
