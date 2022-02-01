@@ -24,13 +24,6 @@ public interface SearchTabModel extends ComponentExporter {
     String getTitle();
 
     /**
-     * Retrieves a list of dialog configured search filter items.
-     *
-     * @return list of filter details.
-     */
-    List<FilterModel> getFilters();
-
-    /**
      * Retrieves a list of facet filter items.
      *
      * @return list of facet filter names.

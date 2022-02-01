@@ -88,7 +88,10 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
     }
 
     private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters) {
-        return Stream.concat(contextFilters.stream(), specifiedFilters.stream()).collect(Collectors.toSet());
+        Set<Filter> filters = new HashSet<>();
+        Optional.ofNullable(contextFilters).ifPresent(filters::addAll);
+        Optional.ofNullable(specifiedFilters).ifPresent(filters::addAll);
+        return filters;
     }
 
     private String createQueryString(String term,

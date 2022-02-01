@@ -52,10 +52,12 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
                                                                                                    SearchCAConfigurationModel.class))
                                                                         .orElseThrow(
                                                                                 () -> new IllegalArgumentException(
-                                                                                        "Could not access search CA configurations from current resource."));
+                                                                                        "Could not access search CA " +
+                                                                                                "configurations from " +
+                                                                                                "current resource."));
         List<String> results = typeaheadService.getResults(searchCAConfigurationModel, searchTerm,
                                                            searchModel.getLanguage(),
-                                                           searchModel.getEffectiveFilters());
+                                                           searchModel.getFilters());
         new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));
     }
 

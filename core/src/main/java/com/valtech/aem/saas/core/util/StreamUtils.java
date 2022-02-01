@@ -1,6 +1,8 @@
 package com.valtech.aem.saas.core.util;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -23,5 +25,9 @@ public final class StreamUtils {
             Iterable<T> iterable = () -> sourceIterator;
             return StreamSupport.stream(iterable.spliterator(), parallel);
         }
+    }
+
+    public static <T> Stream<T> asStream(T[] array) {
+        return Optional.ofNullable(array).map(Arrays::stream).orElse(Stream.empty());
     }
 }

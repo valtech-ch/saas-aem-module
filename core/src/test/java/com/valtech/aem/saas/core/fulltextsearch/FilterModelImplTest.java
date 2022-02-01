@@ -12,7 +12,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 
 @ExtendWith({AemContextExtension.class})
 class FilterModelImplTest {
@@ -51,7 +50,7 @@ class FilterModelImplTest {
                 "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item2");
         adaptResource(context);
         testAdaptable();
-        assertThat(testee.getFilter(), nullValue());
+        assertThat(testee.isValid(), is(false));
     }
 
     @Test
@@ -60,7 +59,7 @@ class FilterModelImplTest {
                 "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item3");
         adaptResource(context);
         testAdaptable();
-        assertThat(testee.getFilter(), nullValue());
+        assertThat(testee.isValid(), is(false));
     }
 
     private void adaptResource(AemContext context) {

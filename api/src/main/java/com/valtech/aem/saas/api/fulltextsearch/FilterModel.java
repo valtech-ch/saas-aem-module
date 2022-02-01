@@ -8,23 +8,16 @@ import com.valtech.aem.saas.api.query.Filter;
 public interface FilterModel {
 
     /**
-     * Gets the filter field name.
-     *
-     * @return filter field name.
-     */
-    String getName();
-
-    /**
-     * Gets the filter field value.
-     *
-     * @return filter value
-     */
-    String getValue();
-
-    /**
      * Gets a {@link Filter} object constructed from the name and value
      *
      * @return query filter object.
      */
     Filter getFilter();
+
+    /**
+     * Checks whether the filter has the necessary data.
+     *
+     * @return true if name and value are specified.
+     */
+    boolean isValid();
 }

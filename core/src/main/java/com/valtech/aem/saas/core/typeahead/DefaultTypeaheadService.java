@@ -23,9 +23,7 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Component(service = TypeaheadService.class)
@@ -55,7 +53,8 @@ public class DefaultTypeaheadService implements TypeaheadService {
         }
         String index = searchConfiguration.getIndex();
         SearchRequestGet searchRequestGet = new SearchRequestGet(
-                getApiUrl(index) + getQueryString(text, language, filters));
+                getApiUrl(index) + getQueryString(text, language,
+                                                  getEffectiveFilters(searchConfiguration.getFilters(), filters)));
         return searchApiRequestExecutorService.execute(searchRequestGet)
                 .filter(SearchResponse::isSuccess)
                 .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
@@ -78,10 +77,17 @@ public class DefaultTypeaheadService implements TypeaheadService {
 
     private String getApiUrl(String index) {
         return String.format("%s%s/%s%s",
-                searchApiRequestExecutorService.getBaseUrl(),
-                configuration.typeaheadService_apiVersionPath(),
-                index,
-                configuration.typeaheadService_apiAction());
+                             searchApiRequestExecutorService.getBaseUrl(),
+                             configuration.typeaheadService_apiVersionPath(),
+                             index,
+                             configuration.typeaheadService_apiAction());
+    }
+
+    private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters) {
+        Set<Filter> filters = new HashSet<>();
+        Optional.ofNullable(contextFilters).ifPresent(filters::addAll);
+        Optional.ofNullable(specifiedFilters).ifPresent(filters::addAll);
+        return filters;
     }
 
     @Activate
@@ -91,7 +97,7 @@ public class DefaultTypeaheadService implements TypeaheadService {
     }
 
     @ObjectClassDefinition(name = "Search as a Service - Typeahead Service Configuration",
-            description = "Typeahead Api specific details.")
+                           description = "Typeahead Api specific details.")
     public @interface Configuration {
 
         String DEFAULT_API_ACTION = "/typeahead";
