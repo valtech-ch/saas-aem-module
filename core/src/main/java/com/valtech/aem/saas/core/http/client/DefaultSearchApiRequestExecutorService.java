@@ -88,7 +88,7 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
                            description = "URL and authentication details for connect to Search Api Endpoint.")
     public @interface Configuration {
 
-        String DEFAULT_WEB_SERVICE_URL = "https://search-api.infocentric.swiss";
+        String DEFAULT_WEB_SERVICE_URL = "https://ic-search-api.valtech.swiss";
         boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
 
         @AttributeDefinition(name = "Base URL",

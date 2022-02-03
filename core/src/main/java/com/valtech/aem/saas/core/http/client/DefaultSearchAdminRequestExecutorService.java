@@ -94,7 +94,7 @@ public class DefaultSearchAdminRequestExecutorService implements SearchAdminRequ
                            description = "URL and authentication details for connect to Search Admin Endpoint.")
     public @interface Configuration {
 
-        String DEFAULT_WEB_SERVICE_URL = "https://search-admin.infocentric.swiss/admin";
+        String DEFAULT_WEB_SERVICE_URL = "https://ic-search-admin.valtech.swiss/admin";
         boolean DEFAULT_BASIC_AUTHENTICATION_ENABLE = false;
         boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
 
