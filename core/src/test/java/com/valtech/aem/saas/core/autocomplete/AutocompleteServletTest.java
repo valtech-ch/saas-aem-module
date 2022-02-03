@@ -1,11 +1,11 @@
 package com.valtech.aem.saas.core.autocomplete;
 
 import com.day.cq.i18n.I18n;
+import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
-import com.valtech.aem.saas.api.typeahead.TypeaheadService;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -37,7 +37,7 @@ class AutocompleteServletTest {
             .build();
 
     @Mock
-    TypeaheadService typeaheadService;
+    AutocompleteService autocompleteService;
 
     @Mock
     I18nProvider i18nProvider;
@@ -52,7 +52,7 @@ class AutocompleteServletTest {
 
     @BeforeEach
     void setUp() {
-        context.registerService(TypeaheadService.class, typeaheadService);
+        context.registerService(AutocompleteService.class, autocompleteService);
         context.registerService(I18nProvider.class, i18nProvider);
         context.registerService(PathTransformer.class, pathTransformer);
         testee = context.registerInjectActivateService(new AutocompleteServlet());
@@ -70,22 +70,24 @@ class AutocompleteServletTest {
         SlingHttpServletRequest request = context.request();
         SlingHttpServletResponse response = context.response();
         assertThrows(IllegalArgumentException.class, () -> testee.doGet(request, response));
-        verify(typeaheadService, never()).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
-                                                     any());
+        verify(autocompleteService, never()).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
+                                                        any());
     }
 
 
     @Test
     void testAutocomplete() throws ServletException, IOException {
         when(i18nProvider.getI18n(any(Locale.class))).thenReturn(i18n);
-        context.request().addRequestParameter(SearchTabModel.SEARCH_TERM, "foo");
+        context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "foo");
         MockContextAwareConfig.writeConfiguration(context,
                                                   context.currentResource().getPath(),
                                                   SearchConfiguration.class,
                                                   "index",
                                                   "bar");
         testee.doGet(context.request(), context.response());
-        verify(typeaheadService, times(1)).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
-                                                      any());
+        verify(autocompleteService, times(1)).getResults(any(SearchCAConfigurationModel.class),
+                                                         anyString(),
+                                                         anyString(),
+                                                         any());
     }
 }

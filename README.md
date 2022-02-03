@@ -75,12 +75,12 @@ You can download the bundles from [Maven Central](https://repo1.maven.org/maven2
 
 To use the OOTB components, the following client libraries should be included:
 
-* saas-aem-module.site
+* [saas-aem-module.base](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/clientlibs/clientlib-base)
 
 Add them as entries in the multifield _**Client Libraries JavaScript Page Head**_, in the page policy for the editable
 template where the components would be used.
 
-## Api with default implementation and osgi configurations
+## Partial (w/o AEM components)
 
 ```xml
 
@@ -121,7 +121,7 @@ property.
 | Interface | Default implementation in `saas-aem.core` |
 | --- | ---: |
 |[FulltextSearchService](api/src/main/java/com/valtech/aem/saas/api/fulltextsearch/FulltextSearchService.java) | [DefaultFulltextSearchService](core/src/main/java/com/valtech/aem/saas/core/fulltextsearch/DefaultFulltextSearchService.java) |
-|[TypeaheadService](api/src/main/java/com/valtech/aem/saas/api/typeahead/TypeaheadService.java) | [DefaultTypeaheadService](core/src/main/java/com/valtech/aem/saas/core/typeahead/DefaultTypeaheadService.java) |
+|[TypeaheadService](api/src/main/java/com/valtech/aem/saas/api/autocomplete/TypeaheadService.java) | [DefaultTypeaheadService](core/src/main/java/com/valtech/aem/saas/core/typeahead/DefaultTypeaheadService.java) |
 |[BestBetsService](api/src/main/java/com/valtech/aem/saas/api/bestbets/BestBetsService.java) | [DefaultBestBetsService](core/src/main/java/com/valtech/aem/saas/core/bestbets/DefaultBestBetsService.java) |
 |[IndexUpdateService](api/src/main/java/com/valtech/aem/saas/api/indexing/IndexUpdateService.java) | [DefaultIndexUpdateService](core/src/main/java/com/valtech/aem/saas/core/indexing/DefaultIndexUpdateService.java) |
 
@@ -131,11 +131,13 @@ Configurations are split in OSGi and Context-Aware.
 
 ## OSGi configurations
 
-1. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Search%20Service%20Connection%20Configuration%20Service)
-2. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Fulltext%20Search%20Service)
-3. [Search as a Service - Typeahead Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Typeahead%20Service)
-4. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Best%20Bets%20Service)
-5. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/Search%20as%20a%20Service%20-%20Index%20Update%20Service)
+1. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService)
+2. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService)
+3. [Search as a Service - Autocomplete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService)
+4. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.bestbets.DefaultBestBetsService)
+5. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService)
+6. [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
+7. [Search as a Service - Search Api Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService)
 
 ## Context Aware configurations
 
@@ -145,7 +147,6 @@ Configurations are split in OSGi and Context-Aware.
 | Search Client | client | Client identifier defined in SaaS admin | x |
 | Search Project Id | projectId | Project identifier defined in SaaS admin | x |
 | Search Filters | searchFilters | Key/value pairs of **field name** and **value**
-| Search Templates | templates | List of custom query templates' names, defined in SaaS admin, for specialized/different field boosting strategies. (Optional)
 | Search result highlight tag name | highlightTagName | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`)
 | Enable Best Bets | enableBestBets | Flag that enables displaying best bets on the top of the search results. Defaults to `false`
 | Enable Auto Suggest | enableAutoSuggest | Flag that enables auto suggest feature in the search component. Defaults to `true`

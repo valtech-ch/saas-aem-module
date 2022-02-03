@@ -1,4 +1,4 @@
-package com.valtech.aem.saas.api.request;
+package com.valtech.aem.saas.core.http.request;
 
 import lombok.NonNull;
 import org.apache.http.client.methods.HttpUriRequest;

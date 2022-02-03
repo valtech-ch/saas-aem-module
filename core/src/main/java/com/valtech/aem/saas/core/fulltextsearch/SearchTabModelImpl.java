@@ -3,11 +3,12 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.fulltextsearch.*;
+import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
+import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.fulltextsearch.dto.*;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FilterFactory;
@@ -46,7 +47,7 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl.RESOUR
        resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
           extensions = ExporterConstants.SLING_MODEL_EXTENSION)
-public class SearchTabModelImpl implements SearchTabModel {
+public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
 
     public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
     public static final int DEFAULT_START_PAGE = 1;
@@ -58,6 +59,14 @@ public class SearchTabModelImpl implements SearchTabModel {
     @JsonInclude(Include.NON_EMPTY)
     @ValueMapValue
     private String title;
+
+    @Getter
+    @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
+    private String exportedType;
+
+    @Getter
+    @ValueMapValue
+    private String template;
 
     @JsonInclude(Include.NON_NULL)
     @Getter
@@ -75,21 +84,19 @@ public class SearchTabModelImpl implements SearchTabModel {
     @Getter
     private boolean showLoadMoreButton;
 
-    @Getter
-    @ValueMapValue(name = JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY)
-    private String exportedType;
-
-    @JsonIgnore
-    @Getter
-    @ValueMapValue
-    private String template;
-
-    @ChildResource
-    private List<FilterModel> filters;
-
     @JsonInclude(Include.NON_EMPTY)
     @Getter
     private String url;
+
+    @JsonInclude(Include.NON_NULL)
+    @Getter
+    private FacetFiltersDTO facetFilters;
+
+    @ChildResource(name = "filters")
+    private List<FilterConfigurationModel> configuredFilters;
+
+    @ChildResource
+    private List<FacetModel> facets;
 
     @Self
     private SlingHttpServletRequest request;
@@ -99,13 +106,6 @@ public class SearchTabModelImpl implements SearchTabModel {
 
     @OSGiService
     private FulltextSearchService fulltextSearchService;
-
-    @JsonInclude(Include.NON_NULL)
-    @Getter
-    private FacetFiltersDTO facetFilters;
-
-    @ChildResource
-    private List<FacetModel> facets;
 
     @OSGiService
     private PathTransformer pathTransformer;
@@ -160,7 +160,7 @@ public class SearchTabModelImpl implements SearchTabModel {
     }
 
     private Optional<String> getSearchTerm() {
-        return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.SEARCH_TERM));
+        return Optional.ofNullable(requestWrapper).flatMap(r -> r.getParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM));
     }
 
     private int getResultsPage(RequestWrapper requestWrapper) {
@@ -232,8 +232,9 @@ public class SearchTabModelImpl implements SearchTabModel {
                                                                                       facetFieldToLabelMap,
                                                                                       facetFieldResultsDTO))
                                                                               .collect(Collectors.toList());
-            return CollectionUtils.isNotEmpty(facetFilterDTOList) ? new FacetFiltersDTO(SearchTabModel.FACET_FILTER,
-                                                                                        facetFilterDTOList)
+            return CollectionUtils.isNotEmpty(facetFilterDTOList)
+                    ? new FacetFiltersDTO(SearchTabModel.QUERY_PARAM_FACET_FILTER,
+                                          facetFilterDTOList)
                     : null;
         }
         return null;
@@ -268,23 +269,23 @@ public class SearchTabModelImpl implements SearchTabModel {
             SearchModel search,
             RequestWrapper requestWrapper) {
         Set<Filter> result = search.getFilters();
-        result.addAll(getFilters());
+        result.addAll(getConfiguredFilters());
         result.addAll(getSelectedFacetFilters(requestWrapper));
         return result;
     }
 
-    private Set<Filter> getFilters() {
-        return Optional.ofNullable(filters)
+    private Set<Filter> getConfiguredFilters() {
+        return Optional.ofNullable(configuredFilters)
                        .map(List::stream)
                        .orElse(Stream.empty())
-                       .filter(FilterModel::isValid)
-                       .map(FilterModel::getFilter)
+                       .filter(FilterConfiguration::isValid)
+                       .map(FilterConfiguration::getFilter)
                        .filter(Objects::nonNull)
                        .collect(Collectors.toSet());
     }
 
     private Set<Filter> getSelectedFacetFilters(RequestWrapper requestWrapper) {
-        return requestWrapper.getParameterValues(SearchTabModel.FACET_FILTER).stream()
+        return requestWrapper.getParameterValues(SearchTabModel.QUERY_PARAM_FACET_FILTER).stream()
                              .map(this::createFilter)
                              .filter(Objects::nonNull)
                              .collect(Collectors.toSet());

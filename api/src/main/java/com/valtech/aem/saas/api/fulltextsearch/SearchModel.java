@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.api.fulltextsearch;
 
-import com.adobe.cq.export.json.ContainerExporter;
 import com.valtech.aem.saas.api.query.Filter;
 
 import java.util.List;
@@ -9,9 +8,7 @@ import java.util.Set;
 /**
  * Represents a model of the aem search component.
  */
-public interface SearchModel extends ContainerExporter {
-
-    int AUTOCOMPLETE_THRESHOLD = 3;
+public interface SearchModel extends SearchInputModel {
 
     /**
      * Retrieves the title configurable for the search component.
@@ -21,14 +18,14 @@ public interface SearchModel extends ContainerExporter {
     String getTitle();
 
     /**
-     * Retrieves the language configurable for the search component.
+     * Retrieves the language override configurable for the search component.
      *
      * @return configured language.
      */
     String getLanguage();
 
     /**
-     * Retrieves a list of dialog configured search filter items.
+     * Retrieves search filter queries.
      *
      * @return set of filter details.
      */
@@ -40,13 +37,6 @@ public interface SearchModel extends ContainerExporter {
      * @return max number of results per request.
      */
     int getResultsPerPage();
-
-    /**
-     * Gets an author configured value for search input field's placeholder.
-     *
-     * @return placeholder text.
-     */
-    String getSearchFieldPlaceholderText();
 
     /**
      * Gets the label for the search button.
@@ -63,34 +53,11 @@ public interface SearchModel extends ContainerExporter {
     String getLoadMoreButtonText();
 
     /**
-     * Gets the autocomplete trigger threshold.
-     *
-     * @return min number of chars typed before triggering the autocomplete.
-     */
-    default int getAutocompleteTriggerThreshold() {
-        return AUTOCOMPLETE_THRESHOLD;
-    }
-
-    /**
      * Gets list of search tabs;
      *
      * @return list of search tabs.
      */
     List<SearchTabModel> getSearchTabs();
-
-    /**
-     * Gets the search configuration in a json format. In this format, the configs are used by the FE.
-     *
-     * @return json formatted string.
-     */
-    String getConfigJson();
-
-    /**
-     * Gets the auto suggest url of the search component.
-     *
-     * @return url string.
-     */
-    String getAutocompleteUrl();
 
     /**
      * Gets the suggestion text, with placeholder, when a misspelled search term is entered.
@@ -106,10 +73,4 @@ public interface SearchModel extends ContainerExporter {
      */
     String getNoResultsText();
 
-    /**
-     * Gets the unique id of the component, based on resource path.
-     *
-     * @return unique identifier
-     */
-    String getId();
 }

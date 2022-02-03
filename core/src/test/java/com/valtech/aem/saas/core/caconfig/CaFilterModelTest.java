@@ -15,14 +15,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CaFilterModelImplTest {
+class CaFilterModelTest {
 
     @Test
     void testGetFilter_simple() {
         SearchFilterConfiguration searchFilterConfiguration = mock(SearchFilterConfiguration.class);
         when(searchFilterConfiguration.name()).thenReturn("foo");
         when(searchFilterConfiguration.value()).thenReturn("bar");
-        CaFilterModelImpl testee = new CaFilterModelImpl(searchFilterConfiguration);
+        CaFilterConfigurationModel testee = new CaFilterConfigurationModel(searchFilterConfiguration);
         Filter simpleFilter = testee.getFilter();
         assertThat(simpleFilter, IsInstanceOf.instanceOf(SimpleFilter.class));
     }
@@ -32,7 +32,7 @@ class CaFilterModelImplTest {
         SearchFilterConfiguration searchFilterConfiguration = mock(SearchFilterConfiguration.class);
         when(searchFilterConfiguration.name()).thenReturn("foo");
         when(searchFilterConfiguration.value()).thenReturn("bar,qux");
-        CaFilterModelImpl testee = new CaFilterModelImpl(searchFilterConfiguration);
+        CaFilterConfigurationModel testee = new CaFilterConfigurationModel(searchFilterConfiguration);
         Filter multiValueFilter = testee.getFilter();
         assertThat(multiValueFilter, IsInstanceOf.instanceOf(CompositeFilter.class));
     }
@@ -42,7 +42,7 @@ class CaFilterModelImplTest {
         SearchFilterConfiguration searchFilterConfigurationValid = mock(SearchFilterConfiguration.class);
         when(searchFilterConfigurationValid.name()).thenReturn("foo");
         when(searchFilterConfigurationValid.value()).thenReturn("bar");
-        CaFilterModelImpl testee = new CaFilterModelImpl(searchFilterConfigurationValid);
+        CaFilterConfigurationModel testee = new CaFilterConfigurationModel(searchFilterConfigurationValid);
         assertThat(testee.isValid(), Is.is(true));
     }
 
@@ -51,7 +51,7 @@ class CaFilterModelImplTest {
         SearchFilterConfiguration searchFilterConfigurationInvalid = mock(SearchFilterConfiguration.class);
         when(searchFilterConfigurationInvalid.name()).thenReturn("foo");
         when(searchFilterConfigurationInvalid.value()).thenReturn("");
-        CaFilterModelImpl testee = new CaFilterModelImpl(searchFilterConfigurationInvalid);
+        CaFilterConfigurationModel testee = new CaFilterConfigurationModel(searchFilterConfigurationInvalid);
         assertThat(testee.isValid(), Is.is(false));
 
     }

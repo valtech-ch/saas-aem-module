@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
-import com.valtech.aem.saas.api.fulltextsearch.FilterModel;
 import com.valtech.aem.saas.api.query.Filter;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -14,14 +13,15 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @ExtendWith({AemContextExtension.class})
-class FilterModelImplTest {
+class FilterConfigurationModelTest {
 
-    FilterModel testee;
+    FilterConfigurationModel testee;
 
     @BeforeEach
     void setUp(AemContext context) {
         context.load().json("/content/components/searchtab/filters/content.json",
-                            "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters");
+                            "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab" +
+                                    "/filters");
     }
 
     @Test
@@ -63,13 +63,13 @@ class FilterModelImplTest {
     }
 
     private void adaptResource(AemContext context) {
-        testee = context.currentResource().adaptTo(FilterModel.class);
+        testee = context.currentResource().adaptTo(FilterConfigurationModel.class);
     }
 
 
     private void testAdaptable() {
         assertThat(testee, notNullValue());
-        assertThat(testee, instanceOf(FilterModel.class));
+        assertThat(testee, instanceOf(FilterConfiguration.class));
     }
 
 }

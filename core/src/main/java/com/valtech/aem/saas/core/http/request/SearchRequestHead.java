@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.http.request;
 
-import com.valtech.aem.saas.api.request.SearchRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

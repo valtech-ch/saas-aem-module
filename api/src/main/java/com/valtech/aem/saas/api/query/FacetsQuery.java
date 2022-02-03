@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Builder
-public class FacetsQuery implements OptionalQuery {
+public class FacetsQuery implements Query {
 
     private static final String FACETFIELD = "facetfield";
 

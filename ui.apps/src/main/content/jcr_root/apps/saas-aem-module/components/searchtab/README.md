@@ -8,7 +8,8 @@ Component that renders the markup as soon as the search is performed. It display
 The Search Tab component uses the `com.valtech.aem.saas.api.fulltextsearch.SearchTabModel` Sling model as its Use-object.
 
 ### Behavior
-On submit of entered search term the children search tab components perform a search query and display the results.  
+On submit of entered search term the children search tab components perform a search query and display the results. If
+facets are configured, it will also display search results filtering options.
 
 ### Authoring
 This is a component that is placed in the responsive-grid of the [Search](../search/README.md) component.
@@ -17,8 +18,10 @@ This is a component that is placed in the responsive-grid of the [Search](../sea
 The following properties are written to JCR for the Search component and are expected to be available as `Resource` properties:
 
 1. `./title` - Will store the text of the title to be rendered on the top of the component. (Required)
-2. `./facets` -  Defines list of (label, index field name). This enables filtering of the search results by index fields. 
-3. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a binary 'AND' operator. 
+2. `./facets` - Defines list of (label, index field name). This enables filtering of the search results by index fields.
+3. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
+   operator.
+4. `./template` - Defines SaaS query template name.
 
 ### Query parameters
 

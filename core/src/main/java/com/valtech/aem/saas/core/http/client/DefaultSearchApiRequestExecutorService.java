@@ -1,6 +1,6 @@
 package com.valtech.aem.saas.core.http.client;
 
-import com.valtech.aem.saas.api.request.SearchRequest;
+import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
