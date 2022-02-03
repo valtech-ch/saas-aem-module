@@ -45,6 +45,13 @@ const removeSuggestionList = (searchContainer: HTMLDivElement) => {
   }
 }
 
+const submitSearchForm = (): void => {
+  const form = document.querySelector('.saas-container_form') as
+    | HTMLFormElement
+    | undefined
+  form?.submit()
+}
+
 const buildSuggestionElements = ({
   results,
   regexp,
@@ -85,6 +92,8 @@ const buildSuggestionElements = ({
 
       if (searchButtonElement) {
         searchButtonElement.click()
+      } else {
+        submitSearchForm()
       }
     })
 
@@ -168,6 +177,7 @@ const buildSearchInput = ({
 }: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
   searchInput.classList.add(SEARCH_INPUT_CLASS)
+  searchInput.name = 'q'
 
   searchInput.placeholder = searchFieldPlaceholderText
   searchInput.id = id
