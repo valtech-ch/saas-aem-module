@@ -4,6 +4,7 @@ import buildSearchForm, {
   triggerSearch,
 } from './components/searchForm'
 import buildSearchInput from './components/searchInput'
+import { QUERY_PARAM_SEARCH_TERM } from './constants'
 import { getDataAttributeFromSearchElement } from './searchElement'
 import { SearchOptions } from './types/searchOptions'
 import initSaasStyle from './utils/saasStyle'
@@ -51,21 +52,21 @@ export const buildSearch = async (
   })
 
   const searchButtonElement = searchButtonText
-      ? buildSearchButton({
+    ? buildSearchButton({
         searchButtonText,
       })
-      : null
+    : null
 
   addEventToSearchForm(
-      searchFormElement,
-      searchInputElement,
-      searchUrl,
-      searchTabs,
-      loadMoreButtonText,
-      autoSuggestText,
-      searchContainer,
-      noResultsText,
-      callbacks,
+    searchFormElement,
+    searchInputElement,
+    searchUrl,
+    searchTabs,
+    loadMoreButtonText,
+    autoSuggestText,
+    searchContainer,
+    noResultsText,
+    callbacks,
   )
 
   initSaasStyle()
@@ -82,21 +83,21 @@ export const buildSearch = async (
 
   const currentUrl = new URL(window.location.href)
   const currentParams = new URLSearchParams(currentUrl.search)
-  const searchValue = currentParams.get('q')
+  const searchValue = currentParams.get(QUERY_PARAM_SEARCH_TERM)
 
   if (searchValue) {
     searchInputElement.value = searchValue
 
     await triggerSearch(
-        searchFormElement,
-        searchInputElement,
-        searchUrl,
-        searchTabs,
-        loadMoreButtonText,
-        autoSuggestText,
-        searchContainer,
-        noResultsText,
-        callbacks,
+      searchFormElement,
+      searchInputElement,
+      searchUrl,
+      searchTabs,
+      loadMoreButtonText,
+      autoSuggestText,
+      searchContainer,
+      noResultsText,
+      callbacks,
     )
   }
 }

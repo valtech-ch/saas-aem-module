@@ -1,3 +1,4 @@
+import { QUERY_PARAM_SEARCH_TERM } from '../constants'
 import type { SearchCallbacks } from '../types/callbacks'
 import fetchSearch from '../utils/fetchSearch'
 import updateUrl from '../utils/updateUrl'
@@ -37,25 +38,24 @@ export const triggerSearch = async (
   }
   const searchInputElementCopy = searchInputElement
 
-  const hasSearchTabs = searchTabs && searchTabs.length > 0;
+  const hasSearchTabs = searchTabs && searchTabs.length > 0
 
   if (hasSearchTabs) {
     searchInputElementCopy.dataset.loading = 'true'
   }
 
   const searchValue = searchInputElement.value
-  const {onSearch, onSwitchTab, onSearchItemClick, onLoadMoreButtonClick} =
-  options || {}
+  const { onSearch, onSwitchTab, onSearchItemClick, onLoadMoreButtonClick } =
+    options || {}
 
   onSearch?.(searchValue)
 
   if (searchUrl && searchUrl != window.location.pathname) {
     const currentUrl = new URL(window.location.href)
     const currentParams = new URLSearchParams(currentUrl.search)
-    currentParams.set("q", searchValue)
+    currentParams.set(QUERY_PARAM_SEARCH_TERM, searchValue)
     window.location.href = `${searchUrl}?${currentParams.toString()}`
   }
-
 
   updateUrl(searchValue)
 
@@ -64,19 +64,17 @@ export const triggerSearch = async (
   removeSearchResults(searchContainer)
   removeSelectedTabFromSearchContainer(searchContainer)
 
+  const tabResultsArray = hasSearchTabs
+    ? await Promise.all(
+        searchTabs.map(async (tab, index): Promise<Tab> => {
+          const tabResultsJSON = await fetchSearch(tab.url, searchValue)
 
-  const tabResultsArray =
-      hasSearchTabs
-          ? await Promise.all(
-              searchTabs.map(async (tab, index): Promise<Tab> => {
-                const tabResultsJSON = await fetchSearch(tab.url, searchValue)
-
-                return {...tabResultsJSON, tabId: tab.title, index} as Tab
-              }),
-          ).finally(() => {
-            searchInputElementCopy.dataset.loading = 'false'
-          })
-          : null
+          return { ...tabResultsJSON, tabId: tab.title, index } as Tab
+        }),
+      ).finally(() => {
+        searchInputElementCopy.dataset.loading = 'false'
+      })
+    : null
 
   const searchFormParent = searchForm.parentElement
 
@@ -89,16 +87,20 @@ export const triggerSearch = async (
   const isDisplayNotFound = noResultsFound && searchFormParent
 
   if (isRemoveSaasNotFound) {
-    searchFormParent?.querySelectorAll('.saas-not-found')?.forEach((item) => item.remove())
+    searchFormParent
+      ?.querySelectorAll('.saas-not-found')
+      ?.forEach((item) => item.remove())
   }
 
   if (isShowSuggestion) {
     const autoSuggestElement = buildSearchSuggestion(
-        suggestion.text,
-        autoSuggestText)
+      suggestion.text,
+      autoSuggestText,
+    )
     searchFormParent?.append(autoSuggestElement)
   }
-  const notFoundElementExists = searchFormParent?.querySelector('.saas-not-found')
+  const notFoundElementExists =
+    searchFormParent?.querySelector('.saas-not-found')
   if (isDisplayNotFound && !notFoundElementExists) {
     const notFoundElement = document.createElement('div')
     notFoundElement.classList.add('saas-not-found')
@@ -112,30 +114,30 @@ export const triggerSearch = async (
 
   if (tabResultsArray) {
     tabResultsArray
-        .sort((tab1, tab2) => {
-          if (tab1.index < tab2.index) {
-            return 1
-          }
+      .sort((tab1, tab2) => {
+        if (tab1.index < tab2.index) {
+          return 1
+        }
 
-          if (tab2.index < tab1.index) {
-            return -1
-          }
+        if (tab2.index < tab1.index) {
+          return -1
+        }
 
-          return 0
+        return 0
+      })
+      .forEach((tabResult) => {
+        buildSearchResultsTab({
+          tabResult,
+          searchValue,
+          searchForm,
+          searchFormParent,
+          loadMoreButtonText,
+          onSearchItemClick,
+          onSwitchTab,
+          onLoadMoreButtonClick,
+          searchContainer,
         })
-        .forEach((tabResult) => {
-          buildSearchResultsTab({
-            tabResult,
-            searchValue,
-            searchForm,
-            searchFormParent,
-            loadMoreButtonText,
-            onSearchItemClick,
-            onSwitchTab,
-            onLoadMoreButtonClick,
-            searchContainer,
-          })
-        })
+      })
   }
 }
 

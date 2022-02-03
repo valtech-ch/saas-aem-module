@@ -1,3 +1,4 @@
+import { QUERY_PARAM_SEARCH_TERM } from '../constants'
 import cleanString from '../utils/cleanString'
 import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
@@ -177,7 +178,7 @@ const buildSearchInput = ({
 }: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
   searchInput.classList.add(SEARCH_INPUT_CLASS)
-  searchInput.name = 'q'
+  searchInput.name = QUERY_PARAM_SEARCH_TERM
 
   searchInput.placeholder = searchFieldPlaceholderText
   searchInput.id = id
