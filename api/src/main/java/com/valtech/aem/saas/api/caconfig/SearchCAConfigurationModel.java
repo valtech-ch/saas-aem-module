@@ -18,14 +18,6 @@ public interface SearchCAConfigurationModel {
     String getIndex();
 
     /**
-     * Retrieves configured client value. Client is considered required.
-     *
-     * @return saas client
-     * @throws IllegalStateException thrown when client value is blank.
-     */
-    String getClient();
-
-    /**
      * Retrieves configured project id. Project id is considered required.
      *
      * @return saas project id

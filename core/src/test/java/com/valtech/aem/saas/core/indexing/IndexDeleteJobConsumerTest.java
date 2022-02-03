@@ -21,7 +21,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class IndexUpdateJobConsumerTest {
+class IndexDeleteJobConsumerTest {
 
     @Mock
     IndexUpdateService indexUpdateService;
@@ -30,7 +30,7 @@ class IndexUpdateJobConsumerTest {
     Job job;
 
     @InjectMocks
-    IndexUpdateJobConsumer testee;
+    IndexDeleteJobConsumer testee;
 
     @Test
     void testProcess_urlMissing() {
@@ -51,20 +51,20 @@ class IndexUpdateJobConsumerTest {
     }
 
     @Test
-    void testProcess_indexUpdateOk() {
+    void testProcess_indexDeleteOk() {
         mockUrl();
         mockRepositoryPath();
         IndexUpdateResponseDTO indexUpdateResponseDto = new IndexUpdateResponseDTO("foo", "bar", "baz", "quz");
-        when(indexUpdateService.indexUrl(anyString(), anyString())).thenReturn(
+        when(indexUpdateService.deleteIndexedUrl(anyString(), anyString())).thenReturn(
                 Optional.of(indexUpdateResponseDto));
         MatcherAssert.assertThat(testee.process(job), Is.is(JobResult.OK));
     }
 
     @Test
-    void testProcess_indexUpdateFailed() {
+    void testProcess_indexDeleteFailed() {
         mockUrl();
         mockRepositoryPath();
-        when(indexUpdateService.indexUrl(anyString(), anyString())).thenReturn(Optional.empty());
+        when(indexUpdateService.deleteIndexedUrl(anyString(), anyString())).thenReturn(Optional.empty());
         MatcherAssert.assertThat(testee.process(job), Is.is(JobResult.FAILED));
     }
 

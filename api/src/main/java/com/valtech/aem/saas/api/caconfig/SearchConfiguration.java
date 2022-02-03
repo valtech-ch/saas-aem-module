@@ -10,16 +10,12 @@ public @interface SearchConfiguration {
 
     boolean DEFAULT_ENABLE_BEST_BETS = false;
     boolean DEFAULT_ENABLE_AUTO_SUGGEST = true;
-    String DEFAULT_HIGHLIHGT_TAG_NAME = "em";
+    String DEFAULT_HIGHLIGHT_TAG_NAME = "em";
     int DEFAULT_PROJECT_ID = 1;
 
     @Property(label = "Search Index",
               description = "SaaS index (Required)")
     String index() default StringUtils.EMPTY;
-
-    @Property(label = "Search Client",
-              description = "SaaS client (Required)")
-    String client() default StringUtils.EMPTY;
 
     @Property(label = "Search Project Id",
               description = "SaaS Project Id (Required)")
@@ -32,7 +28,7 @@ public @interface SearchConfiguration {
     @Property(label = "Search result highlight tag name",
               description = "The name of the tag that will be used to highlight portions of text in the search " +
                       "results. (Optional)")
-    String highlightTagName() default DEFAULT_HIGHLIHGT_TAG_NAME;
+    String highlightTagName() default DEFAULT_HIGHLIGHT_TAG_NAME;
 
     @Property(label = "Enable Best Bets",
               description = "Flag that enables displaying best bets on the top of the search results.")
