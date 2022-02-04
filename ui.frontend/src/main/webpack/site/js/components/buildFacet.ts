@@ -12,6 +12,7 @@ interface BuildFacetOption extends FilterFieldOption {
   queryParameterName: string
   tabId: string
   loadMoreButtonText: string
+  title: string
   onSearchItemClick?: OnSearchItemClickCallback
 }
 
@@ -25,6 +26,7 @@ const buildFacet = ({
   tabId,
   onSearchItemClick,
   loadMoreButtonText,
+  title,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
 BuildFacetOption): HTMLDivElement => {
   const facet = document.createElement('div')
@@ -109,6 +111,7 @@ BuildFacetOption): HTMLDivElement => {
           tabId,
           onSearchItemClick,
           loadMoreButtonText,
+          title,
         })
 
         facetsGroups?.appendChild(facetsGroup)

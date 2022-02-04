@@ -75,6 +75,7 @@ const buildSearchResultsTab = ({
         tabId,
         onSearchItemClick,
         loadMoreButtonText,
+        title,
       })
 
       facetsGroups?.appendChild(facetsGroup)

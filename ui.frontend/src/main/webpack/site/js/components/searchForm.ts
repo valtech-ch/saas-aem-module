@@ -1,6 +1,7 @@
 import { QUERY_PARAM_SEARCH_TERM } from '../constants'
 import type { SearchCallbacks } from '../types/callbacks'
 import fetchSearch from '../utils/fetchSearch'
+import { handleFacetFiltersInAppState } from '../utils/state'
 import updateUrl from '../utils/updateUrl'
 import buildSearchResultsTab from './searchResultsTab'
 import buildSearchSuggestion from './searchSuggestion'
