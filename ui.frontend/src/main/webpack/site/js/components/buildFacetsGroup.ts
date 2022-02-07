@@ -50,25 +50,24 @@ const buildFacetsGroup = ({
     ...facetFilterOptionsMap,
   }
 
-  newFacetFilterOptionsState &&
-    Object.entries(newFacetFilterOptionsState).forEach(
-      ([value, hits]: [value: string, hits: number]) => {
-        const facet = buildFacet({
-          value,
-          hits,
-          filterFieldName,
-          tabUrl,
-          searchValue,
-          queryParameterName,
-          tabId,
-          onSearchItemClick,
-          loadMoreButtonText,
-          title,
-        })
+  Object.entries(newFacetFilterOptionsState).forEach(
+    ([value, hits]: [value: string, hits: number]) => {
+      const facet = buildFacet({
+        value,
+        hits,
+        filterFieldName,
+        tabUrl,
+        searchValue,
+        queryParameterName,
+        tabId,
+        onSearchItemClick,
+        loadMoreButtonText,
+        title,
+      })
 
-        facetItem.appendChild(facet)
-      },
-    )
+      facetItem.appendChild(facet)
+    },
+  )
 
   return facetItem
 }

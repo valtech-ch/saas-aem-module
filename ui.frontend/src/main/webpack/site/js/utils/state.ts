@@ -100,7 +100,7 @@ export const transformFacetFilterOptionsToMap = (
   )
 }
 
-export const resetFacetFilterOptionsByFilterFieldLabel = ({
+export const resetFacetFilterOptionsByTitleAndFilterFieldLabel = ({
   title,
   filterFieldLabel,
 }: {
