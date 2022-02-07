@@ -1,32 +1,74 @@
 import { Tab } from '../components/searchTabs'
 import { FacetFilters } from '../types/facetFilter'
 import { merge } from './deepMerge'
+import {
+  getSessionStorage,
+  setSessionStorage,
+  STORAGE_FACET_FILTERS_KEY,
+} from './sessionStorage'
 
-export {}
+// type StateFacetFilters = {
+//   [key: string]: number
+// }
 
 declare global {
   interface Window {
     // { [key: string]: number } triggers error with ...window.appState.facetFilters[tabResult.title]
-    appState: { facetFilters: any; initial: boolean }
+    appState: { facetFilters: any }
   }
 }
 
-const defaultState = { facetFilters: {}, initial: true }
+const defaultState = { facetFilters: {} }
 
-const handlers = {
-  get: function (obj: any, prop: any) {
-    return obj[prop]
-  },
-  set: function (obj: any, prop: any, value: any) {
-    obj[prop] = value
-    return true
-  },
+const initAppState = () => {
+  const appState = getSessionStorage({
+    storageKey: STORAGE_FACET_FILTERS_KEY,
+    defaultValue: '[{}]',
+  })
+  return Object.entries(appState).length === 0 &&
+    appState.constructor === Object
+    ? defaultState
+    : appState
 }
 
+// ########################
+// Current request response
+// ########################
+// {
+//   facetFilters: {
+//      items: [
+//        {
+//          filterFieldLabel: "Domain",
+//          filterFieldName: "domain",
+//          filterFieldOptions: [{value: "wknd.site", hits: 12}]
+//        },
+//        {
+//          filterFieldLabel: "Content type",
+//          filterFieldName: "contentType",
+//          filterFieldOptions: [{value: "html", hits: 12}, {value: "pdf", hits: 2}]
+//        },
+//      ],
+//      queryParameterName: 'facetFilter'
+//   },
+//   title: 'Search tab'
+// }
+
+// ########################
+// Desirable data structure
+// ########################
+// 'Search tab': {
+//   'Domain': {
+//     'wknd.site': 12
+//   },
+//   'Content type': {
+//     'html': 12,
+//     'pdf': 2
+//   }
+// }
 const transformFilterFacetsToMap = (facetFilters: FacetFilters | undefined) => {
   return (
     facetFilters?.items.reduce((acc, item) => {
-      const result = item?.filterFieldOptions.reduce(
+      const result = item.filterFieldOptions?.reduce(
         (acc: {}, { value, hits }: { value: string; hits: number }) => {
           return {
             ...acc,
@@ -35,23 +77,14 @@ const transformFilterFacetsToMap = (facetFilters: FacetFilters | undefined) => {
         },
         {},
       )
-      return { ...acc, ...{ [item?.filterFieldLabel]: result } }
+      return { ...acc, ...{ [item.filterFieldLabel]: result } }
     }, {}) || null
   )
 }
 
-// 'search tab': {
-//   'domain': {
-//     'wknd.site': 0
-//   },
-//   'content type': {
-//     'html': 12,
-//     'pdf': 2
-//   }
-// }
-
+// TODO: simplify
 const resetFacetFiltersInAppState = (tabResult: Tab) => {
-  const facetFilters = window.appState.facetFilters[tabResult.title]
+  const facetFilters = window.appState.facetFilters?.[tabResult.title]
 
   return Object.entries(facetFilters || {}).reduce(
     (accumulator, [label, _]) => {
@@ -73,23 +106,6 @@ const resetFacetFiltersInAppState = (tabResult: Tab) => {
   )
 }
 
-// const resetFacetFiltersInAppState = (tabResult: Tab) => {
-//   const facetFilters = window.appState.facetFilters[tabResult.title]
-
-//   return Object.entries(facetFilters || {}).reduce((acc, [label, _]) => {
-//     const facetFilterLabel = facetFilters[label]
-//     return {
-//       ...acc,
-//       ...Object.entries(facetFilterLabel).reduce((acc, [key, _]) => {
-//         return {
-//           ...acc,
-//           ...{ [key]: 0 },
-//         }
-//       }, {}),
-//     }
-//   }, {})
-// }
-
 export const handleFacetFiltersInAppState = (tabResult: Tab) => {
   const filterFieldOptions = transformFilterFacetsToMap(tabResult.facetFilters)
 
@@ -101,10 +117,7 @@ export const handleFacetFiltersInAppState = (tabResult: Tab) => {
   const resetCurrentFacetFilters = resetFacetFiltersInAppState(tabResult)
 
   const newState = {
-    ...window.appState,
     facetFilters: {
-      //...window.appState.facetFilters,
-      queryParameterName: tabResult.facetFilters?.queryParameterName,
       [tabResult.title]: {
         ...merge(resetCurrentFacetFilters, filterFieldOptions),
       },
@@ -112,12 +125,8 @@ export const handleFacetFiltersInAppState = (tabResult: Tab) => {
   }
 
   window.appState = newState
+
+  setSessionStorage({ storageKey: STORAGE_FACET_FILTERS_KEY, data: newState })
 }
 
-const state = new Proxy(defaultState, handlers)
-
-window.appState = state
-
-window.addEventListener('unload', function () {
-  window.appState = defaultState
-})
+window.appState = initAppState()
