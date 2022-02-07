@@ -1,9 +1,11 @@
+import { QUERY_PARAM_SEARCH_TERM } from '../constants'
+
 const buildSearchSuggestion = (
   suggestionText: string,
   autoSuggestText: string,
 ): HTMLDivElement => {
   const suggestionUrl = new URL(window.location.href)
-  suggestionUrl.searchParams.set('q', suggestionText)
+  suggestionUrl.searchParams.set(QUERY_PARAM_SEARCH_TERM, suggestionText)
 
   const autoSuggestElement = document.createElement('div')
   autoSuggestElement.classList.add('saas-autosuggest')

@@ -1,19 +1,20 @@
 import { Tab } from '../components/searchTabs'
+import { QUERY_PARAM_SEARCH_TERM } from '../constants'
 
 type FilterSearchParams = {
   [key: string]: string[]
 }
 
 const buildSearchUrl = (
-    url: string,
-    searchValue: string,
-    page?: number,
-    queryParameterName?: string,
-    filterSearchParams?: FilterSearchParams,
+  url: string,
+  searchValue: string,
+  page?: number,
+  queryParameterName?: string,
+  filterSearchParams?: FilterSearchParams,
 ) => {
   const urlElement = new URL(`${window.location.origin}${url}`)
 
-  urlElement.searchParams.set('q', searchValue)
+  urlElement.searchParams.set(QUERY_PARAM_SEARCH_TERM, searchValue)
 
   if (page) {
     urlElement.searchParams.set('page', page.toString())
@@ -24,8 +25,8 @@ const buildSearchUrl = (
       const filterValue = filterSearchParams[filter].toString()
 
       urlElement.searchParams.append(
-          queryParameterName,
-          `${filter}:${filterValue}`,
+        queryParameterName,
+        `${filter}:${filterValue}`,
       )
     })
   }
@@ -34,19 +35,19 @@ const buildSearchUrl = (
 }
 
 const fetchSearch = async (
-    url: string,
-    searchValue: string,
-    page?: number,
-    queryParameterName?: string,
-    filterSearchParams?: FilterSearchParams,
+  url: string,
+  searchValue: string,
+  page?: number,
+  queryParameterName?: string,
+  filterSearchParams?: FilterSearchParams,
 ): Promise<Tab | null> => {
   try {
     const searchURL = buildSearchUrl(
-        url,
-        searchValue,
-        page,
-        queryParameterName,
-        filterSearchParams,
+      url,
+      searchValue,
+      page,
+      queryParameterName,
+      filterSearchParams,
     )
     const results = await fetch(searchURL)
 

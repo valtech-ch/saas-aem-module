@@ -1,9 +1,11 @@
+import { QUERY_PARAM_SEARCH_TERM } from '../constants'
+
 type AutocCompleteResult = string[]
 
 const buildAutoCompletetUrl = (url: string, query: string) => {
   const urlElement = new URL(`${window.location.origin}${url}`)
 
-  urlElement.searchParams.set('q', query)
+  urlElement.searchParams.set(QUERY_PARAM_SEARCH_TERM, query)
 
   return urlElement.toString()
 }
