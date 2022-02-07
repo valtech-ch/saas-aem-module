@@ -4,6 +4,8 @@ import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
 import {
   cleanSessionStorage,
+  getSessionStorage,
+  setSessionStorage,
   STORAGE_QUERY_STRING_KEY,
   STORAGE_SUGGESTIONS_KEY,
 } from '../utils/sessionStorage'
@@ -136,7 +138,11 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
         )
         let suggestionDropdown: Element | null = null
 
-        sessionStorage.setItem(STORAGE_QUERY_STRING_KEY, query)
+        setSessionStorage({
+          storageKey: STORAGE_QUERY_STRING_KEY,
+          data: query,
+          stringify: false,
+        })
 
         if (!existingSuggestions) {
           suggestionDropdown = document.createElement('div')
@@ -149,10 +155,10 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
         suggestionDropdown.innerHTML = ''
 
         if (results?.length) {
-          sessionStorage.setItem(
-            STORAGE_SUGGESTIONS_KEY,
-            JSON.stringify(results),
-          )
+          setSessionStorage({
+            storageKey: STORAGE_SUGGESTIONS_KEY,
+            data: results,
+          })
 
           buildSuggestionElements({
             results,
@@ -188,13 +194,18 @@ const buildSearchInput = ({
   const search = debouncedSearch(autoSuggestionDebounceTime)
 
   searchInput.addEventListener('focus', () => {
-    const query = sessionStorage.getItem(STORAGE_QUERY_STRING_KEY) || ''
-    const results: string[] = JSON.parse(
-      sessionStorage.getItem(STORAGE_SUGGESTIONS_KEY) || '[]',
-    )
+    const query = getSessionStorage({
+      storageKey: STORAGE_QUERY_STRING_KEY,
+      defaultValue: '',
+      parse: false,
+    })
+    const results: string[] = getSessionStorage({
+      storageKey: STORAGE_SUGGESTIONS_KEY,
+      defaultValue: '[]',
+    })
     const { regexp } = getCleanedQueryAndRegex(query)
-
     const suggestionDropdown = document.createElement('div')
+
     suggestionDropdown.id = SUGGESTION_DROPDOWN_ID
 
     buildSuggestionElements({
