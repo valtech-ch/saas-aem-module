@@ -1,5 +1,5 @@
 import { OnSearchItemClickCallback } from '../types/callbacks'
-import { FacetItem, FilterFieldOption } from '../types/facetFilter'
+import { FacetItem } from '../types/facetFilter'
 import buildFacet from './buildFacet'
 
 interface BuildFacetsGroup extends FacetItem {
@@ -15,7 +15,6 @@ interface BuildFacetsGroup extends FacetItem {
 const buildFacetsGroup = ({
   filterFieldLabel,
   filterFieldName,
-  filterFieldOptions,
   tabUrl,
   searchValue,
   queryParameterName,
@@ -33,41 +32,26 @@ const buildFacetsGroup = ({
 
   facetItem.appendChild(facetItemTitle)
 
-  filterFieldOptions?.forEach(({ value, hits }) => {
-    const facet = buildFacet({
-      value,
-      hits: hits as number,
-      filterFieldName,
-      tabUrl,
-      searchValue,
-      queryParameterName,
-      tabId,
-      onSearchItemClick,
-      loadMoreButtonText,
-      title,
-    })
+  const filterFieldOptions = window.appState.facetFilters[title] || {}
 
-    facetItem.appendChild(facet)
-  })
+  Object.entries(filterFieldOptions[filterFieldLabel]).forEach(
+    ([value, hits]) => {
+      const facet = buildFacet({
+        value,
+        hits: hits as number,
+        filterFieldName,
+        tabUrl,
+        searchValue,
+        queryParameterName,
+        tabId,
+        onSearchItemClick,
+        loadMoreButtonText,
+        title,
+      })
 
-  // const filterFieldOptions = window.appState.facetFilters[title] || null
-
-  // Object.entries(filterFieldOptions).forEach(([value, hits]) => {
-  //   const facet = buildFacet({
-  //     value,
-  //     hits: hits as number,
-  //     filterFieldName,
-  //     tabUrl,
-  //     searchValue,
-  //     queryParameterName,
-  //     tabId,
-  //     onSearchItemClick,
-  //     loadMoreButtonText,
-  //     title,
-  //   })
-
-  //   facetItem.appendChild(facet)
-  // })
+      facetItem.appendChild(facet)
+    },
+  )
 
   return facetItem
 }

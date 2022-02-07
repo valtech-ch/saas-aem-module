@@ -67,7 +67,6 @@ const buildSearchResultsTab = ({
     facetFilters?.items.forEach((facetFilter) => {
       const facetsGroup = buildFacetsGroup({
         filterFieldLabel: facetFilter.filterFieldLabel,
-        filterFieldOptions: facetFilter.filterFieldOptions,
         filterFieldName: facetFilter.filterFieldName,
         tabUrl: url,
         searchValue,
