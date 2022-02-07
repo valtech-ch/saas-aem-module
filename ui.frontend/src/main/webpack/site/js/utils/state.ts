@@ -7,14 +7,13 @@ import {
   STORAGE_FACET_FILTERS_KEY,
 } from './sessionStorage'
 
-// type StateFacetFilters = {
-//   [key: string]: number
-// }
+type StateFacetFilters = {
+  [key: string]: { [key: string]: number }
+}
 
 declare global {
   interface Window {
-    // { [key: string]: number } triggers error with ...window.appState.facetFilters[tabResult.title]
-    appState: { facetFilters: any }
+    appState: { facetFilters: StateFacetFilters }
   }
 }
 
@@ -67,8 +66,8 @@ const initAppState = () => {
 // }
 const transformFilterFacetsToMap = (facetFilters: FacetFilters | undefined) => {
   return (
-    facetFilters?.items.reduce((acc, item) => {
-      const result = item.filterFieldOptions
+    facetFilters?.items.reduce((acc1, item) => {
+      const sortedFilterOptions = item.filterFieldOptions
         ?.sort((filterOption1, filterOption2) => {
           const filterOption1Value = filterOption1.value.toLowerCase()
           const filterOption2Value = filterOption2.value.toLowerCase()
@@ -82,36 +81,44 @@ const transformFilterFacetsToMap = (facetFilters: FacetFilters | undefined) => {
 
           return 0
         })
-        .reduce((acc: {}, { value, hits }: { value: string; hits: number }) => {
-          return {
-            ...acc,
-            ...{ [value]: hits },
-          }
-        }, {})
-      return { ...acc, ...{ [item.filterFieldLabel]: result } }
+        .reduce(
+          (
+            acc2: Record<string, unknown>,
+            { value, hits }: { value: string; hits: number },
+          ) => {
+            return {
+              ...acc2,
+              ...{ [value]: hits },
+            }
+          },
+          {},
+        )
+      return { ...acc1, ...{ [item.filterFieldLabel]: sortedFilterOptions } }
     }, {}) || null
   )
 }
 
-// TODO: simplify
 const resetFacetFiltersInAppState = (tabResult: Tab) => {
   const facetFilters = window.appState.facetFilters?.[tabResult.title]
 
   return Object.entries(facetFilters || {}).reduce(
-    (accumulator, [label, _]) => {
-      const facetFilterItems = facetFilters[label]
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (acc1, [facetGroupLabel, _]) => {
+      const facetFilterItems = facetFilters[facetGroupLabel]
       const resetFacetFilters = {
-        ...Object.entries(facetFilterItems).reduce((acc, [key, _]) => {
-          const resetFacetFilterItem = {
-            ...acc,
-            ...{ [key]: 0 },
-          }
-          return resetFacetFilterItem
-        }, {}),
+        ...Object.entries(facetFilterItems).reduce(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-shadow
+          (acc2, [facetFilterLabel, _]) => {
+            return {
+              ...acc2,
+              ...{ [facetFilterLabel]: 0 },
+            }
+          },
+          {},
+        ),
       }
 
-      return { ...accumulator, [label]: resetFacetFilters }
+      return { ...acc1, [facetGroupLabel]: resetFacetFilters }
     },
     {},
   )
@@ -120,7 +127,6 @@ const resetFacetFiltersInAppState = (tabResult: Tab) => {
 export const handleFacetFiltersInAppState = (tabResult: Tab) => {
   const filterFieldOptions = transformFilterFacetsToMap(tabResult.facetFilters)
 
-  // No need to handle searchTabs without facet filters
   if (!filterFieldOptions) {
     return
   }

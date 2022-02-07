@@ -20,9 +20,9 @@ export const getSessionStorage = ({
   parse = true,
 }: {
   storageKey: string
-  defaultValue: any
+  defaultValue: string
   parse?: boolean
-}): string | any =>
+}) =>
   parse
     ? JSON.parse(sessionStorage.getItem(storageKey) || defaultValue)
     : sessionStorage.getItem(storageKey) || defaultValue
@@ -33,8 +33,11 @@ export const setSessionStorage = ({
   stringify = true,
 }: {
   storageKey: string
-  data: any
+  data: [] | Record<string, unknown> | string
   stringify?: boolean
 }): void => {
-  sessionStorage.setItem(storageKey, stringify ? JSON.stringify(data) : data)
+  sessionStorage.setItem(
+    storageKey,
+    stringify ? JSON.stringify(data as string) : (data as string),
+  )
 }
