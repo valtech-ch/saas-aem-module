@@ -121,7 +121,7 @@ export const resetFacetFilterOptionsByTitleAndFilterFieldLabel = ({
   )
 }
 
-export const handleFacetFiltersInAppState = (tabResult: Tab) => {
+export const saveFacetFiltersToAppState = (tabResult: Tab) => {
   if (!tabResult.facetFilters) {
     return
   }
