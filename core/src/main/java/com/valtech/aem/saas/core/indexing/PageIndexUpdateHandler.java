@@ -40,8 +40,8 @@ public class PageIndexUpdateHandler implements EventHandler {
         replicationActionTypeToIndexUpdateAction.put(ReplicationActionType.ACTIVATE, IndexUpdateAction.UPDATE);
         replicationActionTypeToIndexUpdateAction.put(ReplicationActionType.DEACTIVATE, IndexUpdateAction.DELETE);
         replicationActionTypeToIndexUpdateAction.put(ReplicationActionType.DELETE, IndexUpdateAction.DELETE);
-        indexUpdateActionToJobTopic.put(IndexUpdateAction.UPDATE, IndexUpdateJobConsumer.INDEX_UPDATE);
-        indexUpdateActionToJobTopic.put(IndexUpdateAction.DELETE, IndexDeleteJobConsumer.INDEX_DELETE);
+        indexUpdateActionToJobTopic.put(IndexUpdateAction.UPDATE, IndexUpdateJobConsumer.JOB_TOPIC);
+        indexUpdateActionToJobTopic.put(IndexUpdateAction.DELETE, IndexDeleteJobConsumer.JOB_TOPIC);
     }
 
     @Reference

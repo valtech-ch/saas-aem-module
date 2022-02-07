@@ -7,18 +7,20 @@ import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.propertytypes.ServiceDescription;
 
 import java.util.Optional;
 
 @Component(service = JobConsumer.class,
            configurationPolicy = ConfigurationPolicy.REQUIRE,
            property = {
-                   JobConsumer.PROPERTY_TOPICS + "=" + IndexDeleteJobConsumer.INDEX_DELETE
+                   JobConsumer.PROPERTY_TOPICS + "=" + IndexDeleteJobConsumer.JOB_TOPIC
            })
+@ServiceDescription("Search as a Service - Index Delete Job Consumer")
 @Slf4j
 public class IndexDeleteJobConsumer extends AbstractIndexUpdateActionJobConsumer {
 
-    public static final String INDEX_DELETE = "com/valtech/aem/saas/indexing/jobs/indexDelete";
+    public static final String JOB_TOPIC = "com/valtech/aem/saas/indexing/jobs/indexDelete";
 
     @Reference
     private IndexUpdateService indexUpdateService;
