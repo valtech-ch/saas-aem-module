@@ -32,10 +32,11 @@ const buildFacetsGroup = ({
 
   facetItem.appendChild(facetItemTitle)
 
-  const filterFieldOptions = window.appState.facetFilters[title] || {}
+  const filterFieldOptions = window.appState.facetFilters?.[title]
+  const filterFieldItems = filterFieldOptions?.[filterFieldLabel]
 
-  Object.entries(filterFieldOptions[filterFieldLabel]).forEach(
-    ([value, hits]) => {
+  filterFieldItems &&
+    Object.entries(filterFieldItems).forEach(([value, hits]) => {
       const facet = buildFacet({
         value,
         hits: hits as number,
@@ -50,8 +51,7 @@ const buildFacetsGroup = ({
       })
 
       facetItem.appendChild(facet)
-    },
-  )
+    })
 
   return facetItem
 }

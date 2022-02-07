@@ -127,6 +127,7 @@ export const triggerSearch = async (
         return 0
       })
       .forEach((tabResult) => {
+        handleFacetFiltersInAppState(tabResult)
         buildSearchResultsTab({
           tabResult,
           searchValue,
