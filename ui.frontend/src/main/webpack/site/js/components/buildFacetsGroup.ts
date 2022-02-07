@@ -1,7 +1,7 @@
 import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FacetItem } from '../types/facetFilter'
 import {
-  resetFacetFilterOptionsByFilterFieldLabel,
+  resetFacetFilterOptionsByTitleAndFilterFieldLabel,
   transformFacetFilterOptionsToMap,
 } from '../utils/state'
 import buildFacet from './buildFacet'
@@ -37,10 +37,11 @@ const buildFacetsGroup = ({
 
   facetItem.appendChild(facetItemTitle)
 
-  const resetFacetFilterOptions = resetFacetFilterOptionsByFilterFieldLabel({
-    title,
-    filterFieldLabel,
-  })
+  const resetFacetFilterOptions =
+    resetFacetFilterOptionsByTitleAndFilterFieldLabel({
+      title,
+      filterFieldLabel,
+    })
   const facetFilterOptionsMap =
     transformFacetFilterOptionsToMap(filterFieldOptions)
 
