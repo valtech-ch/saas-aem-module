@@ -2,7 +2,6 @@ import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FacetItem } from '../types/facetFilter'
 import {
   resetFacetFilterOptionsByFilterFieldLabel,
-  sortFacetFilterFieldOptionAlphabetically,
   transformFacetFilterOptionsToMap,
 } from '../utils/state'
 import buildFacet from './buildFacet'
