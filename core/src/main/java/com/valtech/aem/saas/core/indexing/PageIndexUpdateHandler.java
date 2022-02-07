@@ -3,15 +3,10 @@ package com.valtech.aem.saas.core.indexing;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
-import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
-import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
-import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
@@ -22,23 +17,35 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-import java.util.*;
-import java.util.function.Function;
-
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 @Component(service = {EventHandler.class},
            immediate = true,
            configurationPolicy = ConfigurationPolicy.REQUIRE,
-           property = {EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC, EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC})
+           property = {EventConstants.EVENT_TOPIC + "=" + ReplicationAction.EVENT_TOPIC,
+                   EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC})
 @ServiceDescription("Search as a Service - Page Replication Event Handler")
 @Slf4j
 public class PageIndexUpdateHandler implements EventHandler {
 
-    @Reference
-    private JobManager jobManager;
+    private static final Map<ReplicationActionType, IndexUpdateAction> replicationActionTypeToIndexUpdateAction =
+            new EnumMap<>(ReplicationActionType.class);
+    private static final Map<IndexUpdateAction, String> indexUpdateActionToJobTopic =
+            new EnumMap<>(IndexUpdateAction.class);
+
+    static {
+        replicationActionTypeToIndexUpdateAction.put(ReplicationActionType.ACTIVATE, IndexUpdateAction.UPDATE);
+        replicationActionTypeToIndexUpdateAction.put(ReplicationActionType.DEACTIVATE, IndexUpdateAction.DELETE);
+        replicationActionTypeToIndexUpdateAction.put(ReplicationActionType.DELETE, IndexUpdateAction.DELETE);
+        indexUpdateActionToJobTopic.put(IndexUpdateAction.UPDATE, IndexUpdateJobConsumer.JOB_TOPIC);
+        indexUpdateActionToJobTopic.put(IndexUpdateAction.DELETE, IndexDeleteJobConsumer.JOB_TOPIC);
+    }
 
     @Reference
-    private ResourceResolverProvider resourceResolverProvider;
+    private JobManager jobManager;
 
     @Reference
     private PathTransformer pathTransformer;
@@ -51,36 +58,8 @@ public class PageIndexUpdateHandler implements EventHandler {
         }
         String actionPath = action.getPath();
         log.info("Replication action {} occurred on {}", action.getType(), actionPath);
-        resourceResolverProvider.resourceResolverFunction(resourceResolver ->
-                                                                  getSaasClient(resourceResolver, actionPath))
-                                .flatMap(Function.identity())
-                                .ifPresent(client -> {
-                                    Map<String, Object> propertiesPrototype = getPropertiesPrototype(action, client);
-                                    pathTransformer.externalizeList(actionPath)
-                                                   .forEach(s -> scheduleJobForPath(s, propertiesPrototype));
-                                });
-    }
-
-    private Optional<String> getSaasClient(
-            ResourceResolver resourceResolver,
-            String pagePath) {
-        return Optional.ofNullable(getContextResource(resourceResolver, pagePath))
-                       .map(r -> r.adaptTo(SearchCAConfigurationModel.class))
-                       .map(SearchCAConfigurationModel::getClient);
-    }
-
-    private Resource getContextResource(
-            ResourceResolver resourceResolver,
-            String pagePath) {
-        PageManager pageManager = resourceResolver.adaptTo(PageManager.class);
-        if (pageManager != null) {
-            Page page = pageManager.getPage(pagePath);
-            if (page != null) {
-                return page.adaptTo(Resource.class);
-            }
-            log.warn("{} is not a Page", pagePath);
-        }
-        return null;
+        pathTransformer.externalizeList(actionPath)
+                       .forEach(s -> scheduleJobForPath(s, action));
     }
 
     private ReplicationAction getReplicationAction(Event event) {
@@ -101,24 +80,27 @@ public class PageIndexUpdateHandler implements EventHandler {
         return action;
     }
 
-    private ImmutableMap<String, Object> getPropertiesPrototype(
-            ReplicationAction action,
-            String client) {
-        return ImmutableMap.<String, Object>builder()
-                           .put(IndexUpdateJobConsumer.JOB_PROPERTY_ACTION,
-                                resolveIndexUpdateAction(action.getType()).getName())
-                           .put(IndexUpdateJobConsumer.JOB_PROPERTY_CLIENT, client)
-                           .put(IndexUpdateJobConsumer.JOB_PROPERTY_REPOSITORY_PATH, action.getPath())
-                           .build();
-    }
-
     private void scheduleJobForPath(
             String externalizedPath,
-            Map<String, Object> propertiesPrototype) {
-        Map<String, Object> properties = new HashMap<>(propertiesPrototype);
-        properties.put(IndexUpdateJobConsumer.JOB_PROPERTY_URL, externalizedPath);
+            ReplicationAction action) {
+        IndexUpdateAction indexUpdateAction = replicationActionTypeToIndexUpdateAction.get(action.getType());
+        if (indexUpdateAction == null) {
+            log.info("Not able to resolve IndexUpdateAction from {}", action.getType());
+            return;
+        }
+        Map<String, Object> properties = ImmutableMap.<String, Object>builder()
+                                                     .put(AbstractIndexUpdateActionJobConsumer.JOB_PROPERTY_REPOSITORY_PATH,
+                                                          action.getPath())
+                                                     .put(AbstractIndexUpdateActionJobConsumer.JOB_PROPERTY_URL,
+                                                          externalizedPath)
+                                                     .build();
         List<String> errorMessages = new ArrayList<>();
-        Job job = jobManager.createJob(IndexUpdateJobConsumer.INDEX_UPDATE).properties(properties).add(errorMessages);
+        String jobTopic = indexUpdateActionToJobTopic.get(indexUpdateAction);
+        if (StringUtils.isBlank(jobTopic)) {
+            log.info("Not able to resolve jobTopic for {}", indexUpdateAction);
+            return;
+        }
+        Job job = jobManager.createJob(jobTopic).properties(properties).add(errorMessages);
         log.info("Added job: {}, Errors: {}", job.getId(), errorMessages);
     }
 
@@ -130,12 +112,5 @@ public class PageIndexUpdateHandler implements EventHandler {
             return ReplicationEvent.fromEvent(event).getReplicationAction();
         }
         return null;
-    }
-
-    private IndexUpdateAction resolveIndexUpdateAction(ReplicationActionType replicationActionType) {
-        if (ReplicationActionType.ACTIVATE == replicationActionType) {
-            return IndexUpdateAction.UPDATE;
-        }
-        return IndexUpdateAction.DELETE;
     }
 }

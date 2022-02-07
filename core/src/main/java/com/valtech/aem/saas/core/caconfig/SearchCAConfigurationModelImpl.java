@@ -28,11 +28,11 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Model(adaptables = Resource.class,
-        adapters = SearchCAConfigurationModel.class)
+       adapters = SearchCAConfigurationModel.class)
 public final class SearchCAConfigurationModelImpl implements SearchCAConfigurationModel {
 
-    public static final String I18N_SEARCH_CA_CONFIGURATION_INDEX_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage";
-    public static final String I18N_SEARCH_CA_CONFIGURATION_CLIENT_REQUIRED = "com.valtech.aem.saas.core.search.caConfiguration.clientRequiredMessage";
+    public static final String I18N_SEARCH_CA_CONFIGURATION_INDEX_REQUIRED =
+            "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage";
 
     @Self
     private Resource resource;
@@ -49,7 +49,9 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
         i18n = i18nProvider.getI18n(getLocale());
         ConfigurationBuilder configurationBuilder = resource.adaptTo(ConfigurationBuilder.class);
         if (configurationBuilder == null) {
-            throw new IllegalStateException(String.format("Failed to resolve '%s' from resource: %s.", SearchConfiguration.class.getName(), resource.getPath()));
+            throw new IllegalStateException(String.format("Failed to resolve '%s' from resource: %s.",
+                                                          SearchConfiguration.class.getName(),
+                                                          resource.getPath()));
         }
         searchConfiguration = configurationBuilder.as(SearchConfiguration.class);
     }
@@ -60,14 +62,6 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
             throw new IllegalStateException(i18n.get(I18N_SEARCH_CA_CONFIGURATION_INDEX_REQUIRED));
         }
         return searchConfiguration.index();
-    }
-
-    @Override
-    public String getClient() {
-        if (StringUtils.isBlank(searchConfiguration.client())) {
-            throw new IllegalStateException(i18n.get(I18N_SEARCH_CA_CONFIGURATION_CLIENT_REQUIRED));
-        }
-        return searchConfiguration.client();
     }
 
     @Override
@@ -105,6 +99,6 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
 
     private Locale getLocale() {
         return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-                .orElse(Locale.getDefault());
+                       .orElse(Locale.getDefault());
     }
 }

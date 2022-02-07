@@ -2,7 +2,6 @@ package com.valtech.aem.saas.core.indexing;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.indexing.IndexUpdateService;
 import com.valtech.aem.saas.api.indexing.dto.IndexContentPayloadDTO;
 import com.valtech.aem.saas.api.indexing.dto.IndexUpdateResponseDTO;
@@ -51,7 +50,7 @@ class DefaultIndexUpdateServiceTest {
     void testIndexUrl() {
         when(searchAdminRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
-        Optional<IndexUpdateResponseDTO> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+        Optional<IndexUpdateResponseDTO> response = testee.indexUrl(SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(true));
         testSuccessfulResponse(response.get());
     }
@@ -60,18 +59,16 @@ class DefaultIndexUpdateServiceTest {
     void testIndexUrl_exceptionDuringExecution() {
         when(searchAdminRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.empty());
-        Optional<IndexUpdateResponseDTO> response = testee.indexUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+        Optional<IndexUpdateResponseDTO> response = testee.indexUrl(SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(false));
     }
 
     @Test
     void testIndexUrl_inputValidationFails() {
-        assertThrows(NullPointerException.class,
-                     () -> testee.indexUrl((SearchCAConfigurationModel) null, SAMPLE_URL, SAMPLE_REPO_PATH));
         assertThrows(IllegalArgumentException.class,
-                     () -> testee.indexUrl("/foo", StringUtils.EMPTY, SAMPLE_REPO_PATH));
+                     () -> testee.indexUrl(StringUtils.EMPTY, SAMPLE_REPO_PATH));
         assertThrows(NullPointerException.class,
-                     () -> testee.indexUrl("/foo", SAMPLE_URL, null));
+                     () -> testee.indexUrl(SAMPLE_URL, null));
     }
 
     @Test
@@ -79,25 +76,21 @@ class DefaultIndexUpdateServiceTest {
         when(searchAdminRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
         IndexContentPayloadDTO indexContentPayload = getCompleteDefaultIndexContentPayload();
-        Optional<IndexUpdateResponseDTO> response = testee.indexContent("/foo", indexContentPayload);
+        Optional<IndexUpdateResponseDTO> response = testee.indexContent(indexContentPayload);
         assertThat(response.isPresent(), is(true));
         testSuccessfulResponse(response.get());
     }
 
     @Test
     void testIndexContent_inputValidationFails() {
-        assertThrows(NullPointerException.class, () -> testee.indexContent((SearchCAConfigurationModel) null, null));
-        IndexContentPayloadDTO indexContentPayload = getCompleteDefaultIndexContentPayload();
-        assertThrows(IllegalArgumentException.class,
-                     () -> testee.indexContent(StringUtils.EMPTY, indexContentPayload));
+        assertThrows(NullPointerException.class, () -> testee.indexContent(null));
     }
 
     @Test
     void testIndexContent_exceptionDuringExecution() {
         when(searchAdminRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.empty());
-        Optional<IndexUpdateResponseDTO> response = testee.indexContent("/foo",
-                                                                        getCompleteDefaultIndexContentPayload());
+        Optional<IndexUpdateResponseDTO> response = testee.indexContent(getCompleteDefaultIndexContentPayload());
         assertThat(response.isPresent(), is(false));
     }
 
@@ -105,7 +98,7 @@ class DefaultIndexUpdateServiceTest {
     void testDeleteIndexedUrl() {
         when(searchAdminRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.of(new SearchResponse(getSuccessResponse(), true)));
-        Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+        Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl(SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(true));
         testSuccessfulResponse(response.get());
     }
@@ -114,20 +107,17 @@ class DefaultIndexUpdateServiceTest {
     void testDeleteIndexedUrl_exceptionDuringExecution() {
         when(searchAdminRequestExecutorService.execute(any(SearchRequest.class)))
                 .thenReturn(Optional.empty());
-        Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl("/foo", SAMPLE_URL, SAMPLE_REPO_PATH);
+        Optional<IndexUpdateResponseDTO> response = testee.deleteIndexedUrl(SAMPLE_URL, SAMPLE_REPO_PATH);
         assertThat(response.isPresent(), is(false));
     }
 
 
     @Test
     void testDeleteIndexedUrl_inputValidationFails() {
-        assertThrows(NullPointerException.class,
-                     () -> testee.deleteIndexedUrl((String) null, SAMPLE_URL,
-                                                   SAMPLE_REPO_PATH));
         assertThrows(IllegalArgumentException.class,
-                     () -> testee.deleteIndexedUrl("/foo", StringUtils.EMPTY, SAMPLE_REPO_PATH));
+                     () -> testee.deleteIndexedUrl(StringUtils.EMPTY, SAMPLE_REPO_PATH));
         assertThrows(IllegalArgumentException.class,
-                     () -> testee.deleteIndexedUrl("/foo", SAMPLE_URL, ""));
+                     () -> testee.deleteIndexedUrl(SAMPLE_URL, ""));
     }
 
     private void testSuccessfulResponse(IndexUpdateResponseDTO response) {
@@ -140,7 +130,9 @@ class DefaultIndexUpdateServiceTest {
 
     private JsonObject getSuccessResponse() {
         return new JsonParser().parse(
-                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search/indexupdate/success.json")))
+                                       new InputStreamReader(getClass().getResourceAsStream("/__files/search" +
+                                                                                                    "/indexupdate" +
+                                                                                                    "/success.json")))
                                .getAsJsonObject();
     }
 

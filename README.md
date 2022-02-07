@@ -144,7 +144,6 @@ Configurations are split in OSGi and Context-Aware.
 | Label | Name | Description | Required |
 | --- | :--- | :--- | :---:|
 | Search Index | index | Index defined in SaaS admin | x |
-| Search Client | client | Client identifier defined in SaaS admin | x |
 | Search Project Id | projectId | Project identifier defined in SaaS admin | x |
 | Search Filters | searchFilters | Key/value pairs of **field name** and **value**
 | Search result highlight tag name | highlightTagName | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`)

@@ -8,6 +8,5 @@
   "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkLogFiles.text": "Please check log files for further details.",
   "com.valtech.aem.saas.core.search.apiConnectionFail.furtherAction.checkOsgiConfigurations.text": "Please check the OSGi Configuration Settings (starting with 'Search as a Service').",
   "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage": "Failed to resolve Context Aware Search Configuration for resource: {}",
-  "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage": "Search Index must be configured.",
-  "com.valtech.aem.saas.core.search.caConfiguration.clientRequiredMessage": "Search Client must be configured."
+  "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage": "Search Index must be configured."
 }

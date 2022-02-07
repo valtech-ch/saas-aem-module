@@ -14,24 +14,25 @@ import java.util.Optional;
 @Component(service = JobConsumer.class,
            configurationPolicy = ConfigurationPolicy.REQUIRE,
            property = {
-                   JobConsumer.PROPERTY_TOPICS + "=" + IndexUpdateJobConsumer.JOB_TOPIC
+                   JobConsumer.PROPERTY_TOPICS + "=" + IndexDeleteJobConsumer.JOB_TOPIC
            })
-@ServiceDescription("Search as a Service - Index Update Job Consumer")
+@ServiceDescription("Search as a Service - Index Delete Job Consumer")
 @Slf4j
-public class IndexUpdateJobConsumer extends AbstractIndexUpdateActionJobConsumer {
+public class IndexDeleteJobConsumer extends AbstractIndexUpdateActionJobConsumer {
 
-    public static final String JOB_TOPIC = "com/valtech/aem/saas/indexing/jobs/indexUpdate";
+    public static final String JOB_TOPIC = "com/valtech/aem/saas/indexing/jobs/indexDelete";
 
     @Reference
     private IndexUpdateService indexUpdateService;
 
     @Override
     protected JobResult processJob(String url, String repositoryPath) {
-        Optional<IndexUpdateResponseDTO> response = indexUpdateService.indexUrl(url, repositoryPath);
+        Optional<IndexUpdateResponseDTO> response = indexUpdateService.deleteIndexedUrl(url, repositoryPath);
         if (response.isPresent()) {
-            log.debug("Index update successful: {}", response.get());
+            log.debug("Index delete successful: {}", response.get());
             return JobResult.OK;
         }
         return JobResult.FAILED;
     }
+
 }
