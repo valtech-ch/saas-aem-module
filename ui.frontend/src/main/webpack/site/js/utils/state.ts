@@ -68,15 +68,26 @@ const initAppState = () => {
 const transformFilterFacetsToMap = (facetFilters: FacetFilters | undefined) => {
   return (
     facetFilters?.items.reduce((acc, item) => {
-      const result = item.filterFieldOptions?.reduce(
-        (acc: {}, { value, hits }: { value: string; hits: number }) => {
+      const result = item.filterFieldOptions
+        ?.sort((filterOption1, filterOption2) => {
+          const filterOption1Value = filterOption1.value.toLowerCase()
+          const filterOption2Value = filterOption2.value.toLowerCase()
+          if (filterOption1Value > filterOption2Value) {
+            return 1
+          }
+
+          if (filterOption2Value > filterOption1Value) {
+            return -1
+          }
+
+          return 0
+        })
+        .reduce((acc: {}, { value, hits }: { value: string; hits: number }) => {
           return {
             ...acc,
             ...{ [value]: hits },
           }
-        },
-        {},
-      )
+        }, {})
       return { ...acc, ...{ [item.filterFieldLabel]: result } }
     }, {}) || null
   )
