@@ -109,6 +109,7 @@ BuildFacetOption): HTMLDivElement => {
         const facetsGroup = buildFacetsGroup({
           filterFieldLabel: facetFilter.filterFieldLabel,
           filterFieldName: facetFilter.filterFieldName,
+          filterFieldOptions: facetFilter.filterFieldOptions,
           tabUrl,
           searchValue,
           queryParameterName: facetFilters.queryParameterName,

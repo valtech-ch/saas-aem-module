@@ -1,5 +1,10 @@
 import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FacetItem } from '../types/facetFilter'
+import {
+  resetFacetFilterOptionsByFilterFieldLabel,
+  sortFacetFilterFieldOptionAlphabetically,
+  transformFacetFilterOptionsToMap,
+} from '../utils/state'
 import buildFacet from './buildFacet'
 
 interface BuildFacetsGroup extends FacetItem {
@@ -15,6 +20,7 @@ interface BuildFacetsGroup extends FacetItem {
 const buildFacetsGroup = ({
   filterFieldLabel,
   filterFieldName,
+  filterFieldOptions,
   tabUrl,
   searchValue,
   queryParameterName,
@@ -32,11 +38,20 @@ const buildFacetsGroup = ({
 
   facetItem.appendChild(facetItemTitle)
 
-  const filterFieldOptions = window.appState.facetFilters?.[title]
-  const filterFieldItems = filterFieldOptions?.[filterFieldLabel]
+  const resetFacetFilterOptions = resetFacetFilterOptionsByFilterFieldLabel({
+    title,
+    filterFieldLabel,
+  })
+  const facetFilterOptionsMap =
+    transformFacetFilterOptionsToMap(filterFieldOptions)
 
-  filterFieldItems &&
-    Object.entries(filterFieldItems).forEach(
+  const newFacetFilterOptionsState = {
+    ...resetFacetFilterOptions,
+    ...facetFilterOptionsMap,
+  }
+
+  newFacetFilterOptionsState &&
+    Object.entries(newFacetFilterOptionsState).forEach(
       ([value, hits]: [value: string, hits: number]) => {
         const facet = buildFacet({
           value,

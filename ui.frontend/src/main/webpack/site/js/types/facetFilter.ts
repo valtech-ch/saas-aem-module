@@ -6,7 +6,7 @@ export interface FacetFilters {
 export interface FacetItem {
   filterFieldLabel: string
   filterFieldName: string
-  filterFieldOptions?: FilterFieldOption[]
+  filterFieldOptions: FilterFieldOption[]
 }
 
 export interface FilterFieldOption {
