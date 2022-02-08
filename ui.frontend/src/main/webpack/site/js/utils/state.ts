@@ -11,7 +11,15 @@ declare global {
   }
 }
 
-const defaultState = { facetFilters: {} }
+const reduceToMap = (
+  acc: Record<string, number>,
+  { value, hits }: { value: string; hits: number },
+) => {
+  return {
+    ...acc,
+    ...{ [value]: hits },
+  }
+}
 
 // ########################
 // Current request response
@@ -51,7 +59,7 @@ const transformFacetFilterGroupsToMap = (
   facetFilters: FacetFilters | undefined,
 ) => {
   return (
-    facetFilters?.items.reduce((acc1, item) => {
+    facetFilters?.items.reduce((acc, item) => {
       const sortedFilterOptions = item.filterFieldOptions
         ?.sort((filterOption1, filterOption2) => {
           const filterOption1Value = filterOption1.value.toLowerCase()
@@ -66,19 +74,8 @@ const transformFacetFilterGroupsToMap = (
 
           return 0
         })
-        .reduce(
-          (
-            acc2: Record<string, number>,
-            { value, hits }: { value: string; hits: number },
-          ) => {
-            return {
-              ...acc2,
-              ...{ [value]: hits },
-            }
-          },
-          {},
-        )
-      return { ...acc1, ...{ [item.filterFieldLabel]: sortedFilterOptions } }
+        .reduce(reduceToMap, {})
+      return { ...acc, ...{ [item.filterFieldLabel]: sortedFilterOptions } }
     }, {}) || null
   )
 }
@@ -86,18 +83,7 @@ const transformFacetFilterGroupsToMap = (
 export const transformFacetFilterOptionsToMap = (
   filterFieldOptions: FilterFieldOption[] | undefined,
 ) => {
-  return filterFieldOptions?.reduce(
-    (
-      acc: Record<string, number>,
-      { value, hits }: { value: string; hits: number },
-    ) => {
-      return {
-        ...acc,
-        ...{ [value]: hits },
-      }
-    },
-    {},
-  )
+  return filterFieldOptions?.reduce(reduceToMap, {})
 }
 
 export const resetFacetFilterOptionsByTitleAndFilterFieldLabel = ({
@@ -136,5 +122,7 @@ export const saveFacetFiltersToAppState = (tabResult: Tab) => {
 
   window.appState = newState
 }
+
+const defaultState = { facetFilters: {} }
 
 window.appState = defaultState
