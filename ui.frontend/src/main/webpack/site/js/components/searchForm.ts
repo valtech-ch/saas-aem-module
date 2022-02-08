@@ -18,7 +18,7 @@ type SearchFormSubmitEventOption = SearchCallbacks
 
 const buildSearchForm = (): HTMLFormElement => {
   const searchForm = document.createElement('form')
-  searchForm.classList.add('saas-container__form')
+  searchForm.classList.add('cmp-saas__form')
 
   return searchForm
 }

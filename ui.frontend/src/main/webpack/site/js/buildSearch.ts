@@ -35,12 +35,12 @@ export const buildSearch = async (
   } = searchConfig
 
   const searchContainer = document.createElement('div')
-  searchContainer.classList.add('saas-container')
+  searchContainer.classList.add('cmp-saas')
 
   const searchFormElement = buildSearchForm()
 
   const searchAutocompleteWrapper = document.createElement('div')
-  searchAutocompleteWrapper.classList.add('saas-autocomplete')
+  searchAutocompleteWrapper.classList.add('cmp-saas-autocomplete')
 
   const searchInputElement = buildSearchInput({
     id,

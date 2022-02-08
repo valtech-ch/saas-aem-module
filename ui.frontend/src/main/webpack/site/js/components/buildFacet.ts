@@ -127,7 +127,7 @@ BuildFacetOption): HTMLDivElement => {
       }
 
       const resultsItems = document.createElement('div')
-      resultsItems.classList.add('saas-container__results-items')
+      resultsItems.classList.add('cmp-saas__results-items')
 
       const searchResultsItem = generateSearchItemList(
         results.results,

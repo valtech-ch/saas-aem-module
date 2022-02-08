@@ -101,7 +101,7 @@ const buildSearchResultsTab = ({
 
     searchResults.dataset.selected = 'true'
     if (searchContainer?.dataset.selectedTab !== tabId) {
-      // overwrite display: grid !important set on .saas-container__results
+      // overwrite display: grid !important set on .cmp-saas__results
       searchResults.style.setProperty('display', 'none', 'important')
       searchResults.dataset.selected = 'false'
     }
