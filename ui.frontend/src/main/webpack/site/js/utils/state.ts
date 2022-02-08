@@ -55,7 +55,7 @@ const reduceToMap = (
 //     'pdf': 2
 //   }
 // }
-const transformFacetFilterGroupsToMap = (
+const sortAndTransformFacetFilterGroupsToMap = (
   facetFilters: FacetFilters | undefined,
 ) => {
   return (
@@ -115,7 +115,7 @@ export const saveFacetFiltersToAppState = (tabResult: Tab) => {
   const newState = {
     facetFilters: {
       [tabResult.title]: {
-        ...transformFacetFilterGroupsToMap(tabResult.facetFilters),
+        ...sortAndTransformFacetFilterGroupsToMap(tabResult.facetFilters),
       },
     },
   }
