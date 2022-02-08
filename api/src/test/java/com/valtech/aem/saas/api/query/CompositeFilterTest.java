@@ -31,6 +31,6 @@ class CompositeFilterTest {
                                   .filter(new SimpleFilter("baz", "quz"))
                                   .joinOperator(FilterJoinOperator.AND)
                                   .build().getQueryString(),
-                   is("((it:is OR operator:example OR it:is not) AND baz:quz)"));
+                   is("((it:is OR operator:example OR it:\"is not\") AND baz:quz)"));
     }
 }
