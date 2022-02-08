@@ -33,7 +33,7 @@ const buildFacetsGroup = ({
 
   const facetItemTitle = document.createElement('h4')
   facetItemTitle.innerText = filterFieldLabel
-  facetItemTitle.classList.add('saas-facets-group-title')
+  facetItemTitle.classList.add('saas-facets-group__title')
 
   facetItem.appendChild(facetItemTitle)
 

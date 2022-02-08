@@ -41,7 +41,7 @@ const buildSearchTab = ({
   searchContainer,
 }: SearchTabOptions): HTMLButtonElement => {
   const searchTab = document.createElement('button')
-  searchTab.classList.add('saas-container_tab')
+  searchTab.classList.add('saas-container__tab')
 
   const searchTabName = document.createElement('span')
   searchTabName.innerHTML = title
@@ -56,7 +56,7 @@ const buildSearchTab = ({
     onSwitchTab?.()
 
     const searchTabs = searchContainer.querySelectorAll<HTMLDivElement>(
-      '.saas-container_results',
+      '.saas-container__results',
     )
 
     searchContainer.dataset.selectedTab = tabId
@@ -69,7 +69,7 @@ const buildSearchTab = ({
         return
       }
 
-      // overwrite display: grid !important set on .saas-container_results
+      // overwrite display: grid !important set on .saas-container__results
       tabElement.style.setProperty('display', 'none', 'important')
     })
   })
@@ -86,7 +86,7 @@ export const removeAutosuggest = (searchContainer: HTMLDivElement): void => {
 
 export const removeSearchTabs = (searchContainer: HTMLDivElement): void => {
   const searchTabs = searchContainer.querySelectorAll<HTMLDivElement>(
-    '.saas-container_tab',
+    '.saas-container__tab',
   )
 
   searchTabs.forEach((tab) => {
@@ -96,7 +96,7 @@ export const removeSearchTabs = (searchContainer: HTMLDivElement): void => {
 
 export const removeSearchResults = (searchContainer: HTMLDivElement): void => {
   const searchResults = searchContainer.querySelectorAll<HTMLDivElement>(
-    '.saas-container_results',
+    '.saas-container__results',
   )
 
   searchResults.forEach((searchResult) => {
