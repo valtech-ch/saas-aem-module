@@ -21,6 +21,29 @@ const reduceToMap = (
   }
 }
 
+const sortFilterOptions = (
+  filterFieldOptions: FilterFieldOption[] | undefined,
+) =>
+  filterFieldOptions?.sort((filterOption1, filterOption2) => {
+    const filterOption1Value = filterOption1.value.toLowerCase()
+    const filterOption2Value = filterOption2.value.toLowerCase()
+    if (filterOption1Value > filterOption2Value) {
+      return 1
+    }
+
+    if (filterOption2Value > filterOption1Value) {
+      return -1
+    }
+
+    return 0
+  })
+
+export const transformFacetFilterOptionsToMap = (
+  filterFieldOptions: FilterFieldOption[] | undefined,
+) => {
+  return filterFieldOptions?.reduce(reduceToMap, {})
+}
+
 // ########################
 // Current request response
 // ########################
@@ -60,30 +83,14 @@ const sortAndTransformFacetFilterGroupsToMap = (
 ) => {
   return (
     facetFilters?.items.reduce((acc, item) => {
-      const sortedFilterOptions = item.filterFieldOptions
-        ?.sort((filterOption1, filterOption2) => {
-          const filterOption1Value = filterOption1.value.toLowerCase()
-          const filterOption2Value = filterOption2.value.toLowerCase()
-          if (filterOption1Value > filterOption2Value) {
-            return 1
-          }
+      const sortedFilterOptions = sortFilterOptions(item.filterFieldOptions)
 
-          if (filterOption2Value > filterOption1Value) {
-            return -1
-          }
+      const filterOptionsMap =
+        transformFacetFilterOptionsToMap(sortedFilterOptions)
 
-          return 0
-        })
-        .reduce(reduceToMap, {})
-      return { ...acc, ...{ [item.filterFieldLabel]: sortedFilterOptions } }
+      return { ...acc, ...{ [item.filterFieldLabel]: filterOptionsMap } }
     }, {}) || null
   )
-}
-
-export const transformFacetFilterOptionsToMap = (
-  filterFieldOptions: FilterFieldOption[] | undefined,
-) => {
-  return filterFieldOptions?.reduce(reduceToMap, {})
 }
 
 export const resetFacetFilterOptionsByTitleAndFilterFieldLabel = ({
