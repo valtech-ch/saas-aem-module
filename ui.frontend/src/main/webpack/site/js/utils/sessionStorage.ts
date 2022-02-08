@@ -8,3 +8,31 @@ export const cleanSessionStorage = (
     sessionStorage.removeItem(storageKey),
   )
 }
+
+export const getSessionStorage = ({
+  storageKey,
+  defaultValue,
+  parse = true,
+}: {
+  storageKey: string
+  defaultValue: string
+  parse?: boolean
+}) =>
+  parse
+    ? JSON.parse(sessionStorage.getItem(storageKey) || defaultValue)
+    : sessionStorage.getItem(storageKey) || defaultValue
+
+export const setSessionStorage = ({
+  storageKey,
+  data,
+  stringify = true,
+}: {
+  storageKey: string
+  data: [] | Record<string, unknown> | string
+  stringify?: boolean
+}): void => {
+  sessionStorage.setItem(
+    storageKey,
+    stringify ? JSON.stringify(data as string) : (data as string),
+  )
+}

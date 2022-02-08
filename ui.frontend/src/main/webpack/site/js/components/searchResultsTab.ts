@@ -67,14 +67,15 @@ const buildSearchResultsTab = ({
     facetFilters?.items.forEach((facetFilter) => {
       const facetsGroup = buildFacetsGroup({
         filterFieldLabel: facetFilter.filterFieldLabel,
-        filterFieldOptions: facetFilter.filterFieldOptions,
         filterFieldName: facetFilter.filterFieldName,
+        filterFieldOptions: facetFilter.filterFieldOptions,
         tabUrl: url,
         searchValue,
         queryParameterName: facetFilters.queryParameterName,
         tabId,
         onSearchItemClick,
         loadMoreButtonText,
+        title,
       })
 
       facetsGroups?.appendChild(facetsGroup)

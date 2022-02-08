@@ -1,5 +1,9 @@
 import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FacetItem } from '../types/facetFilter'
+import {
+  resetFacetFilterOptionsByTitleAndFilterFieldLabel,
+  transformFacetFilterOptionsToMap,
+} from '../utils/state'
 import buildFacet from './buildFacet'
 
 interface BuildFacetsGroup extends FacetItem {
@@ -8,6 +12,7 @@ interface BuildFacetsGroup extends FacetItem {
   queryParameterName: string
   tabId: string
   loadMoreButtonText: string
+  title: string
   onSearchItemClick?: OnSearchItemClickCallback
 }
 
@@ -21,6 +26,7 @@ const buildFacetsGroup = ({
   tabId,
   onSearchItemClick,
   loadMoreButtonText,
+  title,
 }: BuildFacetsGroup): HTMLDivElement => {
   const facetItem = document.createElement('div')
   facetItem.classList.add('saas-facets-group')
@@ -31,21 +37,37 @@ const buildFacetsGroup = ({
 
   facetItem.appendChild(facetItemTitle)
 
-  filterFieldOptions.forEach(({ value, hits }) => {
-    const facet = buildFacet({
-      value,
-      hits,
-      filterFieldName,
-      tabUrl,
-      searchValue,
-      queryParameterName,
-      tabId,
-      onSearchItemClick,
-      loadMoreButtonText,
+  const resetFacetFilterOptions =
+    resetFacetFilterOptionsByTitleAndFilterFieldLabel({
+      title,
+      filterFieldLabel,
     })
+  const facetFilterOptionsMap =
+    transformFacetFilterOptionsToMap(filterFieldOptions)
 
-    facetItem.appendChild(facet)
-  })
+  const newFacetFilterOptionsState = {
+    ...resetFacetFilterOptions,
+    ...facetFilterOptionsMap,
+  }
+
+  Object.entries(newFacetFilterOptionsState).forEach(
+    ([value, hits]: [value: string, hits: number]) => {
+      const facet = buildFacet({
+        value,
+        hits,
+        filterFieldName,
+        tabUrl,
+        searchValue,
+        queryParameterName,
+        tabId,
+        onSearchItemClick,
+        loadMoreButtonText,
+        title,
+      })
+
+      facetItem.appendChild(facet)
+    },
+  )
 
   return facetItem
 }

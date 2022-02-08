@@ -12,6 +12,7 @@ interface BuildFacetOption extends FilterFieldOption {
   queryParameterName: string
   tabId: string
   loadMoreButtonText: string
+  title: string
   onSearchItemClick?: OnSearchItemClickCallback
 }
 
@@ -25,15 +26,21 @@ const buildFacet = ({
   tabId,
   onSearchItemClick,
   loadMoreButtonText,
+  title,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
 BuildFacetOption): HTMLDivElement => {
   const facet = document.createElement('div')
   facet.classList.add('saas-facet')
-
   const facetInput = document.createElement('input')
   facetInput.classList.add('saas-facet-input')
   facetInput.type = 'checkbox'
   facetInput.id = value
+
+  if (!hits) {
+    facet.classList.add('saas-facet--no-result')
+    facet.style.pointerEvents = 'none'
+    facetInput.disabled = true
+  }
 
   const selectedTab = document.querySelector<HTMLDivElement>(
     '[data-selected="true"]',
@@ -101,14 +108,15 @@ BuildFacetOption): HTMLDivElement => {
       facetFilters?.items.forEach((facetFilter) => {
         const facetsGroup = buildFacetsGroup({
           filterFieldLabel: facetFilter.filterFieldLabel,
-          filterFieldOptions: facetFilter.filterFieldOptions,
           filterFieldName: facetFilter.filterFieldName,
+          filterFieldOptions: facetFilter.filterFieldOptions,
           tabUrl,
           searchValue,
           queryParameterName: facetFilters.queryParameterName,
           tabId,
           onSearchItemClick,
           loadMoreButtonText,
+          title,
         })
 
         facetsGroups?.appendChild(facetsGroup)
