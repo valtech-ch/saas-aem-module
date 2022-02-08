@@ -15,37 +15,41 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @ExtendWith({AemContextExtension.class})
 class FilterConfigurationModelTest {
 
+    private final AemContext context = new AemContext();
+
     FilterConfigurationModel testee;
 
     @BeforeEach
-    void setUp(AemContext context) {
-        context.load().json("/content/components/searchtab/filters/content.json",
-                            "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab" +
-                                    "/filters");
+    void setUp() {
+        context.load()
+               .json("/content/components/searchtab/filters/content.json",
+                     "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab" +
+                             "/filters");
     }
 
     @Test
-    void testSingleValueFilter(AemContext context) {
-        context.currentResource(
-                "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item1");
-        adaptResource(context);
-        testAdaptable();
-        assertThat(testee.getFilter(), instanceOf(Filter.class));
-        assertThat(testee.getFilter().getQueryString(), is("domain:https://wknd.site"));
+    void testSingleValueFilter() {
+        testFilterValue(
+                "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item1",
+                "domain:https://wknd.site");
     }
 
     @Test
-    void testMultiValueFilter(AemContext context) {
-        context.currentResource(
-                "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item0");
-        adaptResource(context);
-        testAdaptable();
-        assertThat(testee.getFilter(), instanceOf(Filter.class));
-        assertThat(testee.getFilter().getQueryString(), is("(contentType:pdf OR contentType:xls)"));
+    void testSingleValueWithWhitespaceFilter() {
+        testFilterValue(
+                "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item4",
+                "keyword_mstr:\"Hunting & Fishing\"");
     }
 
     @Test
-    void testInvalidFilter_missingFilterName(AemContext context) {
+    void testMultiValueFilter() {
+        testFilterValue("/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab" +
+                                "/filters/item0",
+                        "(contentType:pdf OR contentType:xls)");
+    }
+
+    @Test
+    void testInvalidFilter_missingFilterName() {
         context.currentResource(
                 "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item2");
         adaptResource(context);
@@ -54,7 +58,7 @@ class FilterConfigurationModelTest {
     }
 
     @Test
-    void testInvalidFilter_missingFilterValue(AemContext context) {
+    void testInvalidFilter_missingFilterValue() {
         context.currentResource(
                 "/content/saas-aem-module/us/en/jcr:content/root/container/search/search-tabs/searchtab/filters/item3");
         adaptResource(context);
@@ -70,6 +74,14 @@ class FilterConfigurationModelTest {
     private void testAdaptable() {
         assertThat(testee, notNullValue());
         assertThat(testee, instanceOf(FilterConfiguration.class));
+    }
+
+    private void testFilterValue(String filterEntryResourcePath, String expected) {
+        context.currentResource(filterEntryResourcePath);
+        adaptResource(context);
+        testAdaptable();
+        assertThat(testee.getFilter(), instanceOf(Filter.class));
+        assertThat(testee.getFilter().getQueryString(), is(expected));
     }
 
 }
