@@ -19,5 +19,10 @@
     "jcr:primaryType": "nt:unstructured",
     "name": "domain",
     "value": ""
+  },
+  "item4": {
+    "jcr:primaryType": "nt:unstructured",
+    "name": "keyword_mstr",
+    "value": "Hunting & Fishing"
   }
 }

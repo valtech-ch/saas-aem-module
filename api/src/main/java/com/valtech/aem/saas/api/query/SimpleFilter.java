@@ -3,6 +3,7 @@ package com.valtech.aem.saas.api.query;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -15,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 public class SimpleFilter implements Filter {
 
     private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
+    public static final String QUOTE = "\"";
+    public static final String REGEX_MATCH_NON_WHITESPACE = "\\S+";
 
     private String name;
     private String value;
@@ -22,8 +25,15 @@ public class SimpleFilter implements Filter {
     @Override
     public String getQueryString() {
         if (StringUtils.isNoneBlank(name, value)) {
-            return String.join(FILTER_FIELD_VALUE_DELIMITER, name, value);
+            return String.join(FILTER_FIELD_VALUE_DELIMITER, name, getSafeValue(value));
         }
         return StringUtils.EMPTY;
+    }
+
+    private String getSafeValue(@NonNull String value) {
+        if (!value.matches(REGEX_MATCH_NON_WHITESPACE)) {
+            return StringUtils.wrapIfMissing(value, QUOTE);
+        }
+        return value;
     }
 }

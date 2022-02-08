@@ -17,5 +17,6 @@ class SimpleFilterTest {
         assertThat(new SimpleFilter("", "foo").getQueryString(), isEmptyString());
         assertThat(new SimpleFilter(null, "foo").getQueryString(), isEmptyString());
         assertThat(new SimpleFilter("foo", "bar").getQueryString(), is("foo:bar"));
+        assertThat(new SimpleFilter("foo", "bar quz").getQueryString(), is("foo:\"bar quz\""));
     }
 }
