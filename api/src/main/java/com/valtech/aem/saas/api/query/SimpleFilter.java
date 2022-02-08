@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 public class SimpleFilter implements Filter {
 
     private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
-    private static final String REGEX_MATCH_NON_WHITESPACE = "\\S+";
 
     private String name;
     private String value;
@@ -30,7 +29,7 @@ public class SimpleFilter implements Filter {
     }
 
     private String getSafeValue(@NonNull String value) {
-        if (!value.matches(REGEX_MATCH_NON_WHITESPACE)) {
+        if (StringUtils.containsWhitespace(value)) {
             return StringUtils.wrapIfMissing(value, "\"");
         }
         return value;
