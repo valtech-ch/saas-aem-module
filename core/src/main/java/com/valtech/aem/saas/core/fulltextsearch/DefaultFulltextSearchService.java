@@ -171,6 +171,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                         .description(new HighlightedDescriptionResolver(searchResultDto,
                                                                         highlightingDto).getDescription())
                         .bestBet(searchResultDto.isElevated())
+                        .repositoryPath(searchResultDto.getRepositoryPathUrl())
                         .build();
     }
 

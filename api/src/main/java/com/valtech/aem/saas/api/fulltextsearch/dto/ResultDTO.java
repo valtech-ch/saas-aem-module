@@ -18,4 +18,6 @@ public class ResultDTO {
     String description;
 
     boolean bestBet;
+
+    String repositoryPath;
 }
