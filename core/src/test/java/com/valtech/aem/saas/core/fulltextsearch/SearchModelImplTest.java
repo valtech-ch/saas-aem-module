@@ -4,7 +4,6 @@ import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
-import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -114,7 +113,8 @@ class SearchModelImplTest {
         assertThat(testee.getResultsPerPage(), is(15));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
         assertThat(testee.getFilters(), IsEmptyCollection.empty());
-        assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
+        assertThat(testee.getAutocompleteTriggerThreshold(),
+                   is(SearchConfiguration.DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD));
         assertThat(testee.getId(), not(isEmptyString()));
     }
 

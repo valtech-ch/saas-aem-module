@@ -10,8 +10,11 @@ public @interface SearchConfiguration {
 
     boolean DEFAULT_ENABLE_BEST_BETS = false;
     boolean DEFAULT_ENABLE_AUTO_SUGGEST = true;
+    boolean DEFAULT_ENABLE_AUTOCOMPLETE = true;
     String DEFAULT_HIGHLIGHT_TAG_NAME = "em";
     int DEFAULT_PROJECT_ID = 1;
+    int DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD = 3;
+    int DEFAULT_AUTOCOMPLETE_RESULTS_MAX_LIMIT = 10;
 
     @Property(label = "Search Index",
               description = "SaaS index (Required)")
@@ -37,4 +40,17 @@ public @interface SearchConfiguration {
     @Property(label = "Enable Auto Suggest",
               description = "Flag that enables auto suggest feature in the search component.")
     boolean enableAutoSuggest() default DEFAULT_ENABLE_AUTO_SUGGEST;
+
+    @Property(label = "Enable Autocomplete",
+              description = "Flag that enables autocomplete (typeahead) feature in the search component.")
+    boolean enableAutocomplete() default DEFAULT_ENABLE_AUTOCOMPLETE;
+
+    @Property(label = "Autocomplete Trigger Threshold",
+              description = "The minimum number of search input characters required for displaying autocomplete " +
+                      "options.")
+    int autocompleteTriggerThreshold() default DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD;
+
+    @Property(label = "Autocomplete options Max Limit",
+              description = "The maximum number of autocomplete options displayed.")
+    int autocompleteOptionsMax() default DEFAULT_AUTOCOMPLETE_RESULTS_MAX_LIMIT;
 }

@@ -9,7 +9,8 @@
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Full](#full)
-  - [Api with default implementation and osgi configurations](#api-with-default-implementation-and-osgi-configurations)
+  - [Partial (w/o AEM components)](#partial-wo-aem-components)
+  - [Embedding in maven project](#embedding-in-maven-project)
   - [Uninstall](#uninstall)
 - [AEM APIs](#aem-apis)
 - [Configurations](#configurations)
@@ -97,10 +98,55 @@ template where the components would be used.
 </dependency>
 
 <dependency>
-  <groupId>io.github.valtech-ch</groupId>
-  <artifactId>saas-aem.ui.config</artifactId>
-  <version>${project.version}</version>
+<groupId>io.github.valtech-ch</groupId>
+<artifactId>saas-aem.ui.config</artifactId>
+<version>${project.version}</version>
 </dependency>
+```
+
+## Embedding in maven project
+
+If your project has similar structure to an aem archetype generated project, then update the pom.xml of your
+project's **all** module. Whether you choose [full](#full) or [partial](#partial) installation, add the appropriate
+dependencies. Configure the **filevault-package-maven-plugin** plugin accordingly.
+
+### Full
+
+```xml
+
+<embeddeds>
+  <embedded>
+    <groupId>io.github.valtech-ch</groupId>
+    <artifactId>saas-aem.all</artifactId>
+    <type>zip</type>
+    <target>/apps/vendor-packages/container/install</target>
+  </embedded>
+  ...
+</embeddeds>
+```
+
+### Partial
+
+```xml
+
+<embeddeds>
+  <embedded>
+    <groupId>io.github.valtech-ch</groupId>
+    <artifactId>saas-aem.api</artifactId>
+    <target>/apps/vendor-packages/application/install</target>
+  </embedded>
+  <embedded>
+    <groupId>io.github.valtech-ch</groupId>
+    <artifactId>saas-aem.core</artifactId>
+    <target>/apps/vendor-packages/application/install</target>
+  </embedded>
+  <embedded>
+    <groupId>io.github.valtech-ch</groupId>
+    <artifactId>saas-aem.api</artifactId>
+    <target>/apps/vendor-packages/application/install</target>
+  </embedded>
+  ...
+</embeddeds>
 ```
 
 ## Uninstall
@@ -141,14 +187,18 @@ Configurations are split in OSGi and Context-Aware.
 
 ## Context Aware configurations
 
-| Label | Name | Description | Required |
-| --- | :--- | :--- | :---:|
-| Search Index | index | Index defined in SaaS admin | x |
-| Search Project Id | projectId | Project identifier defined in SaaS admin | x |
-| Search Filters | searchFilters | Key/value pairs of **field name** and **value**
-| Search result highlight tag name | highlightTagName | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`)
-| Enable Best Bets | enableBestBets | Flag that enables displaying best bets on the top of the search results. Defaults to `false`
-| Enable Auto Suggest | enableAutoSuggest | Flag that enables auto suggest feature in the search component. Defaults to `true`
+| Label                            | Name                         | Description                                                                                                                | Required |
+|----------------------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------|:--------:|
+| Search Index                     | index                        | Index defined in SaaS admin                                                                                                |    x     |
+| Search Project Id                | projectId                    | Project identifier defined in SaaS admin                                                                                   |    x     |
+| Search Filters                   | searchFilters                | Key/value pairs of **field name** and **
+value**                                                                            |          |
+| Search result highlight tag name | highlightTagName             | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`) |          |
+| Enable Best Bets                 | enableBestBets               | Flag that enables displaying best bets on the top of the search results. Defaults to `false`                               |          |
+| Enable Auto Suggest              | enableAutoSuggest            | Flag that enables auto suggest feature in the search component. Defaults to `true`                                         |          |
+| Enable Autocomplete              | enableAutocomplete           | Flag that enables autocomplete feature in the search input. Defaults to `true`                                             |          |
+| Autocomplete Trigger Threshold   | autocompleteTriggerThreshold | The minimum number of search input characters required for displaying autocomplete options.                                |          |
+| Autocomplete options Max Limit   | autocompleteOptionsMax       | The maximum number of autocomplete options displayed.                                                                      |          |
 
 # Components
 

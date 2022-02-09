@@ -61,6 +61,9 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
     @Getter
     private String autocompleteUrl;
 
+    @Getter
+    private int autocompleteTriggerThreshold;
+
     @JsonIgnore
     @Getter
     private String configJson;
@@ -95,6 +98,7 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
         getSearchPageResource().ifPresent(r -> searchPageResource = r);
         getSearchModel().ifPresent(search -> searchModel = search);
         retrieveAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
+        getAutocompleteThreshold().ifPresent(threshold -> autocompleteTriggerThreshold = threshold);
         resolveSearchFieldPlaceholderText().ifPresent(s -> searchFieldPlaceholderText = s);
         createSearchPageUrl().ifPresent(s -> searchUrl = s);
         configJson = getSearchConfigJson();
@@ -160,5 +164,9 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
     @Override
     public String getId() {
         return ResourceUtil.generateId("saas", resource.getPath());
+    }
+
+    private Optional<Integer> getAutocompleteThreshold() {
+        return Optional.ofNullable(searchModel).map(SearchModel::getAutocompleteTriggerThreshold);
     }
 }

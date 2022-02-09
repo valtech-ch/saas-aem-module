@@ -52,4 +52,25 @@ public interface SearchCAConfigurationModel {
      * @return true if enabled.
      */
     boolean isAutoSuggestEnabled();
+
+    /**
+     * Checks whether autocomplete feature is enabled.
+     *
+     * @return true if enabled.
+     */
+    boolean isAutocompleteEnabled();
+
+    /**
+     * Gets the autocomplete init threshold.
+     *
+     * @return positive integer.
+     */
+    int getAutocompleteThreshold();
+
+    /**
+     * Gets the autocomplete max total allowed.
+     *
+     * @return positive integer.
+     */
+    int getAutocompleteResultsMaxTotal();
 }

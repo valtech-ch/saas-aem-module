@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.day.cq.i18n.I18n;
-import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -53,7 +53,8 @@ class SearchRedirectModelImplTest {
         context.currentResource(
                 "/content/saas-aem-module/us/en/searchredirect/jcr:content/root/container/searchredirect");
         testAdaptable();
-        assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
+        assertThat(testee.getAutocompleteTriggerThreshold(),
+                   is(SearchConfiguration.DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD));
         assertThat(testee.getAutocompleteUrl(),
                    is("/content/saas-aem-module/us/en/jcr:content/root/container/container/search.autocomplete.json"));
         assertThat(testee.getSearchUrl(), is("/content/saas-aem-module/us/en.html"));
