@@ -7,7 +7,10 @@ import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.resource.MockPathTransformer;
 import io.wcm.testing.mock.aem.junit5.AemContext;
+import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
+import org.apache.sling.testing.mock.caconfig.ContextPlugins;
+import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +30,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
 class SearchRedirectModelImplTest {
 
-    private final AemContext context = new AemContext();
-
-
+    private final AemContext context = new AemContextBuilder()
+            .plugin(ContextPlugins.CACONFIG)
+            .build();
     @Mock
     I18nProvider i18nProvider;
 
@@ -45,6 +48,7 @@ class SearchRedirectModelImplTest {
         context.registerService(PathTransformer.class, new MockPathTransformer());
         context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
         context.load().json("/content/searchredirect/content.json", "/content/saas-aem-module/us/en/searchredirect");
+        MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
     }
 
     @Test
