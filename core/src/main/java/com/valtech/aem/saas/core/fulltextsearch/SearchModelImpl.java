@@ -194,13 +194,13 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private List<SearchTabModel> getSearchTabList() {
-        if (request != null) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
             return searchTabResources.stream()
-                    .map(r -> modelFactory.getModelFromWrappedRequest(request,
-                            r,
-                            SearchTabModel.class))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                                     .map(r -> modelFactory.getModelFromWrappedRequest(request,
+                                                                                       r,
+                                                                                       SearchTabModel.class))
+                                     .filter(Objects::nonNull)
+                                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -244,21 +244,23 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private ConnectionFailedAlert resolveConnectionFailedAlert() {
-        if (searchCAConfigurationModel == null) {
-            log.error("Can not resolve context aware search configuration model.");
-            return new ConnectionFailedAlert(AlertVariant.WARNING,
-                                             Collections.singletonList(i18n.get(
-                                                     I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE,
-                                                     null,
-                                                     resource.getPath())));
-        }
-        boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
-        if (!pingSuccess) {
-            return new ConnectionFailedAlert(AlertVariant.ERROR,
-                                             Arrays.asList(i18n.get(
-                                                                   I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
-                                                           i18n.get(
-                                                                   I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
+            if (searchCAConfigurationModel == null) {
+                log.error("Can not resolve context aware search configuration model.");
+                return new ConnectionFailedAlert(AlertVariant.WARNING,
+                                                 Collections.singletonList(i18n.get(
+                                                         I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE,
+                                                         null,
+                                                         resource.getPath())));
+            }
+            boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
+            if (!pingSuccess) {
+                return new ConnectionFailedAlert(AlertVariant.ERROR,
+                                                 Arrays.asList(i18n.get(
+                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
+                                                               i18n.get(
+                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
+            }
         }
         return null;
     }
@@ -266,5 +268,13 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     private Optional<Integer> getAutocompleteThreshold() {
         return Optional.ofNullable(searchCAConfigurationModel)
                        .map(SearchCAConfigurationModel::getAutocompleteThreshold);
+    }
+
+    private boolean isResourceOverriddenRequest() {
+        return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
+    }
+
+    private boolean isResolvedFromRequest() {
+        return request != null;
     }
 }
