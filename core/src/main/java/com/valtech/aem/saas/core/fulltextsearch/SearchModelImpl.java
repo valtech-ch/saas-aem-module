@@ -215,9 +215,8 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
                                                      url,
                                                      AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
                                                      AutocompleteServlet.EXTENSION_JSON));
-        } else {
-            log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
         }
+        log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
         return Optional.empty();
     }
 
@@ -253,18 +252,13 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
                                                      null,
                                                      resource.getPath())));
         }
-        try {
-            boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
-            if (!pingSuccess) {
-                return new ConnectionFailedAlert(AlertVariant.ERROR,
-                                                 Arrays.asList(i18n.get(
-                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
-                                                               i18n.get(
-                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return new ConnectionFailedAlert(AlertVariant.WARNING, Collections.singletonList(e.getMessage()));
+        boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
+        if (!pingSuccess) {
+            return new ConnectionFailedAlert(AlertVariant.ERROR,
+                                             Arrays.asList(i18n.get(
+                                                                   I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
+                                                           i18n.get(
+                                                                   I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
         }
         return null;
     }
