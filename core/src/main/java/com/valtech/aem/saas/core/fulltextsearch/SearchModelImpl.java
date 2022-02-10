@@ -246,7 +246,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private ConnectionFailedAlert resolveConnectionFailedAlert() {
         if (searchCAConfigurationModel == null) {
-            log.warn("Can not resolve context aware search configuration model.");
+            log.error("Can not resolve context aware search configuration model.");
             return new ConnectionFailedAlert(AlertVariant.WARNING,
                                              Collections.singletonList(i18n.get(
                                                      I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE,

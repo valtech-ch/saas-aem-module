@@ -61,7 +61,9 @@ public interface SearchCAConfigurationModel {
     boolean isAutocompleteEnabled();
 
     /**
-     * Gets the autocomplete init threshold.
+     * Gets the autocomplete trigger threshold.
+     * That is the minimum number of characters entered before displaying a selection of autocomplete
+     * options/suggestions.
      *
      * @return positive integer.
      */
