@@ -1,14 +1,35 @@
-# WKND sample styling
+# WKND sample styleguide
+
+The information provided here aims at showing how to structure and implement your styles. However, feel free to organize the way that fits your project.
+
+## Table of Contents
+
+- [Files](#files)
+- [Classes](#classes)
+
+## Files
+
+Use the following files in order to update according to your UI needs. Filenames are self-explanatory.
+
+- \_animation.scss
+- \_breakpoints.scss
+- \_colors.scss
+- \_media_queries.scss
+- \_spacing.scss
+- \_typography.scss
+
+They are all imported in \_wkndsample.scss.
 
 ## Classes
 
-Below are all the class definitons that can be styled as needed
+Below are all the classes that are used in the SAAS module and can be styled.
 
-### Input search field
+### Form and search input
 
 ```
 .cmp-saas__form {}
-.cmp-saas__form .search-input {}
+.cmp-saas__search-input-wrapper {}
+.cmp-saas__search-input {}
 ```
 
 ### Results container
@@ -49,13 +70,9 @@ Below are all the class definitons that can be styled as needed
 .cmp-saas__load-more-button {}
 ```
 
-### Search form wrapper
+### Autosuggest
 
-```
-.cmp-saas__autocomplete-wrapper {}
-```
-
-### Autosuggest when query is mispelled
+For when query is mispelled. The application will offer alternatives words.
 
 ```
 cmp-saas__autosuggest {}
