@@ -126,8 +126,7 @@
   .cmp-saas__results-item-title {
     @include typography(lg);
     color: $color-5;
-    margin-top: spacing(2);
-    margin-bottom: spacing(2);
+    margin: spacing(2) 0;
 
     &::after {
       display: block;
