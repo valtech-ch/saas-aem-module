@@ -221,6 +221,7 @@
     left: 0;
     right: 0;
     box-shadow: 0 spacing() spacing(2) 0 $color-10;
+    background-color: $color-1;
   }
   #suggestions .saas-suggestions-element {
     @include typography(md);
@@ -242,6 +243,11 @@
     background-color: $color-12;
     color: $color-2;
   }
+
+  #suggestions .saas-suggestions-element__matched-query {
+    font-weight: $typography-weight-bold;
+  }
+
   .saas-facets-groups {
     grid-area: facetsGroup;
     background-color: $color-7;

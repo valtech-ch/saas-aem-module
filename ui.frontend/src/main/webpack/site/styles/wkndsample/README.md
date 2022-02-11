@@ -61,6 +61,7 @@ Below are all the class definitons that can be styled as needed
 #suggestions {}
 #suggestions .saas-suggestions-element {}
 #suggestions .saas-suggestions-element--active {}
+#suggestions .saas-suggestions-element__matched-query {}
 ```
 
 ### Facets groups

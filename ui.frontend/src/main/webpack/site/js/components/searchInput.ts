@@ -79,7 +79,7 @@ const buildSuggestionElements = ({
   results.forEach((result) => {
     const cleanAndFormatResult = cleanString(result).replace(
       regexp,
-      `<b>${query}</b>`,
+      `<span class="saas-suggestions-element__matched-query">${query}</span>`,
     )
     const suggestionDropdownElement = document.createElement('div')
     suggestionDropdownElement.innerHTML = cleanAndFormatResult
