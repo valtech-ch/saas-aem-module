@@ -16,6 +16,10 @@ type BuildSearchResults = {
   searchContainer: HTMLDivElement
 }
 
+const CMP_SAAS_RESULTS_CLASS = 'cmp-saas__results'
+const CMP_SAAS_RESULTS_SHOW_CLASS = `${CMP_SAAS_RESULTS_CLASS}--show`
+const CMP_SAAS_RESULTS_HIDE_CLASS = `${CMP_SAAS_RESULTS_CLASS}--hide`
+
 const buildSearchResultsTab = ({
   tabResult,
   searchValue,
@@ -99,12 +103,16 @@ const buildSearchResultsTab = ({
       searchResults?.appendChild(loadMoreButton)
     }
 
-    searchResults.dataset.selected = 'true'
     if (searchContainer?.dataset.selectedTab !== tabId) {
-      // overwrite display: grid !important set on .cmp-saas__results
-      searchResults.style.setProperty('display', 'none', 'important')
+      searchResults.classList.remove(CMP_SAAS_RESULTS_SHOW_CLASS)
+      searchResults.classList.add(CMP_SAAS_RESULTS_HIDE_CLASS)
       searchResults.dataset.selected = 'false'
+      return
     }
+
+    searchResults.dataset.selected = 'true'
+    searchResults.classList.remove(CMP_SAAS_RESULTS_HIDE_CLASS)
+    searchResults.classList.add(CMP_SAAS_RESULTS_SHOW_CLASS)
   }
 }
 

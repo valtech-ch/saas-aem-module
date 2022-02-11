@@ -33,6 +33,10 @@ export type Tab = {
   facetFilters?: FacetFilters
 }
 
+const CMP_SAAS_RESULTS_CLASS = 'cmp-saas__results'
+const CMP_SAAS_RESULTS_SHOW_CLASS = `${CMP_SAAS_RESULTS_CLASS}--show`
+const CMP_SAAS_RESULTS_HIDE_CLASS = `${CMP_SAAS_RESULTS_CLASS}--hide`
+
 const buildSearchTab = ({
   tabId,
   title,
@@ -64,12 +68,13 @@ const buildSearchTab = ({
       const tabElement = tab
 
       if (tabElement.dataset.tab === tabId) {
-        tabElement.style.display = 'block'
+        tabElement.classList.add(CMP_SAAS_RESULTS_SHOW_CLASS)
+        tabElement.classList.remove(CMP_SAAS_RESULTS_HIDE_CLASS)
         return
       }
 
-      // overwrite display: grid !important set on .cmp-saas__results
-      tabElement.style.setProperty('display', 'none', 'important')
+      tabElement.classList.remove(CMP_SAAS_RESULTS_SHOW_CLASS)
+      tabElement.classList.add(CMP_SAAS_RESULTS_HIDE_CLASS)
     })
   })
 
