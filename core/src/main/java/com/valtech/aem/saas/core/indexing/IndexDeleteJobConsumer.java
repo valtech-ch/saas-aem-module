@@ -27,11 +27,13 @@ public class IndexDeleteJobConsumer extends AbstractIndexUpdateActionJobConsumer
 
     @Override
     protected JobResult processJob(String url, String repositoryPath) {
+        log.debug("Processing 'Index Delete' Job with url: {} and repository path: {}", url, repositoryPath);
         Optional<IndexUpdateResponseDTO> response = indexUpdateService.deleteIndexedUrl(url, repositoryPath);
         if (response.isPresent()) {
             log.debug("Index delete successful: {}", response.get());
             return JobResult.OK;
         }
+        log.debug("Index delete request to SaaS has failed.");
         return JobResult.FAILED;
     }
 

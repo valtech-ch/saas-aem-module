@@ -27,11 +27,13 @@ public class IndexUpdateJobConsumer extends AbstractIndexUpdateActionJobConsumer
 
     @Override
     protected JobResult processJob(String url, String repositoryPath) {
+        log.debug("Processing 'Index Update' Job with url: {} and repository path: {}", url, repositoryPath);
         Optional<IndexUpdateResponseDTO> response = indexUpdateService.indexUrl(url, repositoryPath);
         if (response.isPresent()) {
             log.debug("Index update successful: {}", response.get());
             return JobResult.OK;
         }
+        log.debug("Index update request to SaaS has failed.");
         return JobResult.FAILED;
     }
 }

@@ -113,6 +113,7 @@ public class PageIndexUpdateHandler implements EventHandler {
             log.info("Not able to resolve jobTopic for {}", indexUpdateAction);
             return;
         }
+        log.debug("Scheduling job {}, with properties {}.", jobTopic, properties);
         Job job = jobManager.createJob(jobTopic).properties(properties).add(errorMessages);
         log.info("Added job: {}, Errors: {}", job.getId(), errorMessages);
     }

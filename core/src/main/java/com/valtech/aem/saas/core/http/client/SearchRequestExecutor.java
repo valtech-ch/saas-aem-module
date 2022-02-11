@@ -31,7 +31,7 @@ public final class SearchRequestExecutor {
             log.debug("Reason: {}", response.getStatusLine().getReasonPhrase());
             boolean isSuccess = isRequestSuccessful(searchRequest, response);
             HttpResponseParser httpResponseParser = new HttpResponseParser(response);
-            if (isSuccess && log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Response content: {}", httpResponseParser.getContentString());
             }
             JsonElement jsonResponse = httpResponseParser.toGsonModel(JsonElement.class);
