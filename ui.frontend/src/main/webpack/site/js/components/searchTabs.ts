@@ -82,8 +82,9 @@ const buildSearchTab = ({
 }
 
 export const removeAutosuggest = (searchContainer: HTMLDivElement): void => {
-  const autoSuggestElement =
-    searchContainer.querySelector<HTMLDivElement>('.saas-autosuggest')
+  const autoSuggestElement = searchContainer.querySelector<HTMLDivElement>(
+    '.cmp-saas__autosuggest',
+  )
 
   autoSuggestElement?.remove()
 }

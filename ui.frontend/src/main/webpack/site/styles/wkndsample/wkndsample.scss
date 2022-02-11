@@ -203,7 +203,7 @@
       width: 250px;
     }
   }
-  .cmp-saas__autocomplete {
+  .cmp-saas__autocomplete-wrapper {
     position: relative;
     display: inline-block;
 
@@ -223,7 +223,7 @@
     box-shadow: 0 spacing() spacing(2) 0 $color-10;
     background-color: $color-1;
   }
-  #suggestions .saas-suggestions-element {
+  .cmp-saas__suggestion-element {
     @include typography(md);
     color: $color-5;
     padding: spacing(2);
@@ -235,20 +235,19 @@
     @media #{$mq-45} {
       &:hover {
         background-color: $color-5;
-        color: $color-11;
       }
     }
   }
-  #suggestions .saas-suggestions-element--active {
+  .cmp-saas__suggestion-element--active {
     background-color: $color-12;
     color: $color-2;
   }
 
-  #suggestions .saas-suggestions-element__matched-query {
+  .cmp-saas__suggestion-element--matched-query {
     font-weight: $typography-weight-bold;
   }
 
-  .saas-facets-groups {
+  .cmp-sass__facets-groups {
     grid-area: facetsGroup;
     background-color: $color-7;
     border-radius: 4px;
@@ -258,22 +257,22 @@
     height: fit-content;
     min-width: 150px;
   }
-  .saas-facets-group {
+  .cmp-sass__facets-group {
     margin-bottom: spacing(4);
   }
-  .saas-facets-group__title {
+  .cmp-sass__facets-group-title {
     color: $color-5;
     margin: 0;
   }
-  .saas-facet {
+  .cmp-sass__facet {
     margin-top: spacing();
     color: $color-5;
   }
-  .saas-facet-label {
+  .cmp-sass__facet-label {
     cursor: pointer;
     margin-left: spacing();
   }
-  .saas-facet--no-result {
+  .cmp-sass__facet--no-result {
     pointer-events: none;
     color: $color-13;
   }
@@ -300,7 +299,7 @@
       }
     }
 
-    &__autocomplete {
+    &__autocomplete-wrapper {
       float: left;
     }
   }

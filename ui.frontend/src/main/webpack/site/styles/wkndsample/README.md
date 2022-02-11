@@ -49,33 +49,45 @@ Below are all the class definitons that can be styled as needed
 .cmp-saas__load-more-button {}
 ```
 
-### Search form container
+### Search form wrapper
 
 ```
-.cmp-saas__autocomplete {}
+.cmp-saas__autocomplete-wrapper {}
+```
+
+### Autosuggest when query is mispelled
+
+```
+cmp-saas__autosuggest {}
+```
+
+### Not found result
+
+```
+cmp-saas__not-found {}
 ```
 
 ### Typeahead suggestion
 
 ```
 #suggestions {}
-#suggestions .saas-suggestions-element {}
-#suggestions .saas-suggestions-element--active {}
-#suggestions .saas-suggestions-element__matched-query {}
+.cmp-saas__suggestions-element {}
+.cmp-saas__suggestions-element--active {}
+.cmp-saas__suggestions-element--matched-query {}
 ```
 
 ### Facets groups
 
 ```
-.saas-facets-groups {}
-.saas-facets-group {}
-.saas-facets-group__title {}
+.cmp-sass__facets-groups {}
+.cmp-sass__facets-group {}
+.cmp-sass__facets-group-title {}
 ```
 
 ### Facet
 
 ```
-.saas-facet {}
-.saas-facet-label {}
-.saas-facet--no-result {}
+.cmp-sass__facet {}
+.cmp-sass__facet-label {}
+.cmp-sass__facet--no-result {}
 ```

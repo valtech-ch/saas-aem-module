@@ -66,7 +66,7 @@ const buildSearchResultsTab = ({
     )
 
     const facetsGroups = document.createElement('div')
-    facetsGroups.classList.add('saas-facets-groups')
+    facetsGroups.classList.add('cmp-sass__facets-groups')
 
     facetFilters?.items.forEach((facetFilter) => {
       const facetsGroup = buildFacetsGroup({

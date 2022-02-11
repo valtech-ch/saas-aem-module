@@ -89,7 +89,7 @@ export const triggerSearch = async (
 
   if (isRemoveSaasNotFound) {
     searchFormParent
-      ?.querySelectorAll('.saas-not-found')
+      ?.querySelectorAll('.cmp-saas__not-found')
       ?.forEach((item) => item.remove())
   }
 
@@ -100,11 +100,12 @@ export const triggerSearch = async (
     )
     searchFormParent?.append(autoSuggestElement)
   }
-  const notFoundElementExists =
-    searchFormParent?.querySelector('.saas-not-found')
+  const notFoundElementExists = searchFormParent?.querySelector(
+    '.cmp-saas__not-found',
+  )
   if (isDisplayNotFound && !notFoundElementExists) {
     const notFoundElement = document.createElement('div')
-    notFoundElement.classList.add('saas-not-found')
+    notFoundElement.classList.add('cmp-saas__not-found')
     notFoundElement.innerText = noResultsText
     searchFormParent.appendChild(notFoundElement)
   }

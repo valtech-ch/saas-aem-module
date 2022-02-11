@@ -8,7 +8,7 @@ const buildSearchSuggestion = (
   suggestionUrl.searchParams.set(QUERY_PARAM_SEARCH_TERM, suggestionText)
 
   const autoSuggestElement = document.createElement('div')
-  autoSuggestElement.classList.add('saas-autosuggest')
+  autoSuggestElement.classList.add('cmp-saas__autosuggest')
 
   const autoSuggestLink = document.createElement('a')
   autoSuggestLink.innerText = `${autoSuggestText} ${suggestionText}`

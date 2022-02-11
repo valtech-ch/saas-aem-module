@@ -21,7 +21,7 @@ type SearchInputOptions = {
 const SUGGESTION_DROPDOWN_ID = 'suggestions'
 const SEARCH_INPUT_CLASS = 'search-input'
 const SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS = '.cmp-saas__form #suggestions'
-const SUGGESTION_ELEMENT_CLASS = 'saas-suggestions-element'
+const SUGGESTION_ELEMENT_CLASS = 'cmp-saas__suggestion-element'
 const ACTIVE_SUGGESTION_ELEMENT_CLASS = `${SUGGESTION_ELEMENT_CLASS}--active`
 
 const setSaasCurrentFocusSuggestion = (
@@ -79,7 +79,7 @@ const buildSuggestionElements = ({
   results.forEach((result) => {
     const cleanAndFormatResult = cleanString(result).replace(
       regexp,
-      `<span class="saas-suggestions-element__matched-query">${query}</span>`,
+      `<span class="cmp-saas__suggestion-element--matched-query">${query}</span>`,
     )
     const suggestionDropdownElement = document.createElement('div')
     suggestionDropdownElement.innerHTML = cleanAndFormatResult
