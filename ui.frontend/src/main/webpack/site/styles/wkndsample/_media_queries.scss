@@ -1,0 +1,42 @@
+// ##################
+// Sample breakpoints
+// ##################
+$breakpoint-1: 544px !default;
+$breakpoint-2: 769px !default;
+$breakpoint-3: 992px !default;
+$breakpoint-4: 1200px !default;
+$breakpoint-5: 1440px !default;
+$breakpoint-6: 1990px !default;
+
+// ###############
+// mobile portrait
+// ###############
+$mq-1: 'only screen and (max-width: #{$breakpoint-1 - 1px})';
+
+// ###########
+// mobile wide
+// ###########
+$mq-2: 'only screen and (min-width: #{$breakpoint-1}) and (max-width: #{$breakpoint-2 - 1px})';
+
+// ###############
+// tablet portrait
+// ###############
+$mq-3: 'only screen and (min-width: #{$breakpoint-2}) and (max-width: #{$breakpoint-3 - 1px})';
+
+// ###########################
+// desktop or tablet landscape
+// ###########################
+$mq-4: 'only screen and (min-width: #{$breakpoint-3}) and (max-width: #{$breakpoint-4 - 1px})';
+
+// ##########
+// widescreen
+// ##########
+$mq-5: 'only screen and (min-width: #{$breakpoint-4})';
+
+// #########################
+// combine and easier to use
+// #########################
+$mq-12: 'only screen and (max-width: #{$breakpoint-2 - 1px})';
+$mq-123: 'only screen and (max-width: #{$breakpoint-3 - 1px})';
+$mq-45: 'only screen and (min-width: #{$breakpoint-3})';
+$mq-345: 'only screen and (min-width: #{$breakpoint-2})';
