@@ -17,7 +17,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            .cmp-saas__autocomplete-wrapper{
+            .cmp-saas__search-input-wrapper{
                position: relative;
                display: inline-block;
             }

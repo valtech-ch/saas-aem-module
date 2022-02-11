@@ -1,12 +1,4 @@
-// ##################
-// Sample breakpoints
-// ##################
-$breakpoint-1: 544px !default;
-$breakpoint-2: 769px !default;
-$breakpoint-3: 992px !default;
-$breakpoint-4: 1200px !default;
-$breakpoint-5: 1440px !default;
-$breakpoint-6: 1990px !default;
+@import './breakpoints';
 
 // ###############
 // mobile portrait
