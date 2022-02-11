@@ -77,7 +77,7 @@ public class DefaultSearchAdminRequestExecutorService implements SearchAdminRequ
                                             .basicAuthenticationEnabled(configuration.searchAdminRequestExecutorService_basicAuthentication_enable())
                                             .baseUrl(configuration.searchAdminRequestExecutorService_baseurl())
                                             .basicAuthenticationUser(configuration.searchAdminRequestExecutorService_basicAuthentication_user())
-                                            .basicAuthenticationUser(configuration.searchAdminRequestExecutorService_basicAuthentication_password())
+                                            .basicAuthenticationPassword(configuration.searchAdminRequestExecutorService_basicAuthentication_password())
                                             .ignoreSslEnabled(getSearchConnectionConfig().isIgnoreSslEnabled())
                                             .httpMaxTotalConnections(getSearchConnectionConfig().getHttpMaxTotalConnections())
                                             .httpMaxConnectionsPerRoute(getSearchConnectionConfig().getHttpMaxConnectionsPerRoute())

@@ -3,10 +3,14 @@ package com.valtech.aem.saas.core.indexing;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.resource.PathTransformer;
+import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
@@ -48,6 +52,9 @@ public class PageIndexUpdateHandler implements EventHandler {
     private JobManager jobManager;
 
     @Reference
+    private ResourceResolverProvider resourceResolverProvider;
+
+    @Reference
     private PathTransformer pathTransformer;
 
     @Override
@@ -58,8 +65,14 @@ public class PageIndexUpdateHandler implements EventHandler {
         }
         String actionPath = action.getPath();
         log.info("Replication action {} occurred on {}", action.getType(), actionPath);
-        pathTransformer.externalizeList(actionPath)
-                       .forEach(s -> scheduleJobForPath(s, action));
+        resourceResolverProvider.resourceResolverConsumer(resourceResolver -> {
+            if (isPage(resourceResolver, actionPath)) {
+                pathTransformer.externalizeList(resourceResolver, actionPath)
+                               .forEach(s -> scheduleJobForPath(s, action));
+            } else {
+                log.warn("{} is not a Page", actionPath);
+            }
+        });
     }
 
     private ReplicationAction getReplicationAction(Event event) {
@@ -112,5 +125,14 @@ public class PageIndexUpdateHandler implements EventHandler {
             return ReplicationEvent.fromEvent(event).getReplicationAction();
         }
         return null;
+    }
+
+    private boolean isPage(ResourceResolver resourceResolver, String pagePath) {
+        PageManager pageManager = resourceResolver.adaptTo(PageManager.class);
+        Page page = null;
+        if (pageManager != null) {
+            page = pageManager.getPage(pagePath);
+        }
+        return page != null;
     }
 }

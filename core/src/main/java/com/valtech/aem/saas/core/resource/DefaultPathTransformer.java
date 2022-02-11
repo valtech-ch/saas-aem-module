@@ -4,6 +4,7 @@ import com.day.cq.commons.Externalizer;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.propertytypes.ServiceDescription;
@@ -32,10 +33,20 @@ public class DefaultPathTransformer implements PathTransformer {
     }
 
     @Override
+    public List<String> externalizeList(ResourceResolver resourceResolver, String path) {
+        return Collections.singletonList(externalize(resourceResolver, path));
+    }
+
+    @Override
     public String externalize(
             SlingHttpServletRequest request,
             String path) {
-        return externalizer.publishLink(request.getResourceResolver(), path) + HTML_EXTENSION;
+        return externalize(request.getResourceResolver(), path);
+    }
+
+    @Override
+    public String externalize(ResourceResolver resourceResolver, String path) {
+        return externalizer.publishLink(resourceResolver, path) + HTML_EXTENSION;
     }
 
     @Override
