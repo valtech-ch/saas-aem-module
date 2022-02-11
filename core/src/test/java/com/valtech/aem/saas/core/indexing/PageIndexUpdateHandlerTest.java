@@ -3,8 +3,6 @@ package com.valtech.aem.saas.core.indexing;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
-import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
 import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.resource.ResourceResolverProviderService;
@@ -50,12 +48,6 @@ class PageIndexUpdateHandlerTest {
 
     @Mock
     ResourceResolver resourceResolver;
-
-    @Mock
-    PageManager pageManager;
-
-    @Mock
-    Page page;
 
     @Mock
     PathTransformer pathTransformer;
@@ -107,7 +99,6 @@ class PageIndexUpdateHandlerTest {
                                                                                             new String[]{"/foo/bar"})
                                                                                        .build()))
                                             .build());
-        when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenThrow(LoginException.class);
         testee.handleEvent(event);
         verify(jobManager, never()).createJob(anyString());
     }
@@ -121,24 +112,6 @@ class PageIndexUpdateHandlerTest {
                                             .put("userId", "foo")
                                             .put("path", "/foo/bar")
                                             .build());
-        when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenReturn(resourceResolver);
-        when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
-        testee.handleEvent(event);
-        verify(jobManager, never()).createJob(anyString());
-    }
-
-    @Test
-    void testHandleEvent_noContextResource(AemContext context) throws LoginException {
-        testee = context.registerInjectActivateService(new PageIndexUpdateHandler());
-        Event event = new Event(ReplicationAction.EVENT_TOPIC,
-                                ImmutableMap.<String, String>builder()
-                                            .put("type", "Activate")
-                                            .put("userId", "foo")
-                                            .put("path", "/foo/bar")
-                                            .build());
-        when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenReturn(resourceResolver);
-        when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
-        when(pageManager.getPage("/foo/bar")).thenReturn(page);
         testee.handleEvent(event);
         verify(jobManager, never()).createJob(anyString());
     }
@@ -150,11 +123,9 @@ class PageIndexUpdateHandlerTest {
                                 ImmutableMap.<String, String>builder()
                                             .put("type", "Deactivate")
                                             .put("userId", "foo")
-                                            .put("path", "/foo/bar")
+                                            .put("path", "/content/foo/bar")
                                             .build());
         when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenReturn(resourceResolver);
-        when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
-        when(pageManager.getPage("/foo/bar")).thenReturn(page);
         when(jobManager.createJob(anyString())).thenReturn(jobBuilder);
         when(jobBuilder.properties(anyMap())).thenReturn(jobBuilder);
         when(jobBuilder.add(anyList())).thenReturn(job);
