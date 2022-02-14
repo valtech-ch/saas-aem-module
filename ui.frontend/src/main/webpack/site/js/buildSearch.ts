@@ -76,7 +76,7 @@ export const buildSearch = async (
   if (searchButtonElement) {
     searchFormElement.appendChild(searchButtonElement)
   }
-  searchResetButton.classList.add('cmp-saas__search-clear-button--hide')
+  searchResetButton?.classList.add('cmp-saas__search-clear-button--hide')
   searchInputWrapper.appendChild(searchResetButton)
 
   const searchElementParent = searchElement.parentElement
@@ -90,7 +90,7 @@ export const buildSearch = async (
 
   if (searchValue) {
     searchInputElement.value = searchValue
-
+    searchResetButton?.classList.remove('cmp-saas__search-clear-button--hide')
     await triggerSearch(
       searchFormElement,
       searchInputElement,
