@@ -1,7 +1,7 @@
 const initSaasStyle = (): void => {
   document.styleSheets[0].insertRule(
     `
-            #suggestions {
+            .cmp-saas__suggestions {
               position: absolute;
               border: 1px solid #d4d4d4;
               border-bottom: none;
@@ -17,7 +17,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            .cmp-saas__search-input-wrapper{
+            .cmp-saas__search-input-wrapper {
                position: relative;
                display: inline-block;
             }
