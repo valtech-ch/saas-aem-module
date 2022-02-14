@@ -218,9 +218,24 @@ const buildSearchInput = ({
   })
 
   searchInput.addEventListener('input', (event) => {
+    const inputValue = (event?.target as HTMLInputElement)?.value
+    const searchClearButton = document.querySelector(
+      '.cmp-saas__search-clear-button',
+    )
+
+    if (searchClearButton) {
+      if (inputValue.length >= autocompleteTriggerThreshold) {
+        searchClearButton.classList.remove(
+          'cmp-saas__search-clear-button--hide',
+        )
+      } else {
+        searchClearButton.classList.add('cmp-saas__search-clear-button--hide')
+      }
+    }
+
     search(
       autocompleteUrl,
-      (event?.target as HTMLInputElement)?.value,
+      inputValue,
       autocompleteTriggerThreshold,
       searchInput,
       searchContainer,
