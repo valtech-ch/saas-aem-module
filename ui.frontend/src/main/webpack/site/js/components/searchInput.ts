@@ -222,16 +222,9 @@ const buildSearchInput = ({
     const searchClearButton = document.querySelector(
       '.cmp-saas__search-clear-button',
     )
-
-    if (searchClearButton) {
-      if (inputValue.length >= autocompleteTriggerThreshold) {
-        searchClearButton.classList.remove(
-          'cmp-saas__search-clear-button--hide',
-        )
-      } else {
-        searchClearButton.classList.add('cmp-saas__search-clear-button--hide')
-      }
-    }
+    const action =
+      inputValue.length >= autocompleteTriggerThreshold ? 'remove' : 'add'
+    searchClearButton?.classList[action]('cmp-saas__search-clear-button--hide')
 
     search(
       autocompleteUrl,
