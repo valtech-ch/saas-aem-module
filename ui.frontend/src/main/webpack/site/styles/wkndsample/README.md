@@ -87,7 +87,7 @@ cmp-saas__not-found {}
 ### Typeahead suggestion
 
 ```
-.cmp-saas__suggestions {}
+#cmp-saas-suggestions {}
 .cmp-saas__suggestions-element {}
 .cmp-saas__suggestions-element--active {}
 .cmp-saas__suggestions-element--matched-query {}
