@@ -17,7 +17,7 @@
   - [OSGi configurations](#osgi-configurations)
   - [Context Aware configurations](#context-aware-configurations)
 - [Components](#components)
-  - [New approach](#new-approach)
+  - [Rendering](#rendering)
   - [Available components](#available-components)
 - [License](#license)
 - [Developers](#developers)
@@ -191,8 +191,7 @@ Configurations are split in OSGi and Context-Aware.
 |----------------------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------|:--------:|
 | Search Index                     | index                        | Index defined in SaaS admin                                                                                                |    x     |
 | Search Project Id                | projectId                    | Project identifier defined in SaaS admin                                                                                   |    x     |
-| Search Filters                   | searchFilters                | Key/value pairs of **field name** and **
-value**                                                                            |          |
+| Search Filters                   | searchFilters                | Key/value pairs of **field name** and **value**                                                                            |          |
 | Search result highlight tag name | highlightTagName             | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`) |          |
 | Enable Best Bets                 | enableBestBets               | Flag that enables displaying best bets on the top of the search results. Defaults to `false`                               |          |
 | Enable Auto Suggest              | enableAutoSuggest            | Flag that enables auto suggest feature in the search component. Defaults to `true`                                         |          |
@@ -202,7 +201,7 @@ value**                                                                         
 
 # Components
 
-## New approach
+## Rendering
 
 Conceptually what differs from the standard way of developing aem components (with HTL) is that the markup rendering is
 now moved in the `ui.frontend` module, and is dynamically generated with javascript. The HTL script is only rendering a
