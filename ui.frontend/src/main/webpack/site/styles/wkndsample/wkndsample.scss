@@ -4,6 +4,8 @@
 @import './spacing';
 @import './animation';
 
+$search-clear-button-sizes: 20px;
+
 .search {
   * {
     font-family: $typography-font;
@@ -301,4 +303,41 @@
       float: left;
     }
   }
+}
+
+.cmp-saas__search-clear-button {
+  position: absolute;
+  right: spacing(5);
+  top: 50%;
+  width: $search-clear-button-sizes;
+  height: $search-clear-button-sizes;
+  transform: translateY(-50%);
+  z-index: 1;
+  opacity: 0.8;
+  cursor: pointer;
+  .search-redirect & {
+    display: none;
+  }
+}
+.cmp-saas__search-clear-button:hover,
+.cmp-saas__search-clear-button:focus {
+  opacity: 1;
+}
+.cmp-saas__search-clear-button:before,
+.cmp-saas__search-clear-button:after {
+  position: absolute;
+  left: spacing(3);
+  content: ' ';
+  height: $search-clear-button-sizes;
+  width: 2px;
+  background-color: $color-5;
+}
+.cmp-saas__search-clear-button:before {
+  transform: rotate(45deg);
+}
+.cmp-saas__search-clear-button:after {
+  transform: rotate(-45deg);
+}
+.cmp-saas__search-clear-button--hide {
+  display: none;
 }

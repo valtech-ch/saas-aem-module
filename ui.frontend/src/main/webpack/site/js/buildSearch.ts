@@ -1,3 +1,4 @@
+import { buildSearchClearButton } from './components/buildSearchClearButton'
 import buildSearchButton from './components/searchButton'
 import buildSearchForm, {
   addEventToSearchForm,
@@ -38,6 +39,7 @@ export const buildSearch = async (
   searchContainer.classList.add('cmp-saas')
 
   const searchFormElement = buildSearchForm()
+  const searchResetButton = buildSearchClearButton()
   const searchInputWrapper = document.createElement('div')
   searchInputWrapper.classList.add('cmp-saas__search-input-wrapper')
 
@@ -74,6 +76,8 @@ export const buildSearch = async (
   if (searchButtonElement) {
     searchFormElement.appendChild(searchButtonElement)
   }
+  searchResetButton.classList.add('cmp-saas__search-clear-button--hide')
+  searchInputWrapper.appendChild(searchResetButton)
 
   const searchElementParent = searchElement.parentElement
   searchElementParent?.replaceChild(searchContainer, searchElement)

@@ -63,11 +63,12 @@ Below are all the classes that are used in the SAAS module and can be styled.
 .cmp-saas__tab {}
 ```
 
-### Search and load more buttons
+### Search, load more and reset buttons
 
 ```
 .cmp-saas__button {}
 .cmp-saas__load-more-button {}
+.cmp-saas__search-clear-button {}
 ```
 
 ### Autosuggest
