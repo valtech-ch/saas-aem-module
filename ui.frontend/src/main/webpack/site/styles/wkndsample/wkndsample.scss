@@ -315,9 +315,6 @@ $search-clear-button-sizes: 20px;
   z-index: 1;
   opacity: 0.8;
   cursor: pointer;
-  .search-redirect & {
-    display: none;
-  }
 }
 .cmp-saas__search-clear-button:hover,
 .cmp-saas__search-clear-button:focus {
