@@ -4,7 +4,6 @@ import com.adobe.cq.export.json.ComponentExporter;
 import com.day.cq.i18n.I18n;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
-import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
@@ -60,6 +59,7 @@ class SearchModelImplTest {
         when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
         when(i18n.get(SearchModelImpl.I18N_SEARCH_SUGGESTION_TEXT)).thenReturn("Did you mean");
         when(i18n.get(SearchModelImpl.I18N_SEARCH_NO_RESULTS_TEXT)).thenReturn("No results.");
+
         context.registerService(FulltextSearchPingService.class, fulltextSearchPingService);
         context.registerService(PathTransformer.class, pathTransformer);
         context.registerService(I18nProvider.class, i18nProvider);
@@ -68,16 +68,24 @@ class SearchModelImplTest {
         context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
         context.currentPage("/content/saas-aem-module/us/en");
         context.currentResource("/content/saas-aem-module/us/en/jcr:content/root/container/container/search");
+        context.requestPathInfo()
+               .setResourcePath("/content/saas-aem-module/us/en/jcr:content/root/container/container/search");
         MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
     }
 
     @Test
     void testAdaptRequest() {
+        when(i18n.get(SearchModelImpl.I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION)).thenReturn(
+                "Check osgi configs.");
+        when(i18n.get(SearchModelImpl.I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)).thenReturn(
+                "Check log files");
         when(pathTransformer.map(any(SlingHttpServletRequest.class),
-                                 eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab"))).thenReturn(
+                                 eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search" +
+                                            "/search-tabs/searchtab"))).thenReturn(
                 "foo");
         when(pathTransformer.map(any(SlingHttpServletRequest.class),
-                                 eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab_2"))).thenReturn(
+                                 eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search" +
+                                            "/search-tabs/searchtab_2"))).thenReturn(
                 "bar");
         when(pathTransformer.map(any(SlingHttpServletRequest.class),
                                  eq("/content/saas-aem-module/us/en/jcr:content/root/container/container/search"))).thenReturn(
@@ -114,7 +122,8 @@ class SearchModelImplTest {
         assertThat(testee.getResultsPerPage(), is(15));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
         assertThat(testee.getFilters(), IsEmptyCollection.empty());
-        assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
+        assertThat(testee.getAutocompleteTriggerThreshold(),
+                   is(SearchConfiguration.DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD));
         assertThat(testee.getId(), not(isEmptyString()));
     }
 

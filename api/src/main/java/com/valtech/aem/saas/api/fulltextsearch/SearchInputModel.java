@@ -4,19 +4,13 @@ package com.valtech.aem.saas.api.fulltextsearch;
  * Interface of a component containing search input field.
  */
 public interface SearchInputModel {
-    /**
-     * The minimum search term length for which autocomplete is performed
-     */
-    int AUTOCOMPLETE_THRESHOLD = 3;
 
     /**
      * Gets the autocomplete trigger threshold.
      *
      * @return min number of chars typed before triggering the autocomplete.
      */
-    default int getAutocompleteTriggerThreshold() {
-        return AUTOCOMPLETE_THRESHOLD;
-    }
+    int getAutocompleteTriggerThreshold();
 
     /**
      * Gets the search configuration in a json format. In this format, the configs are used by the FE.

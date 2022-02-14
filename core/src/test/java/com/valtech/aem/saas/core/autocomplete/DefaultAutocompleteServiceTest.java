@@ -26,14 +26,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -97,15 +93,17 @@ class DefaultAutocompleteServiceTest {
     @Test
     void testGetResults() {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "bar");
+                                                  "index", "bar", "autocompleteOptionsMax", 5);
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
-                Optional.of(new SearchResponse(new JsonParser().parse(
-                                new InputStreamReader(getClass().getResourceAsStream("/__files/search/typeahead/success.json")))
-                        .getAsJsonObject(), true)));
-        assertThat(service.getResults(searchCAConfigurationModel, "foo bar", "en",
-                                      new HashSet<>(Collections.singletonList(new SimpleFilter("foo", "bar")))),
-                   is(not(empty())));
+                Optional.of(new SearchResponse(new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(
+                        "/__files/search/typeahead/success.json"))).getAsJsonObject(), true)));
+        List<String> results = service.getResults(searchCAConfigurationModel,
+                                                  "foo bar",
+                                                  "en",
+                                                  new HashSet<>(Collections.singletonList(new SimpleFilter("foo",
+                                                                                                           "bar"))));
+        assertThat(results.size(), is(5));
     }
 
     @Test

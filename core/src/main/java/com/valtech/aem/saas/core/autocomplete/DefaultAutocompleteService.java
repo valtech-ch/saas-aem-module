@@ -24,6 +24,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component(service = AutocompleteService.class)
@@ -56,10 +57,13 @@ public class DefaultAutocompleteService implements AutocompleteService {
                 getApiUrl(index) + getQueryString(text, language,
                                                   getEffectiveFilters(searchConfiguration.getFilters(), filters)));
         return searchApiRequestExecutorService.execute(searchRequestGet)
-                .filter(SearchResponse::isSuccess)
-                .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
-                        language)))
-                .orElse(Collections.emptyList());
+                                              .filter(SearchResponse::isSuccess)
+                                              .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
+                                                      language)))
+                                              .orElse(Collections.emptyList())
+                                              .stream()
+                                              .limit(searchConfiguration.getAutocompleteResultsMaxTotal())
+                                              .collect(Collectors.toList());
     }
 
     private String getQueryString(

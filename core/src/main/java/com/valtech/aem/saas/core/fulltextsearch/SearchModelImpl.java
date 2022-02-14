@@ -108,6 +108,9 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     @Getter
     private ConnectionFailedAlert connectionFailedAlert;
 
+    @Getter
+    private int autocompleteTriggerThreshold;
+
     @JsonIgnore
     @Getter
     private String configJson;
@@ -145,11 +148,15 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private I18n i18n;
 
+    private SearchCAConfigurationModel searchCAConfigurationModel;
+
     @PostConstruct
     private void init() {
+        searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
         createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
         i18n = i18nProvider.getI18n(getLocale());
         connectionFailedAlert = resolveConnectionFailedAlert();
+        getAutocompleteThreshold().ifPresent(threshold -> autocompleteTriggerThreshold = threshold);
         autoSuggestText = i18n.get(I18N_SEARCH_SUGGESTION_TEXT);
         noResultsText = i18n.get(I18N_SEARCH_NO_RESULTS_TEXT);
         filters = getConfiguredFilters();
@@ -161,25 +168,6 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
         searchTabs = getSearchTabList();
         configJson = getSearchConfigJson();
     }
-
-    public ConnectionFailedAlert resolveConnectionFailedAlert() {
-        SearchCAConfigurationModel searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
-        if (searchCAConfigurationModel == null) {
-            log.warn("Can not resolve context aware search configuration model.");
-            return new ConnectionFailedAlert(AlertVariant.WARNING, Collections.singletonList(i18n.get(I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE, null, resource.getPath())));
-        }
-        try {
-            boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
-            if (!pingSuccess) {
-                return new ConnectionFailedAlert(AlertVariant.ERROR, Arrays.asList(i18n.get(I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION), i18n.get(I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return new ConnectionFailedAlert(AlertVariant.WARNING, Collections.singletonList(e.getMessage()));
-        }
-        return null;
-    }
-
 
     @JsonIgnore
     public String getLanguage() {
@@ -206,23 +194,30 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private List<SearchTabModel> getSearchTabList() {
-        if (request != null) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
             return searchTabResources.stream()
-                    .map(r -> modelFactory.getModelFromWrappedRequest(request,
-                            r,
-                            SearchTabModel.class))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                                     .map(r -> modelFactory.getModelFromWrappedRequest(request,
+                                                                                       r,
+                                                                                       SearchTabModel.class))
+                                     .filter(Objects::nonNull)
+                                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
     private Optional<String> createAutocompleteUrl() {
-        return Optional.ofNullable(request).map(r -> pathTransformer.map(r, resource.getPath()))
-                .map(url -> String.format("%s.%s.%s",
-                        url,
-                        AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
-                        AutocompleteServlet.EXTENSION_JSON));
+        if (Optional.ofNullable(searchCAConfigurationModel)
+                    .filter(SearchCAConfigurationModel::isAutocompleteEnabled)
+                    .isPresent()) {
+            return Optional.ofNullable(request)
+                           .map(r -> pathTransformer.map(r, resource.getPath()))
+                           .map(url -> String.format("%s.%s.%s",
+                                                     url,
+                                                     AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
+                                                     AutocompleteServlet.EXTENSION_JSON));
+        }
+        log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
+        return Optional.empty();
     }
 
     private String getSearchConfigJson() {
@@ -245,6 +240,41 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private Locale getLocale() {
         return Optional.ofNullable(resource.adaptTo(ResourceWrapper.class)).map(ResourceWrapper::getLocale)
-                .orElse(Locale.getDefault());
+                       .orElse(Locale.getDefault());
+    }
+
+    private ConnectionFailedAlert resolveConnectionFailedAlert() {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
+            if (searchCAConfigurationModel == null) {
+                log.error("Can not resolve context aware search configuration model.");
+                return new ConnectionFailedAlert(AlertVariant.WARNING,
+                                                 Collections.singletonList(i18n.get(
+                                                         I18N_SEARCH_CA_CONFIGURATION_FAILED_TO_RESOLVE,
+                                                         null,
+                                                         resource.getPath())));
+            }
+            boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
+            if (!pingSuccess) {
+                return new ConnectionFailedAlert(AlertVariant.ERROR,
+                                                 Arrays.asList(i18n.get(
+                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
+                                                               i18n.get(
+                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
+            }
+        }
+        return null;
+    }
+
+    private Optional<Integer> getAutocompleteThreshold() {
+        return Optional.ofNullable(searchCAConfigurationModel)
+                       .map(SearchCAConfigurationModel::getAutocompleteThreshold);
+    }
+
+    private boolean isResourceOverriddenRequest() {
+        return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
+    }
+
+    private boolean isResolvedFromRequest() {
+        return request != null;
     }
 }

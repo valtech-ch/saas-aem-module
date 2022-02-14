@@ -1,13 +1,16 @@
 package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.day.cq.i18n.I18n;
-import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
+import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.SearchRedirectModel;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.resource.MockPathTransformer;
 import io.wcm.testing.mock.aem.junit5.AemContext;
+import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
+import org.apache.sling.testing.mock.caconfig.ContextPlugins;
+import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +30,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
 class SearchRedirectModelImplTest {
 
-    private final AemContext context = new AemContext();
-
-
+    private final AemContext context = new AemContextBuilder()
+            .plugin(ContextPlugins.CACONFIG)
+            .build();
     @Mock
     I18nProvider i18nProvider;
 
@@ -45,6 +48,7 @@ class SearchRedirectModelImplTest {
         context.registerService(PathTransformer.class, new MockPathTransformer());
         context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
         context.load().json("/content/searchredirect/content.json", "/content/saas-aem-module/us/en/searchredirect");
+        MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
     }
 
     @Test
@@ -53,7 +57,8 @@ class SearchRedirectModelImplTest {
         context.currentResource(
                 "/content/saas-aem-module/us/en/searchredirect/jcr:content/root/container/searchredirect");
         testAdaptable();
-        assertThat(testee.getAutocompleteTriggerThreshold(), is(SearchModel.AUTOCOMPLETE_THRESHOLD));
+        assertThat(testee.getAutocompleteTriggerThreshold(),
+                   is(SearchConfiguration.DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD));
         assertThat(testee.getAutocompleteUrl(),
                    is("/content/saas-aem-module/us/en/jcr:content/root/container/container/search.autocomplete.json"));
         assertThat(testee.getSearchUrl(), is("/content/saas-aem-module/us/en.html"));
