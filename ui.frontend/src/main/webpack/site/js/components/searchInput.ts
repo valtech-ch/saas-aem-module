@@ -20,7 +20,7 @@ type SearchInputOptions = {
 }
 const SUGGESTION_DROPDOWN_ID = 'cmp-saas-suggestions'
 const SEARCH_INPUT_CLASS = 'cmp-saas__search-input'
-const SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS = `.cmp-saas__form #${SUGGESTION_DROPDOWN_ID}`
+const SAAS_CONTAINER_FORM_SUGGESTIONS_SELECTOR = `.cmp-saas__form #${SUGGESTION_DROPDOWN_ID}`
 const SUGGESTION_ELEMENT_CLASS = 'cmp-saas__suggestion-element'
 const ACTIVE_SUGGESTION_ELEMENT_CLASS = `${SUGGESTION_ELEMENT_CLASS}--active`
 
@@ -39,7 +39,7 @@ const getSaasCurrentFocusSuggestion = (
 
 const removeSuggestionList = (searchContainer: HTMLDivElement) => {
   const existingDataList = searchContainer.querySelector(
-    SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
+    SAAS_CONTAINER_FORM_SUGGESTIONS_SELECTOR,
   )
 
   if (existingDataList) {
@@ -133,7 +133,7 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
         const { cleanedQuery, regexp } = getCleanedQueryAndRegex(query)
         const results = await fetchAutoComplete(autocompleteUrl, cleanedQuery)
         const existingSuggestions = searchContainer.querySelector(
-          SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
+          SAAS_CONTAINER_FORM_SUGGESTIONS_SELECTOR,
         )
         let suggestionDropdown: Element | null = null
 
