@@ -7,8 +7,8 @@ import {SearchOptions} from './types/searchOptions'
 import initSaasStyle from './utils/saasStyle'
 
 export const buildSearch = async (
-    searchElement: HTMLDivElement,
-    options?: SearchOptions,
+  searchElement: HTMLDivElement,
+  options?: SearchOptions,
 ): Promise<void> => {
   const searchConfig = getDataAttributeFromSearchElement(searchElement)
 
@@ -55,15 +55,15 @@ export const buildSearch = async (
     : null
 
   addEventToSearchForm(
-      searchFormElement,
-      searchInputElement,
-      searchUrl,
-      searchTabs,
-      loadMoreButtonText,
-      autoSuggestText,
-      searchContainer,
-      noResultsText,
-      callbacks,
+    searchFormElement,
+    searchInputElement,
+    searchUrl,
+    searchTabs,
+    loadMoreButtonText,
+    autoSuggestText,
+    searchContainer,
+    noResultsText,
+    callbacks,
   )
 
   initSaasStyle()

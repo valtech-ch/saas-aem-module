@@ -38,7 +38,7 @@ describe('searchElement', () => {
       searchButtonText: 'Search',
       autoCompleteTriggerThreshold: 3,
       autoCompleteUrl:
-          '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
+        '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
       autoSuggestText: 'Did you mean: ',
       noResultsText: 'No results found.',
     }

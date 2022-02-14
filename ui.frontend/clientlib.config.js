@@ -14,9 +14,9 @@
  ~ limitations under the License.
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-const path = require('path');
+const path = require('path')
 
-const BUILD_DIR = path.join(__dirname, 'dist');
+const BUILD_DIR = path.join(__dirname, 'dist')
 const CLIENTLIB_DIR = path.join(
   __dirname,
   '..',
@@ -27,15 +27,15 @@ const CLIENTLIB_DIR = path.join(
   'jcr_root',
   'apps',
   'saas-aem-module',
-  'clientlibs'
-);
+  'clientlibs',
+)
 
 const libsBaseConfig = {
   allowProxy: true,
   serializationFormat: 'xml',
   cssProcessor: ['default:none', 'min:none'],
-  jsProcessor: ['default:none', 'min:none']
-};
+  jsProcessor: ['default:none', 'min:none'],
+}
 
 // Config for `aem-clientlib-generator`
 module.exports = {
@@ -52,14 +52,14 @@ module.exports = {
         js: {
           cwd: 'clientlib-dependencies',
           files: ['**/*.js'],
-          flatten: false
+          flatten: false,
         },
         css: {
           cwd: 'clientlib-dependencies',
           files: ['**/*.css'],
-          flatten: false
-        }
-      }
+          flatten: false,
+        },
+      },
     },
     {
       ...libsBaseConfig,
@@ -72,12 +72,12 @@ module.exports = {
         js: {
           cwd: 'clientlib-base',
           files: ['**/*.js'],
-          flatten: false
+          flatten: false,
         },
         css: {
           cwd: 'clientlib-base',
           files: ['**/*.css'],
-          flatten: false
+          flatten: false,
         },
 
         // Copy all other files into the `resources` ClientLib directory
@@ -85,9 +85,9 @@ module.exports = {
           cwd: 'clientlib-base',
           files: ['**/*.*'],
           flatten: false,
-          ignore: ['**/*.js', '**/*.css']
-        }
-      }
-    }
-  ]
-};
+          ignore: ['**/*.js', '**/*.css'],
+        },
+      },
+    },
+  ],
+}

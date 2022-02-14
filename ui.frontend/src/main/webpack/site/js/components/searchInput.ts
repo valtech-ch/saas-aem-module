@@ -117,11 +117,11 @@ const getCleanedQueryAndRegex = (
 const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   debounce(
     async (
-        autoCompleteUrl: string,
-        query: string,
-        autoCompleteTriggerThreshold: number,
-        searchInput: HTMLInputElement,
-        searchContainer: HTMLDivElement,
+      autoCompleteUrl: string,
+      query: string,
+      autoCompleteTriggerThreshold: number,
+      searchInput: HTMLInputElement,
+      searchContainer: HTMLDivElement,
     ) => {
       setSaasCurrentFocusSuggestion(searchInput, -1)
 
@@ -131,10 +131,10 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
       }
 
       if (query.length >= autoCompleteTriggerThreshold) {
-        const {cleanedQuery, regexp} = getCleanedQueryAndRegex(query)
+        const { cleanedQuery, regexp } = getCleanedQueryAndRegex(query)
         const results = await fetchAutoComplete(autoCompleteUrl, cleanedQuery)
         const existingSuggestions = searchContainer.querySelector(
-            SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
+          SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
         )
         let suggestionDropdown: Element | null = null
 
@@ -175,13 +175,13 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   )
 
 const buildSearchInput = ({
-                            id,
-                            searchFieldPlaceholderText,
-                            autoCompleteUrl,
-                            autoCompleteTriggerThreshold,
-                            autoSuggestionDebounceTime = 500,
-                            searchContainer,
-                          }: SearchInputOptions): HTMLInputElement => {
+  id,
+  searchFieldPlaceholderText,
+  autoCompleteUrl,
+  autoCompleteTriggerThreshold,
+  autoSuggestionDebounceTime = 500,
+  searchContainer,
+}: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
   searchInput.classList.add(SEARCH_INPUT_CLASS)
   searchInput.name = QUERY_PARAM_SEARCH_TERM
@@ -220,11 +220,11 @@ const buildSearchInput = ({
 
   searchInput.addEventListener('input', (event) => {
     search(
-        autoCompleteUrl,
-        (event?.target as HTMLInputElement)?.value,
-        autoCompleteTriggerThreshold,
-        searchInput,
-        searchContainer,
+      autoCompleteUrl,
+      (event?.target as HTMLInputElement)?.value,
+      autoCompleteTriggerThreshold,
+      searchInput,
+      searchContainer,
     )
   })
 
