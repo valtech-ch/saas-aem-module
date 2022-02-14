@@ -179,7 +179,7 @@ Configurations are split in OSGi and Context-Aware.
 
 1. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService)
 2. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService)
-3. [Search as a Service - Autocomplete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService)
+3. [Search as a Service - Auto-complete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutoCompleteService)
 4. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.bestbets.DefaultBestBetsService)
 5. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService)
 6. [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
@@ -191,14 +191,15 @@ Configurations are split in OSGi and Context-Aware.
 |----------------------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------|:--------:|
 | Search Index                     | index                        | Index defined in SaaS admin                                                                                                |    x     |
 | Search Project Id                | projectId                    | Project identifier defined in SaaS admin                                                                                   |    x     |
-| Search Filters                   | searchFilters                | Key/value pairs of **field name** and **
-value**                                                                            |          |
+| Search Filters                   | searchFilters                | Key/value pairs of **field
+name** and **                                                                                   |          |
+| value**                          |                              |                                                                                                                            |          |
 | Search result highlight tag name | highlightTagName             | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`) |          |
 | Enable Best Bets                 | enableBestBets               | Flag that enables displaying best bets on the top of the search results. Defaults to `false`                               |          |
 | Enable Auto Suggest              | enableAutoSuggest            | Flag that enables auto suggest feature in the search component. Defaults to `true`                                         |          |
-| Enable Autocomplete              | enableAutocomplete           | Flag that enables autocomplete feature in the search input. Defaults to `true`                                             |          |
-| Autocomplete Trigger Threshold   | autocompleteTriggerThreshold | The minimum number of search input characters required for displaying autocomplete options.                                |          |
-| Autocomplete options Max Limit   | autocompleteOptionsMax       | The maximum number of autocomplete options displayed.                                                                      |          |
+| Enable Auto Complete             | enableAutoComplete           | Flag that enables auto-complete feature in the search input. Defaults to `true`                                            |          |
+| Auto-complete Trigger Threshold  | autoCompleteTriggerThreshold | The minimum number of search input characters required for displaying auto-complete options.                               |          |
+| Auto-complete options Max Limit  | autoCompleteOptionsMax       | The maximum number of auto-complete options displayed.                                                                     |          |
 
 # Components
 

@@ -6,11 +6,11 @@ package com.valtech.aem.saas.api.fulltextsearch;
 public interface SearchInputModel {
 
     /**
-     * Gets the autocomplete trigger threshold.
+     * Gets the auto-complete trigger threshold.
      *
-     * @return min number of chars typed before triggering the autocomplete.
+     * @return min number of chars typed before triggering the auto-complete.
      */
-    int getAutocompleteTriggerThreshold();
+    int getAutoCompleteTriggerThreshold();
 
     /**
      * Gets the search configuration in a json format. In this format, the configs are used by the FE.
@@ -24,7 +24,7 @@ public interface SearchInputModel {
      *
      * @return url string.
      */
-    String getAutocompleteUrl();
+    String getAutoCompleteUrl();
 
     /**
      * Gets the unique id of the component, based on resource path.

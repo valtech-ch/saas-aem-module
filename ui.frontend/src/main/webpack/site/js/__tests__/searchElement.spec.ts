@@ -1,7 +1,4 @@
-import {
-  getDataAttributeFromSearchElement,
-  getSearchElement,
-} from '../searchElement'
+import {getDataAttributeFromSearchElement, getSearchElement,} from '../searchElement'
 
 describe('searchElement', () => {
   describe('getSearchElement', () => {
@@ -39,8 +36,8 @@ describe('searchElement', () => {
         '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/searchtab.model.json?q=pg',
       ],
       searchButtonText: 'Search',
-      autocompleteTriggerThreshold: 3,
-      autocompleteUrl:
+      autoCompleteTriggerThreshold: 3,
+      autoCompleteUrl:
           '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
       autoSuggestText: 'Did you mean: ',
       noResultsText: 'No results found.',

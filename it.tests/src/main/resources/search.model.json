@@ -20,8 +20,8 @@
       ":type": "saas-aem-module/components/searchtab"
     }
   ],
-  "autocompleteUrl": "/content/saas-aem-module/us/en/_jcr_content/root/container/search.autocomplete.json",
-  "autocompleteTriggerThreshold": 3,
+  "autoCompleteUrl": "/content/saas-aem-module/us/en/_jcr_content/root/container/search.autocomplete.json",
+  "autoCompleteTriggerThreshold": 3,
   ":type": "saas-aem-module/components/search",
   ":items": {},
   ":itemsOrder": []

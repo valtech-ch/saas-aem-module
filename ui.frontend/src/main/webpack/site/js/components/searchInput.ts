@@ -1,4 +1,4 @@
-import { QUERY_PARAM_SEARCH_TERM } from '../constants'
+import {QUERY_PARAM_SEARCH_TERM} from '../constants'
 import cleanString from '../utils/cleanString'
 import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
@@ -13,8 +13,8 @@ import {
 type SearchInputOptions = {
   id: string
   searchFieldPlaceholderText: string
-  autocompleteUrl: string
-  autocompleteTriggerThreshold: number
+  autoCompleteUrl: string
+  autoCompleteTriggerThreshold: number
   autoSuggestionDebounceTime: number
   searchContainer: HTMLDivElement
 }
@@ -117,24 +117,24 @@ const getCleanedQueryAndRegex = (
 const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   debounce(
     async (
-      autocompleteUrl: string,
-      query: string,
-      autocompleteTriggerThreshold: number,
-      searchInput: HTMLInputElement,
-      searchContainer: HTMLDivElement,
+        autoCompleteUrl: string,
+        query: string,
+        autoCompleteTriggerThreshold: number,
+        searchInput: HTMLInputElement,
+        searchContainer: HTMLDivElement,
     ) => {
       setSaasCurrentFocusSuggestion(searchInput, -1)
 
-      if (!query?.length || query.length < autocompleteTriggerThreshold) {
+      if (!query?.length || query.length < autoCompleteTriggerThreshold) {
         removeSuggestionList(searchContainer)
         cleanSessionStorage()
       }
 
-      if (query.length >= autocompleteTriggerThreshold) {
-        const { cleanedQuery, regexp } = getCleanedQueryAndRegex(query)
-        const results = await fetchAutoComplete(autocompleteUrl, cleanedQuery)
+      if (query.length >= autoCompleteTriggerThreshold) {
+        const {cleanedQuery, regexp} = getCleanedQueryAndRegex(query)
+        const results = await fetchAutoComplete(autoCompleteUrl, cleanedQuery)
         const existingSuggestions = searchContainer.querySelector(
-          SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
+            SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS,
         )
         let suggestionDropdown: Element | null = null
 
@@ -175,13 +175,13 @@ const debouncedSearch = (autoSuggestionDebounceTime: number) =>
   )
 
 const buildSearchInput = ({
-  id,
-  searchFieldPlaceholderText,
-  autocompleteUrl,
-  autocompleteTriggerThreshold,
-  autoSuggestionDebounceTime = 500,
-  searchContainer,
-}: SearchInputOptions): HTMLInputElement => {
+                            id,
+                            searchFieldPlaceholderText,
+                            autoCompleteUrl,
+                            autoCompleteTriggerThreshold: autoCompleteTriggerThreshold,
+                            autoSuggestionDebounceTime = 500,
+                            searchContainer,
+                          }: SearchInputOptions): HTMLInputElement => {
   const searchInput = document.createElement('input')
   searchInput.classList.add(SEARCH_INPUT_CLASS)
   searchInput.name = QUERY_PARAM_SEARCH_TERM
@@ -220,11 +220,11 @@ const buildSearchInput = ({
 
   searchInput.addEventListener('input', (event) => {
     search(
-      autocompleteUrl,
-      (event?.target as HTMLInputElement)?.value,
-      autocompleteTriggerThreshold,
-      searchInput,
-      searchContainer,
+        autoCompleteUrl,
+        (event?.target as HTMLInputElement)?.value,
+        autoCompleteTriggerThreshold,
+        searchInput,
+        searchContainer,
     )
   })
 

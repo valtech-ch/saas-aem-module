@@ -57,9 +57,9 @@ class SearchRedirectModelImplTest {
         context.currentResource(
                 "/content/saas-aem-module/us/en/searchredirect/jcr:content/root/container/searchredirect");
         testAdaptable();
-        assertThat(testee.getAutocompleteTriggerThreshold(),
-                   is(SearchConfiguration.DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD));
-        assertThat(testee.getAutocompleteUrl(),
+        assertThat(testee.getAutoCompleteTriggerThreshold(),
+                   is(SearchConfiguration.DEFAULT_AUTO_COMPLETE_TRIGGER_THRESHOLD));
+        assertThat(testee.getAutoCompleteUrl(),
                    is("/content/saas-aem-module/us/en/jcr:content/root/container/container/search.autocomplete.json"));
         assertThat(testee.getSearchUrl(), is("/content/saas-aem-module/us/en.html"));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here...(overridden)"));
@@ -80,7 +80,7 @@ class SearchRedirectModelImplTest {
         context.currentResource(
                 "/content/saas-aem-module/us/en/searchredirect/jcr:content/root/container/searchredirect_noSearchPagePath");
         testAdaptable();
-        assertThat(testee.getAutocompleteUrl(), is(nullValue()));
+        assertThat(testee.getAutoCompleteUrl(), is(nullValue()));
         assertThat(testee.getSearchUrl(), is(nullValue()));
         assertThat(testee.getSearchFieldPlaceholderText(), is(nullValue()));
     }
@@ -90,7 +90,7 @@ class SearchRedirectModelImplTest {
         context.currentResource(
                 "/content/saas-aem-module/us/en/searchredirect/jcr:content/root/container/searchredirect_nonExistingSearchPagePath");
         testAdaptable();
-        assertThat(testee.getAutocompleteUrl(), is(nullValue()));
+        assertThat(testee.getAutoCompleteUrl(), is(nullValue()));
         assertThat(testee.getSearchUrl(), is(nullValue()));
         assertThat(testee.getSearchFieldPlaceholderText(), is(nullValue()));
     }

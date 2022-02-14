@@ -10,11 +10,11 @@ public @interface SearchConfiguration {
 
     boolean DEFAULT_ENABLE_BEST_BETS = false;
     boolean DEFAULT_ENABLE_AUTO_SUGGEST = true;
-    boolean DEFAULT_ENABLE_AUTOCOMPLETE = true;
+    boolean DEFAULT_ENABLE_AUTO_COMPLETE = true;
     String DEFAULT_HIGHLIGHT_TAG_NAME = "em";
     int DEFAULT_PROJECT_ID = 1;
-    int DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD = 3;
-    int DEFAULT_AUTOCOMPLETE_RESULTS_MAX_LIMIT = 10;
+    int DEFAULT_AUTO_COMPLETE_TRIGGER_THRESHOLD = 3;
+    int DEFAULT_AUTO_COMPLETE_RESULTS_MAX_LIMIT = 10;
 
     @Property(label = "Search Index",
               description = "SaaS index (Required)")
@@ -41,16 +41,16 @@ public @interface SearchConfiguration {
               description = "Flag that enables auto suggest feature in the search component.")
     boolean enableAutoSuggest() default DEFAULT_ENABLE_AUTO_SUGGEST;
 
-    @Property(label = "Enable Autocomplete",
-              description = "Flag that enables autocomplete (typeahead) feature in the search component.")
-    boolean enableAutocomplete() default DEFAULT_ENABLE_AUTOCOMPLETE;
+    @Property(label = "Enable Auto Complete",
+              description = "Flag that enables auto-complete (typeahead) feature in the search component.")
+    boolean enableAutoComplete() default DEFAULT_ENABLE_AUTO_COMPLETE;
 
-    @Property(label = "Autocomplete Trigger Threshold",
-              description = "The minimum number of search input characters required for displaying autocomplete " +
+    @Property(label = "Auto-complete Trigger Threshold",
+              description = "The minimum number of search input characters required for displaying auto-complete " +
                       "options.")
-    int autocompleteTriggerThreshold() default DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD;
+    int autoCompleteTriggerThreshold() default DEFAULT_AUTO_COMPLETE_TRIGGER_THRESHOLD;
 
-    @Property(label = "Autocomplete options Max Limit",
-              description = "The maximum number of autocomplete options displayed.")
-    int autocompleteOptionsMax() default DEFAULT_AUTOCOMPLETE_RESULTS_MAX_LIMIT;
+    @Property(label = "Auto-complete options Max Limit",
+              description = "The maximum number of auto-complete options displayed.")
+    int autoCompleteOptionsMax() default DEFAULT_AUTO_COMPLETE_RESULTS_MAX_LIMIT;
 }

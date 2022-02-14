@@ -94,18 +94,18 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
     }
 
     @Override
-    public boolean isAutocompleteEnabled() {
-        return searchConfiguration.enableAutocomplete();
+    public boolean isAutoCompleteEnabled() {
+        return searchConfiguration.enableAutoComplete();
     }
 
     @Override
-    public int getAutocompleteThreshold() {
-        return searchConfiguration.autocompleteTriggerThreshold();
+    public int getAutoCompleteThreshold() {
+        return searchConfiguration.autoCompleteTriggerThreshold();
     }
 
     @Override
-    public int getAutocompleteResultsMaxTotal() {
-        return searchConfiguration.autocompleteOptionsMax();
+    public int getAutoCompleteResultsMaxTotal() {
+        return searchConfiguration.autoCompleteOptionsMax();
     }
 
     private <T> Stream<T> asStream(T[] array) {

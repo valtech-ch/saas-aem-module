@@ -2,7 +2,7 @@ package com.valtech.aem.saas.core.autocomplete;
 
 import com.day.cq.i18n.I18n;
 import com.google.gson.JsonParser;
-import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
+import com.valtech.aem.saas.api.autocomplete.AutoCompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.query.SimpleFilter;
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
-class DefaultAutocompleteServiceTest {
+class DefaultAutoCompleteServiceTest {
 
     private final AemContext context = new AemContextBuilder()
             .plugin(ContextPlugins.CACONFIG)
@@ -53,7 +53,7 @@ class DefaultAutocompleteServiceTest {
     @Mock
     I18n i18n;
 
-    AutocompleteService service;
+    AutoCompleteService service;
 
     Resource currentResource;
 
@@ -72,7 +72,7 @@ class DefaultAutocompleteServiceTest {
         context.registerService(HttpClientBuilderFactory.class, httpClientBuilderFactory);
         context.registerInjectActivateService(new DefaultSearchServiceConnectionConfigurationService());
         context.registerService(SearchApiRequestExecutorService.class, searchApiRequestExecutorService);
-        service = context.registerInjectActivateService(new DefaultAutocompleteService());
+        service = context.registerInjectActivateService(new DefaultAutoCompleteService());
         currentResource = context.currentResource();
     }
 
@@ -93,7 +93,7 @@ class DefaultAutocompleteServiceTest {
     @Test
     void testGetResults() {
         MockContextAwareConfig.writeConfiguration(context, currentResource.getPath(), SearchConfiguration.class,
-                                                  "index", "bar", "autocompleteOptionsMax", 5);
+                                                  "index", "bar", "autoCompleteOptionsMax", 5);
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
         when(searchApiRequestExecutorService.execute(Mockito.any(SearchRequest.class))).thenReturn(
                 Optional.of(new SearchResponse(new JsonParser().parse(new InputStreamReader(getClass().getResourceAsStream(

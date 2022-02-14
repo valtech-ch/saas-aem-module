@@ -15,7 +15,7 @@ import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.resource.PathTransformer;
-import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
+import com.valtech.aem.saas.core.autocomplete.AutoCompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
 import com.valtech.aem.saas.core.util.ResourceUtil;
@@ -97,7 +97,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     private List<SearchTabModel> searchTabs;
 
     @Getter
-    private String autocompleteUrl;
+    private String autoCompleteUrl;
 
     @Getter
     private String autoSuggestText;
@@ -109,7 +109,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     private ConnectionFailedAlert connectionFailedAlert;
 
     @Getter
-    private int autocompleteTriggerThreshold;
+    private int autoCompleteTriggerThreshold;
 
     @JsonIgnore
     @Getter
@@ -153,10 +153,10 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     @PostConstruct
     private void init() {
         searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
-        createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
+        createAutocompleteUrl().ifPresent(url -> autoCompleteUrl = url);
         i18n = i18nProvider.getI18n(getLocale());
         connectionFailedAlert = resolveConnectionFailedAlert();
-        getAutocompleteThreshold().ifPresent(threshold -> autocompleteTriggerThreshold = threshold);
+        getAutocompleteThreshold().ifPresent(threshold -> autoCompleteTriggerThreshold = threshold);
         autoSuggestText = i18n.get(I18N_SEARCH_SUGGESTION_TEXT);
         noResultsText = i18n.get(I18N_SEARCH_NO_RESULTS_TEXT);
         filters = getConfiguredFilters();
@@ -207,14 +207,14 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private Optional<String> createAutocompleteUrl() {
         if (Optional.ofNullable(searchCAConfigurationModel)
-                    .filter(SearchCAConfigurationModel::isAutocompleteEnabled)
+                    .filter(SearchCAConfigurationModel::isAutoCompleteEnabled)
                     .isPresent()) {
             return Optional.ofNullable(request)
                            .map(r -> pathTransformer.map(r, resource.getPath()))
                            .map(url -> String.format("%s.%s.%s",
                                                      url,
-                                                     AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
-                                                     AutocompleteServlet.EXTENSION_JSON));
+                                                     AutoCompleteServlet.AUTO_COMPLETE_SELECTOR,
+                                                     AutoCompleteServlet.EXTENSION_JSON));
         }
         log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
         return Optional.empty();
@@ -267,7 +267,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private Optional<Integer> getAutocompleteThreshold() {
         return Optional.ofNullable(searchCAConfigurationModel)
-                       .map(SearchCAConfigurationModel::getAutocompleteThreshold);
+                       .map(SearchCAConfigurationModel::getAutoCompleteThreshold);
     }
 
     private boolean isResourceOverriddenRequest() {

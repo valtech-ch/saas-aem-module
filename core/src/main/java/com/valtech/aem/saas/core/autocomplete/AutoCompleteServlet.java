@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.autocomplete;
 
 import com.google.gson.Gson;
-import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
+import com.valtech.aem.saas.api.autocomplete.AutoCompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
@@ -25,15 +25,15 @@ import java.util.Optional;
 
 @Component(service = Servlet.class)
 @SlingServletResourceTypes(resourceTypes = SearchModelImpl.RESOURCE_TYPE,
-                           selectors = AutocompleteServlet.AUTOCOMPLETE_SELECTOR,
-                           extensions = AutocompleteServlet.EXTENSION_JSON)
-public class AutocompleteServlet extends SlingSafeMethodsServlet {
+                           selectors = AutoCompleteServlet.AUTO_COMPLETE_SELECTOR,
+                           extensions = AutoCompleteServlet.EXTENSION_JSON)
+public class AutoCompleteServlet extends SlingSafeMethodsServlet {
 
-    public static final String AUTOCOMPLETE_SELECTOR = "autocomplete";
+    public static final String AUTO_COMPLETE_SELECTOR = "autocomplete";
     public static final String EXTENSION_JSON = "json";
 
     @Reference
-    private transient AutocompleteService autocompleteService;
+    private transient AutoCompleteService autoCompleteService;
 
     @Override
     protected void doGet(@NonNull SlingHttpServletRequest request,
@@ -51,7 +51,7 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
                 Optional.ofNullable(request.getResource().adaptTo(SearchCAConfigurationModel.class))
                         .orElseThrow(() -> new IllegalArgumentException(
                                 "Could not access search CA configurations from current resource."));
-        List<String> results = autocompleteService.getResults(searchCAConfigurationModel,
+        List<String> results = autoCompleteService.getResults(searchCAConfigurationModel,
                                                               searchTerm,
                                                               searchModel.getLanguage(),
                                                               searchModel.getFilters());

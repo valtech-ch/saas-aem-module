@@ -1,7 +1,7 @@
 package com.valtech.aem.saas.core.autocomplete;
 
 import com.day.cq.i18n.I18n;
-import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
+import com.valtech.aem.saas.api.autocomplete.AutoCompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.caconfig.SearchConfiguration;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
@@ -30,14 +30,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({AemContextExtension.class, MockitoExtension.class})
-class AutocompleteServletTest {
+class AutoCompleteServletTest {
 
     private final AemContext context = new AemContextBuilder()
             .plugin(ContextPlugins.CACONFIG)
             .build();
 
     @Mock
-    AutocompleteService autocompleteService;
+    AutoCompleteService autoCompleteService;
 
     @Mock
     I18nProvider i18nProvider;
@@ -48,21 +48,21 @@ class AutocompleteServletTest {
     @Mock
     I18n i18n;
 
-    AutocompleteServlet testee;
+    AutoCompleteServlet testee;
 
     @BeforeEach
     void setUp() {
-        context.registerService(AutocompleteService.class, autocompleteService);
+        context.registerService(AutoCompleteService.class, autoCompleteService);
         context.registerService(I18nProvider.class, i18nProvider);
         context.registerService(PathTransformer.class, pathTransformer);
-        testee = context.registerInjectActivateService(new AutocompleteServlet());
+        testee = context.registerInjectActivateService(new AutoCompleteServlet());
         context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
         context.create().page("/content/saas-aem-module/us");
         context.load().json("/content/searchpage/content.json", "/content/saas-aem-module/us/en");
         context.currentPage("/content/saas-aem-module/us/en");
         context.currentResource("/content/saas-aem-module/us/en/jcr:content/root/container/container/search");
         MockContextAwareConfig.registerAnnotationClasses(context, SearchConfiguration.class);
-        context.requestPathInfo().setSelectorString(AutocompleteServlet.AUTOCOMPLETE_SELECTOR);
+        context.requestPathInfo().setSelectorString(AutoCompleteServlet.AUTO_COMPLETE_SELECTOR);
     }
 
     @Test
@@ -70,7 +70,7 @@ class AutocompleteServletTest {
         SlingHttpServletRequest request = context.request();
         SlingHttpServletResponse response = context.response();
         assertThrows(IllegalArgumentException.class, () -> testee.doGet(request, response));
-        verify(autocompleteService, never()).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
+        verify(autoCompleteService, never()).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
                                                         any());
     }
 
@@ -85,7 +85,7 @@ class AutocompleteServletTest {
                                                   "index",
                                                   "bar");
         testee.doGet(context.request(), context.response());
-        verify(autocompleteService, times(1)).getResults(any(SearchCAConfigurationModel.class),
+        verify(autoCompleteService, times(1)).getResults(any(SearchCAConfigurationModel.class),
                                                          anyString(),
                                                          anyString(),
                                                          any());

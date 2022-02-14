@@ -105,9 +105,9 @@ class SearchModelImplTest {
         assertThat(testee.getResultsPerPage(), is(15));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
         assertThat(testee.getFilters(), IsEmptyCollection.empty());
-        assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
+        assertThat(testee.getAutoCompleteTriggerThreshold(), is(3));
         assertThat(testee.getSearchTabs(), not(empty()));
-        assertThat(testee.getAutocompleteUrl(), is("/search.autocomplete.json"));
+        assertThat(testee.getAutoCompleteUrl(), is("/search.autocomplete.json"));
     }
 
     @Test
@@ -122,8 +122,8 @@ class SearchModelImplTest {
         assertThat(testee.getResultsPerPage(), is(15));
         assertThat(testee.getSearchFieldPlaceholderText(), is("Type search term here..."));
         assertThat(testee.getFilters(), IsEmptyCollection.empty());
-        assertThat(testee.getAutocompleteTriggerThreshold(),
-                   is(SearchConfiguration.DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD));
+        assertThat(testee.getAutoCompleteTriggerThreshold(),
+                   is(SearchConfiguration.DEFAULT_AUTO_COMPLETE_TRIGGER_THRESHOLD));
         assertThat(testee.getId(), not(isEmptyString()));
     }
 

@@ -1,9 +1,9 @@
 package com.valtech.aem.saas.core.autocomplete;
 
-import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
+import com.valtech.aem.saas.api.autocomplete.AutoCompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
 import com.valtech.aem.saas.api.query.*;
-import com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService.Configuration;
+import com.valtech.aem.saas.core.autocomplete.DefaultAutoCompleteService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
@@ -27,10 +27,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component(service = AutocompleteService.class)
-@ServiceDescription("Search as a Service - Autocomplete Service")
+@Component(service = AutoCompleteService.class)
+@ServiceDescription("Search as a Service - Auto-complete Service")
 @Designate(ocd = Configuration.class)
-public class DefaultAutocompleteService implements AutocompleteService {
+public class DefaultAutoCompleteService implements AutoCompleteService {
 
     @Reference
     private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
@@ -62,7 +62,7 @@ public class DefaultAutocompleteService implements AutocompleteService {
                                                       language)))
                                               .orElse(Collections.emptyList())
                                               .stream()
-                                              .limit(searchConfiguration.getAutocompleteResultsMaxTotal())
+                                              .limit(searchConfiguration.getAutoCompleteResultsMaxTotal())
                                               .collect(Collectors.toList());
     }
 

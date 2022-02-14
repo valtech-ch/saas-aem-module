@@ -59,10 +59,10 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
     private String searchUrl;
 
     @Getter
-    private String autocompleteUrl;
+    private String autoCompleteUrl;
 
     @Getter
-    private int autocompleteTriggerThreshold;
+    private int autoCompleteTriggerThreshold;
 
     @JsonIgnore
     @Getter
@@ -97,8 +97,8 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
     private void init() {
         getSearchPageResource().ifPresent(r -> searchPageResource = r);
         getSearchModel().ifPresent(search -> searchModel = search);
-        retrieveAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
-        getAutocompleteThreshold().ifPresent(threshold -> autocompleteTriggerThreshold = threshold);
+        retrieveAutocompleteUrl().ifPresent(url -> autoCompleteUrl = url);
+        getAutocompleteThreshold().ifPresent(threshold -> autoCompleteTriggerThreshold = threshold);
         resolveSearchFieldPlaceholderText().ifPresent(s -> searchFieldPlaceholderText = s);
         createSearchPageUrl().ifPresent(s -> searchUrl = s);
         configJson = getSearchConfigJson();
@@ -130,7 +130,7 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
     }
 
     private Optional<String> retrieveAutocompleteUrl() {
-        return Optional.ofNullable(searchModel).map(SearchModel::getAutocompleteUrl);
+        return Optional.ofNullable(searchModel).map(SearchModel::getAutoCompleteUrl);
     }
 
     private Optional<SearchModel> getSearchModel() {
@@ -167,6 +167,6 @@ public class SearchRedirectModelImpl implements SearchRedirectModel, ComponentEx
     }
 
     private Optional<Integer> getAutocompleteThreshold() {
-        return Optional.ofNullable(searchModel).map(SearchModel::getAutocompleteTriggerThreshold);
+        return Optional.ofNullable(searchModel).map(SearchModel::getAutoCompleteTriggerThreshold);
     }
 }
