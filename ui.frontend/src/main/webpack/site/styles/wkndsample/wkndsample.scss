@@ -1,0 +1,304 @@
+@import './media_queries';
+@import './colors';
+@import './typography';
+@import './spacing';
+@import './animation';
+
+.search {
+  * {
+    font-family: $typography-font;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .cmp-saas__form {
+    padding-bottom: spacing(9);
+    display: flex;
+    align-items: center;
+
+    @media #{$mq-1} {
+      flex-wrap: wrap;
+    }
+  }
+  .cmp-saas__form .cmp-saas__search-input {
+    @include typography(md);
+    width: 100%;
+    background-color: $color-7;
+    color: $color-5;
+    padding: spacing(3);
+    outline: none;
+    box-shadow: none;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    transition: 0.08s ease-in;
+
+    &:focus {
+      background-color: $color-2;
+      outline: none;
+      box-shadow: none;
+      border: 1px solid $color-5;
+    }
+
+    @media #{$mq-345} {
+      min-width: 550px;
+    }
+  }
+  .cmp-saas__results {
+    margin-top: spacing(9);
+
+    @media #{$mq-12} {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media #{$mq-345} {
+      grid-template: 'facetsGroup resultsItems' '. loadMoreButton';
+      grid-template-columns: max-content auto;
+    }
+  }
+  .cmp-saas__results--show {
+    @media #{$mq-12} {
+      display: flex;
+    }
+    @media #{$mq-345} {
+      display: grid;
+    }
+  }
+  .cmp-saas__results--hide {
+    display: none;
+  }
+  .cmp-saas__results-items {
+    grid-area: resultsItems;
+    display: grid;
+    grid-auto-rows: 1fr;
+
+    @media #{$mq-3} {
+      grid-template-columns: repeat(2, 50%);
+    }
+
+    @media #{$mq-45} {
+      grid-template-columns: repeat(3, 33.3333%);
+    }
+  }
+  .cmp-saas__results-item {
+    position: relative;
+    box-shadow: 0 0 0 1px $color-1;
+    border-radius: 4px;
+    transition: 0.08s ease-in;
+    min-height: 200px;
+    @media (prefers-color-scheme: dark) {
+      background-color: $color-2;
+    }
+
+    @media #{$mq-12} {
+      margin: spacing(3) 0 0 0;
+    }
+
+    @media #{$mq-345} {
+      margin: 0 0 spacing(3) spacing(3);
+    }
+    @media #{$mq-45} {
+      &:hover {
+        box-shadow: 0 0 0 1px $color-3;
+      }
+    }
+  }
+  .cmp-saas__results-item--best-best {
+    background-color: $color-8;
+  }
+  .cmp-saas__results-item-description {
+    @include typography(base);
+    color: $color-4;
+    margin-top: spacing(6);
+    text-align: start;
+  }
+  .cmp-saas__results-item-title {
+    @include typography(lg);
+    color: $color-5;
+    margin: spacing(2) 0;
+
+    &::after {
+      display: block;
+      width: 84px;
+      padding-top: spacing();
+      content: '';
+      border-bottom: 2px solid $color-3;
+    }
+  }
+  .cmp-saas__results-item-url {
+    @include typography(md);
+    display: block;
+    padding: spacing(3);
+    height: 100%;
+    color: $color-5;
+    word-break: break-word;
+  }
+  .cmp-saas__results-item-link-text {
+    @include typography(md);
+    display: none;
+    color: $color-6;
+    word-break: break-all;
+  }
+  .cmp-saas__tab {
+    @include typography(base);
+    border: none;
+    background-color: $color-5;
+    color: $color-2;
+    text-transform: uppercase;
+    margin: 0 spacing(3) spacing(3) 0;
+    padding: spacing(2);
+  }
+  .cmp-saas__button {
+    @include typography(md, regular);
+    @include animate-button();
+    color: $color-5;
+    border: none;
+    text-transform: uppercase;
+    padding: spacing(3);
+    text-decoration: none;
+    background-color: unset;
+    position: relative;
+    transition: 0.08s ease-in;
+
+    @media #{$mq-1} {
+      width: 100%;
+      margin-top: spacing(3);
+    }
+
+    @media #{$mq-2} {
+      margin-left: spacing(3);
+    }
+
+    @media #{$mq-345} {
+      margin-left: spacing(2);
+    }
+  }
+  .cmp-saas__load-more-button {
+    @include typography(md, regular);
+    @include animate-button();
+    grid-area: loadMoreButton;
+    border: none;
+    color: $color-5;
+    text-transform: uppercase;
+    padding: spacing(3);
+    text-decoration: none;
+    margin: spacing(6) auto;
+    background-color: unset;
+    position: relative;
+    transition: 0.08s ease-in;
+
+    @media #{$mq-1} {
+      width: 100%;
+    }
+
+    @media #{$mq-345} {
+      width: 250px;
+    }
+  }
+  .cmp-saas__search-input-wrapper {
+    position: relative;
+    display: inline-block;
+
+    @media #{$mq-12} {
+      width: 100%;
+    }
+  }
+  .cmp-saas__suggestions {
+    position: absolute;
+    border: 1px solid $color-9;
+    border-bottom: none;
+    border-top: none;
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    right: 0;
+    box-shadow: 0 spacing() spacing(2) 0 $color-10;
+    background-color: $color-1;
+  }
+  .cmp-saas__suggestion-element {
+    @include typography(md);
+    padding: spacing(2);
+    cursor: pointer;
+    background: $color-2;
+    &:last-child {
+      border-bottom: 1px solid $color-9;
+    }
+    @media #{$mq-45} {
+      &:hover {
+        color: $color-1;
+        background-color: $color-5;
+      }
+    }
+  }
+  .cmp-saas__suggestion-element--active {
+    background-color: $color-12;
+    color: $color-2;
+  }
+
+  .cmp-saas__suggestion-element--matched-query {
+    font-weight: $typography-weight-bold;
+  }
+
+  .cmp-sass__facets-groups {
+    grid-area: facetsGroup;
+    background-color: $color-7;
+    border-radius: 4px;
+    padding: spacing(3);
+    overflow: visible;
+    user-select: none;
+    height: fit-content;
+    min-width: 150px;
+  }
+  .cmp-sass__facets-group {
+    margin-bottom: spacing(4);
+  }
+  .cmp-sass__facets-group-title {
+    color: $color-5;
+    margin: 0;
+  }
+  .cmp-sass__facet {
+    margin-top: spacing();
+    color: $color-5;
+  }
+  .cmp-sass__facet-label {
+    cursor: pointer;
+    margin-left: spacing();
+  }
+  .cmp-sass__facet--no-result {
+    pointer-events: none;
+    color: $color-13;
+  }
+}
+
+.search-redirect {
+  .cmp-saas {
+    padding-top: spacing(2);
+
+    &__form {
+      .cmp-saas__search-input {
+        padding: spacing(2);
+        color: $color-5;
+        background-color: $color-7;
+        outline: none;
+        box-shadow: none;
+        border: 1px solid $color-4;
+        &:hover {
+          background-color: $color-2;
+          outline: none;
+          box-shadow: none;
+          border: 1px solid $color-4;
+        }
+      }
+    }
+
+    &__search-input-wrapper {
+      float: left;
+    }
+  }
+}

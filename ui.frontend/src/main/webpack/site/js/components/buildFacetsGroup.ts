@@ -29,11 +29,11 @@ const buildFacetsGroup = ({
   title,
 }: BuildFacetsGroup): HTMLDivElement => {
   const facetItem = document.createElement('div')
-  facetItem.classList.add('saas-facets-group')
+  facetItem.classList.add('cmp-sass__facets-group')
 
   const facetItemTitle = document.createElement('h4')
   facetItemTitle.innerText = filterFieldLabel
-  facetItemTitle.classList.add('saas-facets-group-title')
+  facetItemTitle.classList.add('cmp-sass__facets-group-title')
 
   facetItem.appendChild(facetItemTitle)
 

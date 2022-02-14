@@ -94,6 +94,9 @@ A ClientLib will consist of the following files and directories:
 - `resources/`: Source maps, non-entrypoint code chunks (resulting from code splitting), static assets (e.g. icons),
   etc.
 
+# Styling recommendation
+
+wknd-sample clientlib was created in order to demonstrate and provide a structure when it comes to implementing design for Search as Service. Please check [here](../ui.frontend/src/main/webpack/site/styles/wkndsample/README.md)
 # Testing
 
 There are three levels of testing contained in the project:

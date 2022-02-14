@@ -35,12 +35,11 @@ export const buildSearch = async (
   } = searchConfig
 
   const searchContainer = document.createElement('div')
-  searchContainer.classList.add('saas-container')
+  searchContainer.classList.add('cmp-saas')
 
   const searchFormElement = buildSearchForm()
-
-  const searchAutocompleteWrapper = document.createElement('div')
-  searchAutocompleteWrapper.classList.add('saas-autocomplete')
+  const searchInputWrapper = document.createElement('div')
+  searchInputWrapper.classList.add('cmp-saas__search-input-wrapper')
 
   const searchInputElement = buildSearchInput({
     id,
@@ -70,8 +69,8 @@ export const buildSearch = async (
   )
 
   initSaasStyle()
-  searchAutocompleteWrapper.appendChild(searchInputElement)
-  searchFormElement.appendChild(searchAutocompleteWrapper)
+  searchInputWrapper.appendChild(searchInputElement)
+  searchFormElement.appendChild(searchInputWrapper)
   if (searchButtonElement) {
     searchFormElement.appendChild(searchButtonElement)
   }

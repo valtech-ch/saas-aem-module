@@ -81,6 +81,12 @@ To use the OOTB components, the following client libraries should be included:
 Add them as entries in the multifield _**Client Libraries JavaScript Page Head**_, in the page policy for the editable
 template where the components would be used.
 
+To see a styling sample based on WKND theme, the following client library should be included (NOT RECOMMENDED FOR PRODUCTION):
+
+* [saas-aem-module.wknd-sample](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/clientlibs/wknd-sample)
+
+To read more information about how to style, [here](ui.frontend/src/main/webpack/site/styles/wkndsample/README.md)
+
 ## Partial (w/o AEM components)
 
 ```xml

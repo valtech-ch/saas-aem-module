@@ -22,7 +22,7 @@ const buildLoadMoreButton = ({
   queryParameterName,
 }: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
-  loadMoreButton.classList.add('saas-load-more-button')
+  loadMoreButton.classList.add('cmp-saas__load-more-button')
 
   loadMoreButton.dataset.page = `${page}`
 
@@ -53,7 +53,7 @@ const buildLoadMoreButton = ({
     // we must search the results items wrapper from the current 'active' results element.
     const searchResultsItemsWrapper =
       searchResultsElement.getElementsByClassName(
-        'saas-container_results_items',
+        'cmp-saas__results-items',
       )?.[0]
 
     resultJSON?.results.forEach((resultItem: SearchItem) => {

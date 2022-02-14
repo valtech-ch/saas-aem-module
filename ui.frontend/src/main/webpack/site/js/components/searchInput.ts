@@ -19,10 +19,10 @@ type SearchInputOptions = {
   searchContainer: HTMLDivElement
 }
 const SUGGESTION_DROPDOWN_ID = 'suggestions'
-const SEARCH_INPUT_CLASS = 'search-input'
+const SEARCH_INPUT_CLASS = 'cmp-saas__search-input'
 const SAAS_CONTAINER_FORM_SUGGESTIONS_CLASS =
-  '.saas-container_form #suggestions'
-const SUGGESTION_ELEMENT_CLASS = 'saas-suggestions-element'
+  '.cmp-saas__form .cmp-saas__suggestions'
+const SUGGESTION_ELEMENT_CLASS = 'cmp-saas__suggestion-element'
 const ACTIVE_SUGGESTION_ELEMENT_CLASS = `${SUGGESTION_ELEMENT_CLASS}--active`
 
 const setSaasCurrentFocusSuggestion = (
@@ -49,7 +49,7 @@ const removeSuggestionList = (searchContainer: HTMLDivElement) => {
 }
 
 const submitSearchForm = (): void => {
-  const form = document.querySelector('.saas-container_form') as
+  const form = document.querySelector('.cmp-saas__form') as
     | HTMLFormElement
     | undefined
   form?.submit()
@@ -75,12 +75,12 @@ const buildSuggestionElements = ({
   }
 
   const searchButtonElement = document.getElementsByClassName(
-    'saas-container_button',
+    'cmp-saas__button',
   )?.[0] as HTMLButtonElement | undefined
   results.forEach((result) => {
     const cleanAndFormatResult = cleanString(result).replace(
       regexp,
-      `<b>${query}</b>`,
+      `<span class="cmp-saas__suggestion-element--matched-query">${query}</span>`,
     )
     const suggestionDropdownElement = document.createElement('div')
     suggestionDropdownElement.innerHTML = cleanAndFormatResult
@@ -243,7 +243,7 @@ const buildSearchInput = ({
     const ENTER_KEY = 'Enter'
 
     const suggestionElements = searchContainer.querySelectorAll<HTMLDivElement>(
-      `#suggestions .${SUGGESTION_ELEMENT_CLASS}`,
+      `.cmp-saas__suggestions .${SUGGESTION_ELEMENT_CLASS}`,
     )
 
     if (!suggestionElements.length) {

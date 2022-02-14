@@ -1,0 +1,66 @@
+// ##################################################################################
+// Sample typography definitions: font-family, font-weight, font-size and line-height
+// ##################################################################################
+$typography-font: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial,
+  sans-serif;
+
+$typography-weight-bold: 700;
+$typography-weight-medium: 500;
+$typography-weight-regular: 400;
+$typography-weight-light: 300;
+
+$typography-size-sm: 12px;
+$typography-size-base: 14px;
+$typography-size-md: 16px;
+$typography-size-lg: 20px;
+
+$typography-line-height-sm: 1.2;
+$typography-line-height-base: 1.5;
+$typography-line-height-md: 1.6;
+$typography-line-height-lg: 2;
+
+// ####################################
+// Sample mixin: responsive typography
+// ####################################
+@mixin h1 {
+  @media #{$mq-12} {
+    @include typography(sm, medium);
+  }
+
+  @media #{$mq-3} {
+    @include typography(base, medium);
+  }
+
+  @media #{$mq-45} {
+    @include typography(lg, medium);
+  }
+}
+
+// ####################################
+// Sample mixin: typography
+// ####################################
+@mixin typography($size: 'base', $weight: '') {
+  @if $size == sm {
+    font-size: $typography-size-sm;
+    line-height: $typography-line-height-sm;
+  } @else if $size == base {
+    font-size: $typography-size-base;
+    line-height: $typography-line-height-base;
+  } @else if $size == md {
+    font-size: $typography-size-md;
+    line-height: $typography-line-height-md;
+  } @else if $size == lg {
+    font-size: $typography-size-lg;
+    line-height: $typography-line-height-lg;
+  }
+
+  @if $weight == bold {
+    font-weight: $typography-weight-bold;
+  } @else if $weight == medium {
+    font-weight: $typography-weight-medium;
+  } @else if $weight == regular {
+    font-weight: $typography-weight-regular;
+  } @else if $weight == light {
+    font-weight: $typography-weight-light;
+  }
+}

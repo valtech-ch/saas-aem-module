@@ -1,0 +1,8 @@
+// ##############################
+// Sample spacing helper function
+// ##############################
+$spacing-base: 5px;
+
+@function spacing($multiplier: 1, $base: $spacing-base) {
+  @return $multiplier * $base;
+}

@@ -33,6 +33,10 @@ export type Tab = {
   facetFilters?: FacetFilters
 }
 
+const CMP_SAAS_RESULTS_CLASS = 'cmp-saas__results'
+const CMP_SAAS_RESULTS_SHOW_CLASS = `${CMP_SAAS_RESULTS_CLASS}--show`
+const CMP_SAAS_RESULTS_HIDE_CLASS = `${CMP_SAAS_RESULTS_CLASS}--hide`
+
 const buildSearchTab = ({
   tabId,
   title,
@@ -41,7 +45,7 @@ const buildSearchTab = ({
   searchContainer,
 }: SearchTabOptions): HTMLButtonElement => {
   const searchTab = document.createElement('button')
-  searchTab.classList.add('saas-container_tab')
+  searchTab.classList.add('cmp-saas__tab')
 
   const searchTabName = document.createElement('span')
   searchTabName.innerHTML = title
@@ -55,9 +59,8 @@ const buildSearchTab = ({
   searchTab.addEventListener('click', () => {
     onSwitchTab?.()
 
-    const searchTabs = searchContainer.querySelectorAll<HTMLDivElement>(
-      '.saas-container_results',
-    )
+    const searchTabs =
+      searchContainer.querySelectorAll<HTMLDivElement>('.cmp-saas__results')
 
     searchContainer.dataset.selectedTab = tabId
 
@@ -65,12 +68,13 @@ const buildSearchTab = ({
       const tabElement = tab
 
       if (tabElement.dataset.tab === tabId) {
-        tabElement.style.display = 'block'
+        tabElement.classList.add(CMP_SAAS_RESULTS_SHOW_CLASS)
+        tabElement.classList.remove(CMP_SAAS_RESULTS_HIDE_CLASS)
         return
       }
 
-      // overwrite display: grid !important set on .saas-container_results
-      tabElement.style.setProperty('display', 'none', 'important')
+      tabElement.classList.remove(CMP_SAAS_RESULTS_SHOW_CLASS)
+      tabElement.classList.add(CMP_SAAS_RESULTS_HIDE_CLASS)
     })
   })
 
@@ -78,16 +82,16 @@ const buildSearchTab = ({
 }
 
 export const removeAutosuggest = (searchContainer: HTMLDivElement): void => {
-  const autoSuggestElement =
-    searchContainer.querySelector<HTMLDivElement>('.saas-autosuggest')
+  const autoSuggestElement = searchContainer.querySelector<HTMLDivElement>(
+    '.cmp-saas__autosuggest',
+  )
 
   autoSuggestElement?.remove()
 }
 
 export const removeSearchTabs = (searchContainer: HTMLDivElement): void => {
-  const searchTabs = searchContainer.querySelectorAll<HTMLDivElement>(
-    '.saas-container_tab',
-  )
+  const searchTabs =
+    searchContainer.querySelectorAll<HTMLDivElement>('.cmp-saas__tab')
 
   searchTabs.forEach((tab) => {
     tab.remove()
@@ -95,9 +99,8 @@ export const removeSearchTabs = (searchContainer: HTMLDivElement): void => {
 }
 
 export const removeSearchResults = (searchContainer: HTMLDivElement): void => {
-  const searchResults = searchContainer.querySelectorAll<HTMLDivElement>(
-    '.saas-container_results',
-  )
+  const searchResults =
+    searchContainer.querySelectorAll<HTMLDivElement>('.cmp-saas__results')
 
   searchResults.forEach((searchResult) => {
     searchResult.remove()

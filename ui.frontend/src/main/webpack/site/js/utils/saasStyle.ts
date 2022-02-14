@@ -1,7 +1,7 @@
 const initSaasStyle = (): void => {
   document.styleSheets[0].insertRule(
     `
-            #suggestions {
+            .cmp-saas__suggestions {
               position: absolute;
               border: 1px solid #d4d4d4;
               border-bottom: none;
@@ -17,7 +17,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            .saas-autocomplete {
+            .cmp-saas__search-input-wrapper {
                position: relative;
                display: inline-block;
             }
@@ -27,7 +27,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            #suggestions .saas-suggestions-element {
+            .cmp-saas__suggestion-element {
               padding: 10px;
               cursor: pointer;
               background: #fff;
@@ -38,7 +38,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            #suggestions .saas-suggestions-element:last-child {
+            .cmp-saas__suggestion-element:last-child {
               border-bottom: 1px solid #d4d4d4;
             }
           `,
@@ -47,7 +47,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            #suggestions .saas-suggestions-element:hover {
+            .cmp-saas__suggestion-element:hover {
               background-color: #e9e9e9;
             }
           `,
@@ -56,7 +56,7 @@ const initSaasStyle = (): void => {
 
   document.styleSheets[0].insertRule(
     `
-            .saas-suggestions-element--active {
+            .cmp-saas__suggestion-element--active {
               background-color: DodgerBlue !important;
               color: #fff;
             }

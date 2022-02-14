@@ -30,14 +30,14 @@ const buildFacet = ({
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
 BuildFacetOption): HTMLDivElement => {
   const facet = document.createElement('div')
-  facet.classList.add('saas-facet')
+  facet.classList.add('cmp-sass__facet')
   const facetInput = document.createElement('input')
-  facetInput.classList.add('saas-facet-input')
+  facetInput.classList.add('cmp-sass__facet-input')
   facetInput.type = 'checkbox'
   facetInput.id = value
 
   if (!hits) {
-    facet.classList.add('saas-facet--no-result')
+    facet.classList.add('cmp-sass__facet--no-result')
     facet.style.pointerEvents = 'none'
     facetInput.disabled = true
   }
@@ -101,7 +101,7 @@ BuildFacetOption): HTMLDivElement => {
 
     if (results) {
       const facetsGroups = document.createElement('div')
-      facetsGroups.classList.add('saas-facets-groups')
+      facetsGroups.classList.add('cmp-sass__facets-groups')
 
       const { facetFilters } = results
 
@@ -127,7 +127,7 @@ BuildFacetOption): HTMLDivElement => {
       }
 
       const resultsItems = document.createElement('div')
-      resultsItems.classList.add('saas-container_results_items')
+      resultsItems.classList.add('cmp-saas__results-items')
 
       const searchResultsItem = generateSearchItemList(
         results.results,
@@ -156,7 +156,7 @@ BuildFacetOption): HTMLDivElement => {
   })
 
   const facetLabel = document.createElement('label')
-  facetLabel.classList.add('saas-facet-label')
+  facetLabel.classList.add('cmp-sass__facet-label')
   facetLabel.innerText = `${value} (${hits})`
   facetLabel.htmlFor = value
 
