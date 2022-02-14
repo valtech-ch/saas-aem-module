@@ -1,10 +1,11 @@
 import { cleanSessionStorage } from '../utils/sessionStorage'
 
 export const buildSearchClearButton = () => {
-  const resetButton = document.createElement('span')
-  resetButton.classList.add('cmp-saas__search-clear-button')
+  const searchClearButton = document.createElement('span')
+  searchClearButton.classList.add('cmp-saas__search-clear-button')
 
-  resetButton.addEventListener('click', () => {
+  searchClearButton.addEventListener('click', () => {
+    searchClearButton.classList.add('cmp-saas__search-clear-button--hide')
     const searchInput = document.getElementsByClassName(
       'cmp-saas__search-input',
     )?.[0] as HTMLInputElement
@@ -20,5 +21,5 @@ export const buildSearchClearButton = () => {
     }
   })
 
-  return resetButton
+  return searchClearButton
 }
