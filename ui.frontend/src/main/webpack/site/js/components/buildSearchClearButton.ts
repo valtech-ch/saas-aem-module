@@ -14,7 +14,7 @@ export const buildSearchClearButton = () => {
       searchInput.value = ''
       searchInput.focus()
       cleanSessionStorage()
-      const suggestionElement = document.getElementById('#cmp-saas-suggestions')
+      const suggestionElement = document.getElementById('cmp-saas-suggestions')
       if (suggestionElement) {
         suggestionElement.remove()
       }
