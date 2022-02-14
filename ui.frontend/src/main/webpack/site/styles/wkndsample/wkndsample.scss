@@ -76,7 +76,7 @@
   .cmp-saas__results-items {
     grid-area: resultsItems;
     display: grid;
-    grid-auto-rows: 1fr;
+    grid-auto-rows: max-content;
 
     @media #{$mq-3} {
       grid-template-columns: repeat(2, 50%);
