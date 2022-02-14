@@ -5,7 +5,7 @@
 # Table of contents
 
 - [Introduction](#introduction)
-- [Approach](#approach)
+- [Integration](#integration)
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Full](#full)
@@ -24,7 +24,7 @@
 
 # Introduction
 
-SAAS (Search as a Service) is continuously improved by Valtech Switzerland in cooperation with its clients. This service
+Search as a Service (SAAS) is continuously improved by Valtech Switzerland in cooperation with its clients. This service
 allows Valtech clients to jointly benefit from a constantly evolving and improved search service for digital experience
 platforms. Improvements are continuously rolled out as updates become available without any downtime. The offering
 consists of the following main components:
@@ -35,7 +35,7 @@ consists of the following main components:
 * SAAS AEM Search Component - this very component for integrating SAAS into AEM within a very short timeframe through
   configuration and styling
 
-# Approach
+# Integration
 
 The AEM Search Component can be installed and connected to SAAS through configuration. Content Authors then configure
 content pages that act as Search Result Pages (SERP). The author configures the behaviour like filters or tabs according
