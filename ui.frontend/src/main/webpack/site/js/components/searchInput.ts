@@ -178,7 +178,7 @@ const buildSearchInput = ({
                             id,
                             searchFieldPlaceholderText,
                             autoCompleteUrl,
-                            autoCompleteTriggerThreshold: autoCompleteTriggerThreshold,
+                            autoCompleteTriggerThreshold,
                             autoSuggestionDebounceTime = 500,
                             searchContainer,
                           }: SearchInputOptions): HTMLInputElement => {
