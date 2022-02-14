@@ -1,7 +1,7 @@
 const initSaasStyle = (): void => {
   document.styleSheets[0].insertRule(
     `
-            .cmp-saas__suggestions {
+            #cmp-saas-suggestions {
               position: absolute;
               border: 1px solid #d4d4d4;
               border-bottom: none;
