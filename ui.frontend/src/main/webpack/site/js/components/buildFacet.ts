@@ -1,7 +1,6 @@
 import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FilterFieldOption } from '../types/facetFilter'
 import fetchSearch from '../utils/fetchSearch'
-import buildFacetsGroup from './buildFacetsGroup'
 import buildLoadMoreButton from './loadMoreButton'
 import { generateSearchItemList } from './searchResults'
 
@@ -35,12 +34,6 @@ BuildFacetOption): HTMLDivElement => {
   facetInput.classList.add('cmp-sass__facet-input')
   facetInput.type = 'checkbox'
   facetInput.id = value
-
-  if (!hits) {
-    facet.classList.add('cmp-sass__facet--no-result')
-    facet.style.pointerEvents = 'none'
-    facetInput.disabled = true
-  }
 
   const selectedTab = document.querySelector<HTMLDivElement>(
     '[data-selected="true"]',
@@ -93,39 +86,16 @@ BuildFacetOption): HTMLDivElement => {
       newSelectedFacetsValue,
     )
 
-    const currentTabResults = currentTab.querySelectorAll('*')
+    const ALL_EXCEPT_FACET_ELEMENTS_SELECTOR = ':not([class*=cmp-sass__facet])'
+    const currentTabResults = currentTab.querySelectorAll(
+      ALL_EXCEPT_FACET_ELEMENTS_SELECTOR,
+    )
 
     currentTabResults?.forEach((element) => {
       element.remove()
     })
 
     if (results) {
-      const facetsGroups = document.createElement('div')
-      facetsGroups.classList.add('cmp-sass__facets-groups')
-
-      const { facetFilters } = results
-
-      facetFilters?.items.forEach((facetFilter) => {
-        const facetsGroup = buildFacetsGroup({
-          filterFieldLabel: facetFilter.filterFieldLabel,
-          filterFieldName: facetFilter.filterFieldName,
-          filterFieldOptions: facetFilter.filterFieldOptions,
-          tabUrl,
-          searchValue,
-          queryParameterName: facetFilters.queryParameterName,
-          tabId,
-          onSearchItemClick,
-          loadMoreButtonText,
-          title,
-        })
-
-        facetsGroups?.appendChild(facetsGroup)
-      })
-
-      if (facetFilters) {
-        currentTab.appendChild(facetsGroups)
-      }
-
       const resultsItems = document.createElement('div')
       resultsItems.classList.add('cmp-saas__results-items')
 
@@ -157,7 +127,7 @@ BuildFacetOption): HTMLDivElement => {
 
   const facetLabel = document.createElement('label')
   facetLabel.classList.add('cmp-sass__facet-label')
-  facetLabel.innerText = `${value} (${hits})`
+  facetLabel.innerText = `${value}`
   facetLabel.htmlFor = value
 
   facet.appendChild(facetInput)
