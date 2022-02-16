@@ -1,8 +1,8 @@
-import {OnSearchItemClickCallback} from '../types/callbacks'
-import {FilterFieldOption} from '../types/facetFilter'
+import { OnSearchItemClickCallback } from '../types/callbacks'
+import { FilterFieldOption } from '../types/facetFilter'
 import fetchSearch from '../utils/fetchSearch'
 import buildLoadMoreButton from './loadMoreButton'
-import {generateSearchItemList} from './searchResults'
+import { generateSearchItemList } from './searchResults'
 
 interface BuildFacetOption extends FilterFieldOption {
   filterFieldName: string
@@ -34,12 +34,6 @@ BuildFacetOption): HTMLDivElement => {
   facetInput.classList.add('cmp-sass__facet-input')
   facetInput.type = 'checkbox'
   facetInput.id = value
-
-  if (!hits) {
-    facet.classList.add('cmp-sass__facet--no-result')
-    facet.style.pointerEvents = 'none'
-    facetInput.disabled = true
-  }
 
   const selectedTab = document.querySelector<HTMLDivElement>(
     '[data-selected="true"]',
@@ -133,7 +127,7 @@ BuildFacetOption): HTMLDivElement => {
 
   const facetLabel = document.createElement('label')
   facetLabel.classList.add('cmp-sass__facet-label')
-  facetLabel.innerText = `${value} (${hits})`
+  facetLabel.innerText = `${value}`
   facetLabel.htmlFor = value
 
   facet.appendChild(facetInput)
