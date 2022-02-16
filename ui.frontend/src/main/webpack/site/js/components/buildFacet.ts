@@ -92,8 +92,10 @@ BuildFacetOption): HTMLDivElement => {
       newSelectedFacetsValue,
     )
 
-    const ALL_EXCEPT_FACET_ELEMENTS_SELECTOR = ":not([class*=cmp-sass__facet])"
-    const currentTabResults = currentTab.querySelectorAll(ALL_EXCEPT_FACET_ELEMENTS_SELECTOR)
+    const ALL_EXCEPT_FACET_ELEMENTS_SELECTOR = ':not([class*=cmp-sass__facet])'
+    const currentTabResults = currentTab.querySelectorAll(
+      ALL_EXCEPT_FACET_ELEMENTS_SELECTOR,
+    )
 
     currentTabResults?.forEach((element) => {
       element.remove()
