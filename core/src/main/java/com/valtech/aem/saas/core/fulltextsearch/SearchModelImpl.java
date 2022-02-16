@@ -253,13 +253,18 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
                                                          null,
                                                          resource.getPath())));
             }
-            boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
-            if (!pingSuccess) {
-                return new ConnectionFailedAlert(AlertVariant.ERROR,
-                                                 Arrays.asList(i18n.get(
-                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
-                                                               i18n.get(
-                                                                       I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
+            try {
+                boolean pingSuccess = fulltextSearchPingService.ping(searchCAConfigurationModel);
+                if (!pingSuccess) {
+                    return new ConnectionFailedAlert(AlertVariant.ERROR,
+                                                     Arrays.asList(i18n.get(
+                                                                           I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_OSGI_CONFIGURATION),
+                                                                   i18n.get(
+                                                                           I18N_SEARCH_CONNECTION_FAILED_FURTHER_ACTION_CHECK_LOG_FILES)));
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                return new ConnectionFailedAlert(AlertVariant.WARNING, Collections.singletonList(e.getMessage()));
             }
         }
         return null;
