@@ -6,7 +6,7 @@
 
 $search-clear-button-sizes: 20px;
 
-.search {
+.search, .searchredirect {
   * {
     font-family: $typography-font;
   }
@@ -301,6 +301,14 @@ $search-clear-button-sizes: 20px;
 
     &__search-input-wrapper {
       float: left;
+    }
+  }
+}
+
+.searchredirect {
+  .cmp-saas__form .cmp-saas__search-input {
+    @media #{$mq-345} {
+      min-width: 200px;
     }
   }
 }
