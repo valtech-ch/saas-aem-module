@@ -205,6 +205,8 @@ Configurations are split in OSGi and Context-Aware.
 | Autocomplete Trigger Threshold   | autocompleteTriggerThreshold | The minimum number of search input characters required for displaying autocomplete options.                                |          |
 | Autocomplete options Max Limit   | autocompleteOptionsMax       | The maximum number of autocomplete options displayed.                                                                      |          |
 
+![Context aware configuration](images/context-aware_search-configuration.png "Search configuration")
+
 # Components
 
 ## Rendering

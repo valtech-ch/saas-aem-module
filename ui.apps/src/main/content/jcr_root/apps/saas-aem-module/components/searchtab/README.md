@@ -11,6 +11,9 @@ The Search Tab component uses the `com.valtech.aem.saas.api.fulltextsearch.Searc
 On submit of entered search term the children search tab components perform a search query and display the results. If
 facets are configured, it will also display search results filtering options.
 
+![search results](../../../../../../../../../images/searchresults.png)
+![search results filtered](../../../../../../../../../images/searchpage-results_filtered.png)
+
 ### Authoring
 This is a component that is placed in the responsive-grid of the [Search](../search/README.md) component.
 
@@ -22,6 +25,10 @@ The following properties are written to JCR for the Search component and are exp
 3. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
    operator.
 4. `./template` - Defines SaaS query template name.
+
+![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties.png)
+![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties_2.png)
+![dialog tab filters](../../../../../../../../../images/searchtab_dialog_filters.png)
 
 ### Query parameters
 

@@ -8,7 +8,9 @@ Search component with placeholder markup and configs in json format, ready for d
 The Search component uses the `com.valtech.aem.saas.api.fulltextsearch.SearchModel` Sling model as its Use-object.
 
 ### Behavior
-The user enters search term in the text input field. On submit, the children search tab components perform a search query and display the results.  
+The user enters search term in the text input field. While typing, user is prompted with autocomplete/typeahead options. On submit, the children search tab components perform a search query and display the results.
+
+![typeahead](../../../../../../../../../images/searchpage-typeahead.png)
 
 ### Authoring
 This is a container that accepts [Search Tab](../searchtab/README.md) components. It can be included on any page (fix or inside a parsys/responsive-grid). By default, it includes one Search
@@ -23,6 +25,9 @@ The following properties are written to JCR for the Search component and are exp
 3. `./resultsPerPage` - defines the number of results per page. It overrides the default value of 10 results per page.
 4. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
    operator.
+
+![dialog tab properties](../../../../../../../../../images/search_dialog_properties.png)
+![dialog tab filters](../../../../../../../../../images/search_dialog_filters.png)
 
 #### Autocomplete
 
