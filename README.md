@@ -2,11 +2,13 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valtech-ch_saas-aem-module&metric=alert_status)](https://sonarcloud.io/dashboard?id=valtech-ch_saas-aem-module)
 
-# Table of contents
+AEM Search Module to use and customize Valtech's Search as a Service (SAAS) offering within AEM.
+
+![typeahead](images/searchpage-typeahead.png)
 
 - [Introduction](#introduction)
-- [Integration](#integration)
-- [Requirements](#requirements)
+- [AEM Search Module](#aem-search-module)
+- [System Requirements](#system-requirements)
 - [Installation](#installation)
   - [Full](#full)
   - [Partial (w/o AEM components)](#partial-wo-aem-components)
@@ -32,36 +34,35 @@ consists of the following main components:
 * SAAS Crawler - Web page crawling, extraction of relevant content areas, and metadata.
 * SAAS Administration UI - Interface for controlling and configuring the crawlers.
 * SAAS Engine - Collection of APIs for full text or typeahead content queries.
-* SAAS AEM Search Component - this very component for integrating SAAS into AEM within a very short timeframe through
+* SAAS AEM Search Module - this module has been designed to easily integrate SAAS into AEM within a very short timeframe through
   configuration and styling
+   
 
-# Integration
+# AEM Search Module
 
-The AEM Search Component can be installed and connected to SAAS through configuration. Content Authors then configure
+The AEM Search Module can be installed and connected to SAAS through configuration. Content Authors then configure
 content pages that act as Search Result Pages (SERP). The author configures the behaviour like filters or tabs according
 to the specific needs of the SERP.
 
 On top of that, AEM developers can extend the AEM Search Component to implement custom requirements that are not covered
-out-of-the-box. The component follows the architectural patterns of Adobe Core Component. Therefore, the approach is
+out-of-the-box. The component follows the architectural patterns of [AEM WCM Core Components](https://github.com/adobe/aem-core-wcm-components) . Therefore, the approach is
 known and straight forward to extend while ensuring maintainability of the core module. In the SAAS Administration UI
 the SAAS Crawler can be configured. A recommended approach is to use Sitemaps (although raw crawling works as well) in
 order to indicate which pages should be shown in the Search Admin. To generate Sitemaps, the Apache Sling Sitemap module
 can be used described on the AEM
 documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem
 
-<a name="requirements"></a>
+# System Requirements
 
-# Requirements
-
-| AEM | JDK |
-| --- | --- |
-| 6.5 / Cloud | 8, 11 |
+| AEM 6.5 | AEM as a Cloud Service | JDK | Maven |
+| --- | --- | --- | --- |
+| 6.5.10.0+ (*) | Continual | 8, 11 | 3.3.9+ |
 
 # Installation
 
-You can download the bundles from [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/).
+You can download the packages and bundles from [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/).
 
-## Full
+## Dependencies 
 
 ```xml
 
