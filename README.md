@@ -14,6 +14,7 @@ AEM Search Module to use and customize Valtech's Search as a Service (SAAS) offe
   - [Configurations](#configurations)
     - [OSGi configurations](#osgi-configurations)
     - [Context Aware configurations](#context-aware-configurations)
+  - [Rendering](#rendering)
 - [System Requirements](#system-requirements)
 - [Installation](#installation)
   - [Clientlibs](#clientlibs)
@@ -21,7 +22,6 @@ AEM Search Module to use and customize Valtech's Search as a Service (SAAS) offe
     - [Step 1: Add SaaS as a dependency](#step-1-add-saas-as-a-dependency)
     - [Step 2: Add SaaS as an embed package](#step-2-add-saas-as-an-embed-package)
   - [Uninstall](#uninstall)
-  - [Rendering](#rendering)
 - [License](#license)
 - [Developers](#developers)
 
@@ -33,10 +33,10 @@ platforms. Improvements are continuously rolled out as updates become available 
 consists of the following main components:
 
 * SAAS Crawler - Web page crawling, extraction of relevant content areas, and metadata.
-* SAAS Administration UI - Interface for controlling and configuring the crawlers.
-* SAAS Engine - Collection of APIs for full text or typeahead content queries.
-* SAAS AEM Module - this module has been designed to easily integrate SAAS into AEM within a very short timeframe through
-  configuration and styling
+  * SAAS Administration UI - Interface for controlling and configuring the crawlers.
+  * SAAS Engine - Collection of APIs for full text or typeahead content queries.
+  * SAAS AEM Module - this module has been designed to easily integrate SAAS into AEM within a very short timeframe through
+    configuration and styling
 
 
 # AEM Search Module
@@ -56,19 +56,19 @@ documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-
 # Features
 
 - **Production-Ready:** Ready made APIs and components that are well tested and used in Production.
-- **Cloud-Ready:** Whether on AEM as a Cloud Service, on Adobe Managed Services, or on-premise, they just work.
-- **Customizable** Modules are designed to be customized: API module with interfaces, components can be changed similar to AEM core components, modules published on maven central and npm registry.  
-- **Themeable:** The components markup follows BEM CSS conventions and are prefixed to avoid any integration conflicts.
-- **Configurable:** Features can be configured on component and on context aware-level.
-- **WebApp-Ready:** The streamlined JSON output allows client-side rendering.
-- **Developer friendly:** Intensive documentation in readme files, javadocs and sample code.
-- **Open Sourced:** If something is not as it should, contribution is welcomed.
+  - **Cloud-Ready:** Whether on AEM as a Cloud Service, on Adobe Managed Services, or on-premise, they just work.
+  - **Customizable** Modules are designed to be customized: API module with interfaces, components can be changed similar to AEM core components, modules published on maven central and npm registry.  
+  - **Themeable:** The components markup follows BEM CSS conventions and are prefixed to avoid any integration conflicts.
+  - **Configurable:** Features can be configured on component and on context aware-level.
+  - **WebApp-Ready:** The streamlined JSON output allows client-side rendering.
+  - **Developer friendly:** Intensive documentation in readme files, javadocs and sample code.
+  - **Open Sourced:** If something is not as it should, contribution is welcomed.
 
 ## Components
 
 * [Search Redirect](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchredirect/README.md)
-* [Search](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)
-* [Search Tab](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)
+  * [Search](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)
+  * [Search Tab](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)
 
 **Component group:** _Search as a Service - Content_
 
@@ -93,12 +93,12 @@ Configurations are split in OSGi and Context-Aware.
 ### OSGi configurations
 
 1. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService)
-2. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService)
-3. [Search as a Service - Autocomplete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService)
-4. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.bestbets.DefaultBestBetsService)
-5. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService)
-6. [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
-7. [Search as a Service - Search Api Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService)
+   1. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService)
+   2. [Search as a Service - Autocomplete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService)
+   3. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.bestbets.DefaultBestBetsService)
+   4. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService)
+   5. [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
+   6. [Search as a Service - Search Api Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService)
 
 ### Context Aware configurations
 
@@ -115,6 +115,14 @@ Configurations are split in OSGi and Context-Aware.
 | Autocomplete options Max Limit   | autocompleteOptionsMax       | The maximum number of autocomplete options displayed.                                                                      |          |
 
 ![Context aware configuration](images/context-aware_search-configuration.png "Search configuration")
+
+## Rendering
+
+As the search components are highly dynamic, rendering is  completely done in the frontend.
+Within the HTL only a webcomponent with the api-endpoint and configuration is exported.
+The HTL script is only rendering a placeholder in **wcmmode = edit**.
+The components are utilizing `org.apache.sling.models.jacksonexporter` to export the
+sling model into json. The exported json is then consumed by the FE and the actual component markup is generated.
 
 # System Requirements
 
@@ -182,16 +190,8 @@ In the filevault-package-maven-plugin plugin configuration of your all projectâ€
 To uninstall the module, delete the following subtrees:
 
 * /apps/saas-aem-module
-* /apps/saas-aem-module-packages
-* /home/users/system/saas
-
-## Rendering
-
-As the search components are highly dynamic, rendering is  completely done in the frontend. 
-Within the HTL only a webcomponent with the api-endpoint and configuration is exported. 
-The HTL script is only rendering a placeholder in **wcmmode = edit**. 
-The components are utilizing `org.apache.sling.models.jacksonexporter` to export the
-sling model into json. The exported json is then consumed by the FE and the actual component markup is generated.
+  * /apps/saas-aem-module-packages
+  * /home/users/system/saas
 
 # License
 
