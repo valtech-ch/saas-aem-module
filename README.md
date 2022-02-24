@@ -56,13 +56,13 @@ documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-
 # Features
 
 - **Production-Ready:** Ready made APIs and components that are well tested and used in Production.
-  - **Cloud-Ready:** Whether on AEM as a Cloud Service, on Adobe Managed Services, or on-premise, they just work.
-  - **Customizable** Modules are designed to be customized: API module with interfaces, components can be changed similar to AEM core components, modules published on maven central and npm registry.  
-  - **Themeable:** The components markup follows BEM CSS conventions and are prefixed to avoid any integration conflicts.
-  - **Configurable:** Features can be configured on component and on context aware-level.
-  - **WebApp-Ready:** The streamlined JSON output allows client-side rendering.
-  - **Developer friendly:** Intensive documentation in readme files, javadocs and sample code.
-  - **Open Sourced:** If something is not as it should, contribution is welcomed.
+- **Cloud-Ready:** Whether on AEM as a Cloud Service, on Adobe Managed Services, or on-premise, they just work.
+- **Customizable** Modules are designed to be customized: API module with interfaces, components can be changed similar to AEM core components, modules published on maven central and npm registry.  
+- **Themeable:** The components markup follows BEM CSS conventions and are prefixed to avoid any integration conflicts.
+- **Configurable:** Features can be configured on component and on context aware-level.
+- **WebApp-Ready:** The streamlined JSON output allows client-side rendering.
+- **Developer friendly:** Intensive documentation in readme files, javadocs and sample code.
+- **Open Sourced:** If something is not as it should, contribution is welcomed.
 
 ## Components
 
