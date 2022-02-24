@@ -38,6 +38,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
+      - run: npm ci
       - run: npm --no-git-tag-version version ${{ github.event.inputs.releaseVersion }}
       - run: npm publish --dry-run ${{ github.event.inputs.dryRun }}
         env:
