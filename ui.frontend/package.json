@@ -25,7 +25,8 @@
     "lint-staged": "lint-staged",
     "package": "webpack --config ./webpack.npm.js",
     "release": "npm publish --access public",
-    "postversion": "git add . && git push"
+    "version": "git add package.json package-lock.json",
+    "postversion": "git push"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
