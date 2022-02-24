@@ -67,8 +67,8 @@ documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-
 ## Components
 
 * [Search Redirect](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchredirect/README.md)
-  * [Search](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)
-  * [Search Tab](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)
+* [Search](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)
+* [Search Tab](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)
 
 **Component group:** _Search as a Service - Content_
 
