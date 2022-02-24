@@ -1,0 +1,45 @@
+name: Publish package to NPM registry
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release version (<major.minor.patch> | major | minor | patch)'
+        required: false
+        default: ''
+      dryRun:
+        description: 'Dry Run? (false to do an actual release)'
+        required: true
+        default: 'true'
+jobs:
+  build-npm:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ui.frontend
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16      
+      -  run: npm ci
+      -  run: npm test
+
+  publish-npm:
+    needs: build-npm
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ui.frontend
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm version ${{ github.event.inputs.releaseVersion }}
+      - run: npm publish --dry-run ${{ github.event.inputs.dryRun }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
