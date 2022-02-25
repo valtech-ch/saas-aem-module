@@ -1,6 +1,8 @@
 # AEM Module to integrate Valtech's Search as a Service
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valtech-ch_saas-aem-module&metric=alert_status)](https://sonarcloud.io/dashboard?id=valtech-ch_saas-aem-module)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.valtech-ch/saas-aem.all/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.valtech-ch/saas-aem.all)
+[![javadoc](https://javadoc.io/badge2/io.github.valtech-ch/saas-aem.api/javadoc.svg)](https://javadoc.io/doc/io.github.valtech-ch/saas-aem.api)
 
 AEM Search Module to use and customize Valtech's Search as a Service (SAAS) offering within AEM.
 
@@ -57,7 +59,7 @@ documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-
 
 - **Production-Ready:** Ready made APIs and components that are well tested and used in Production.
 - **Cloud-Ready:** Whether on AEM as a Cloud Service, on Adobe Managed Services, or on-premise, they just work.
-- **Customizable** Modules are designed to be customized: API module with interfaces, components can be changed similar to AEM core components, modules published on maven central and npm registry.  
+- **Customizable:** Modules are designed to be customized: API module with interfaces, components can be changed similar to AEM core components, modules published on maven central and npm registry.  
 - **Themeable:** The components markup follows BEM CSS conventions and are prefixed to avoid any integration conflicts.
 - **Configurable:** Features can be configured on component and on context aware-level.
 - **WebApp-Ready:** The streamlined JSON output allows client-side rendering.
@@ -145,7 +147,7 @@ template where the components would be used.
 
 To see a styling sample based on WKND theme, the following client library should be included (NOT RECOMMENDED FOR PRODUCTION):
 
-* [saas-aem-module.wknd-sample](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/clientlibs/wknd-sample)
+* [saas-aem-module.wknd.sample](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/clientlibs/wknd-sample)
 
 To read more information about how to style, [here](ui.frontend/src/main/webpack/site/styles/wkndsample/README.md)
 
