@@ -24,7 +24,9 @@
     "prepare": "cd .. && husky install",
     "lint-staged": "lint-staged",
     "package": "webpack --config ./webpack.npm.js",
-    "release": "npm publish --access public"
+    "release": "npm publish --access public",
+    "version": "git add package.json package-lock.json && git commit -m 'Bump version'",
+    "postversion": "git push"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
