@@ -39,7 +39,7 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: git config --global user.email "jovan.stojanov@valtech.com" && git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/valtech-ch/saas-aem-module 
+      - run: git config --global user.email "jovan.stojanov@valtech.com" && git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/valtech-ch/saas-aem-module 
       - run: npm --no-git-tag-version version ${{ github.event.inputs.releaseVersion }} && git add package.json package-lock.json && git commit -m "Bump version ${{ github.event.inputs.releaseVersion }}" && git push
       - run: npm publish --dry-run ${{ github.event.inputs.dryRun }}
         env:
