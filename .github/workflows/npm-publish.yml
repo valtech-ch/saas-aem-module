@@ -39,8 +39,7 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: mkdir .git
-      - run: npm --no-git-tag-version version ${{ github.event.inputs.releaseVersion }}
+      - run: npm --no-git-tag-version version ${{ github.event.inputs.releaseVersion }} && ga package.json package-lock.json && gc -m "Bump version ${{ github.event.inputs.releaseVersion }}" && git push
       - run: npm publish --dry-run ${{ github.event.inputs.dryRun }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
