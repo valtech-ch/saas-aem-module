@@ -216,7 +216,7 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
                 getEffectiveFilters(parentSearch, requestWrapper),
                 Optional.ofNullable(facets).map(List::stream).orElse(
                         Stream.empty()).map(FacetModel::getFieldName).collect(
-                        Collectors.toSet()),
+                        Collectors.toCollection(LinkedHashSet::new)),
                 template);
     }
 

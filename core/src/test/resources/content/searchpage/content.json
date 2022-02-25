@@ -51,7 +51,20 @@
                 "jcr:lastModifiedBy": "admin",
                 "jcr:created": "Thu Sep 09 2021 10:42:07 GMT+0200",
                 "jcr:lastModified": "Thu Sep 09 2021 10:42:07 GMT+0200",
-                "sling:resourceType": "saas-aem-module/components/searchtab"
+                "sling:resourceType": "saas-aem-module/components/searchtab",
+                "facets": {
+                  "jcr:primaryType": "nt:unstructured",
+                  "item0": {
+                    "jcr:primaryType": "nt:unstructured",
+                    "label": "Content type",
+                    "fieldName": "contentType"
+                  },
+                  "item1": {
+                    "jcr:primaryType": "nt:unstructured",
+                    "label": "Domain",
+                    "fieldName": "domain"
+                  }
+                }
               },
               "searchtab_2": {
                 "jcr:primaryType": "nt:unstructured",

@@ -44,6 +44,10 @@
   "facet_counts": {
     "facet_queries": {},
     "facet_fields": {
+      "contentType": [
+        "pdf",
+        285
+      ],
       "domain": [
         "www.valtech.com",
         1584

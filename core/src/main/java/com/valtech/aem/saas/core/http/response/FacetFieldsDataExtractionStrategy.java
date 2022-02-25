@@ -31,7 +31,7 @@ public final class FacetFieldsDataExtractionStrategy implements
     private List<FacetFieldResultsDTO> getFacetResults(@NonNull FacetCountsDTO facetCounts) {
         return Optional.ofNullable(facetCounts.getFacetFields())
                        .filter(MapUtils::isNotEmpty)
-                       .map(HashMap::entrySet)
+                       .map(LinkedHashMap::entrySet)
                        .map(Collection::stream)
                        .orElse(Stream.empty())
                        .map(entry -> FacetFieldResultsDTO.builder().fieldName(entry.getKey())
