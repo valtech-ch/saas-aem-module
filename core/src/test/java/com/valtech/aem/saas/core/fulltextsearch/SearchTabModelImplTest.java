@@ -21,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.LinkedHashSet;
 import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,14 +88,17 @@ class SearchTabModelImplTest {
         context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "bar");
         context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_PAGE, "2");
         ArgumentCaptor<Integer> startParam = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<LinkedHashSet> facetInput = ArgumentCaptor.forClass(LinkedHashSet.class);
         testAdaptable();
         verify(fulltextSearchService).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
-                                                 startParam.capture(), anyInt(), anySet(), anySet(), any());
+                                                 startParam.capture(), anyInt(), anySet(), facetInput.capture(),
+                                                 any());
         assertThat(testee.getResults(), nullValue());
         assertThat(testee.getResultsTotal(), is(0));
         assertThat(testee.getSuggestion(), is(nullValue()));
         assertThat(testee.getExportedType(), is(SearchTabModelImpl.RESOURCE_TYPE));
         assertThat(startParam.getValue(), Is.is(15));
+        assertThat(facetInput.getValue().stream().findFirst().get(), Is.is("contentType"));
     }
 
     private void testAdaptable() {
