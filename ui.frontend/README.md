@@ -1,17 +1,12 @@
 # Frontend Library of the AEM Module to integrate Valtech's Search as a Service
 
-## Introduction
-SAAS (Search as a Service) is continuously improved by Valtech Switzerland in cooperation with its clients. This service allows Valtech clients to jointly benefit from a constantly evolving and improved search service for digital experience platforms. Improvements are continuously rolled out as updates become available without any downtime. The offering consists of the following main components:
+This is the frontend library of the [AEM Module to integrate Valtech's Search as a Service](../README.md).
+More info about the project can be also found there.
 
-* SAAS Crawler - Web page crawling, extraction of relevant content areas, and metadata.
-* SAAS Administration UI - Interface for controlling and configuring the crawlers.
-* SAAS Engine - Collection of APIs for full text or typeahead content queries.
-* SAAS AEM Search Component - this very component for integrating SAAS into AEM within a very short timeframe through configuration and styling
+## Integration
 
-## Approach
-The AEM Search Component can be installed and connected to SAAS through configuration. Content Authors then configure content pages that act as Search Result Pages (SERP). The author configures the behaviour like filters or tabs according to the specific needs of the SERP.
-
-On top of that, AEM developers can extend the AEM Search Component to implement custom requirements that are not covered out-of-the-box. The component follows the architectural patterns of Adobe Core Component. Therefore, the approach is known and straight forward to extend while ensuring maintainability of the core module.
+The frontend sources can be either embedded with clientlibs or added as a dependency in your frontend build.
+To use with clientlibs, please see the details outlined [here](../README.md#clientlibs).
 
 ## Build and release procedure
 
