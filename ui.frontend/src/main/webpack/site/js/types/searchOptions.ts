@@ -17,4 +17,5 @@ export type SearchConfig = {
   autocompleteUrl: string
   autoSuggestText: string
   noResultsText: string
+  trackingUrlParam? :string
 }
