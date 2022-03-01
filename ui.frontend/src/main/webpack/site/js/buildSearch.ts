@@ -6,19 +6,20 @@ import buildSearchForm, {
 } from './components/searchForm'
 import buildSearchInput from './components/searchInput'
 import { QUERY_PARAM_SEARCH_TERM } from './constants'
-import { getDataAttributeFromSearchElement } from './searchElement'
-import { SearchOptions } from './types/searchOptions'
+// import { getDataAttributeFromSearchElement } from './searchElement'
+import {SearchConfig, SearchOptions} from './types/searchOptions'
 import initSaasStyle from './utils/saasStyle'
 
 export const buildSearch = async (
   searchElement: HTMLDivElement,
+  searchConfig: SearchConfig,
   options?: SearchOptions,
 ): Promise<void> => {
-  const searchConfig = getDataAttributeFromSearchElement(searchElement)
-
-  if (!searchConfig) {
-    return
-  }
+  // const searchConfig = getDataAttributeFromSearchElement(searchElement)
+  //
+  // if (!searchConfig) {
+  //   return
+  // }
 
   const { callbacks, autoSuggestionDebounceTime = 500 } = options || {}
 
@@ -33,7 +34,9 @@ export const buildSearch = async (
     autocompleteTriggerThreshold,
     autoSuggestText,
     noResultsText,
+    trackingUrl,
   } = searchConfig
+
 
   const searchContainer = document.createElement('div')
   searchContainer.classList.add('cmp-saas')

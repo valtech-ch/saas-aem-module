@@ -108,6 +108,11 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
         return searchConfiguration.autocompleteOptionsMax();
     }
 
+    @Override
+    public boolean isTrackingEnabled() {
+        return searchConfiguration.enableTracking();
+    }
+
     private <T> Stream<T> asStream(T[] array) {
         return Optional.ofNullable(array).map(Arrays::stream).orElse(Stream.empty());
     }

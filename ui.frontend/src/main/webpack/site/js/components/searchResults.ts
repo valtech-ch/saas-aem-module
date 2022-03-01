@@ -18,7 +18,7 @@ export const generateSearchItemList = (
       searchItemElement.addEventListener('click', (event) => {
         event.preventDefault()
 
-        onSearchItemClick?.(searchItem.title)
+        onSearchItemClick?.(searchItem.url)
       })
     }
     return searchItemElement

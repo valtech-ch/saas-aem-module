@@ -3,7 +3,6 @@ export type SearchItem = {
   description: string
   url: string
   bestBet: boolean
-  trackingUrlParam: string
 }
 
 export const buildSearchItem = ({
@@ -11,7 +10,6 @@ export const buildSearchItem = ({
   description,
   url,
   bestBet,
-  trackingUrlParam
 }: SearchItem): HTMLDivElement => {
   const searchItem = document.createElement('div')
   searchItem.classList.add('cmp-saas__results-item')
@@ -34,31 +32,31 @@ export const buildSearchItem = ({
 
   const searchItemUrl = document.createElement('a')
   searchItemUrl.classList.add('cmp-saas__results-item-url')
-  //searchItemUrl.href = url
+  searchItemUrl.href = url
 
   searchItemUrl.appendChild(searchItemUrlCite)
   searchItemUrl.appendChild(searchItemTitle)
   searchItemUrl.appendChild(searchItemDescription)
   searchItem.appendChild(searchItemUrl)
 
-  searchItem.addEventListener("click", () => {
-     fetch(trackingUrl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ clickedUrl: url})
-    })
-  .then(response => response.json())
-        .then(data => {
-          console.log('Success:', data);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        })
-
-  })
+  // searchItem.addEventListener("click", () => {
+  //    fetch(trackingUrl, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({ trackedUrl: url})
+  //   })
+  // .then(response => response.json())
+  //       .then(data => {
+  //         console.log('Success:', data);
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error:', error);
+  //       })
+  //
+  // })
 
 
   return searchItem

@@ -33,9 +33,6 @@ import java.util.stream.Collectors;
 public class DefaultAutocompleteService implements AutocompleteService {
 
     @Reference
-    private SearchServiceConnectionConfigurationService searchServiceConnectionConfigurationService;
-
-    @Reference
     private SearchApiRequestExecutorService searchApiRequestExecutorService;
 
     private Configuration configuration;

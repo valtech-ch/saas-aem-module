@@ -73,4 +73,12 @@ public interface SearchModel extends SearchInputModel {
      */
     String getNoResultsText();
 
+    /**
+     * Gets the tracking url of the search component.
+     * Tracking is done on client interaction with search results.
+     *
+     * @return url string.
+     */
+    String getTrackingUrl();
+
 }
