@@ -3,6 +3,10 @@ package com.valtech.aem.saas.core.fulltextsearch;
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ContainerExporter;
 import com.adobe.cq.export.json.ExporterConstants;
+import com.adobe.cq.wcm.core.components.models.Container;
+import com.adobe.cq.wcm.core.components.models.datalayer.ComponentData;
+import com.adobe.cq.wcm.core.components.models.datalayer.builder.DataLayerBuilder;
+import com.adobe.cq.wcm.core.components.util.ComponentUtils;
 import com.day.cq.i18n.I18n;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -51,7 +55,7 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchModelImpl.RESOURCE_
        resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
           extensions = ExporterConstants.SLING_MODEL_EXTENSION)
-public class SearchModelImpl implements SearchModel, ContainerExporter {
+public class SearchModelImpl implements SearchModel, Container {
 
     public static final String RESOURCE_TYPE = "saas-aem-module/components/search";
     public static final String NODE_NAME_SEARCH_TABS_CONTAINER = "search-tabs";
@@ -150,6 +154,20 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private SearchCAConfigurationModel searchCAConfigurationModel;
 
+    @Override
+    public ComponentData getData() {
+        if (ComponentUtils.isDataLayerEnabled(this.resource)) {
+            return DataLayerBuilder.forContainer()
+                                   .withId(this::getId)
+                                   .withTitle(this::getTitle)
+                                   .withType(this::getExportedType)
+                                   .build();
+
+        }
+        return null;
+    }
+
+
     @PostConstruct
     private void init() {
         searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
@@ -171,7 +189,9 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     @JsonIgnore
     public String getLanguage() {
-        return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
+        return StringUtils.isNotBlank(language)
+                ? language
+                : getLocale().getLanguage();
     }
 
     @Override

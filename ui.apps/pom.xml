@@ -52,7 +52,6 @@
                         <cloudManagerTarget>none</cloudManagerTarget>
                     </properties>
                     <group>com.valtech.aem</group>
-                    <name>saas.ui.apps</name>
                     <packageType>application</packageType>
                     <repositoryStructurePackages>
                         <repositoryStructurePackage>

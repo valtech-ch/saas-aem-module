@@ -74,6 +74,11 @@
                             <type>zip</type>
                             <target>/apps/saas-aem-module-packages/application/install</target>
                         </embedded>
+                        <embedded>
+                                <groupId>com.adobe.cq</groupId>
+                                <artifactId>core.wcm.components.core</artifactId>
+                                <target>/apps/saas-aem-module-vendor-packages/application/install</target>
+                        </embedded>
                     </embeddeds>
                 </configuration>
             </plugin>
@@ -186,6 +191,10 @@
             <artifactId>saas-aem.ui.config</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.cq</groupId>
+            <artifactId>core.wcm.components.core</artifactId>
         </dependency>
     </dependencies>
 </project>

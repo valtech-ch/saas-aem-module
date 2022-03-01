@@ -33,10 +33,12 @@ export const buildSearch = async (
     autocompleteTriggerThreshold,
     autoSuggestText,
     noResultsText,
+    dataLayer,
   } = searchConfig
 
   const searchContainer = document.createElement('div')
   searchContainer.classList.add('cmp-saas')
+  searchContainer.dataset.cmpDataLayer = JSON.stringify(dataLayer)
 
   const searchFormElement = buildSearchForm()
   const searchResetButton = buildSearchClearButton()

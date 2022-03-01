@@ -3,6 +3,10 @@ package com.valtech.aem.saas.core.fulltextsearch;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
+import com.adobe.cq.wcm.core.components.models.Component;
+import com.adobe.cq.wcm.core.components.models.datalayer.ComponentData;
+import com.adobe.cq.wcm.core.components.models.datalayer.builder.DataLayerBuilder;
+import com.adobe.cq.wcm.core.components.util.ComponentUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
@@ -15,6 +19,7 @@ import com.valtech.aem.saas.api.query.FilterFactory;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.util.ResourceUtil;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +52,7 @@ import static com.valtech.aem.saas.core.fulltextsearch.SearchTabModelImpl.RESOUR
        resourceType = RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
           extensions = ExporterConstants.SLING_MODEL_EXTENSION)
-public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
+public class SearchTabModelImpl implements SearchTabModel, Component {
 
     public static final String RESOURCE_TYPE = "saas-aem-module/components/searchtab";
     public static final int DEFAULT_START_PAGE = 1;
@@ -136,6 +141,26 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
             facetFilters = getFacetFilters(fulltextSearchResults.getFacetFieldsResults());
         });
     }
+
+    @Override
+    public ComponentData getData() {
+        if (ComponentUtils.isDataLayerEnabled(this.resource)) {
+            return DataLayerBuilder.forComponent()
+                                   .withId(this::getId)
+                                   .withParentId(() -> Optional.ofNullable(parentSearch).map(SearchModel::getId).orElse(""))
+                                   .withTitle(this::getTitle)
+                                   .withType(this::getExportedType)
+                                   .build();
+
+        }
+        return null;
+    }
+
+    @Override
+    public String getId() {
+        return ResourceUtil.generateId("saas", resource.getPath());
+    }
+
 
     private Optional<Integer> getConfiguredResultsPerPage() {
         return Optional.ofNullable(parentSearch).map(SearchModel::getResultsPerPage);

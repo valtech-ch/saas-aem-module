@@ -39,6 +39,7 @@ const buildSearchResultsTab = ({
     results,
     url,
     facetFilters,
+    dataLayer,
   } = tabResult
 
   if (resultsTotal) {
@@ -51,13 +52,14 @@ const buildSearchResultsTab = ({
       tabNumberOfResults: resultsTotal,
       title,
       onSwitchTab,
-      searchContainer,
+      searchContainer
     })
 
     const searchResults = buildSearchResult({
       searchItems: results,
       tabId,
       onSearchItemClick,
+      dataLayer
     })
 
     searchForm?.parentNode?.insertBefore(

@@ -13,6 +13,7 @@ export type SearchTabOptions = {
 export type TabConfig = {
   title: string
   url: string
+  dataLayer: object
 }
 
 export type Suggestion = {
@@ -31,6 +32,7 @@ export type Tab = {
   url: string
   suggestion?: Suggestion
   facetFilters?: FacetFilters
+  dataLayer: object
 }
 
 const CMP_SAAS_RESULTS_CLASS = 'cmp-saas__results'
