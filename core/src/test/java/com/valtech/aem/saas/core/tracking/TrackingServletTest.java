@@ -59,11 +59,6 @@ class TrackingServletTest {
     void setUp() {
         context.registerService(TrackingService.class, trackingService);
         context.registerService(I18nProvider.class, i18nProvider);
-        when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
-        when(i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
-        when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
-        when(i18n.get(SearchModelImpl.I18N_SEARCH_SUGGESTION_TEXT)).thenReturn("Did you mean");
-        when(i18n.get(SearchModelImpl.I18N_SEARCH_NO_RESULTS_TEXT)).thenReturn("No results.");
         context.registerService(PathTransformer.class, pathTransformer);
         testee = context.registerInjectActivateService(new TrackingServlet());
         context.create().resource("/content/saas-aem-module", "sling:configRef", "/conf/saas-aem-module");
@@ -85,6 +80,11 @@ class TrackingServletTest {
 
     @Test
     void testTracking() throws ServletException, IOException {
+        when(i18nProvider.getI18n(Locale.ENGLISH)).thenReturn(i18n);
+        when(i18n.get(SearchTabModelImpl.I18N_KEY_LOAD_MORE_BUTTON_LABEL)).thenReturn("load more");
+        when(i18n.get(SearchModelImpl.I18N_KEY_SEARCH_BUTTON_LABEL)).thenReturn("search");
+        when(i18n.get(SearchModelImpl.I18N_SEARCH_SUGGESTION_TEXT)).thenReturn("Did you mean");
+        when(i18n.get(SearchModelImpl.I18N_SEARCH_NO_RESULTS_TEXT)).thenReturn("No results.");
         when(trackingService.trackUrl(anyString())).thenReturn(Optional.of(new UrlTrackingDTO("", "", 0, "")));
         when(pathTransformer.map(any(SlingHttpServletRequest.class), Mockito.eq(context.currentResource().getPath()))).thenReturn(context.currentResource().getPath());
         SlingHttpServletRequest request = context.request();
