@@ -39,25 +39,5 @@ export const buildSearchItem = ({
   searchItemUrl.appendChild(searchItemDescription)
   searchItem.appendChild(searchItemUrl)
 
-  // searchItem.addEventListener("click", () => {
-  //    fetch(trackingUrl, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({ trackedUrl: url})
-  //   })
-  // .then(response => response.json())
-  //       .then(data => {
-  //         console.log('Success:', data);
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error:', error);
-  //       })
-  //
-  // })
-
-
   return searchItem
 }

@@ -199,7 +199,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private List<SearchTabModel> getSearchTabList() {
-        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest() && !hasSelectors()) {
             return searchTabResources.stream()
                                      .map(r -> modelFactory.getModelFromWrappedRequest(request,
                                                                                        r,
@@ -231,9 +231,10 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
                     .isPresent()) {
             return Optional.ofNullable(request)
                            .map(r -> pathTransformer.map(r, resource.getPath()))
-                           .map(url -> String.format("%s.%s",
+                           .map(url -> String.format("%s.%s.%s",
                                                      url,
-                                                     TrackingServlet.TRACKING_SELECTOR));
+                                                     TrackingServlet.TRACKING_SELECTOR,
+                                                     TrackingServlet.TRACKING_EXTENSION));
         }
         log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
         return Optional.empty();
@@ -263,7 +264,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private ConnectionFailedAlert resolveConnectionFailedAlert() {
-        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest() && !hasSelectors()) {
             if (searchCAConfigurationModel == null) {
                 log.error("Can not resolve context aware search configuration model.");
                 return new ConnectionFailedAlert(AlertVariant.WARNING,
@@ -296,6 +297,10 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private boolean isResourceOverriddenRequest() {
         return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
+    }
+
+    private boolean hasSelectors() {
+        return ArrayUtils.isNotEmpty(request.getRequestPathInfo().getSelectors());
     }
 
     private boolean isResolvedFromRequest() {

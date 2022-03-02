@@ -42,7 +42,7 @@ public class DefaultTrackingService implements TrackingService {
         }
 
         URIBuilder uriBuilder = new URIBuilder();
-        uriBuilder.addParameter("trackedUrl", url);
+        uriBuilder.addParameter("url", url);
         SearchRequest searchRequest = new SearchRequestGet(createTrackingApiUrl() + uriBuilder.toString());
         Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
 
@@ -52,7 +52,7 @@ public class DefaultTrackingService implements TrackingService {
 
     private String createTrackingApiUrl() {
         return StringUtils.join(searchAdminRequestExecutorService.getBaseUrl(),
-                                configuration.trackingService_apiAction(),
+                                configuration.trackingService_apiVersionPath(),
                                 configuration.trackingService_apiAction());
     }
 
