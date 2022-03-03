@@ -110,7 +110,7 @@ class SearchModelImplTest {
         assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
         assertThat(testee.getSearchTabs(), not(empty()));
         assertThat(testee.getAutocompleteUrl(), is("/search.autocomplete.json"));
-        assertThat(testee.getTrackingUrl(), is("/search.tracking.html"));
+        assertThat(testee.getTrackingUrl(), is("/search.tracking.json"));
     }
 
     @Test
