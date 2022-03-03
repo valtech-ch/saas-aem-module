@@ -2,19 +2,16 @@ package com.valtech.aem.saas.core.http.response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.valtech.aem.saas.core.http.response.dto.FacetCountsDTO;
+import com.valtech.aem.saas.api.tracking.dto.SearchResultItemTrackingDTO;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
 /**
- * A strategy for extracting facet counts data.
+ * A strategy for extracting search result item tracking data.
  */
 @RequiredArgsConstructor
-public final class PojoDataExtractionStrategy<T> implements SearchResponseDataExtractionStrategy<T> {
-
-    private final Class<T> clazz;
+public final class SearchResultItemTrackingExtractionStrategy implements SearchResponseDataExtractionStrategy<SearchResultItemTrackingDTO> {
 
     @Override
     public String propertyName() {
@@ -22,11 +19,11 @@ public final class PojoDataExtractionStrategy<T> implements SearchResponseDataEx
     }
 
     @Override
-    public Optional<T> getData(JsonElement response) {
+    public Optional<SearchResultItemTrackingDTO> getData(JsonElement response) {
         return Optional.ofNullable(response)
                        .filter(JsonElement::isJsonObject)
                        .map(JsonElement::getAsJsonObject)
-                       .map(jsonObject -> new Gson().fromJson(jsonObject, clazz));
+                       .map(jsonObject -> new Gson().fromJson(jsonObject, SearchResultItemTrackingDTO.class));
     }
 
 }

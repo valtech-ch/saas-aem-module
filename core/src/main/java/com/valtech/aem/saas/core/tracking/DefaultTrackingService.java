@@ -1,13 +1,12 @@
 package com.valtech.aem.saas.core.tracking;
 
 import com.valtech.aem.saas.api.tracking.TrackingService;
-import com.valtech.aem.saas.api.tracking.dto.UrlTrackingDTO;
+import com.valtech.aem.saas.api.tracking.dto.SearchResultItemTrackingDTO;
 import com.valtech.aem.saas.core.http.client.SearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
-import com.valtech.aem.saas.core.http.request.SearchRequestPost;
-import com.valtech.aem.saas.core.http.response.PojoDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
+import com.valtech.aem.saas.core.http.response.SearchResultItemTrackingExtractionStrategy;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,24 +29,26 @@ import java.util.Optional;
 @Designate(ocd = DefaultTrackingService.Configuration.class)
 public class DefaultTrackingService implements TrackingService {
 
+    private static final String QUERY_PARAM_URL = "url";
+
     @Reference
     private SearchAdminRequestExecutorService searchAdminRequestExecutorService;
 
     private Configuration configuration;
 
     @Override
-    public Optional<UrlTrackingDTO> trackUrl(@NonNull String url) {
+    public Optional<SearchResultItemTrackingDTO> trackUrl(@NonNull String url) {
         if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("Tracked url should not be empty.");
         }
 
         URIBuilder uriBuilder = new URIBuilder();
-        uriBuilder.addParameter("url", url);
+        uriBuilder.addParameter(QUERY_PARAM_URL, url);
         SearchRequest searchRequest = new SearchRequestGet(createTrackingApiUrl() + uriBuilder.toString());
         Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
 
         return searchResponse.filter(SearchResponse::isSuccess)
-                             .flatMap(response -> response.get(new PojoDataExtractionStrategy<>(UrlTrackingDTO.class)));
+                             .flatMap(response -> response.get(new SearchResultItemTrackingExtractionStrategy()));
     }
 
     private String createTrackingApiUrl() {
@@ -66,7 +67,7 @@ public class DefaultTrackingService implements TrackingService {
                            description = "Analytics Tracking Api specific details.")
     public @interface Configuration {
 
-        String DEFAULT_API_ACTION = "/analytics/track";
+        String DEFAULT_TRACKING_ACTION = "/analytics/track";
         String DEFAULT_API_VERSION_PATH = "/api/v3";  // NOSONAR
 
         @AttributeDefinition(name = "Api version path",
@@ -77,7 +78,7 @@ public class DefaultTrackingService implements TrackingService {
         @AttributeDefinition(name = "Api action",
                              description = "Path designating the action",
                              type = AttributeType.STRING)
-        String trackingService_apiAction() default DEFAULT_API_ACTION; // NOSONAR
+        String trackingService_apiAction() default DEFAULT_TRACKING_ACTION; // NOSONAR
 
     }
 }

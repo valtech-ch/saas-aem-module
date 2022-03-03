@@ -6,7 +6,7 @@ import lombok.Value;
 
 @ToString
 @Value
-public class UrlTrackingDTO {
+public class SearchResultItemTrackingDTO {
     String createdAt;
     String id;
     @SerializedName("siteid")

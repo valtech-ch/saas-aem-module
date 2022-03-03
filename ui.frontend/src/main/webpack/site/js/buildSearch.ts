@@ -28,17 +28,17 @@ export const buildSearch = async (
     callbacks.onSearchItemClick = (url: string) => {
       const headers = new Headers()
       headers.append('Content-Type', 'application/x-www-form-urlencoded')
-      fetch(`${window.location.origin}${trackingUrl}`, {
+      fetch(trackingUrl, {
         method: 'POST',
-        headers: headers,
+        headers,
         body: `trackedUrl=${url}`,
       })
-        .then((response) => {
-          console.log(response.status)
-        })
         .catch((error) => {
-          console.error('Error:', error)
+          console.error(`Error while tracking search result item with url: ${url}.`, error)
         })
+          .finally(() => {
+            window.location.href = url
+          })
     }
   }
 

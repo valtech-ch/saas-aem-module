@@ -18,7 +18,7 @@ import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
-import com.valtech.aem.saas.core.tracking.TrackingServlet;
+import com.valtech.aem.saas.core.tracking.SearchResultItemTrackingServlet;
 import com.valtech.aem.saas.core.util.ResourceUtil;
 import lombok.Getter;
 import lombok.NonNull;
@@ -227,16 +227,16 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private Optional<String> createTrackingUrl() {
         if (Optional.ofNullable(searchCAConfigurationModel)
-                    .filter(SearchCAConfigurationModel::isTrackingEnabled)
+                    .filter(SearchCAConfigurationModel::isSearchResultItemTrackingEnabled)
                     .isPresent()) {
             return Optional.ofNullable(request)
                            .map(r -> pathTransformer.map(r, resource.getPath()))
                            .map(url -> String.format("%s.%s.%s",
                                                      url,
-                                                     TrackingServlet.TRACKING_SELECTOR,
-                                                     TrackingServlet.TRACKING_EXTENSION));
+                                                     SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_SELECTOR,
+                                                     SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_EXTENSION));
         }
-        log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
+        log.info("Search Result Item Tracking is not enabled. To enable it, please check context aware SearchConfiguration.");
         return Optional.empty();
     }
 
@@ -264,7 +264,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private ConnectionFailedAlert resolveConnectionFailedAlert() {
-        if (isResolvedFromRequest() && !isResourceOverriddenRequest() && !hasSelectors()) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
             if (searchCAConfigurationModel == null) {
                 log.error("Can not resolve context aware search configuration model.");
                 return new ConnectionFailedAlert(AlertVariant.WARNING,

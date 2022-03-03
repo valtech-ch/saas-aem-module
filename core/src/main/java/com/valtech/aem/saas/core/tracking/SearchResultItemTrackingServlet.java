@@ -2,7 +2,7 @@ package com.valtech.aem.saas.core.tracking;
 
 import com.valtech.aem.saas.api.fulltextsearch.SearchModel;
 import com.valtech.aem.saas.api.tracking.TrackingService;
-import com.valtech.aem.saas.api.tracking.dto.UrlTrackingDTO;
+import com.valtech.aem.saas.api.tracking.dto.SearchResultItemTrackingDTO;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.fulltextsearch.SearchModelImpl;
 import lombok.NonNull;
@@ -22,18 +22,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.valtech.aem.saas.core.tracking.TrackingServlet.TRACKING_EXTENSION;
+import static com.valtech.aem.saas.core.tracking.SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_EXTENSION;
 
 @Slf4j
 @Component(service = Servlet.class)
 @SlingServletResourceTypes(resourceTypes = SearchModelImpl.RESOURCE_TYPE,
                            methods = HttpPost.METHOD_NAME,
-                           selectors = TrackingServlet.TRACKING_SELECTOR,
-                           extensions = TRACKING_EXTENSION)
-public class TrackingServlet extends SlingAllMethodsServlet {
+                           selectors = SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_SELECTOR,
+                           extensions = SEARCH_RESULT_ITEM_TRACKING_EXTENSION)
+public class SearchResultItemTrackingServlet extends SlingAllMethodsServlet {
 
-    public static final String TRACKING_SELECTOR = "tracking";
-    public static final String TRACKING_EXTENSION = "html";
+    public static final String SEARCH_RESULT_ITEM_TRACKING_SELECTOR = "tracking";
+    public static final String SEARCH_RESULT_ITEM_TRACKING_EXTENSION = "html";
     public static final String QUERY_PARAM_TRACKED_URL = "trackedUrl";
 
     @Reference
@@ -48,8 +48,9 @@ public class TrackingServlet extends SlingAllMethodsServlet {
             throw new IllegalArgumentException("Can not adapt the request to RequestWrapper sling model.");
         }
 
-        String url = requestWrapper.getParameter(QUERY_PARAM_TRACKED_URL).orElse("");
-        if (StringUtils.isEmpty(url)) {
+        Optional<String> url = requestWrapper.getParameter(QUERY_PARAM_TRACKED_URL).filter(StringUtils::isNotBlank);
+        if (!url.isPresent()) {
+            log.warn("Url is not specified.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -58,18 +59,19 @@ public class TrackingServlet extends SlingAllMethodsServlet {
                 "Can not resolve search model."));
 
         if (StringUtils.isBlank(searchModel.getTrackingUrl())) {
-            log.info("Tracking is not enabled. Please enable it in CA configration or search component's dialog");
+            log.warn("Tracking is not enabled. Please enable it in CA configuration or search component's dialog");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        Optional<UrlTrackingDTO> urlTrackingDTO = trackingService.trackUrl(url);
+        Optional<SearchResultItemTrackingDTO> urlTrackingDTO = trackingService.trackUrl(url.get());
         if (!urlTrackingDTO.isPresent()) {
+            log.error("Failed to update tracking entry for url: {}", url.get());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
-        log.debug("Url tracking entry is created: {}", urlTrackingDTO);
+        log.debug("Url tracking entry is created/updated: {}", urlTrackingDTO);
         response.setStatus(HttpServletResponse.SC_CREATED);
     }
 

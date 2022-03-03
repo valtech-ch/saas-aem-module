@@ -94,7 +94,9 @@ class SearchModelImplTest {
                                                   context.currentResource().getPath(),
                                                   SearchConfiguration.class,
                                                   "index",
-                                                  "foo");
+                                                  "foo",
+                                                  "enableSearchResultItemTracking",
+                                                  true);
         context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "bar");
         adaptRequest();
         testAdaptable();

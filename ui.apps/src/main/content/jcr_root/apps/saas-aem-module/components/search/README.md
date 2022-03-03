@@ -35,3 +35,8 @@ When requesting the search component resource with a selector: **autocomplete** 
 /content/saas/us/en/search-page/jcr:content/search.**autocomplete**.**json**), then the search component uses the
 typeahead api, to retrieve options for auto complete of the term query (**q**). The search query performed for the
 typeahead considers the component's configured filter entries.
+
+#### Search result item tracking
+
+AEM exposes an api for tracking search results items. The api serves a POST request sent to the search component resource with a selector: **tracking** and extension: **html** (e.g.
+/content/saas/us/en/search-page/jcr:content/search.**tracking**.**html**). The request should be sent with a payload containing the search result item's url (`trackedUrl=<search result item url>`). Using the TrackingService OSGi component, the url tracking entry is updated in SaaS system.  

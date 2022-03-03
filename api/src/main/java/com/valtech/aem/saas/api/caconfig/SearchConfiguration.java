@@ -11,7 +11,7 @@ public @interface SearchConfiguration {
     boolean DEFAULT_ENABLE_BEST_BETS = false;
     boolean DEFAULT_ENABLE_AUTO_SUGGEST = true;
     boolean DEFAULT_ENABLE_AUTOCOMPLETE = true;
-    boolean DEFAULT_ENABLE_TRACKING = true;
+    boolean DEFAULT_ENABLE_SEARCH_RESULT_ITEM_TRACKING = false;
     String DEFAULT_HIGHLIGHT_TAG_NAME = "em";
     int DEFAULT_PROJECT_ID = 1;
     int DEFAULT_AUTOCOMPLETE_TRIGGER_THRESHOLD = 3;
@@ -55,7 +55,7 @@ public @interface SearchConfiguration {
               description = "The maximum number of autocomplete options displayed.")
     int autocompleteOptionsMax() default DEFAULT_AUTOCOMPLETE_RESULTS_MAX_LIMIT;
 
-    @Property(label = "Enable Tracking",
-              description = "Flag that enables click tracking feature in the search component.")
-    boolean enableTracking() default DEFAULT_ENABLE_TRACKING;
+    @Property(label = "Enable Search Result Item Tracking",
+              description = "Flag that enables click tracking feature in for search result items.")
+    boolean enableSearchResultItemTracking() default DEFAULT_ENABLE_SEARCH_RESULT_ITEM_TRACKING;
 }

@@ -109,8 +109,8 @@ public final class SearchCAConfigurationModelImpl implements SearchCAConfigurati
     }
 
     @Override
-    public boolean isTrackingEnabled() {
-        return searchConfiguration.enableTracking();
+    public boolean isSearchResultItemTrackingEnabled() {
+        return searchConfiguration.enableSearchResultItemTracking();
     }
 
     private <T> Stream<T> asStream(T[] array) {
