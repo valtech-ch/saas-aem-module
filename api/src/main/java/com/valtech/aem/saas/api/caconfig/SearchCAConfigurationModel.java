@@ -81,5 +81,7 @@ public interface SearchCAConfigurationModel {
      *
      * @return true if enabled.
      */
-    boolean isSearchResultItemTrackingEnabled();
+    default boolean isSearchResultItemTrackingEnabled() {
+        return false;
+    }
 }

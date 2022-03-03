@@ -79,6 +79,8 @@ public interface SearchModel extends SearchInputModel {
      *
      * @return url string.
      */
-    String getTrackingUrl();
+    default String getTrackingUrl() {
+        return null;
+    }
 
 }

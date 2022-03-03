@@ -33,7 +33,7 @@ import static com.valtech.aem.saas.core.tracking.SearchResultItemTrackingServlet
 public class SearchResultItemTrackingServlet extends SlingAllMethodsServlet {
 
     public static final String SEARCH_RESULT_ITEM_TRACKING_SELECTOR = "tracking";
-    public static final String SEARCH_RESULT_ITEM_TRACKING_EXTENSION = "html";
+    public static final String SEARCH_RESULT_ITEM_TRACKING_EXTENSION = "json";
     public static final String QUERY_PARAM_TRACKED_URL = "trackedUrl";
 
     @Reference
