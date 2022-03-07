@@ -30,7 +30,7 @@
                         jcr:primaryType="nt:unstructured"
                         jcr:title="Generic Page"
                         sling:resourceType="wcm/core/components/policy/policy"
-                        clientlibs="[saas-aem-module.base]">
+                        clientlibs="[saas-aem-module.base,saas-aem-module.wknd.sample]">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy>
             </page>
