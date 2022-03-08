@@ -1,4 +1,4 @@
-import type {SearchConfig} from './types/searchOptions'
+import type { SearchConfig } from './types/searchOptions'
 
 export const getSearchElement = (
   searchSelector = 'search',
@@ -15,16 +15,14 @@ export const getSearchElements = (
 export const isSearchConfig = (
   searchConfig: SearchConfig | never,
 ): searchConfig is SearchConfig => {
-  const {
-    id,
-    searchFieldPlaceholderText,
-    searchUrl,
-  } = searchConfig
+  const { id, searchFieldPlaceholderText, searchUrl } = searchConfig
 
   return (
-      typeof id === 'string' && Boolean(id)
-      && typeof searchFieldPlaceholderText === 'string' && Boolean(searchFieldPlaceholderText)
-      && (!searchUrl || typeof searchUrl === 'string')
+    typeof id === 'string' &&
+    Boolean(id) &&
+    typeof searchFieldPlaceholderText === 'string' &&
+    Boolean(searchFieldPlaceholderText) &&
+    (!searchUrl || typeof searchUrl === 'string')
   )
 }
 

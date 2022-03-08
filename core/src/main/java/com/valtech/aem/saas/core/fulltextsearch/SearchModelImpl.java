@@ -18,6 +18,7 @@ import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.autocomplete.AutocompleteServlet;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
 import com.valtech.aem.saas.core.i18n.I18nProvider;
+import com.valtech.aem.saas.core.tracking.SearchResultItemTrackingServlet;
 import com.valtech.aem.saas.core.util.ResourceUtil;
 import lombok.Getter;
 import lombok.NonNull;
@@ -100,6 +101,9 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     private String autocompleteUrl;
 
     @Getter
+    private String trackingUrl;
+
+    @Getter
     private String autoSuggestText;
 
     @Getter
@@ -154,6 +158,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     private void init() {
         searchCAConfigurationModel = resource.adaptTo(SearchCAConfigurationModel.class);
         createAutocompleteUrl().ifPresent(url -> autocompleteUrl = url);
+        createTrackingUrl().ifPresent(url -> trackingUrl = url);
         i18n = i18nProvider.getI18n(getLocale());
         connectionFailedAlert = resolveConnectionFailedAlert();
         getAutocompleteThreshold().ifPresent(threshold -> autocompleteTriggerThreshold = threshold);
@@ -171,7 +176,9 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     @JsonIgnore
     public String getLanguage() {
-        return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
+        return StringUtils.isNotBlank(language)
+                ? language
+                : getLocale().getLanguage();
     }
 
     @Override
@@ -194,7 +201,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private List<SearchTabModel> getSearchTabList() {
-        if (isResolvedFromRequest() && !isResourceOverriddenRequest()) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest() && !hasSelectors()) {
             return searchTabResources.stream()
                                      .map(r -> modelFactory.getModelFromWrappedRequest(request,
                                                                                        r,
@@ -217,6 +224,23 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
                                                      AutocompleteServlet.EXTENSION_JSON));
         }
         log.info("Autocomplete is not enabled. To enable it, please check context aware SearchConfiguration.");
+        return Optional.empty();
+    }
+
+    private Optional<String> createTrackingUrl() {
+        if (Optional.ofNullable(searchCAConfigurationModel)
+                    .filter(SearchCAConfigurationModel::isSearchResultItemTrackingEnabled)
+                    .isPresent()) {
+            return Optional.ofNullable(request)
+                           .map(r -> pathTransformer.map(r, resource.getPath()))
+                           .map(url -> String.format("%s.%s.%s",
+                                                     url,
+                                                     SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_SELECTOR,
+                                                     SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_EXTENSION));
+        }
+        log.debug(
+                "Search Result Item Tracking is not enabled. To enable it, please check context aware " +
+                        "SearchConfiguration.");
         return Optional.empty();
     }
 
@@ -277,6 +301,10 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     private boolean isResourceOverriddenRequest() {
         return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
+    }
+
+    private boolean hasSelectors() {
+        return ArrayUtils.isNotEmpty(request.getRequestPathInfo().getSelectors());
     }
 
     private boolean isResolvedFromRequest() {

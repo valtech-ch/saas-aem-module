@@ -81,12 +81,13 @@ The `saas-aem.core` module offers a default implementation for each of these int
 utilizing the module have the possibility to provide a custom implementation by specifying a higher `service.ranking`
 property and implementing the interface accordingly.
 
-| Interface | Default implementation in `saas-aem.core` |
-| --- | ---: |
-|[FulltextSearchService](api/src/main/java/com/valtech/aem/saas/api/fulltextsearch/FulltextSearchService.java) | [DefaultFulltextSearchService](core/src/main/java/com/valtech/aem/saas/core/fulltextsearch/DefaultFulltextSearchService.java) |
-|[TypeaheadService](api/src/main/java/com/valtech/aem/saas/api/autocomplete/TypeaheadService.java) | [DefaultTypeaheadService](core/src/main/java/com/valtech/aem/saas/core/typeahead/DefaultTypeaheadService.java) |
-|[BestBetsService](api/src/main/java/com/valtech/aem/saas/api/bestbets/BestBetsService.java) | [DefaultBestBetsService](core/src/main/java/com/valtech/aem/saas/core/bestbets/DefaultBestBetsService.java) |
-|[IndexUpdateService](api/src/main/java/com/valtech/aem/saas/api/indexing/IndexUpdateService.java) | [DefaultIndexUpdateService](core/src/main/java/com/valtech/aem/saas/core/indexing/DefaultIndexUpdateService.java) |
+| Interface                                                                                                     |                                                                                     Default implementation in `saas-aem.core` |
+|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------:|
+| [FulltextSearchService](api/src/main/java/com/valtech/aem/saas/api/fulltextsearch/FulltextSearchService.java) | [DefaultFulltextSearchService](core/src/main/java/com/valtech/aem/saas/core/fulltextsearch/DefaultFulltextSearchService.java) |
+| [TypeaheadService](api/src/main/java/com/valtech/aem/saas/api/autocomplete/TypeaheadService.java)             |                [DefaultTypeaheadService](core/src/main/java/com/valtech/aem/saas/core/typeahead/DefaultTypeaheadService.java) |
+| [BestBetsService](api/src/main/java/com/valtech/aem/saas/api/bestbets/BestBetsService.java)                   |                   [DefaultBestBetsService](core/src/main/java/com/valtech/aem/saas/core/bestbets/DefaultBestBetsService.java) |
+| [IndexUpdateService](api/src/main/java/com/valtech/aem/saas/api/indexing/IndexUpdateService.java)             |             [DefaultIndexUpdateService](core/src/main/java/com/valtech/aem/saas/core/indexing/DefaultIndexUpdateService.java) |
+| [TrackingService](api/src/main/java/com/valtech/aem/saas/api/tracking/TrackingService.java)                   |                   [DefaultTrackingService](core/src/main/java/com/valtech/aem/saas/core/tracking/DefaultTrackingService.java) |
 
 ## Configurations
 
@@ -104,17 +105,18 @@ Configurations are split in OSGi and Context-Aware.
 
 ### Context Aware configurations
 
-| Label                            | Name                         | Description                                                                                                                | Required |
-|----------------------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------|:--------:|
-| Search Index                     | index                        | Index defined in SaaS admin                                                                                                |    x     |
-| Search Project Id                | projectId                    | Project identifier defined in SaaS admin                                                                                   |    x     |
-| Search Filters                   | searchFilters                | Key/value pairs of **field name** and **value**                                                                            |          |
-| Search result highlight tag name | highlightTagName             | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`) |          |
-| Enable Best Bets                 | enableBestBets               | Flag that enables displaying best bets on the top of the search results. Defaults to `false`                               |          |
-| Enable Auto Suggest              | enableAutoSuggest            | Flag that enables auto suggest feature in the search component. Defaults to `true`                                         |          |
-| Enable Autocomplete              | enableAutocomplete           | Flag that enables autocomplete feature in the search input. Defaults to `true`                                             |          |
-| Autocomplete Trigger Threshold   | autocompleteTriggerThreshold | The minimum number of search input characters required for displaying autocomplete options.                                |          |
-| Autocomplete options Max Limit   | autocompleteOptionsMax       | The maximum number of autocomplete options displayed.                                                                      |          |
+| Label                              | Name                           | Description                                                                                                                | Required |
+|------------------------------------|:-------------------------------|:---------------------------------------------------------------------------------------------------------------------------|:--------:|
+| Search Index                       | index                          | Index defined in SaaS admin                                                                                                |    x     |
+| Search Project Id                  | projectId                      | Project identifier defined in SaaS admin                                                                                   |    x     |
+| Search Filters                     | searchFilters                  | Key/value pairs of **field name** and **value**                                                                            |          |
+| Search result highlight tag name   | highlightTagName               | The name of the tag that will be used to highlight portions of text in the search results. (Optional; Default value: `em`) |          |
+| Enable Best Bets                   | enableBestBets                 | Flag that enables displaying best bets on the top of the search results. Defaults to `false`                               |          |
+| Enable Auto Suggest                | enableAutoSuggest              | Flag that enables auto suggest feature in the search component. Defaults to `true`                                         |          |
+| Enable Autocomplete                | enableAutocomplete             | Flag that enables autocomplete feature in the search input. Defaults to `true`                                             |          |
+| Autocomplete Trigger Threshold     | autocompleteTriggerThreshold   | The minimum number of search input characters required for displaying autocomplete options.                                |          |
+| Autocomplete options Max Limit     | autocompleteOptionsMax         | The maximum number of autocomplete options displayed.                                                                      |          |
+| Enable Search Result Item Tracking | enableSearchResultItemTracking | Flag that enables search result items tracking. Defaults to `false`                                                        |          |
 
 ![Context aware configuration](images/context-aware_search-configuration.png "Search configuration")
 

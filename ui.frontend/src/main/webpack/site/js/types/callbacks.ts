@@ -6,8 +6,8 @@ export type OnSearchItemClickCallback = (itemTitle: string) => void
 export type OnLoadMoreButtonClickCallback = () => void
 
 export type SearchCallbacks = {
-  onSearch: OnSearchCallback
-  onSwitchTab: OnSwitchTabCallback
-  onSearchItemClick: OnSearchItemClickCallback
-  onLoadMoreButtonClick: OnLoadMoreButtonClickCallback
+  onSearch?: OnSearchCallback
+  onSwitchTab?: OnSwitchTabCallback
+  onSearchItemClick?: OnSearchItemClickCallback
+  onLoadMoreButtonClick?: OnLoadMoreButtonClickCallback
 }
