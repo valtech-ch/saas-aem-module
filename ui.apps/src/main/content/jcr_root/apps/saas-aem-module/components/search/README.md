@@ -35,3 +35,7 @@ When requesting the search component resource with a selector: **autocomplete** 
 /content/saas/us/en/search-page/jcr:content/search.**autocomplete**.**json**), then the search component uses the
 typeahead api, to retrieve options for auto complete of the term query (**q**). The search query performed for the
 typeahead considers the component's configured filter entries.
+
+#### Search result item tracking
+
+Search Result Items can be boosted by the number of clicks within the Search. A Tracking-API can be enabled to allow for click-tracking of search result items. The API allows to send a POST request to the search component resource with a selector: **tracking** and extension: **json** (e.g. /content/saas/us/en/search-page/jcr:content/search.**tracking**.**json**). The request should be sent with a payload containing the search result item's url (trackedUrl=). Using the TrackingService OSGi component, the url tracking entry is updated in SaaS system.

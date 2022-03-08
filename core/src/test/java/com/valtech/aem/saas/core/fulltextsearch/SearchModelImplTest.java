@@ -94,7 +94,9 @@ class SearchModelImplTest {
                                                   context.currentResource().getPath(),
                                                   SearchConfiguration.class,
                                                   "index",
-                                                  "foo");
+                                                  "foo",
+                                                  "enableSearchResultItemTracking",
+                                                  true);
         context.request().addRequestParameter(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "bar");
         adaptRequest();
         testAdaptable();
@@ -108,6 +110,7 @@ class SearchModelImplTest {
         assertThat(testee.getAutocompleteTriggerThreshold(), is(3));
         assertThat(testee.getSearchTabs(), not(empty()));
         assertThat(testee.getAutocompleteUrl(), is("/search.autocomplete.json"));
+        assertThat(testee.getTrackingUrl(), is("/search.tracking.json"));
     }
 
     @Test

@@ -17,5 +17,6 @@ export type SearchConfig = {
   autocompleteUrl: string
   autoSuggestText: string
   noResultsText: string
+  trackingUrl?: string
   dataLayer: string
 }

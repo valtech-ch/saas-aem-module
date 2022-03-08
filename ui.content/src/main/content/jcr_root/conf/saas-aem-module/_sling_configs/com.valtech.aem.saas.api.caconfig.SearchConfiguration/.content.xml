@@ -4,7 +4,7 @@
     jcr:primaryType="cq:Page">
     <jcr:content
             jcr:primaryType="cq:PageContent"
-            client="ic"
+            enableSearchResultItemTracking="{Boolean}true"
             index="icweb">
         <searchFilters
             jcr:primaryType="nt:unstructured">
