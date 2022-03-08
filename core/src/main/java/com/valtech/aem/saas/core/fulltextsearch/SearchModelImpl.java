@@ -176,7 +176,9 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
 
     @JsonIgnore
     public String getLanguage() {
-        return StringUtils.isNotBlank(language) ? language : getLocale().getLanguage();
+        return StringUtils.isNotBlank(language)
+                ? language
+                : getLocale().getLanguage();
     }
 
     @Override
@@ -236,7 +238,9 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
                                                      SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_SELECTOR,
                                                      SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_EXTENSION));
         }
-        log.info("Search Result Item Tracking is not enabled. To enable it, please check context aware SearchConfiguration.");
+        log.debug(
+                "Search Result Item Tracking is not enabled. To enable it, please check context aware " +
+                        "SearchConfiguration.");
         return Optional.empty();
     }
 
