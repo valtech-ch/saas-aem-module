@@ -1,4 +1,4 @@
-import { OnSwitchTabCallback } from '../types/callbacks'
+import { onSwitchTabClick } from '../service/serviceEvent'
 import { FacetFilters } from '../types/facetFilter'
 import { SearchItem } from './searchItem'
 
@@ -6,7 +6,6 @@ export type SearchTabOptions = {
   tabId: string
   tabNumberOfResults: number
   title: string
-  onSwitchTab?: OnSwitchTabCallback
   searchContainer: HTMLDivElement
 }
 
@@ -41,7 +40,7 @@ const buildSearchTab = ({
   tabId,
   title,
   tabNumberOfResults,
-  onSwitchTab,
+
   searchContainer,
 }: SearchTabOptions): HTMLButtonElement => {
   const searchTab = document.createElement('button')
@@ -56,9 +55,8 @@ const buildSearchTab = ({
   searchTab.appendChild(searchTabName)
   searchTab.appendChild(searchTabNumberOfResults)
 
-  searchTab.addEventListener('click', () => {
-    onSwitchTab?.()
-
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  searchTab.addEventListener('SAAS-tab-switch', () => {
     const searchTabs =
       searchContainer.querySelectorAll<HTMLDivElement>('.cmp-saas__results')
 
@@ -76,6 +74,10 @@ const buildSearchTab = ({
       tabElement.classList.remove(CMP_SAAS_RESULTS_SHOW_CLASS)
       tabElement.classList.add(CMP_SAAS_RESULTS_HIDE_CLASS)
     })
+  })
+
+  searchTab.addEventListener('click', () => {
+    searchTab.dispatchEvent(onSwitchTabClick)
   })
 
   return searchTab

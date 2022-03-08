@@ -12,7 +12,7 @@ type BuildSearchResults = {
   loadMoreButtonText: string
   onSearchItemClick?: OnSearchItemClickCallback
   onSwitchTab?: CallbackFunction
-  onLoadMoreButtonClick?: CallbackFunction
+  onLoadMoreButtonClick?: CustomEvent
   searchContainer: HTMLDivElement
 }
 

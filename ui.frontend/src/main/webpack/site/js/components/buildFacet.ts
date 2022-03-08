@@ -1,3 +1,4 @@
+import { onFacetsSelect } from '../service/serviceEvent'
 import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FilterFieldOption } from '../types/facetFilter'
 import fetchSearch from '../utils/fetchSearch'
@@ -49,7 +50,7 @@ BuildFacetOption): HTMLDivElement => {
     : false
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  facetInput.addEventListener('change', async (event) => {
+  facetInput.addEventListener('SAAS-facets-select', async (event) => {
     const isChecked = (event?.target as HTMLInputElement).checked
 
     const currentTab = document.querySelector<HTMLDivElement>(
@@ -117,12 +118,16 @@ BuildFacetOption): HTMLDivElement => {
           tabUrl,
           searchValue,
           searchResultsElement: currentTab,
-          onLoadMoreButtonClick: undefined,
+          onLoadMoreClick: undefined,
           queryParameterName,
         })
         currentTab.appendChild(loadMoreButton)
       }
     }
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  facetInput.addEventListener('change', () => {
+    facetInput.dispatchEvent(onFacetsSelect)
   })
 
   const facetLabel = document.createElement('label')

@@ -1,24 +1,20 @@
-import { OnSearchItemClickCallback } from '../types/callbacks'
+import { onSearchItemClick } from '../service/serviceEvent'
 import { buildSearchItem, SearchItem } from './searchItem'
 
 type SearchResultsOptions = {
   searchItems: SearchItem[]
   tabId: string
-  onSearchItemClick?: OnSearchItemClickCallback
 }
 
 export const generateSearchItemList = (
   searchItems: SearchItem[],
-  onSearchItemClick?: OnSearchItemClickCallback,
 ): HTMLDivElement[] => {
   return searchItems.map((searchItem) => {
     const searchItemElement = buildSearchItem(searchItem)
-
+    searchItemElement.addEventListener('SAAS-search-submit', () => {})
     if (onSearchItemClick) {
-      searchItemElement.addEventListener('click', (event) => {
-        event.preventDefault()
-
-        onSearchItemClick?.(searchItem.title)
+      searchItemElement.addEventListener('click', () => {
+        searchItemElement.dispatchEvent(onSearchItemClick)
       })
     }
     return searchItemElement
@@ -28,7 +24,6 @@ export const generateSearchItemList = (
 const buildSearchResult = ({
   searchItems,
   tabId,
-  onSearchItemClick,
 }: SearchResultsOptions): HTMLDivElement => {
   const searchResults = document.createElement('div')
   searchResults.classList.add('cmp-saas__results')
@@ -38,11 +33,9 @@ const buildSearchResult = ({
 
   searchResults.dataset.tab = tabId
 
-  generateSearchItemList(searchItems, onSearchItemClick).forEach(
-    (searchItemElement) => {
-      resultsItems.appendChild(searchItemElement)
-    },
-  )
+  generateSearchItemList(searchItems).forEach((searchItemElement) => {
+    resultsItems.appendChild(searchItemElement)
+  })
 
   searchResults.appendChild(resultsItems)
 
