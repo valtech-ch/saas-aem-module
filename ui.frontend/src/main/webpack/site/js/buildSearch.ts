@@ -125,4 +125,8 @@ export const buildSearch = async (
       callbacks,
     )
   }
+  const DOMContentLoadedEvent = new Event('DOMContentLoaded', {
+    bubbles: true
+  });
+  window.document.dispatchEvent(DOMContentLoadedEvent)
 }
