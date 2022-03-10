@@ -18,8 +18,7 @@ The main parts of the template are:
   component-related Java code such as servlets or request filters.
 * it.tests: Java based integration tests
 * ui.apps: contains the /apps (and /etc) parts of the project, ie JS&CSS clientlibs, components, and templates
-* ui.content: contains sample content using the components from the ui.apps (Excluded from the default build. It can be
-  included by using the maven profile "installSampleContent")
+* ui.content: contains sample content using the components from the ui.apps
 * ui.config: contains runmode specific OSGi configs for the project
 * ui.frontend: contains the FE implementation of search components (markup and js)
 * all: a single content package that embeds all of the compiled modules (bundles and content packages) including any

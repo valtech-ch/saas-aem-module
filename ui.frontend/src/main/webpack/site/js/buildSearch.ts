@@ -20,7 +20,27 @@ export const buildSearch = async (
     return
   }
 
-  const { callbacks, autoSuggestionDebounceTime = 500 } = options || {}
+  const { trackingUrl } = searchConfig
+
+  const { callbacks = {}, autoSuggestionDebounceTime = 500 } = options || {}
+
+  if (trackingUrl) {
+    callbacks.onSearchItemClick = (url: string) => {
+      const headers = new Headers()
+      headers.append('Content-Type', 'application/x-www-form-urlencoded')
+      fetch(trackingUrl, {
+        method: 'POST',
+        headers,
+        body: `trackedUrl=${url}`,
+      })
+        .catch((error) => {
+          console.error(`Error while tracking search result item with url: ${url}.`, error)
+        })
+          .finally(() => {
+            window.location.href = url
+          })
+    }
+  }
 
   const {
     id,

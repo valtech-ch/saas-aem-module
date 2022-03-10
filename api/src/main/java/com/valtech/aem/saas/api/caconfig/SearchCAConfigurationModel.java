@@ -75,4 +75,13 @@ public interface SearchCAConfigurationModel {
      * @return positive integer.
      */
     int getAutocompleteResultsMaxTotal();
+
+    /**
+     * Checks whether search result items click tracking is enabled.
+     *
+     * @return true if enabled.
+     */
+    default boolean isSearchResultItemTrackingEnabled() {
+        return false;
+    }
 }

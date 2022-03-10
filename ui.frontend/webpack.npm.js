@@ -24,7 +24,7 @@ module.exports = merge(
     mode: 'production',
     resolve: resolve,
     entry: {
-        base: SOURCE_ROOT + '/site/js/initSearch.ts',
+      base: SOURCE_ROOT + '/site/js/initSearch.ts',
     },
     devtool: 'source-map',
     output: {
