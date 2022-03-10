@@ -5,6 +5,7 @@ type SearchResultsOptions = {
   searchItems: SearchItem[]
   tabId: string
   onSearchItemClick?: OnSearchItemClickCallback
+  dataLayer: object
 }
 
 export const generateSearchItemList = (
@@ -29,9 +30,11 @@ const buildSearchResult = ({
   searchItems,
   tabId,
   onSearchItemClick,
+  dataLayer,
 }: SearchResultsOptions): HTMLDivElement => {
   const searchResults = document.createElement('div')
   searchResults.classList.add('cmp-saas__results')
+  searchResults.dataset.cmpDataLayer = JSON.stringify(dataLayer)
 
   const resultsItems = document.createElement('div')
   resultsItems.classList.add('cmp-saas__results-items')

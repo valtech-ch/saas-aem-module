@@ -51,7 +51,6 @@
                         <cloudManagerTarget>none</cloudManagerTarget>
                     </properties>
                     <group>com.valtech.aem</group>
-                    <name>saas.ui.content</name>
                     <packageType>content</packageType>
                     <accessControlHandling>merge</accessControlHandling>
                     <validatorsSettings>

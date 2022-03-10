@@ -131,6 +131,10 @@
             <artifactId>commons-io</artifactId>
             <groupId>commons-io</groupId>
         </dependency>
+        <dependency>
+            <groupId>com.adobe.cq</groupId>
+            <artifactId>core.wcm.components.core</artifactId>
+        </dependency>
         <!-- AEM 6.5 Dependencies, this has to be last dependency before the Testing section -->
         <dependency>
             <groupId>com.adobe.aem</groupId>

@@ -32,7 +32,6 @@ export const getDataAttributeFromSearchElement = (
   if (!element) {
     return null
   }
-
   const searchConfigStr = element.dataset.searchConfig || '{}'
   const searchConfig = JSON.parse(searchConfigStr) as SearchConfig
 
