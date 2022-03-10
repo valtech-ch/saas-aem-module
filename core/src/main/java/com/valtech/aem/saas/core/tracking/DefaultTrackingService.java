@@ -4,13 +4,15 @@ import com.valtech.aem.saas.api.tracking.TrackingService;
 import com.valtech.aem.saas.api.tracking.dto.SearchResultItemTrackingDTO;
 import com.valtech.aem.saas.core.http.client.SearchAdminRequestExecutorService;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
-import com.valtech.aem.saas.core.http.request.SearchRequestGet;
+import com.valtech.aem.saas.core.http.request.SearchRequestPost;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.http.response.SearchResultItemTrackingExtractionStrategy;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.entity.ContentType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -21,6 +23,7 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -42,9 +45,15 @@ public class DefaultTrackingService implements TrackingService {
             throw new IllegalArgumentException("Tracked url should not be empty.");
         }
 
-        URIBuilder uriBuilder = new URIBuilder();
-        uriBuilder.addParameter(QUERY_PARAM_URL, url);
-        SearchRequest searchRequest = new SearchRequestGet(createTrackingApiUrl() + uriBuilder.toString());
+        HttpEntity payload = EntityBuilder.create()
+                                          .setText(String.format("{\"url\":\"%s\"}", url))
+                                          .setContentType(ContentType.APPLICATION_JSON)
+                                          .setContentEncoding(StandardCharsets.UTF_8.name())
+                                          .build();
+        SearchRequest searchRequest = SearchRequestPost.builder()
+                                                       .uri(createTrackingApiUrl())
+                                                       .httpEntity(payload)
+                                                       .build();
         Optional<SearchResponse> searchResponse = searchAdminRequestExecutorService.execute(searchRequest);
 
         return searchResponse.filter(SearchResponse::isSuccess)
