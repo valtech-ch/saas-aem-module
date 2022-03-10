@@ -1,4 +1,4 @@
-import { onSearchItemClick } from '../service/serviceEvent'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import { buildSearchItem, SearchItem } from './searchItem'
 
 type SearchResultsOptions = {
@@ -11,10 +11,18 @@ export const generateSearchItemList = (
 ): HTMLDivElement[] => {
   return searchItems.map((searchItem) => {
     const searchItemElement = buildSearchItem(searchItem)
-    searchItemElement.addEventListener('SAAS-search-submit', () => {})
-    if (onSearchItemClick) {
-      searchItemElement.addEventListener('click', () => {
-        searchItemElement.dispatchEvent(onSearchItemClick)
+    if (searchItemElement) {
+      searchItemElement.addEventListener('click', (e) => {
+        e.target?.dispatchEvent(
+          createCustomEvent({
+            name: events.searchItem,
+            data: {
+              title: searchItem.title,
+              url: searchItem.url,
+              bestBet: searchItem.bestBet,
+            },
+          }),
+        )
       })
     }
     return searchItemElement

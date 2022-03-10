@@ -1,5 +1,4 @@
-import { onFacetsSelect } from '../service/serviceEvent'
-import { OnSearchItemClickCallback } from '../types/callbacks'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import { FilterFieldOption } from '../types/facetFilter'
 import fetchSearch from '../utils/fetchSearch'
 import buildLoadMoreButton from './loadMoreButton'
@@ -13,7 +12,6 @@ interface BuildFacetOption extends FilterFieldOption {
   tabId: string
   loadMoreButtonText: string
   title: string
-  onSearchItemClick?: OnSearchItemClickCallback
 }
 
 const buildFacet = ({
@@ -24,7 +22,6 @@ const buildFacet = ({
   searchValue,
   queryParameterName,
   tabId,
-  onSearchItemClick,
   loadMoreButtonText,
   title,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -50,7 +47,7 @@ BuildFacetOption): HTMLDivElement => {
     : false
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  facetInput.addEventListener('SAAS-facets-select', async (event) => {
+  facetInput.addEventListener('click', async (event) => {
     const isChecked = (event?.target as HTMLInputElement).checked
 
     const currentTab = document.querySelector<HTMLDivElement>(
@@ -100,14 +97,23 @@ BuildFacetOption): HTMLDivElement => {
       const resultsItems = document.createElement('div')
       resultsItems.classList.add('cmp-saas__results-items')
 
-      const searchResultsItem = generateSearchItemList(
-        results.results,
-        onSearchItemClick,
-      )
+      const searchResultsItem = generateSearchItemList(results.results)
 
       searchResultsItem.forEach((element) => {
         resultsItems.appendChild(element)
       })
+
+      event.target?.dispatchEvent(
+        createCustomEvent({
+          name: events.facetsSelect,
+          data: {
+            value,
+            searchValue,
+            filterFieldName,
+            queryParameterName,
+          },
+        }),
+      )
 
       currentTab?.appendChild(resultsItems)
 
@@ -124,10 +130,6 @@ BuildFacetOption): HTMLDivElement => {
         currentTab.appendChild(loadMoreButton)
       }
     }
-  })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  facetInput.addEventListener('change', () => {
-    facetInput.dispatchEvent(onFacetsSelect)
   })
 
   const facetLabel = document.createElement('label')

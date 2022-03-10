@@ -1,26 +1,20 @@
-export const onLoadMoreClick = new CustomEvent('SAAS-loadMore-click', {
-  detail: {},
-})
+export const events = {
+  tabswitch: 'saas-tab-switch',
+  searchItem: 'saas-search-item-click',
+  facetsSelect: 'saas-facets-select',
+  autoSuggestSelect: 'saas-autosuggest-select',
+  searchSubmit: 'saas-search-submit',
+  loadMore: 'saas-load-more-click',
+}
 
-export const onSwitchTabClick = new CustomEvent('SAAS-tab-switch', {
-  detail: {},
-})
-
-export const onSearchItemClick = new CustomEvent('SAAS-searchItem-click', {
-  detail: {},
-})
-
-export const onFacetsSelect = new CustomEvent('SAAS-facets-select', {
-  detail: {},
-})
-
-export const onAutoSuggestionSelect = new CustomEvent(
-  'SAAS-autoSuggest-select',
-  {
-    detail: {},
-  },
-)
-
-export const onSearch = new CustomEvent('SAAS-search-submit', {
-  detail: {},
-})
+export const createCustomEvent = ({
+  name,
+  data,
+}: {
+  name: string
+  data?: any
+}): Event => {
+  return new CustomEvent(name, {
+    detail: data,
+  })
+}

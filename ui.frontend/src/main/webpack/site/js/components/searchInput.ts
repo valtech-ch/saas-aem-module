@@ -1,4 +1,5 @@
 import { QUERY_PARAM_SEARCH_TERM } from '../constants'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import cleanString from '../utils/cleanString'
 import debounce from '../utils/debounce'
 import fetchAutoComplete from '../utils/fetchAutoComplete'
@@ -85,12 +86,23 @@ const buildSuggestionElements = ({
     suggestionDropdownElement.innerHTML = cleanAndFormatResult
     suggestionDropdownElement.classList.add(SUGGESTION_ELEMENT_CLASS)
 
-    suggestionDropdownElement.addEventListener('click', () => {
+    suggestionDropdownElement.addEventListener('click', (e) => {
       const searchInputElementCopy = searchInput
       cleanSessionStorage()
       removeSuggestionList(searchContainer)
 
       searchInputElementCopy.value = result
+
+      e.target?.dispatchEvent(
+        createCustomEvent({
+          name: events.autoSuggestSelect,
+          data: {
+            query,
+            results: results.length,
+            term: suggestionDropdownElement.textContent,
+          },
+        }),
+      )
 
       if (searchButtonElement) {
         searchButtonElement.click()

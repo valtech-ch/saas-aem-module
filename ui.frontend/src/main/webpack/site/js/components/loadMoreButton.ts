@@ -1,4 +1,4 @@
-import { onLoadMoreClick } from '../service/serviceEvent'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import fetchSearch from '../utils/fetchSearch'
 import { buildSearchItem, SearchItem } from './searchItem'
 
@@ -27,7 +27,7 @@ const buildLoadMoreButton = ({
   loadMoreButton.innerText = loadMoreButtonText
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  loadMoreButton.addEventListener('SAAS-loadMore-click', async () => {
+  loadMoreButton.addEventListener('click', async (e) => {
     const currentPage = loadMoreButton.dataset.page || page
 
     const selectedFacets = searchResultsElement?.dataset.facets
@@ -43,6 +43,21 @@ const buildLoadMoreButton = ({
     )
 
     loadMoreButton.dataset.page = `${+currentPage + 1}`
+
+    e.target?.dispatchEvent(
+      createCustomEvent({
+        name: events.loadMore,
+        data: {
+          page: `${+currentPage + 1}`,
+          searchValue,
+          tabUrl,
+          selectedFacets,
+          selectedSearchTab: document
+            .querySelector('.cmp-saas')
+            ?.getAttribute('data-selected-tab'),
+        },
+      }),
+    )
 
     // we must search the results items wrapper from the current 'active' results element.
     const searchResultsItemsWrapper =
@@ -65,11 +80,6 @@ const buildLoadMoreButton = ({
     if (!resultJSON?.showLoadMoreButton) {
       loadMoreButton.remove()
     }
-  })
-
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  loadMoreButton.addEventListener('click', () => {
-    loadMoreButton.dispatchEvent(onLoadMoreClick)
   })
 
   return loadMoreButton

@@ -1,4 +1,3 @@
-import { CallbackFunction, OnSearchItemClickCallback } from '../types/callbacks'
 import buildFacetsGroup from './buildFacetsGroup'
 import buildLoadMoreButton from './loadMoreButton'
 import buildSearchResult from './searchResults'
@@ -10,9 +9,6 @@ type BuildSearchResults = {
   searchForm: HTMLFormElement
   searchFormParent: HTMLElement | null
   loadMoreButtonText: string
-  onSearchItemClick?: OnSearchItemClickCallback
-  onSwitchTab?: CallbackFunction
-  onLoadMoreButtonClick?: CustomEvent
   searchContainer: HTMLDivElement
 }
 
@@ -26,9 +22,7 @@ const buildSearchResultsTab = ({
   searchForm,
   searchFormParent,
   loadMoreButtonText,
-  onSearchItemClick,
-  onSwitchTab,
-  onLoadMoreButtonClick,
+
   searchContainer,
 }: BuildSearchResults): void => {
   const {
@@ -50,14 +44,12 @@ const buildSearchResultsTab = ({
       tabId,
       tabNumberOfResults: resultsTotal,
       title,
-      onSwitchTab,
       searchContainer,
     })
 
     const searchResults = buildSearchResult({
       searchItems: results,
       tabId,
-      onSearchItemClick,
     })
 
     searchForm?.parentNode?.insertBefore(
@@ -77,7 +69,6 @@ const buildSearchResultsTab = ({
         searchValue,
         queryParameterName: facetFilters.queryParameterName,
         tabId,
-        onSearchItemClick,
         loadMoreButtonText,
         title,
       })
@@ -98,7 +89,6 @@ const buildSearchResultsTab = ({
         tabUrl: url,
         searchValue,
         searchResultsElement: searchResults,
-        onLoadMoreButtonClick,
       })
       searchResults?.appendChild(loadMoreButton)
     }

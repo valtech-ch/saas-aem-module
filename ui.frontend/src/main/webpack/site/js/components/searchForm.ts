@@ -1,4 +1,5 @@
 import { QUERY_PARAM_SEARCH_TERM } from '../constants'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import type { SearchCallbacks } from '../types/callbacks'
 import fetchSearch from '../utils/fetchSearch'
 import { saveFacetFiltersToAppState } from '../utils/state'
@@ -158,6 +159,15 @@ export const addEventToSearchForm = (
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   return searchForm.addEventListener('submit', (event) => {
     event.preventDefault()
+
+    event.target?.dispatchEvent(
+      createCustomEvent({
+        name: events.searchSubmit,
+        data: {
+          query: searchInputElement.value,
+        },
+      }),
+    )
 
     return triggerSearch(
       searchForm,
