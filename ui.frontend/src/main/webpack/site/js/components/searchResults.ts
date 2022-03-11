@@ -11,20 +11,20 @@ export const generateSearchItemList = (
 ): HTMLDivElement[] => {
   return searchItems.map((searchItem) => {
     const searchItemElement = buildSearchItem(searchItem)
-    if (searchItemElement) {
-      searchItemElement.addEventListener('click', (e) => {
-        e.target?.dispatchEvent(
-          createCustomEvent({
-            name: events.searchItem,
-            data: {
-              title: searchItem.title,
-              url: searchItem.url,
-              bestBet: searchItem.bestBet,
-            },
-          }),
-        )
-      })
-    }
+
+    searchItemElement?.addEventListener('click', (e) => {
+      e.target?.dispatchEvent(
+        createCustomEvent({
+          name: events.searchItem,
+          data: {
+            title: searchItem.title,
+            url: searchItem.url,
+            bestBet: searchItem.bestBet,
+          },
+        }),
+      )
+    })
+
     return searchItemElement
   })
 }

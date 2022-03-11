@@ -47,7 +47,7 @@ BuildFacetOption): HTMLDivElement => {
     : false
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  facetInput.addEventListener('click', async (event) => {
+  facetInput.addEventListener('change', async (event) => {
     const isChecked = (event?.target as HTMLInputElement).checked
 
     const currentTab = document.querySelector<HTMLDivElement>(
@@ -124,7 +124,7 @@ BuildFacetOption): HTMLDivElement => {
           tabUrl,
           searchValue,
           searchResultsElement: currentTab,
-          onLoadMoreClick: undefined,
+          onLoadMoreButtonClick: undefined,
           queryParameterName,
         })
         currentTab.appendChild(loadMoreButton)
