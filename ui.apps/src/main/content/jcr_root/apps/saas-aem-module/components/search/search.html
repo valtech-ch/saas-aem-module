@@ -14,6 +14,16 @@
         </coral-alert-content>
     </coral-alert>
 </sly>
+<sly data-sly-test="${isEdit}">
+     <sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
+          data-sly-call="${clientlib.all @ categories='coralui3'}"></sly>
+     <coral-alert size="L">
+         <coral-alert-header>${'com.valtech.aem.saas.core.search.viewAsPublishedHintHeader.text' @ i18n}</coral-alert-header>
+         <coral-alert-content>
+          ${'com.valtech.aem.saas.core.search.viewAsPublishedHint.text' @ i18n} 
+         </coral-alert-content>
+     </coral-alert>
+ </sly>
 <sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
      data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
 <div data-sly-test="${isEdit}"
