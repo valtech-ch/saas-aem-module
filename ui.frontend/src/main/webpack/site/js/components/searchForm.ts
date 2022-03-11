@@ -1,6 +1,5 @@
 import { QUERY_PARAM_SEARCH_TERM } from '../constants'
 import { createCustomEvent, events } from '../service/serviceEvent'
-import type { SearchCallbacks } from '../types/callbacks'
 import fetchSearch from '../utils/fetchSearch'
 import { saveFacetFiltersToAppState } from '../utils/state'
 import updateUrl from '../utils/updateUrl'
@@ -14,8 +13,6 @@ import {
   Tab,
   TabConfig,
 } from './searchTabs'
-
-type SearchFormSubmitEventOption = SearchCallbacks
 
 const buildSearchForm = (): HTMLFormElement => {
   const searchForm = document.createElement('form')
@@ -33,7 +30,6 @@ export const triggerSearch = async (
   autoSuggestText: string,
   searchContainer: HTMLDivElement,
   noResultsText: string,
-  options?: SearchFormSubmitEventOption,
 ): Promise<void> => {
   if (searchInputElement.dataset.loading === 'true') {
     return
@@ -47,10 +43,6 @@ export const triggerSearch = async (
   }
 
   const searchValue = searchInputElement.value
-  const { onSearch, onSwitchTab, onSearchItemClick, onLoadMoreButtonClick } =
-    options || {}
-
-  onSearch?.(searchValue)
 
   if (searchUrl && searchUrl != window.location.pathname) {
     const currentUrl = new URL(window.location.href)
@@ -136,9 +128,6 @@ export const triggerSearch = async (
           searchForm,
           searchFormParent,
           loadMoreButtonText,
-          onSearchItemClick,
-          onSwitchTab,
-          onLoadMoreButtonClick,
           searchContainer,
         })
       })
@@ -154,7 +143,6 @@ export const addEventToSearchForm = (
   autoSuggestText: string,
   searchContainer: HTMLDivElement,
   noResultsText: string,
-  options?: SearchFormSubmitEventOption,
 ): void => {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   return searchForm.addEventListener('submit', (event) => {
@@ -178,7 +166,6 @@ export const addEventToSearchForm = (
       autoSuggestText,
       searchContainer,
       noResultsText,
-      options,
     )
   })
 }

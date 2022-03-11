@@ -1,8 +1,6 @@
 import { TabConfig } from '../components/searchTabs'
-import { SearchCallbacks } from './callbacks'
 
 export type SearchOptions = {
-  callbacks: SearchCallbacks
   autoSuggestionDebounceTime: number
 }
 
