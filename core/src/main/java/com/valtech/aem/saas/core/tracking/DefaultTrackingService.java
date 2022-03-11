@@ -46,7 +46,7 @@ public class DefaultTrackingService implements TrackingService {
         }
 
         HttpEntity payload = EntityBuilder.create()
-                                          .setText(String.format("{\"url\":\"%s\"}", url))
+                                          .setText(String.format("{\"%s\":\"%s\"}", QUERY_PARAM_URL, url))
                                           .setContentType(ContentType.APPLICATION_JSON)
                                           .setContentEncoding(StandardCharsets.UTF_8.name())
                                           .build();

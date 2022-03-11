@@ -15,6 +15,7 @@ export const createCustomEvent = ({
   data?: any
 }): Event => {
   return new CustomEvent(name, {
+    bubbles: true,
     detail: data,
   })
 }
