@@ -15,7 +15,7 @@ export const generateSearchItemList = (
     searchItemElement?.addEventListener('click', (e) => {
       e.target?.dispatchEvent(
         createCustomEvent({
-          name: events.searchItem,
+          name: events.searchResultItemClick,
           data: {
             title: searchItem.title,
             url: searchItem.url,

@@ -1,6 +1,6 @@
 export const events = {
-  tabswitch: 'saas-tab-switch',
-  searchItem: 'saas-search-item-click',
+  tabSwitch: 'saas-tab-switch',
+  searchResultItemClick: 'saas-search-result-item-click',
   facetsSelect: 'saas-facets-select',
   autoSuggestSelect: 'saas-autosuggest-select',
   searchSubmit: 'saas-search-submit',

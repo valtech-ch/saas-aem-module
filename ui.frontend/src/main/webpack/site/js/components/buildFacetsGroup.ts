@@ -22,7 +22,6 @@ const buildFacetsGroup = ({
   searchValue,
   queryParameterName,
   tabId,
-  // onSearchItemClick,
   loadMoreButtonText,
   title,
 }: BuildFacetsGroup): HTMLDivElement => {

@@ -26,7 +26,7 @@ export const buildSearch = async (
   const { autoSuggestionDebounceTime = 500 } = options || {}
 
   if (trackingUrl) {
-    document.addEventListener(events.searchItem, (e) => {
+    document.addEventListener(events.searchResultItemClick, (e) => {
       const headers = new Headers()
       headers.append('Content-Type', 'application/x-www-form-urlencoded')
       fetch(trackingUrl, {
