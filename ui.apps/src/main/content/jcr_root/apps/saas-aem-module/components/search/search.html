@@ -1,6 +1,8 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchModel"
      data-sly-test.isEdit="${wcmmode.edit}"
-     data-sly-test.connectionFailedAlert="${model.connectionFailedAlert}"></sly>
+     data-sly-test.connectionFailedAlert="${model.connectionFailedAlert}">
+     <search data-search-config="${model.configJson}"></search>
+</sly>
 <sly data-sly-test="${isEdit && connectionFailedAlert}">
     <sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
          data-sly-call="${clientlib.all @ categories='coralui3'}"></sly>
@@ -14,6 +16,7 @@
         </coral-alert-content>
     </coral-alert>
 </sly>
+
 <sly data-sly-test="${isEdit}">
      <sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
           data-sly-call="${clientlib.all @ categories='coralui3'}"></sly>
@@ -24,9 +27,7 @@
          </coral-alert-content>
      </coral-alert>
  </sly>
-<sly data-sly-use.template="/apps/saas-aem-module/shared/htl/templates/placeholder.html"
-     data-sly-call="${template.placeholder @ isEmpty=isEdit}"></sly>
+
+
 <div data-sly-test="${isEdit}"
-     data-sly-resource="${'search-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>
-<search data-sly-test="${!isEdit}"
-        data-search-config="${model.configJson}"></search>
+ data-sly-resource="${'search-tabs' @ resourceType='wcm/foundation/components/responsivegrid'}"></div>
