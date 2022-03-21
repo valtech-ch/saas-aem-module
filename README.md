@@ -142,14 +142,14 @@ You can download the packages and bundles from [Maven Central](https://repo1.mav
 
 To use the Search components, the following client libraries should be included:
 
-* [saas-aem-module.base](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/clientlibs/clientlib-base)
+* [saas-aem-module.base](https://github.com/valtech-ch/saas-aem-module/blob/main/ui.frontend/clientlib.config.js#L67)
 
 Add them as entries in the multifield _**Client Libraries JavaScript Page Head**_, in the page policy for the editable
 template where the components would be used.
 
 To see a styling sample based on WKND theme, the following client library should be included (NOT RECOMMENDED FOR PRODUCTION):
 
-* [saas-aem-module.wknd.sample](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/clientlibs/wknd-sample)
+* [saas-aem-module.wknd.sample](https://github.com/valtech-ch/saas-aem-module/blob/main/ui.frontend/clientlib.config.js#L82)
 
 To read more information about how to style, [here](ui.frontend/src/main/webpack/site/styles/wkndsample/README.md)
 
