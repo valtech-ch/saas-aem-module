@@ -1,4 +1,4 @@
-import { OnLoadMoreButtonClickCallback } from '../types/callbacks'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import fetchSearch from '../utils/fetchSearch'
 import { buildSearchItem, SearchItem } from './searchItem'
 
@@ -8,7 +8,6 @@ type SearchButtonOptions = {
   tabUrl: string
   searchValue: string
   searchResultsElement: HTMLDivElement
-  onLoadMoreButtonClick?: OnLoadMoreButtonClickCallback
   queryParameterName?: string
 }
 
@@ -18,7 +17,6 @@ const buildLoadMoreButton = ({
   tabUrl,
   searchValue,
   searchResultsElement,
-  onLoadMoreButtonClick,
   queryParameterName,
 }: SearchButtonOptions): HTMLButtonElement => {
   const loadMoreButton = document.createElement('button')
@@ -29,11 +27,7 @@ const buildLoadMoreButton = ({
   loadMoreButton.innerText = loadMoreButtonText
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  loadMoreButton.addEventListener('click', async (event) => {
-    onLoadMoreButtonClick?.()
-
-    event.preventDefault()
-
+  loadMoreButton.addEventListener('click', async (e) => {
     const currentPage = loadMoreButton.dataset.page || page
 
     const selectedFacets = searchResultsElement?.dataset.facets
@@ -49,6 +43,21 @@ const buildLoadMoreButton = ({
     )
 
     loadMoreButton.dataset.page = `${+currentPage + 1}`
+
+    e.target?.dispatchEvent(
+      createCustomEvent({
+        name: events.loadMore,
+        data: {
+          page: `${+currentPage + 1}`,
+          searchValue,
+          tabUrl,
+          selectedFacets,
+          selectedSearchTab: document
+            .querySelector('.cmp-saas')
+            ?.getAttribute('data-selected-tab'),
+        },
+      }),
+    )
 
     // we must search the results items wrapper from the current 'active' results element.
     const searchResultsItemsWrapper =

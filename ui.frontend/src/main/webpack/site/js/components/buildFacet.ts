@@ -1,4 +1,4 @@
-import { OnSearchItemClickCallback } from '../types/callbacks'
+import { createCustomEvent, events } from '../service/serviceEvent'
 import { FilterFieldOption } from '../types/facetFilter'
 import fetchSearch from '../utils/fetchSearch'
 import buildLoadMoreButton from './loadMoreButton'
@@ -12,7 +12,6 @@ interface BuildFacetOption extends FilterFieldOption {
   tabId: string
   loadMoreButtonText: string
   title: string
-  onSearchItemClick?: OnSearchItemClickCallback
 }
 
 const buildFacet = ({
@@ -23,7 +22,6 @@ const buildFacet = ({
   searchValue,
   queryParameterName,
   tabId,
-  onSearchItemClick,
   loadMoreButtonText,
   title,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -99,14 +97,23 @@ BuildFacetOption): HTMLDivElement => {
       const resultsItems = document.createElement('div')
       resultsItems.classList.add('cmp-saas__results-items')
 
-      const searchResultsItem = generateSearchItemList(
-        results.results,
-        onSearchItemClick,
-      )
+      const searchResultsItem = generateSearchItemList(results.results)
 
       searchResultsItem.forEach((element) => {
         resultsItems.appendChild(element)
       })
+
+      event.target?.dispatchEvent(
+        createCustomEvent({
+          name: events.facetsSelect,
+          data: {
+            value,
+            searchValue,
+            filterFieldName,
+            queryParameterName,
+          },
+        }),
+      )
 
       currentTab?.appendChild(resultsItems)
 

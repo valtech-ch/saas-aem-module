@@ -1,4 +1,5 @@
 import { QUERY_PARAM_SEARCH_TERM } from '../constants'
+import { createCustomEvent } from '../service/serviceEvent'
 
 const buildSearchSuggestion = (
   suggestionText: string,
@@ -14,6 +15,17 @@ const buildSearchSuggestion = (
   autoSuggestLink.innerText = `${autoSuggestText} ${suggestionText}`
   autoSuggestLink.href = suggestionUrl.toString()
   autoSuggestElement.appendChild(autoSuggestLink)
+
+  autoSuggestElement.addEventListener('click', (e) => {
+    e.target?.dispatchEvent(
+      createCustomEvent({
+        name: suggestionText,
+        data: {
+          autoSuggestText,
+        },
+      }),
+    )
+  })
 
   return autoSuggestElement
 }

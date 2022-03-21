@@ -1,4 +1,3 @@
-import { OnSearchItemClickCallback } from '../types/callbacks'
 import { FacetItem } from '../types/facetFilter'
 import {
   resetFacetFilterOptionsByTitleAndFilterFieldLabel,
@@ -13,7 +12,6 @@ interface BuildFacetsGroup extends FacetItem {
   tabId: string
   loadMoreButtonText: string
   title: string
-  onSearchItemClick?: OnSearchItemClickCallback
 }
 
 const buildFacetsGroup = ({
@@ -24,7 +22,6 @@ const buildFacetsGroup = ({
   searchValue,
   queryParameterName,
   tabId,
-  onSearchItemClick,
   loadMoreButtonText,
   title,
 }: BuildFacetsGroup): HTMLDivElement => {
@@ -60,7 +57,6 @@ const buildFacetsGroup = ({
         searchValue,
         queryParameterName,
         tabId,
-        onSearchItemClick,
         loadMoreButtonText,
         title,
       })

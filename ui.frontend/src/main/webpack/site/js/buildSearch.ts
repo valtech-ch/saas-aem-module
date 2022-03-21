@@ -7,6 +7,7 @@ import buildSearchForm, {
 import buildSearchInput from './components/searchInput'
 import { QUERY_PARAM_SEARCH_TERM } from './constants'
 import { getDataAttributeFromSearchElement } from './searchElement'
+import { events } from './service/serviceEvent'
 import { SearchOptions } from './types/searchOptions'
 import initSaasStyle from './utils/saasStyle'
 
@@ -22,24 +23,23 @@ export const buildSearch = async (
 
   const { trackingUrl } = searchConfig
 
-  const { callbacks = {}, autoSuggestionDebounceTime = 500 } = options || {}
+  const { autoSuggestionDebounceTime = 500 } = options || {}
 
   if (trackingUrl) {
-    callbacks.onSearchItemClick = (url: string) => {
+    document.addEventListener(events.searchResultItemClick, (e) => {
       const headers = new Headers()
       headers.append('Content-Type', 'application/x-www-form-urlencoded')
       fetch(trackingUrl, {
         method: 'POST',
         headers,
-        body: `trackedUrl=${url}`,
+        body: `trackedUrl=${e.detail.url}`,
+      }).catch((error) => {
+        console.error(
+          `Error while tracking search result item with url: ${e.detail.url}.`,
+          error,
+        )
       })
-        .catch((error) => {
-          console.error(`Error while tracking search result item with url: ${url}.`, error)
-        })
-          .finally(() => {
-            window.location.href = url
-          })
-    }
+    })
   }
 
   const {
@@ -87,7 +87,6 @@ export const buildSearch = async (
     autoSuggestText,
     searchContainer,
     noResultsText,
-    callbacks,
   )
 
   initSaasStyle()
@@ -120,7 +119,6 @@ export const buildSearch = async (
       autoSuggestText,
       searchContainer,
       noResultsText,
-      callbacks,
     )
   }
 }
