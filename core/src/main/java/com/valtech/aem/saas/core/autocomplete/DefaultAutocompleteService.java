@@ -2,13 +2,22 @@ package com.valtech.aem.saas.core.autocomplete;
 
 import com.valtech.aem.saas.api.autocomplete.AutocompleteService;
 import com.valtech.aem.saas.api.caconfig.SearchCAConfigurationModel;
-import com.valtech.aem.saas.api.query.*;
+import com.valtech.aem.saas.api.query.Filter;
+import com.valtech.aem.saas.api.query.FiltersQuery;
+import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
+import com.valtech.aem.saas.api.query.LanguageQuery;
+import com.valtech.aem.saas.api.query.TypeaheadTextQuery;
 import com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
-import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.response.SearchResponse;
 import com.valtech.aem.saas.core.http.response.TypeaheadDataExtractionStrategy;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,9 +32,6 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Component(service = AutocompleteService.class)
 @ServiceDescription("Search as a Service - Autocomplete Service")
@@ -39,10 +45,20 @@ public class DefaultAutocompleteService implements AutocompleteService {
 
     @Override
     public List<String> getResults(
+        @NonNull SearchCAConfigurationModel searchConfiguration,
+        @NonNull String text,
+        @NonNull String language,
+        Set<Filter> filters) {
+        return  getResults(searchConfiguration, text, language, filters, false);
+    }
+    
+    @Override
+    public List<String> getResults(
             @NonNull SearchCAConfigurationModel searchConfiguration,
             @NonNull String text,
             @NonNull String language,
-            Set<Filter> filters) {
+            Set<Filter> filters,
+            boolean disableContextFilters) {
         if (StringUtils.isBlank(text)) {
             throw new IllegalArgumentException("Typeahead payload should contain a search text.");
         }
@@ -52,7 +68,7 @@ public class DefaultAutocompleteService implements AutocompleteService {
         String index = searchConfiguration.getIndex();
         SearchRequestGet searchRequestGet = new SearchRequestGet(
                 getApiUrl(index) + getQueryString(text, language,
-                                                  getEffectiveFilters(searchConfiguration.getFilters(), filters)));
+                                                  getEffectiveFilters(searchConfiguration.getFilters(), filters, disableContextFilters)));
         return searchApiRequestExecutorService.execute(searchRequestGet)
                                               .filter(SearchResponse::isSuccess)
                                               .flatMap(response -> response.get(new TypeaheadDataExtractionStrategy(
@@ -84,9 +100,11 @@ public class DefaultAutocompleteService implements AutocompleteService {
                              configuration.typeaheadService_apiAction());
     }
 
-    private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters) {
+    private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters, boolean disableContextFilters) {
         Set<Filter> filters = new HashSet<>();
-        Optional.ofNullable(contextFilters).ifPresent(filters::addAll);
+        if (!disableContextFilters) {
+            Optional.ofNullable(contextFilters).ifPresent(filters::addAll);
+        }
         Optional.ofNullable(specifiedFilters).ifPresent(filters::addAll);
         return filters;
     }

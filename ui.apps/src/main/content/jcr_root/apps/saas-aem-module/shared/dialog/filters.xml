@@ -53,6 +53,14 @@
                                 </items>
                             </field>
                         </filters>
+                        <disableContextFilters
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                            text="Disable context filters"
+                            fieldDescription="If checked, the filters configured in the context aware configuration will be disabled, and only the filters configured on the component level will be used"
+                            name="./disableContextFilters"
+                            value="{Boolean}true">
+                        </disableContextFilters>
                     </items>
                 </column>
             </items>

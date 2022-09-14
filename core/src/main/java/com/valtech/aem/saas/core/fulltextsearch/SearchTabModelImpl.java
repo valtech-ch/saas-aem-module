@@ -95,6 +95,12 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
     @ChildResource(name = "filters")
     private List<FilterConfigurationModel> configuredFilters;
 
+    @ValueMapValue
+    private String language;
+    
+    @ValueMapValue
+    private boolean disableContextFilters;
+
     @ChildResource
     private List<FacetModel> facets;
 
@@ -210,13 +216,14 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
         return fulltextSearchService.getResults(
                 searchCAConfigurationModel,
                 searchTerm,
-                requestWrapper.getLocale().getLanguage(),
+                StringUtils.defaultIfBlank(language, parentSearch.getLanguage()),
                 resolveStartOffset(),
                 resultsPerPage,
                 getEffectiveFilters(parentSearch, requestWrapper),
                 Optional.ofNullable(facets).map(List::stream).orElse(
                         Stream.empty()).map(FacetModel::getFieldName).collect(
                         Collectors.toCollection(LinkedHashSet::new)),
+                disableContextFilters || parentSearch.isDisableContextFilters(),
                 template);
     }
 

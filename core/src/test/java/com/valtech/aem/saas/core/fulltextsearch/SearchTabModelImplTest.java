@@ -92,7 +92,7 @@ class SearchTabModelImplTest {
         testAdaptable();
         verify(fulltextSearchService).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
                                                  startParam.capture(), anyInt(), anySet(), facetInput.capture(),
-                                                 any());
+                                                 anyBoolean(), any());
         assertThat(testee.getResults(), nullValue());
         assertThat(testee.getResultsTotal(), is(0));
         assertThat(testee.getSuggestion(), is(nullValue()));

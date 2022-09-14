@@ -83,4 +83,12 @@ public interface SearchModel extends SearchInputModel {
         return null;
     }
 
+    /**
+     * Flag to determine whether the filters from context aware configuration should be used for searching.
+     *
+     * @return disable context filters flag.
+     */
+    default boolean isDisableContextFilters(){
+        return false;
+    }
 }
