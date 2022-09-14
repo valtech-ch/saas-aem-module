@@ -52,30 +52,43 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
 
     @Override
     public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
-                                                         String searchText,
-                                                         @NonNull String language,
-                                                         int start,
-                                                         int rows,
-                                                         Set<Filter> filters,
-                                                         Set<String> facets,
-                                                         String template) {
+        String searchText,
+        @NonNull String language,
+        int start,
+        int rows,
+        Set<Filter> filters,
+        Set<String> facets,
+        String template) {
+        return getResults(searchConfiguration, searchText, language, start, rows, filters, facets, false, template);
+    }
+    
+    @Override
+    public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
+        String searchText,
+        @NonNull String language,
+        int start,
+        int rows,
+        Set<Filter> filters,
+        Set<String> facets,
+        boolean disableContextFilters,
+        String template) {
         String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
-                                          createQueryString(searchText,
-                                                            language,
-                                                            start,
-                                                            rows,
-                                                            getEffectiveFilters(searchConfiguration.getFilters(),
-                                                                                filters),
-                                                            facets,
-                                                            template));
+            createQueryString(searchText,
+                language,
+                start,
+                rows,
+                getEffectiveFilters(searchConfiguration.getFilters(),
+                    filters, disableContextFilters),
+                facets,
+                template));
         log.debug("Search GET Request: {}", requestUrl);
         Optional<SearchResponse> searchResponse =
-                searchApiRequestExecutorService.execute(new SearchRequestGet(requestUrl));
+            searchApiRequestExecutorService.execute(new SearchRequestGet(requestUrl));
         if (searchResponse.isPresent()) {
             printResponseHeaderInLog(searchResponse.get());
             return getFulltextSearchResults(searchResponse.get(),
-                                            searchConfiguration.isAutoSuggestEnabled(),
-                                            searchConfiguration.isBestBetsEnabled());
+                searchConfiguration.isAutoSuggestEnabled(),
+                searchConfiguration.isBestBetsEnabled());
         }
         return Optional.empty();
     }
@@ -87,9 +100,11 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         return searchApiRequestExecutorService.execute(pingRequest).map(SearchResponse::isSuccess).orElse(false);
     }
 
-    private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters) {
+    private Set<Filter> getEffectiveFilters(Set<Filter> contextFilters, Set<Filter> specifiedFilters, boolean disableContextFilters) {
         Set<Filter> filters = new HashSet<>();
-        Optional.ofNullable(contextFilters).ifPresent(filters::addAll);
+        if (!disableContextFilters) {
+            Optional.ofNullable(contextFilters).ifPresent(filters::addAll);
+        }
         Optional.ofNullable(specifiedFilters).ifPresent(filters::addAll);
         return filters;
     }

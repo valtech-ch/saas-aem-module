@@ -21,10 +21,28 @@ public interface AutocompleteService {
      * @param filters             search filters
      * @return List of string represented autocomplete options. Empty list if no options are found.
      */
-    List<String> getResults(
+    default List<String> getResults(
             @NonNull SearchCAConfigurationModel searchConfiguration,
             @NonNull String text,
             @NonNull String language,
-            Set<Filter> filters);
+            Set<Filter> filters){
+        return getResults(searchConfiguration, text, language, filters, false);
+    }
 
+    /**
+     * Retrieves typeahead (autocomplete) results
+     *
+     * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
+     * @param text                search term.
+     * @param language            search language scope.
+     * @param filters             search filters
+     * @param disableContextFilters flag to disable the filters configured in context aware configuration.
+     * @return List of string represented autocomplete options. Empty list if no options are found.
+     */
+    List<String> getResults(
+        @NonNull SearchCAConfigurationModel searchConfiguration,
+        @NonNull String text,
+        @NonNull String language,
+        Set<Filter> filters,
+        boolean disableContextFilters);
 }

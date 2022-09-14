@@ -123,6 +123,11 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     @Getter
     private Set<Filter> filters;
 
+    @JsonIgnore
+    @Getter
+    @ValueMapValue
+    private boolean disableContextFilters;
+    
     @ChildResource(name = "filters")
     private List<FilterConfigurationModel> configuredFilters;
 

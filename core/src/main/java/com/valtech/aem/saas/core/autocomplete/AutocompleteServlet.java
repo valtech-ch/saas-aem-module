@@ -54,7 +54,8 @@ public class AutocompleteServlet extends SlingSafeMethodsServlet {
         List<String> results = autocompleteService.getResults(searchCAConfigurationModel,
                                                               searchTerm,
                                                               searchModel.getLanguage(),
-                                                              searchModel.getFilters());
+                                                              searchModel.getFilters(),
+                                                              searchModel.isDisableContextFilters());
         new JsonResponseCommitter(response).flush(printWriter -> new Gson().toJson(results, printWriter));
     }
 

@@ -71,7 +71,7 @@ class AutocompleteServletTest {
         SlingHttpServletResponse response = context.response();
         assertThrows(IllegalArgumentException.class, () -> testee.doGet(request, response));
         verify(autocompleteService, never()).getResults(any(SearchCAConfigurationModel.class), anyString(), anyString(),
-                                                        any());
+                                                        any(), anyBoolean());
     }
 
 
@@ -88,6 +88,7 @@ class AutocompleteServletTest {
         verify(autocompleteService, times(1)).getResults(any(SearchCAConfigurationModel.class),
                                                          anyString(),
                                                          anyString(),
-                                                         any());
+                                                         any(), 
+                                                         anyBoolean());
     }
 }

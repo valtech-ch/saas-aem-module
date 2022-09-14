@@ -35,6 +35,12 @@
                                                 fieldLabel="Title"
                                                 name="./title"
                                                 required="{Boolean}true"/>
+                                            <language
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                fieldLabel="Language"
+                                                fieldDescription="Optional override of context resolved language."
+                                                name="./language"/>
                                             <facets
                                                 jcr:primaryType="nt:unstructured"
                                                 fieldLabel="Facets"
