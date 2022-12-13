@@ -36,7 +36,7 @@ jobs:
         env:
           X_GITHUB_USERNAME: ${{ secrets.RELEASE_GITHUB_USERNAME }}
         run: |
-          git config user.email "jovan.stojanov@valtech.com"
+          git config user.email "nicolas.hirrle@valtech.com"
           git config user.name "${X_GITHUB_USERNAME}"
 
       - id: publish-to-central
