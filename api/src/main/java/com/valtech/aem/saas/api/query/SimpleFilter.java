@@ -17,8 +17,8 @@ public class SimpleFilter implements Filter {
 
     private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
 
-    private String name;
-    private String value;
+    protected String name;
+    protected String value;
 
     @Override
     public String getQueryString() {
