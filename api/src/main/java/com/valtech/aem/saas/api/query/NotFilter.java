@@ -5,15 +5,15 @@ import org.apache.commons.lang3.StringUtils;
 import lombok.NoArgsConstructor;
 
 /**
- * An implementation of Filter that represents a simple filter query entry.
+ * An implementation of Filter that represents a not filter query entry.
  */
 @NoArgsConstructor
 public class NotFilter extends SimpleFilter {
 
 	private static final String FILTER_NOT_KEYWORD = "NOT ";
 
-	public NotFilter(String name, String value) {
-		super(name, value);
+	public NotFilter(String name, String value, boolean startsWith) {
+		super(name, value, startsWith);
 	}
 
 	@Override
