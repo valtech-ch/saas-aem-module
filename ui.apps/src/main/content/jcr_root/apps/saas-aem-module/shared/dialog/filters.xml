@@ -21,7 +21,19 @@
                             jcr:primaryType="nt:unstructured"
                             sling:resourceType="granite/ui/components/coral/foundation/alert"
                             size="S"
-                            text="Filter entries are joined with 'AND' operator. For a single filter entry, it is possible to specify multiple comma separated values, which will be translated in a composite filter query composed of 'OR' related entries.">
+                            text="You can add one or multiple filters here. Multiple filters are joined with 'AND' operator. &lt;br/&gt;
+For a single filter entry: &lt;ul&gt;
+&lt;li&gt;it is possible to use a startsWith filter by appending an asterisk (*) to the value(s).&lt;/li&gt;
+&lt;li&gt;it is possible to specify a NOT filter by prepending the value(s) with an exclamation mark (!).&lt;/li&gt;
+&lt;li&gt;it is possible to specify multiple comma separated values, which will be translated into a filter query composed of 'OR' related entries.&lt;/li&gt;
+&lt;/ul&gt; &lt;br/&gt;
+Filter options within a single filter entry can be combined arbitrarily.&lt;br/&gt;
+Examples:
+&lt;ul&gt;
+&lt;li&gt; key 'some_key' and value 'digit*' will turn into a filter for entries where 'some_key' starts with 'digit' &lt;/li&gt;
+&lt;li&gt; key 'some_key' and value '!digital' will turn into a filter where 'some_key' does NOT have the value 'digital' &lt;/li&gt;
+&lt;li&gt; key 'some_key' and value 'this,that' will turn into a filter for 'some_key' to have the value 'this' or 'that' &lt;/li&gt;
+&lt;ul&gt;">
                         </alert>
                         <filters
                             jcr:primaryType="nt:unstructured"
