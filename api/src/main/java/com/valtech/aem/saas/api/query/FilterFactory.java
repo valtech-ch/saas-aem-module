@@ -13,7 +13,7 @@ import lombok.NonNull;
 public final class FilterFactory {
 
     /**
-     * Convenience method for creating simple filter query item.
+     * Convenience method for creating filter query item.
      *
      * @param key   filter query key.
      * @param value filter query value.
@@ -23,8 +23,7 @@ public final class FilterFactory {
             @NonNull String key,
             @NonNull String value) {
 
-        // TODO decide on do we need cases like "!!" or stuff
-        if (value.startsWith("!")) {
+        if (value.startsWith(NotFilter.FILTER_NOT_PREFIX)) {
             return new NotFilter(key, value.substring(1), isStartsWithFilter(value));
         }
 
@@ -32,7 +31,6 @@ public final class FilterFactory {
     }
 
     /**
-     * TODO fix this
      * Convenience method for creating simple filter query item.
      *
      * @param key   filter query key.
@@ -44,8 +42,7 @@ public final class FilterFactory {
     }
 
     /**
-     * TODO fix this
-     * Convenience method for creating simple filter query item.
+     * Convenience method for creating not filter query item.
      *
      * @param key   filter query key.
      * @param value filter query value.
@@ -100,8 +97,7 @@ public final class FilterFactory {
      * @return true if the filter query value ends with the startsWith suffix character '*'
      */
     private static boolean isStartsWithFilter(String value) {
-    // TODO make prettier
-        return value.endsWith("*");
+        return value.endsWith(SimpleFilter.FILTER_STARTS_WITH_SUFFIX);
     }
 
     private FilterFactory() {

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class NotFilter extends SimpleFilter {
 
 	private static final String FILTER_NOT_KEYWORD = "NOT ";
+	public static final String FILTER_NOT_PREFIX ="!";
 
 	public NotFilter(String name, String value, boolean startsWith) {
 		super(name, value, startsWith);

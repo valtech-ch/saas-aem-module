@@ -15,16 +15,19 @@ import org.apache.commons.lang3.StringUtils;
 public class SimpleFilter implements Filter {
 
     private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
-    private static final String FILTER_STARTS_WITH_SUFFIX = "*";
+    public static final String FILTER_STARTS_WITH_SUFFIX = "*";
 
     protected String name;
     protected String value;
     protected boolean startsWith;
 
+    /**
+     * Constructor for convenience purposes like testing only
+     */
     public SimpleFilter(String name, String value) {
         this.name = name;
         this.value = value;
-        this.startsWith = value.endsWith(FILTER_STARTS_WITH_SUFFIX);
+        this.startsWith = value != null && value.endsWith(FILTER_STARTS_WITH_SUFFIX);
     }
 
     @Override
