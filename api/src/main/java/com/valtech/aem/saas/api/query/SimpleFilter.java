@@ -14,8 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 @EqualsAndHashCode
 public class SimpleFilter implements Filter {
 
-    private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
+    /**
+     * The prefix character used to identify a startsWith filter in the search value.
+     * Example: 'Adve*' to search for "Adventure" and "Advertisement"
+     */
     public static final String FILTER_STARTS_WITH_SUFFIX = "*";
+    private static final String FILTER_FIELD_VALUE_DELIMITER = ":";
 
     protected String name;
     protected String value;

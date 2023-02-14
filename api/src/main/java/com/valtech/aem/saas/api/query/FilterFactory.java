@@ -27,7 +27,7 @@ public final class FilterFactory {
             return new NotFilter(key, value.substring(1), isStartsWithFilter(value));
         }
 
-        return new SimpleFilter(key, value,isStartsWithFilter(value));
+        return new SimpleFilter(key, value, isStartsWithFilter(value));
     }
 
     /**

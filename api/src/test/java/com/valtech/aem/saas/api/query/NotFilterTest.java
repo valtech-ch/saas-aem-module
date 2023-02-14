@@ -6,7 +6,7 @@ import static org.hamcrest.text.IsEmptyString.isEmptyString;
 
 import org.junit.jupiter.api.Test;
 
-public class NotFilterTest {
+class NotFilterTest {
 
     @Test
     void testGetQueryString() {

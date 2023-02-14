@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NotFilter extends SimpleFilter {
 
-	private static final String FILTER_NOT_KEYWORD = "NOT ";
+	/**
+	 * The prefix character used to identify a not filter in the search value.
+	 * Example: "!landing-page-template"
+	 */
 	public static final String FILTER_NOT_PREFIX ="!";
+	private static final String FILTER_NOT_KEYWORD = "NOT ";
 
 	public NotFilter(String name, String value, boolean startsWith) {
 		super(name, value, startsWith);
@@ -20,9 +24,9 @@ public class NotFilter extends SimpleFilter {
 	@Override
 	public String getQueryString() {
 		if (StringUtils.isNoneBlank(name, value)) {
-		return StringUtils.join(FILTER_NOT_KEYWORD, super.getQueryString());
+			return StringUtils.join(FILTER_NOT_KEYWORD, super.getQueryString());
 		}
-        return StringUtils.EMPTY;
+		return StringUtils.EMPTY;
 	}
 
 }
