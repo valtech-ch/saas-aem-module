@@ -69,6 +69,8 @@ public interface SearchTabModel {
      *
      * @return configured tabId.
      */
-    String getTabId();
+    default String getTabId() {
+        return null;
+    };
 
 }
