@@ -98,6 +98,12 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
     @ValueMapValue
     private String language;
     
+
+    @JsonInclude(Include.NON_DEFAULT)
+    @Getter
+    @ValueMapValue
+    private String tabId;
+
     @ValueMapValue
     private boolean disableContextFilters;
 

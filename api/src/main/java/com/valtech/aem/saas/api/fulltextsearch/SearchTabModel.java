@@ -64,4 +64,11 @@ public interface SearchTabModel {
      */
     String getUrl();
 
+    /**
+     * Retrieves the tabId configurable for the search tab component.
+     *
+     * @return configured tabId.
+     */
+    String getTabId();
+
 }
