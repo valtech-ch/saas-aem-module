@@ -17,16 +17,37 @@
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/container">
                     <items jcr:primaryType="nt:unstructured">
-                        <alert
+                        <collapsible
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/foundation/container"
+                        jcr:title="How to configure filters">
+                            <layout jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/foundation/layouts/collapsible" />
+                            <items jcr:primaryType="nt:unstructured">
+                                <alert
                             jcr:primaryType="nt:unstructured"
                             sling:resourceType="granite/ui/components/coral/foundation/alert"
                             size="S"
-                            text="Filter entries are joined with 'AND' operator. For a single filter entry, it is possible to specify multiple comma separated values, which will be translated in a composite filter query composed of 'OR' related entries.">
-                        </alert>
+                            text="You can add one or multiple filters here. Multiple filters are joined with 'AND' operator. &lt;br/&gt;
+
+For a single filter entry: &lt;ul&gt;
+&lt;li&gt;it is possible to use a startsWith filter by appending an asterisk (*) to the value(s).&lt;/li&gt;
+&lt;li&gt;it is possible to specify a NOT filter by prepending the value(s) with an exclamation mark (!).&lt;/li&gt;
+&lt;li&gt;it is possible to specify multiple comma separated values, which will be translated into a filter query composed of 'OR' related entries.&lt;/li&gt;
+&lt;/ul&gt; &lt;br/&gt;
+Filter options within a single filter entry can be combined arbitrarily.&lt;br/&gt;
+Examples:
+&lt;ul&gt;
+&lt;li&gt; key 'title' and value 'Advent*' will turn into a filter for entries where 'title' starts with 'Advent' (to find entries with title Adventure) &lt;/li&gt;
+&lt;li&gt; key 'template' and value '!landing-page-template' will turn into a filter where 'template' does NOT have the value 'landing-page-template' &lt;/li&gt;
+&lt;li&gt; key 'template' and value 'landing-page-template,content-page-template' will turn into a filter for 'template' to have the value 'landing-page-template' or 'content-page-template' &lt;/li&gt;
+&lt;ul&gt;" />
+                            </items>
+                        </collapsible>
                         <filters
                             jcr:primaryType="nt:unstructured"
                             fieldLabel="Filters"
-                            fieldDescription="The filter entries are joined with a binary 'AND' operator."
+                            fieldDescription="You can add one or multiple filters here. Check the instructions above for configuration."
                             sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
                             composite="{Boolean}true">
                             <field
@@ -46,7 +67,7 @@
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
                                         fieldLabel="Value"
-                                        fieldDescription="Indexed value for that field"
+                                        fieldDescription="Indexed value for that field. Check the instructions above for configuration."
                                         name="value"
                                         required="{Boolean}true">
                                     </value>

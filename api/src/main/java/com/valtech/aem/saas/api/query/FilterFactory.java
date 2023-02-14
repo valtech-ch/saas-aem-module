@@ -1,10 +1,11 @@
 package com.valtech.aem.saas.api.query;
 
-import lombok.NonNull;
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import lombok.NonNull;
 
 /**
  * A helper factory for convenient instantiation of filter entries.
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 public final class FilterFactory {
 
     /**
-     * Convenience method for creating simple filter query item.
+     * Convenience method for creating filter query item.
      *
      * @param key   filter query key.
      * @param value filter query value.
@@ -21,7 +22,34 @@ public final class FilterFactory {
     public static Filter createFilter(
             @NonNull String key,
             @NonNull String value) {
-        return new SimpleFilter(key, value);
+
+        if (value.startsWith(NotFilter.FILTER_NOT_PREFIX)) {
+            return new NotFilter(key, value.substring(1), isStartsWithFilter(value));
+        }
+
+        return new SimpleFilter(key, value, isStartsWithFilter(value));
+    }
+
+    /**
+     * Convenience method for creating simple filter query item.
+     *
+     * @param key   filter query key.
+     * @param value filter query value.
+     * @return a filter object representing the filter query.
+     */
+    public static Filter createSimpleFilter(@NonNull String key, @NonNull String value) {
+        return new SimpleFilter(key, value, isStartsWithFilter(value));
+    }
+
+    /**
+     * Convenience method for creating not filter query item.
+     *
+     * @param key   filter query key.
+     * @param value filter query value.
+     * @return a filter object representing the filter query.
+     */
+    public static Filter createNotFilter(@NonNull String key, @NonNull String value) {
+        return new NotFilter(key, value, isStartsWithFilter(value));
     }
 
     /**
@@ -55,12 +83,21 @@ public final class FilterFactory {
                                       .joinOperator(joinOperator)
                                       .filters(values.stream()
                                                      .map(v -> createFilter(key, v))
-                                                     .collect(Collectors.toSet()))
+                                                     .collect(Collectors.toList()))
                                       .build();
             }
             return createFilter(key, values.get(0));
         }
         return new SimpleFilter();
+    }
+
+    /**
+     * Convenience method for checking if we have a startsWith filter
+     * @param value     the filter query value
+     * @return true if the filter query value ends with the startsWith suffix character '*'
+     */
+    private static boolean isStartsWithFilter(String value) {
+        return value.endsWith(SimpleFilter.FILTER_STARTS_WITH_SUFFIX);
     }
 
     private FilterFactory() {

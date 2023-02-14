@@ -27,8 +27,8 @@ The following properties are written to JCR for the Search component and are exp
 4. `./template` - Defines SaaS query template name.
 
 ![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties.png)
-![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties_2.png)
-![dialog tab filters](../../../../../../../../../images/searchtab_dialog_filters.png)
+![dialog tab filters collapsed](../../../../../../../../../images/searchtab_dialog_filters_collapsed.png)
+![dialog tab filters expanded](../../../../../../../../../images/searchtab_dialog_filters_expanded.png)
 
 ### Query parameters
 

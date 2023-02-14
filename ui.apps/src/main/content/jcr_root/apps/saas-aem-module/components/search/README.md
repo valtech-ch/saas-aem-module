@@ -20,14 +20,15 @@ Tab component.
 The following properties are written to JCR for the Search component and are expected to be available as `Resource` properties:
 
 1. `./title` - Will store the text of the title to be rendered on the top of the component.
-2`./language` - Defines the search results language. It overrides the language resolved from resource context.
-2. `./searchFieldPlaceholderText` - Defines the text to be displayed as placeholder in the input field. It has a default value defined as i18n entry.
-3. `./resultsPerPage` - defines the number of results per page. It overrides the default value of 10 results per page.
-4. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
+2. `./language` - Defines the search results language. It overrides the language resolved from resource context.
+3. `./searchFieldPlaceholderText` - Defines the text to be displayed as placeholder in the input field. It has a default value defined as i18n entry.
+4. `./resultsPerPage` - defines the number of results per page. It overrides the default value of 10 results per page.
+5. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
    operator.
 
 ![dialog tab properties](../../../../../../../../../images/search_dialog_properties.png)
-![dialog tab filters](../../../../../../../../../images/search_dialog_filters.png)
+![dialog tab filters collapsed](../../../../../../../../../images/search_dialog_filters_collapsed.png)
+![dialog tab filters expanded](../../../../../../../../../images/search_dialog_filters_expanded.png)
 
 #### Autocomplete
 
