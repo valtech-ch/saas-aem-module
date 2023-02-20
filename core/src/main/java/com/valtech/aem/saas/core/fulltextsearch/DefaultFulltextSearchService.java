@@ -5,23 +5,46 @@ import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchPingService;
 import com.valtech.aem.saas.api.fulltextsearch.FulltextSearchService;
 import com.valtech.aem.saas.api.fulltextsearch.dto.FulltextSearchResultsDTO;
 import com.valtech.aem.saas.api.fulltextsearch.dto.ResultDTO;
-import com.valtech.aem.saas.api.query.*;
+import com.valtech.aem.saas.api.query.FacetsQuery;
+import com.valtech.aem.saas.api.query.Filter;
+import com.valtech.aem.saas.api.query.FiltersQuery;
+import com.valtech.aem.saas.api.query.GetQueryStringConstructor;
+import com.valtech.aem.saas.api.query.LanguageQuery;
+import com.valtech.aem.saas.api.query.PaginationQuery;
+import com.valtech.aem.saas.api.query.SearchTemplateQuery;
+import com.valtech.aem.saas.api.query.Sort;
+import com.valtech.aem.saas.api.query.SortQuery;
+import com.valtech.aem.saas.api.query.TermQuery;
 import com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService.Configuration;
 import com.valtech.aem.saas.core.http.client.SearchApiRequestExecutorService;
 import com.valtech.aem.saas.core.http.client.SearchServiceConnectionConfigurationService;
 import com.valtech.aem.saas.core.http.request.SearchRequest;
 import com.valtech.aem.saas.core.http.request.SearchRequestGet;
 import com.valtech.aem.saas.core.http.request.SearchRequestHead;
-import com.valtech.aem.saas.core.http.response.*;
+import com.valtech.aem.saas.core.http.response.FacetFieldsDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.HighlightingDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.ResponseBodyDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.ResponseHeaderDataExtractionStrategy;
+import com.valtech.aem.saas.core.http.response.SearchResponse;
+import com.valtech.aem.saas.core.http.response.SuggestionDataExtractionStrategy;
 import com.valtech.aem.saas.core.http.response.dto.FallbackHighlightingDTO;
 import com.valtech.aem.saas.core.http.response.dto.HighlightingDTO;
 import com.valtech.aem.saas.core.http.response.dto.ResponseBodyDTO;
 import com.valtech.aem.saas.core.http.response.dto.SearchResultDTO;
 import com.valtech.aem.saas.core.util.LoggedOptional;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -31,10 +54,6 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Component(service = {FulltextSearchService.class, FulltextSearchPingService.class})
@@ -59,7 +78,7 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         Set<Filter> filters,
         Set<String> facets,
         String template) {
-        return getResults(searchConfiguration, searchText, language, start, rows, filters, facets, false, template);
+        return getResults(searchConfiguration, searchText, language, start, rows, filters, facets, false, template, null);
     }
     
     @Override
@@ -71,7 +90,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         Set<Filter> filters,
         Set<String> facets,
         boolean disableContextFilters,
-        String template) {
+        String template,
+        List<Pair<String, Sort>> sortParameters) {
         String requestUrl = getRequestUrl(getApiUrl(searchConfiguration.getIndex()),
             createQueryString(searchText,
                 language,
@@ -80,7 +100,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                 getEffectiveFilters(searchConfiguration.getFilters(),
                     filters, disableContextFilters),
                 facets,
-                template));
+                template,
+                sortParameters));
         log.debug("Search GET Request: {}", requestUrl);
         Optional<SearchResponse> searchResponse =
             searchApiRequestExecutorService.execute(new SearchRequestGet(requestUrl));
@@ -115,7 +136,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                                      int rows,
                                      Set<Filter> filters,
                                      Set<String> facets,
-                                     String template) {
+                                     String template,
+                                     List<Pair<String, Sort>> sortParameters) {
         GetQueryStringConstructor.GetQueryStringConstructorBuilder builder =
                 GetQueryStringConstructor.builder()
                                          .query(new TermQuery(term))
@@ -130,6 +152,9 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
                                                            .build());
         if (StringUtils.isNotBlank(template)) {
             builder.query(new SearchTemplateQuery(template));
+        }
+        if (CollectionUtils.isNotEmpty(sortParameters)) {
+            builder.query(new SortQuery(sortParameters));
         }
         return builder.build().getQueryString();
     }
