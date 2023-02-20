@@ -63,7 +63,7 @@ export const triggerSearch = async (
         searchTabs.map(async (tab, index): Promise<Tab> => {
           const tabResultsJSON = await fetchSearch(tab.url, searchValue)
 
-          return { ...tabResultsJSON, tabId: tab.title, index } as Tab
+          return { ...tabResultsJSON, tabId: tab.tabId || tab.title, title: tab.title, index } as Tab
         }),
       ).finally(() => {
         searchInputElementCopy.dataset.loading = 'false'

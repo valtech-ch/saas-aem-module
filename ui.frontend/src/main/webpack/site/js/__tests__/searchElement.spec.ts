@@ -36,12 +36,12 @@ describe('searchElement', () => {
       searchFieldPlaceholderText: 'Type search term here...',
       loadMoreButtonText: 'Load more',
       searchTabs: [
-        '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/searchtab.model.json?q=pg',
+        '/content/saas-aem-module/us/en/search-page/_jcr_content/root/container/container/search/search-tabs/searchtab.model.json?q=pg',
       ],
       searchButtonText: 'Search',
       autocompleteTriggerThreshold: 3,
       autocompleteUrl:
-        '/content/saas-aem-module/us/en/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
+        '/content/saas-aem-module/us/en/search-page/_jcr_content/root/container/container/search/search-tabs/autosuggest.model.json',
       autoSuggestText: 'Did you mean: ',
       noResultsText: 'No results found.',
     }
