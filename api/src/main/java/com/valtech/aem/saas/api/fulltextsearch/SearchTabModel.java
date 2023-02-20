@@ -71,6 +71,6 @@ public interface SearchTabModel {
      */
     default String getTabId() {
         return null;
-    };
+    }
 
 }
