@@ -15,6 +15,7 @@ import com.valtech.aem.saas.api.query.FilterFactory;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
+import com.valtech.aem.saas.core.util.ResourceUtil;
 import com.valtech.aem.saas.core.util.StringToInteger;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -147,6 +148,7 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
             suggestion = fulltextSearchResults.getSuggestion();
             facetFilters = getFacetFilters(fulltextSearchResults.getFacetFieldsResults());
         });
+        tabId = StringUtils.isNotBlank(tabId) ? tabId : ResourceUtil.generateId("tab", resource.getPath());
     }
 
     private Optional<Integer> getConfiguredResultsPerPage() {
