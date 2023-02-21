@@ -32,6 +32,7 @@ The following properties are written to JCR for the Search component and are exp
 ![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties.png)
 ![dialog tab filters collapsed](../../../../../../../../../images/searchtab_dialog_filters_collapsed.png)
 ![dialog tab filters expanded](../../../../../../../../../images/searchtab_dialog_filters_expanded.png)
+![dialog tab filters sorting](../../../../../../../../../images/searchtab_dialog_sorting.png)
 
 ### Query parameters
 
