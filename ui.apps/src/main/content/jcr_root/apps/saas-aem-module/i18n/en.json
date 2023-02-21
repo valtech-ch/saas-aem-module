@@ -10,5 +10,5 @@
   "com.valtech.aem.saas.core.search.caConfiguration.failedToResolveConfigurationMessage": "Failed to resolve Context Aware Search Configuration for resource: {}",
   "com.valtech.aem.saas.core.search.caConfiguration.indexRequiredMessage": "Search Index must be configured.",
   "com.valtech.aem.saas.core.search.viewAsPublishedHintHeader.text": "For Information",
-  "com.valtech.aem.saas.core.search.viewAsPublishedHint.text": "To see the search component in action, please switch to view as published mode"
+  "com.valtech.aem.saas.core.search.viewAsPublishedHint.text": "To see the search component in action, please switch to view as published."
 }
