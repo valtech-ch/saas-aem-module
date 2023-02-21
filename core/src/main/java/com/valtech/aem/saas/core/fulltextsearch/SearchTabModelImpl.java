@@ -12,6 +12,7 @@ import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.fulltextsearch.dto.*;
 import com.valtech.aem.saas.api.query.Filter;
 import com.valtech.aem.saas.api.query.FilterFactory;
+import com.valtech.aem.saas.api.query.Sort;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.common.request.RequestWrapper;
 import com.valtech.aem.saas.core.common.resource.ResourceWrapper;
@@ -20,7 +21,9 @@ import com.valtech.aem.saas.core.util.StringToInteger;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -110,6 +113,9 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
 
     @ChildResource
     private List<FacetModel> facets;
+    
+    @ChildResource
+    private List<SortModel> sortParameters;
 
     @Self
     private SlingHttpServletRequest request;
@@ -232,7 +238,10 @@ public class SearchTabModelImpl implements SearchTabModel, ComponentExporter {
                         Stream.empty()).map(FacetModel::getFieldName).collect(
                         Collectors.toCollection(LinkedHashSet::new)),
                 disableContextFilters || parentSearch.isDisableContextFilters(),
-                template);
+                template,
+                Optional.ofNullable(sortParameters).map(List::stream).orElse(Stream.empty())
+                    .map(sortParameter -> new ImmutablePair<>(sortParameter.getFieldName(), EnumUtils.getEnumIgnoreCase(Sort.class, sortParameter.getDirection())))
+                    .collect(Collectors.toList()));
     }
 
     private boolean isResourceOverriddenRequest() {

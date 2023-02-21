@@ -27,10 +27,12 @@ The following properties are written to JCR for the Search component and are exp
 5. `./template` - Defines SaaS query template name.
 6. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
    operator.
+7. `./sortParameters` - Defines a list of parameters that will be used to sort the results.
 
 ![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties.png)
 ![dialog tab filters collapsed](../../../../../../../../../images/searchtab_dialog_filters_collapsed.png)
 ![dialog tab filters expanded](../../../../../../../../../images/searchtab_dialog_filters_expanded.png)
+![dialog tab filters sorting](../../../../../../../../../images/searchtab_dialog_sorting.png)
 
 ### Query parameters
 

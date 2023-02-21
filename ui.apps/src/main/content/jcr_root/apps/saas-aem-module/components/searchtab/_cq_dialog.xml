@@ -91,6 +91,69 @@
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/include"
                         path="/apps/saas-aem-module/shared/dialog/filters"/>
+                    <sorting
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Sorting"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <columns
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                                margin="{Boolean}true">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <column
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <alert
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/alert"
+                                                size="S"
+                                                text="By default, the results are sorted by score. This configuration is optional and should be used only if you would like to override the default sorting for the results. Please use a single-value field of type string."/>
+                                            <sortParameters
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                                composite="{Boolean}true"
+                                                fieldDescription="Possibility to configure multiple filters. Ex. Order the results by a specific date descending, and ascending by title"
+                                                fieldLabel="Sort Parameters">
+                                                <field
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                    name="./sortParameters">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <name
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldDescription="SaaS Metadata field name. Should be of type string (ending with _str at the end)"
+                                                            fieldLabel="Field Name"
+                                                            name="./fieldName"
+                                                            required="{Boolean}true"/>
+                                                        <direction
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            fieldLabel="Sort Direction"
+                                                            name="./direction"
+                                                            required="{Boolean}true">
+                                                            <items jcr:primaryType="nt:unstructured">
+                                                                <asc jcr:primaryType="nt:unstructured"
+                                                                    text="Ascending"
+                                                                    value="asc"
+                                                                    selected="{Boolean}true"/>
+                                                                <desc jcr:primaryType="nt:unstructured"
+                                                                    text="Descending"
+                                                                    value="desc"/>
+                                                            </items>
+                                                        </direction>
+                                                    </items>
+                                                </field>
+                                            </sortParameters>
+                                        </items>
+                                    </column>
+                                </items>
+                            </columns>
+                        </items>
+                    </sorting>
                 </items>
             </tabs>
         </items>
