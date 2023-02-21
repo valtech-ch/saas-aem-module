@@ -36,14 +36,16 @@ const buildSearchResultsTab = ({
   } = tabResult
 
   if (resultsTotal) {
-    if (searchContainer && tabResult.index === 0) {
+    if (searchContainer && window.location.hash) {
+      searchContainer.dataset.selectedTab = window.location.hash.replace('#', '');
+    } else if (searchContainer && tabResult.index === 0) {
       searchContainer.dataset.selectedTab = tabResult.tabId
     }
 
     const searchTabElement = buildSearchTab({
       tabId,
-      tabNumberOfResults: resultsTotal,
       title,
+      tabNumberOfResults: resultsTotal,
       searchContainer,
     })
 

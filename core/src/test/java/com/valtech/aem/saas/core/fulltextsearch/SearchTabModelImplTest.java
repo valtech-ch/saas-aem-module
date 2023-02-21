@@ -10,10 +10,12 @@ import com.valtech.aem.saas.core.i18n.I18nProvider;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.testing.mock.caconfig.ContextPlugins;
 import org.apache.sling.testing.mock.caconfig.MockContextAwareConfig;
 import org.hamcrest.core.Is;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,6 +101,18 @@ class SearchTabModelImplTest {
         assertThat(testee.getExportedType(), is(SearchTabModelImpl.RESOURCE_TYPE));
         assertThat(startParam.getValue(), Is.is(15));
         assertThat(facetInput.getValue().stream().findFirst().get(), Is.is("contentType"));
+    }
+
+    @Test
+    void testGetTabId() {
+        SearchTabModelImpl searchTabModel1 = context.request().adaptTo(SearchTabModelImpl.class);
+        Assertions.assertTrue(StringUtils.isNotBlank(searchTabModel1.getTabId()));
+
+        context.currentResource("/content/saas-aem-module/us/en/jcr:content/root/container/container/search/search-tabs/searchtab_2");
+        SearchTabModelImpl searchTabModel2 = context.request().adaptTo(SearchTabModelImpl.class);
+        Assertions.assertEquals("customTabId", searchTabModel2.getTabId());
+
+
     }
 
     private void testAdaptable() {

@@ -12,6 +12,7 @@ export type SearchTabOptions = {
 export type TabConfig = {
   title: string
   url: string
+  tabId: string
 }
 
 export type Suggestion = {
@@ -61,6 +62,8 @@ const buildSearchTab = ({
       searchContainer.querySelectorAll<HTMLDivElement>('.cmp-saas__results')
 
     searchContainer.dataset.selectedTab = tabId
+    window.location.hash = tabId
+
 
     searchTabs?.forEach((tab) => {
       const tabElement = tab
@@ -68,13 +71,15 @@ const buildSearchTab = ({
       if (tabElement.dataset.tab === tabId) {
         tabElement.classList.add(CMP_SAAS_RESULTS_SHOW_CLASS)
         tabElement.classList.remove(CMP_SAAS_RESULTS_HIDE_CLASS)
+        tabElement.dataset.selected = 'true'
 
         return
       }
 
       tabElement.classList.remove(CMP_SAAS_RESULTS_SHOW_CLASS)
       tabElement.classList.add(CMP_SAAS_RESULTS_HIDE_CLASS)
-
+      tabElement.dataset.selected = 'false'
+      
       e.target?.dispatchEvent(
         createCustomEvent({
           name: events.tabswitch,

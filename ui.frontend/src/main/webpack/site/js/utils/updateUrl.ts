@@ -8,7 +8,7 @@ const updateUrl = (searchValue: string): void => {
   window.history.replaceState(
     {},
     '',
-    `${window.location.pathname}?${currentParams.toString()}`,
+    `${window.location.pathname}?${currentParams.toString()}${window.location.hash}`,
   )
 }
 
