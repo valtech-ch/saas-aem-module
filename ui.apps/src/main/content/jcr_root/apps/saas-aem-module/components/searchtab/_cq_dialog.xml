@@ -121,7 +121,7 @@
                                                             sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
                                                             fieldDescription="SaaS Metadata field name"
                                                             fieldLabel="Field Name"
-                                                            name="fieldName"
+                                                            name="./fieldName"
                                                             required="{Boolean}true"/>
                                                         <direction
                                                             jcr:primaryType="nt:unstructured"
