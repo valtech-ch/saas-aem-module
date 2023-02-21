@@ -21,11 +21,13 @@ This is a component that is placed in the responsive-grid of the [Search](../sea
 The following properties are written to JCR for the Search component and are expected to be available as `Resource` properties:
 
 1. `./title` - Will store the text of the title to be rendered on the top of the component. (Required)
-2. `./facets` - Defines list of (label, index field name). This enables filtering of the search results by index fields.
-3. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
+2. `./language` - Language to be used in the search query. Optional, can be defined to override of context resolved language.
+3. `./tabId` - Optional tab id which can be used to deep link to a search result tab.
+4. `./facets` - Defines list of (label, index field name). This enables filtering of the search results by index fields.
+5. `./template` - Defines SaaS query template name.
+6. `./filters` - Defines list of simple search filter entries. The filter entries are joined with a logical 'AND'
    operator.
-4. `./template` - Defines SaaS query template name.
-5. `./sortParameters` - Defines a list of parameters that will be used to sort the results.
+7. `./sortParameters` - Defines a list of parameters that will be used to sort the results.
 
 ![dialog tab properties](../../../../../../../../../images/searchtab_dialog_properties.png)
 ![dialog tab filters collapsed](../../../../../../../../../images/searchtab_dialog_filters_collapsed.png)

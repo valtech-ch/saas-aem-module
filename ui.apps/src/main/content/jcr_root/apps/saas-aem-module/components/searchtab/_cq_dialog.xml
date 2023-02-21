@@ -41,6 +41,12 @@
                                                 fieldLabel="Language"
                                                 fieldDescription="Optional override of context resolved language."
                                                 name="./language"/>
+                                            <tabId
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                fieldLabel="Tab Id"
+                                                fieldDescription="Optional tab id to use for direct URL to a search result tab."
+                                                name="./tabId"/>
                                             <facets
                                                 jcr:primaryType="nt:unstructured"
                                                 fieldLabel="Facets"
