@@ -80,7 +80,19 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         String template) {
         return getResults(searchConfiguration, searchText, language, start, rows, filters, facets, false, template, null);
     }
-    
+    @Override
+    public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
+                                                         String searchText,
+                                                         @NonNull String language,
+                                                         int start,
+                                                         int rows,
+                                                         Set<Filter> filters,
+                                                         Set<String> facets,
+                                                         boolean disableContextFilters,
+                                                         String template) {
+        return getResults(searchConfiguration, searchText, language, start, rows, filters, facets, disableContextFilters, template, null);
+    }
+
     @Override
     public Optional<FulltextSearchResultsDTO> getResults(@NonNull SearchCAConfigurationModel searchConfiguration,
         String searchText,
@@ -130,7 +142,8 @@ public class DefaultFulltextSearchService implements FulltextSearchService, Full
         return filters;
     }
 
-    private String createQueryString(String term,
+
+    private String createQueryString(String term, //NOSONAR
                                      String language,
                                      int start,
                                      int rows,

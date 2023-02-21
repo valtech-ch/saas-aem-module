@@ -120,31 +120,6 @@ public interface FulltextSearchService {
             Set<String> facets) {
         return getResults(searchConfiguration, null, language, start, rows, filters, facets, null);
     }
-
-    /**
-     * @param searchConfiguration   sling model accessing context aware search configurations (i.e client and index).
-     * @param searchText            full text query value.
-     * @param language              full text search language scope.
-     * @param start                 the start page for search results.
-     * @param rows                  the number of results per page
-     * @param filters               additional filters of type SimpleFilter or CompositeFilter
-     * @param facets                list of field names.
-     * @param disableContextFilters flag to disable the filters configured in context aware configuration.
-     * @param template              a template to filter by.
-     * @return search results object
-     */
-    default Optional<FulltextSearchResultsDTO> getResults(
-        @NonNull SearchCAConfigurationModel searchConfiguration,
-        String searchText,
-        @NonNull String language,
-        int start,
-        int rows,
-        Set<Filter> filters,
-        Set<String> facets,
-        boolean disableContextFilters,
-        String template){
-        return getResults(searchConfiguration, searchText, language, start, rows, filters, facets, disableContextFilters, template);
-    }
     
     /**
      * @param searchConfiguration sling model accessing context aware search configurations (i.e client and index).
@@ -177,19 +152,43 @@ public interface FulltextSearchService {
      * @param facets                list of field names.
      * @param disableContextFilters flag to disable the filters configured in context aware configuration.
      * @param template              a template to filter by.
+     * @return search results object
+     */
+
+    Optional<FulltextSearchResultsDTO> getResults(//NOSONAR
+            @NonNull SearchCAConfigurationModel searchConfiguration,
+            String searchText,
+            @NonNull String language,
+            int start,
+            int rows,
+            Set<Filter> filters,
+            Set<String> facets,
+            boolean disableContextFilters,
+            String template);
+
+    /**
+     * @param searchConfiguration   sling model accessing context aware search configurations (i.e client and index).
+     * @param searchText            full text query value.
+     * @param language              full text search language scope.
+     * @param start                 the start page for search results.
+     * @param rows                  the number of results per page
+     * @param filters               additional filters of type SimpleFilter or CompositeFilter
+     * @param facets                list of field names.
+     * @param disableContextFilters flag to disable the filters configured in context aware configuration.
+     * @param template              a template to filter by.
      * @param sortParameters        a list of field - sort direction parameters used for sorting of results.
      * @return search results object
      */
     @SuppressWarnings("java:S107")
     Optional<FulltextSearchResultsDTO> getResults(
-        @NonNull SearchCAConfigurationModel searchConfiguration,
-        String searchText,
-        @NonNull String language,
-        int start,
-        int rows,
-        Set<Filter> filters,
-        Set<String> facets,
-        boolean disableContextFilters,
-        String template,
-        List<Pair<String, Sort>> sortParameters);
+            @NonNull SearchCAConfigurationModel searchConfiguration,
+            String searchText,
+            @NonNull String language,
+            int start,
+            int rows,
+            Set<Filter> filters,
+            Set<String> facets,
+            boolean disableContextFilters,
+            String template,
+            List<Pair<String, Sort>> sortParameters);
 }
