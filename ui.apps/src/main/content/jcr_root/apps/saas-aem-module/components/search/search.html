@@ -1,7 +1,6 @@
 <sly data-sly-use.model="com.valtech.aem.saas.api.fulltextsearch.SearchModel"
      data-sly-test.isEdit="${wcmmode.edit}"
      data-sly-test.connectionFailedAlert="${model.connectionFailedAlert}">
-     <search data-search-config="${model.configJson}"></search>
 </sly>
 <sly data-sly-test="${isEdit && connectionFailedAlert}">
     <sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
@@ -27,6 +26,7 @@
          </coral-alert-content>
      </coral-alert>
  </sly>
+<search data-search-config="${model.configJson}"></search>
 
 
 <div data-sly-test="${isEdit}"
