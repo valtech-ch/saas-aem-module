@@ -1,22 +1,13 @@
-name: Publish package to the Maven Central Repository
-on:
-  release:
-    types: [created]
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release version (major.minor.patch)'
-        required: false
-        default: ''
-      dryRun:
-        description: 'Dry Run? (false to do an actual release)'
-        required: true
-        default: 'true'
+name: Deploy to OSSRH
+
+# Run workflow on commits to default branch
+on: workflow_dispatch
+
 jobs:
-  publish:
+  deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release/'
     steps:
+      # Check out Git repository
       - uses: actions/checkout@v3
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v1
@@ -29,8 +20,8 @@ jobs:
       - id: install-secret-key
         name: Install gpg secret key
         run: |
-         cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-         gpg --list-secret-keys --keyid-format LONG
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
 
       - name: Configure git user for release commits
         env:
@@ -48,9 +39,8 @@ jobs:
           X_GITHUB_PASSWORD: ${{ secrets.RELEASE_GITHUB_PASSWORD }}
         run: |
           mvn -P release-sign-artifacts,adobe-public \
-            --no-transfer-progress \
-            --batch-mode \
-            -s ./.github/workflows/settings.xml \
-            -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
-            clean release:prepare release:perform -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -Dtag=${{ github.event.inputs.releaseVersion }} -DdryRun=${{ github.event.inputs.dryRun }} -Darguments="-Dbaseline.skip=true"
-
+                      --no-transfer-progress \
+                      --batch-mode \
+                      -s ./.github/workflows/settings.xml \
+                      -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
+                      clean deploy  -DdryRun=${{ github.event.inputs.dryRun }} -Darguments="-Dbaseline.skip=true"
