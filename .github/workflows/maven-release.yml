@@ -15,7 +15,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release/'
+    # Only release from `release/...` branch
+    if: startsWith(github.ref, 'refs/heads/release/')
     steps:
       - uses: actions/checkout@v3
       - name: Set up Maven Central Repository
