@@ -43,4 +43,4 @@ jobs:
                       --batch-mode \
                       -s ./.github/workflows/settings.xml \
                       -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
-                      clean deploy
+                      clean deploy  -DdryRun=${{ github.event.inputs.dryRun }} -Darguments="-Dbaseline.skip=true"
