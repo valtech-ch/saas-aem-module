@@ -1,6 +1,7 @@
 package com.valtech.aem.saas.it.tests;
 
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.valtech.aem.saas.api.fulltextsearch.SearchTabModel;
 import com.valtech.aem.saas.api.query.LanguageQuery;
 import org.apache.commons.io.IOUtils;
@@ -8,7 +9,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.ResourceUtil;
-import org.codehaus.jackson.JsonNode;
+
 import org.json.JSONException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -31,7 +32,6 @@ public class SearchComponentIT {
   @ClassRule
   public static final SearchContentInstallRule content = new SearchContentInstallRule(cqBaseClassRule.authorRule);
 
-  public static final String RESULTS = "results";
   public static final String RESULTS_TOTAL = "resultsTotal";
   public static final String ITEMS = "items";
   public static final String FACET_FILTERS = "facetFilters";
@@ -39,7 +39,7 @@ public class SearchComponentIT {
   public static final String SUGGESTION = "suggestion";
   public static final String JSON_EXPORTER_MODEL = "model";
   public static final String JSON_EXTENSION = "json";
-
+  public static final String RESULTS = "results";
 
 
   static SlingModelJsonExporterClient slingModelJsonExporterClient;
@@ -60,9 +60,9 @@ public class SearchComponentIT {
   }
 
   @Test
-  public void testSearchResults() throws ClientException {
+  public void testSearchResults() throws ClientException, JSONException {
     List<NameValuePair> searchParams =
-            Arrays.asList(new BasicNameValuePair(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "uk"),
+            Arrays.asList(new BasicNameValuePair(SearchTabModel.QUERY_PARAM_SEARCH_TERM, "wknd"),
                           new BasicNameValuePair(LanguageQuery.KEY, "en"));
 
     JsonNode searchTab1 = slingModelJsonExporterClient.doGetJsonNode(
@@ -95,7 +95,11 @@ public class SearchComponentIT {
     assertNotEquals(getResultsTotal(searchTab1), getResultsTotal(searchTab2));
 
     //check that setting a tmpl param retrieves different results
-    assertNotEquals(getResultsTotal(searchTab1), getResultsTotal(searchTab3CopyOfSearchTab1WithTmplSet));
+    JSONAssert.assertNotEquals(getResults(searchTab1), getResults(searchTab3CopyOfSearchTab1WithTmplSet), false);
+  }
+
+  private String getResults(JsonNode searchTab) {
+    return searchTab.get(RESULTS).toString();
   }
 
   @Test
@@ -131,7 +135,7 @@ public class SearchComponentIT {
     JsonNode text = suggestion.get(TEXT);
     assertNotNull(text);
     assertTrue(text.isTextual());
-    return text.getTextValue();
+    return text.asText();
   }
 
   private void hasFacetFilters(JsonNode searchTab) {
@@ -147,7 +151,7 @@ public class SearchComponentIT {
   private int getResultsTotal(JsonNode searchTab) {
     JsonNode resultsTotal = searchTab.get(RESULTS_TOTAL);
     assertNotNull(resultsTotal);
-    return resultsTotal.getIntValue();
+    return resultsTotal.asInt();
   }
 
   private void validateSearchTabJson(JsonNode searchTab) {
