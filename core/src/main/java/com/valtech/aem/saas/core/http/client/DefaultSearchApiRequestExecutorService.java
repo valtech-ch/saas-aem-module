@@ -89,7 +89,7 @@ public class DefaultSearchApiRequestExecutorService implements SearchApiRequestE
     public @interface Configuration {
 
         String DEFAULT_WEB_SERVICE_URL = "https://ic-search-api.valtech.swiss";
-        boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = false;
+        boolean DEFAULT_JWT_AUTHENTICATION_ENABLE = true;
 
         @AttributeDefinition(name = "Base URL",
                              description = "The protocol + url for the search service")
