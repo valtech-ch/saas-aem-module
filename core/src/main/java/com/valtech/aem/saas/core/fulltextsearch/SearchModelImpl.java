@@ -206,7 +206,7 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
     }
 
     private List<SearchTabModel> getSearchTabList() {
-        if (isResolvedFromRequest() && !isResourceOverriddenRequest() && !hasSelectors()) {
+        if (isResolvedFromRequest() && !isResourceOverriddenRequest() && !hasTrackingSelectors()) {
             return searchTabResources.stream()
                                      .map(r -> modelFactory.getModelFromWrappedRequest(request,
                                                                                        r,
@@ -308,8 +308,8 @@ public class SearchModelImpl implements SearchModel, ContainerExporter {
         return !StringUtils.equals(request.getRequestPathInfo().getResourcePath(), resource.getPath());
     }
 
-    private boolean hasSelectors() {
-        return ArrayUtils.isNotEmpty(request.getRequestPathInfo().getSelectors());
+    private boolean hasTrackingSelectors() {
+        return ArrayUtils.contains(request.getRequestPathInfo().getSelectors(), SearchResultItemTrackingServlet.SEARCH_RESULT_ITEM_TRACKING_SELECTOR);
     }
 
     private boolean isResolvedFromRequest() {

@@ -2,6 +2,8 @@ package com.valtech.aem.saas.it.tests;
 
 import java.net.URI;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.sling.testing.clients.ClientException;
@@ -10,7 +12,6 @@ import org.apache.sling.testing.clients.SlingClientConfig;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.HttpUtils;
 import org.apache.sling.testing.clients.util.JsonUtils;
-import org.codehaus.jackson.JsonNode;
 
 public final class SlingModelJsonExporterClient extends SlingClient {
 
