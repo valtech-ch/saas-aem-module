@@ -54,7 +54,7 @@ order to indicate which pages should be shown. To generate Sitemaps, the Apache 
 can be used described on the AEM
 documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem
 
-Metadata such as a title, description, publication date, taxonomy and more can be scrapped from the HTML or Sitemaps in order to allow the usage of advanced features such as facetting, filtering or customized sorting.   
+Metadata such as a title, description, publication date, taxonomy and more can be scrpped from the HTML or Sitemaps in order to allow the usage of advanced features such as Facets, Filters or customized sorting.   
 
 # Features
 
@@ -70,7 +70,7 @@ Metadata such as a title, description, publication date, taxonomy and more can b
 ## Components
 
 1. **[Search:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)** Container component which consists of an input field for the search and Search Tabs. Typically used on a Search Result Page   
-2. **[Search Tab:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)** Component which performs a search displays the Search Results. 
+2. **[Search Tab:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)** Component which performs a search and displays the Search Results. 
 3. **[Search Redirect:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchredirect/README.md)** Component usually added within the Header of the page. Consists of an input field with autocomplete which redirects the user to a Search Result Page on click 
 
 **Component group:** _Search as a Service - Content_
@@ -232,11 +232,13 @@ Optionally you can install the [wcm io Context-Aware Configuration Editor](https
 Obviously you can embed the components into your own pages and templates.
 
 1. Open Template editor of the custom template
-2. Open Page Policies and 
+2. Open Page Policies and
 * include JS client library **saas-aem-module.base** in Client Libraries JavaScript Page Head
 * optionally add client library **saas-aem-module.wknd.sample** to have sample styling. This part you want to customize (see [Clientlibs](#clientlibs))
+  ![open page policies](images/open-page-policies.png) ![clientlibs page policies](images/clientlibs-page-policies.png)
 3. Open Policy of the responsive grid and include component group Search as a Service - Content in allowed components list.
-
+![clientlibs content policies](images/clientlibs-content-policies.png)
+ 
 Afterwards you can drag & drop a search component onto the defined page and start exploring.
 
 # License
