@@ -1,6 +1,6 @@
 Search Tab
 ====
-Component that renders the markup as soon as the search is performed. It displays search results.
+Component that performs a search and displays the search results.
 
 ## Features
 

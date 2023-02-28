@@ -35,11 +35,10 @@ platforms. Improvements are continuously rolled out as updates become available 
 consists of the following main components:
 
 * SAAS Crawler - Web page crawling, extraction of relevant content areas, and metadata.
-  * SAAS Administration UI - Interface for controlling and configuring the crawlers.
-  * SAAS Engine - Collection of APIs for full text or typeahead content queries.
-  * SAAS AEM Module - this module has been designed to easily integrate SAAS into AEM within a very short timeframe through
-    configuration and styling
-
+* SAAS Administration UI - Interface for controlling and configuring the crawlers.
+* SAAS Engine - Collection of APIs for full text or typeahead content queries.
+* SAAS AEM Module - this module has been designed to easily integrate SAAS into AEM within a very short timeframe through
+  configuration and styling. On top, it offers an API, either for backend or frontend customizations.
 
 # AEM Search Module
 
@@ -51,9 +50,11 @@ On top of that, AEM developers can extend the AEM Search Component to implement 
 out-of-the-box. The component follows the architectural patterns of [AEM WCM Core Components](https://github.com/adobe/aem-core-wcm-components) . Therefore, the approach is
 known and straight forward to extend while ensuring maintainability of the core module. In the SAAS Administration UI
 the SAAS Crawler can be configured. A recommended approach is to use Sitemaps (although raw crawling works as well) in
-order to indicate which pages should be shown in the Search Admin. To generate Sitemaps, the Apache Sling Sitemap module
+order to indicate which pages should be shown. To generate Sitemaps, the Apache Sling Sitemap module
 can be used described on the AEM
 documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem
+
+Metadata such as a title, description, publication date, taxonomy and more can be scraped from the HTML or Sitemaps in order to allow the usage of advanced features such as Facets, Filters or customized sorting.   
 
 # Features
 
@@ -68,9 +69,9 @@ documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-
 
 ## Components
 
-* [Search Redirect](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchredirect/README.md)
-* [Search](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)
-* [Search Tab](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)
+1. **[Search:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/search/README.md)** Container component which consists of an input field for the search and Search Tabs. Typically used on a Search Result Page   
+2. **[Search Tab:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchtab/README.md)** Component which performs a search and displays the Search Results. 
+3. **[Search Redirect:](ui.apps/src/main/content/jcr_root/apps/saas-aem-module/components/searchredirect/README.md)** Component usually added within the Header of the page. Consists of an input field with autocomplete which redirects the user to a Search Result Page on click 
 
 **Component group:** _Search as a Service - Content_
 
@@ -95,13 +96,13 @@ Configurations are split in OSGi and Context-Aware.
 
 ### OSGi configurations
 
-1. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService)
-2. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService)
-3. [Search as a Service - Autocomplete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService)
-4. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.bestbets.DefaultBestBetsService)
-5. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService)
-6. [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
-7. [Search as a Service - Search Api Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService)
+1. [Search as a Service - Search Api Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService)
+2. [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
+3. [Search as a Service - Search Service HTTP Connection Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchServiceConnectionConfigurationService)
+4. [Search as a Service - Fulltext Search Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.fulltextsearch.DefaultFulltextSearchService)
+5. [Search as a Service - Autocomplete Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.autocomplete.DefaultAutocompleteService)
+6. [Search as a Service - Best Bets Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.bestbets.DefaultBestBetsService)
+7. [Search as a Service - Index Update Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.indexing.DefaultIndexUpdateService)
 
 ### Context Aware configurations
 
@@ -124,19 +125,8 @@ Configurations are split in OSGi and Context-Aware.
 
 As the search components are highly dynamic, rendering is  completely done in the frontend.
 Within the HTL only a webcomponent with the api-endpoint and configuration is exported.
-The HTL script is only rendering a placeholder in **wcmmode = edit**.
 The components are utilizing `org.apache.sling.models.jacksonexporter` to export the
 sling model into json. The exported json is then consumed by the FE and the actual component markup is generated.
-
-# System Requirements
-
-| AEM 6.5 | AEM as a Cloud Service | JDK | Maven |
-| --- | --- | --- | --- |
-| 6.5.10.0+ (*) | Continual | 8, 11 | 3.3.9+ |
-
-# Installation
-
-You can download the packages and bundles from [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/).
 
 ## Clientlibs
 
@@ -153,7 +143,24 @@ To see a styling sample based on WKND theme, the following client library should
 
 To read more information about how to style, [here](ui.frontend/src/main/webpack/site/styles/wkndsample/README.md)
 
+# Installation
+
+As a **prerequisite** you need to be onboarded and get an API token and access to the Search Admin Interfaces.
+
+We are happy to do a live demo and provide all necessary information.
+Please reach out to [contact.ch@valtech.com](mailto:contact.ch@valtech.com) for licensing costs of the service and more information.
+
+You can download the crx-package from the [release page](https://github.com/valtech-ch/saas-aem-module/releases/latest).
+
+## System Requirements
+
+| AEM 6.5 | AEM as a Cloud Service | JDK | Maven |
+| --- | --- | --- | --- |
+| 6.5.10.0+ (*) | Continual | 8, 11 | 3.3.9+ |
+
 ## Embedding in a maven project
+
+To embed it as part of a deployment you can find the packages and bundles on [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/)
 
 If your project has similar structure to an aem archetype generated project, then update the pom.xml of your
 project's **all** module. Whether you choose all modules or partial modules, add the appropriate
@@ -196,6 +203,43 @@ To uninstall the module, delete the following subtrees:
 * /apps/saas-aem-module
 * /apps/saas-aem-module-packages
 * /home/users/system/saas
+
+## Getting started
+
+After installation of the module following steps need to be done:
+
+### OSGI Configurations
+* Configure [Search as a Service - Search Api Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchApiRequestExecutorService):
+  * Base URL
+  * JWT Token
+* Configure [Search as a Service - Search Admin Request Executor Service Configuration](http://localhost:4502/system/console/configMgr/com.valtech.aem.saas.core.http.client.DefaultSearchAdminRequestExecutorService)
+  * Base URL
+  * JWT Token or Basic Authentication 
+
+Within AEM as a Cloud Service Base URL and JWT Token can be configured as a [secret environment variable](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/deploying/configuring-osgi.html?lang=en#secret-configuration-values) 
+
+### Context-aware configurations
+
+The following fields are mandatory: SaaS Index
+
+### Sample content
+
+To get started right away you can install the sample [ui.content](https://github.com/valtech-ch/saas-aem-module/releases/latest) via CRX Package Manager and start [exploring](http://localhost:4502/editor.html/content/saas-aem-module/us/en/search-page.html).
+Optionally you can install the [wcm io Context-Aware Configuration Editor](https://wcm.io/caconfig/editor/usage.html) in order to see the context aware configuration within AEM.  
+
+### Embed component in custom templates
+
+Obviously you can embed the components into your own pages and templates.
+
+1. Open Template editor of the custom template
+2. Open Page Policies and
+* include JS client library **saas-aem-module.base** in Client Libraries JavaScript Page Head
+* optionally add client library **saas-aem-module.wknd.sample** to have sample styling. This part you want to customize (see [Clientlibs](#clientlibs))
+  ![open page policies](images/open-page-policies.png) ![clientlibs page policies](images/clientlibs-page-policies.png)
+3. Open Policy of the responsive grid and include component group Search as a Service - Content in allowed components list.
+![clientlibs content policies](images/clientlibs-content-policies.png)
+ 
+Afterwards you can drag & drop a search component onto the defined page and start exploring.
 
 # License
 
