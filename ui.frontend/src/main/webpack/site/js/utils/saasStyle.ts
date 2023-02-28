@@ -1,6 +1,11 @@
 const initSaasStyle = (): void => {
-  document.styleSheets[0].insertRule(
-    `
+    const style = document.createElement("style");
+    document.head.prepend(style); // must append before we can access sheet property
+    const sheet = style.sheet;
+
+    if (sheet) {
+        sheet.insertRule(
+            `
             #cmp-saas-suggestions {
               position: absolute;
               border: 1px solid #d4d4d4;
@@ -12,57 +17,58 @@ const initSaasStyle = (): void => {
               right: 0;
             }
           `,
-    0,
-  )
+            0,
+        )
 
-  document.styleSheets[0].insertRule(
-    `
+        sheet.insertRule(
+            `
             .cmp-saas__search-input-wrapper {
                position: relative;
                display: inline-block;
             }
           `,
-    0,
-  )
+            0,
+        )
 
-  document.styleSheets[0].insertRule(
-    `
+        sheet.insertRule(
+            `
             .cmp-saas__suggestion-element {
               padding: 10px;
               cursor: pointer;
               background: #fff;
             }
           `,
-    0,
-  )
+            0,
+        )
 
-  document.styleSheets[0].insertRule(
-    `
+        sheet.insertRule(
+            `
             .cmp-saas__suggestion-element:last-child {
               border-bottom: 1px solid #d4d4d4;
             }
           `,
-    0,
-  )
+            0,
+        )
 
-  document.styleSheets[0].insertRule(
-    `
+        sheet.insertRule(
+            `
             .cmp-saas__suggestion-element:hover {
               background-color: #e9e9e9;
             }
           `,
-    0,
-  )
+            0,
+        )
 
-  document.styleSheets[0].insertRule(
-    `
+        sheet.insertRule(
+            `
             .cmp-saas__suggestion-element--active {
               background-color: DodgerBlue !important;
               color: #fff;
             }
           `,
-    0,
-  )
+            0,
+        )
+    }
 }
 
 export default initSaasStyle
