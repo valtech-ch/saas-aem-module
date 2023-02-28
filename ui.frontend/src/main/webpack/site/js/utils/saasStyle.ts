@@ -1,6 +1,6 @@
 const initSaasStyle = (): void => {
     const style = document.createElement("style");
-    document.head.prepend(style); // must append before we can access sheet property
+    document.head.prepend(style); // must prepend before we can access sheet property. prepending so it could be overwritten if required
     const sheet = style.sheet;
 
     if (sheet) {

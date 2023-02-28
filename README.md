@@ -54,7 +54,7 @@ order to indicate which pages should be shown. To generate Sitemaps, the Apache 
 can be used described on the AEM
 documentation: https://experienceleague.adobe.com/docs/experience-manager-cloud-service/overview/seo-and-url-management.html?lang=en#building-an-xml-sitemap-on-aem
 
-Metadata such as a title, description, publication date, taxonomy and more can be scrpped from the HTML or Sitemaps in order to allow the usage of advanced features such as Facets, Filters or customized sorting.   
+Metadata such as a title, description, publication date, taxonomy and more can be scraped from the HTML or Sitemaps in order to allow the usage of advanced features such as Facets, Filters or customized sorting.   
 
 # Features
 
