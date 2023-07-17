@@ -205,7 +205,7 @@ const buildSearchInput = ({
   const search = debouncedSearch(autoSuggestionDebounceTime)
 
   searchInput.addEventListener('focus', () => {
-    const query = getSessionStorage({
+    const query = getSessionStorage<string>({
       storageKey: STORAGE_QUERY_STRING_KEY,
       defaultValue: '',
       parse: false,
@@ -244,7 +244,9 @@ const buildSearchInput = ({
       autocompleteTriggerThreshold,
       searchInput,
       searchContainer,
-    )
+    ).catch((e: Error) => {
+      throw e
+    })
   })
 
   document.addEventListener('click', (event) => {

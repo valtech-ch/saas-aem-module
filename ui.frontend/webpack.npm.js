@@ -47,7 +47,7 @@ module.exports = merge(
             {
               loader: 'babel-loader',
               options: {
-                configFile: './babel.config.npm.js',
+                presets: ['@babel/typescript']
               },
             },
           ],

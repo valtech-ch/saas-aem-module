@@ -1,5 +1,5 @@
 import { createCustomEvent, events } from '../service/serviceEvent'
-import fetchSearch from '../utils/fetchSearch'
+import fetchSearch, { FilterSearchParams } from '../utils/fetchSearch'
 import { buildSearchItem, SearchItem } from './searchItem'
 
 type SearchButtonOptions = {
@@ -31,7 +31,7 @@ const buildLoadMoreButton = ({
     const currentPage = loadMoreButton.dataset.page || page
 
     const selectedFacets = searchResultsElement?.dataset.facets
-      ? JSON.parse(searchResultsElement.dataset.facets)
+      ? JSON.parse(searchResultsElement.dataset.facets) as FilterSearchParams
       : {}
 
     const resultJSON = await fetchSearch(

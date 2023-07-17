@@ -1,7 +1,7 @@
 import { Tab } from '../components/searchTabs'
 import { QUERY_PARAM_SEARCH_TERM } from '../constants'
 
-type FilterSearchParams = {
+export type FilterSearchParams = {
   [key: string]: string[]
 }
 

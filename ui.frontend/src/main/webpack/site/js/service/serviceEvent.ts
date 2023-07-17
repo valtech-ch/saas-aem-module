@@ -7,12 +7,12 @@ export const events = {
   loadMore: 'saas-load-more-click',
 }
 
-export const createCustomEvent = ({
+export const createCustomEvent = <T>({
   name,
   data,
 }: {
   name: string
-  data?: any
+  data?: T
 }): Event => {
   return new CustomEvent(name, {
     bubbles: true,

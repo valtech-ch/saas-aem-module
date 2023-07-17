@@ -1,6 +1,6 @@
 import { createCustomEvent, events } from '../service/serviceEvent'
 import { FilterFieldOption } from '../types/facetFilter'
-import fetchSearch from '../utils/fetchSearch'
+import fetchSearch, { FilterSearchParams } from '../utils/fetchSearch'
 import buildLoadMoreButton from './loadMoreButton'
 import { generateSearchItemList } from './searchResults'
 
@@ -16,14 +16,11 @@ interface BuildFacetOption extends FilterFieldOption {
 
 const buildFacet = ({
   value,
-  hits,
   filterFieldName,
   tabUrl,
   searchValue,
   queryParameterName,
-  tabId,
   loadMoreButtonText,
-  title,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
 BuildFacetOption): HTMLDivElement => {
   const facet = document.createElement('div')
@@ -59,7 +56,7 @@ BuildFacetOption): HTMLDivElement => {
     }
 
     const selectedFacets = currentTab?.dataset.facets
-      ? JSON.parse(currentTab.dataset.facets)
+      ? JSON.parse(currentTab.dataset.facets) as FilterSearchParams
       : {}
 
     const selectedFacetsFieldName = selectedFacets[filterFieldName] || []
@@ -124,7 +121,6 @@ BuildFacetOption): HTMLDivElement => {
           tabUrl,
           searchValue,
           searchResultsElement: currentTab,
-          onLoadMoreButtonClick: undefined,
           queryParameterName,
         })
         currentTab.appendChild(loadMoreButton)

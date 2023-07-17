@@ -13,7 +13,7 @@ export const getSearchElements = (
 }
 
 export const isSearchConfig = (
-  searchConfig: SearchConfig | never,
+  searchConfig: SearchConfig,
 ): searchConfig is SearchConfig => {
   const { id, searchFieldPlaceholderText, searchUrl } = searchConfig
 

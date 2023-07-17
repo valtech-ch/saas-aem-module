@@ -9,7 +9,7 @@ export const cleanSessionStorage = (
   )
 }
 
-export const getSessionStorage = ({
+export const getSessionStorage = <T>({
   storageKey,
   defaultValue,
   parse = true,
@@ -18,9 +18,9 @@ export const getSessionStorage = ({
   defaultValue: string
   parse?: boolean
 }) =>
-  parse
+  (parse
     ? JSON.parse(sessionStorage.getItem(storageKey) || defaultValue)
-    : sessionStorage.getItem(storageKey) || defaultValue
+    : sessionStorage.getItem(storageKey) || defaultValue) as T
 
 export const setSessionStorage = ({
   storageKey,
@@ -28,7 +28,7 @@ export const setSessionStorage = ({
   stringify = true,
 }: {
   storageKey: string
-  data: [] | Record<string, unknown> | string
+  data: string[] | Record<string, unknown> | string
   stringify?: boolean
 }): void => {
   sessionStorage.setItem(
