@@ -22,6 +22,6 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true
   },
-  "exclude": ["node_modules", "./babel.config.npm.js"],
+  "exclude": ["node_modules"],
   "include": ["./src/**/*.ts"]
 }
