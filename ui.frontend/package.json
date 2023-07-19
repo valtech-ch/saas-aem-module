@@ -1,6 +1,6 @@
 {
   "name": "@valtech-ch/saas",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Frontend of the Valtech CH Search as a Service module",
   "repository": {
     "type": "git",
