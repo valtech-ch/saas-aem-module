@@ -1,11 +1,7 @@
 const { merge } = require('webpack-merge')
-const webpack = require('webpack')
-const common = require('./webpack.common.js')
 const path = require('path')
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const SOURCE_ROOT = __dirname + '/src/main/webpack'
 
@@ -47,7 +43,7 @@ module.exports = merge(
             {
               loader: 'babel-loader',
               options: {
-                configFile: './babel.config.npm.js',
+                presets: ['@babel/typescript']
               },
             },
           ],

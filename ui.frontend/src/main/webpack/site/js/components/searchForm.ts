@@ -30,6 +30,7 @@ export const triggerSearch = async (
   autoSuggestText: string,
   searchContainer: HTMLDivElement,
   noResultsText: string,
+// eslint-disable-next-line sonarjs/cognitive-complexity
 ): Promise<void> => {
   if (searchInputElement.dataset.loading === 'true') {
     return

@@ -29,13 +29,17 @@ export const buildSearch = async (
     document.addEventListener(events.searchResultItemClick, (e) => {
       const headers = new Headers()
       headers.append('Content-Type', 'application/x-www-form-urlencoded')
+
+      const url = (e as unknown as { detail: { url: string } }).detail.url
+
       fetch(trackingUrl, {
         method: 'POST',
         headers,
-        body: `trackedUrl=${e.detail.url}`,
+        body: `trackedUrl=${url}`,
       }).catch((error) => {
+        // eslint-disable-next-line no-console
         console.error(
-          `Error while tracking search result item with url: ${e.detail.url}.`,
+          `Error while tracking search result item with url: ${url}.`,
           error,
         )
       })
