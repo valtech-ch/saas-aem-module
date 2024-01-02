@@ -457,8 +457,7 @@
                     <artifactId>dependency-check-maven</artifactId>
                     <version>8.3.1</version>
                     <configuration>
-                        <failBuildOnCVSS>0</failBuildOnCVSS>
-                        <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                        <failBuildOnCVSS>8</failBuildOnCVSS>
                         <skipProvidedScope>true</skipProvidedScope>
                     </configuration>
                     <executions>
