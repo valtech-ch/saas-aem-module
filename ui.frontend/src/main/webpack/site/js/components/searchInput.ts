@@ -48,11 +48,15 @@ const removeSuggestionList = (searchContainer: HTMLDivElement) => {
   }
 }
 
-const submitSearchForm = (): void => {
-  const form = document.querySelector('.cmp-saas__form') as
+const submitSearchForm = ({
+  searchContainer
+}: {
+  searchContainer: HTMLDivElement
+}): void => {
+  const form = searchContainer.querySelector('.cmp-saas__form') as
     | HTMLFormElement
     | undefined
-  form?.submit()
+  form?.dispatchEvent(new Event('submit'))
 }
 
 const buildSuggestionElements = ({
@@ -74,7 +78,7 @@ const buildSuggestionElements = ({
     return
   }
 
-  const searchButtonElement = document.getElementsByClassName(
+  const searchButtonElement = searchContainer.getElementsByClassName(
     'cmp-saas__button',
   )?.[0] as HTMLButtonElement | undefined
   results.forEach((result) => {
@@ -107,7 +111,7 @@ const buildSuggestionElements = ({
       if (searchButtonElement) {
         searchButtonElement.click()
       } else {
-        submitSearchForm()
+        submitSearchForm({searchContainer})
       }
     })
 
@@ -231,7 +235,7 @@ const buildSearchInput = ({
 
   searchInput.addEventListener('input', (event) => {
     const inputValue = (event?.target as HTMLInputElement)?.value
-    const searchClearButton = document.querySelector(
+    const searchClearButton = searchContainer.querySelector(
       '.cmp-saas__search-clear-button',
     )
     const action =
@@ -244,7 +248,7 @@ const buildSearchInput = ({
       autocompleteTriggerThreshold,
       searchInput,
       searchContainer,
-    ).catch((e: Error) => {
+    )?.catch((e: Error) => {
       throw e
     })
   })
