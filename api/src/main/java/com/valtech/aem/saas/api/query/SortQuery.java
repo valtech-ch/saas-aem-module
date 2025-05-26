@@ -1,15 +1,15 @@
 package com.valtech.aem.saas.api.query;
 
-import com.google.common.annotations.VisibleForTesting;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link Query} that specifies a sorting according to a specific field.
@@ -61,17 +61,14 @@ public final class SortQuery implements Query {
         return Collections.singletonList(sortBy);
     }
 
-    @VisibleForTesting
     boolean isIllegalSortingInput(List<Pair<String, Sort>> sortParameters) {
         return sortParameters.stream().noneMatch(this::isSortConfigured);
     }
-    
-    @VisibleForTesting
+
     boolean isSortConfigured(Pair<String, Sort> sortParameter) {
         return StringUtils.isNotBlank(sortParameter.getKey()) && sortParameter.getValue() != null;
     }
-    
-    @VisibleForTesting
+
     String getSortQueryString(List<Pair<String, Sort>> sortParameters) {
         return sortParameters.stream()
             .filter(this::isSortConfigured)

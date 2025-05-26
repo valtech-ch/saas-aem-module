@@ -1,6 +1,5 @@
 package com.valtech.aem.saas.core.common.resource;
 
-import com.google.common.collect.ImmutableMap;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 import org.apache.sling.api.resource.Resource;
@@ -8,6 +7,9 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -27,16 +29,13 @@ class ResourceWrapperTest {
 
     @BeforeEach
     void setUp(AemContext context) {
-        parent = context.create().resource("/goo",
-                                           ImmutableMap.<String, String>builder()
-                                                       .put(ResourceResolver.PROPERTY_RESOURCE_TYPE, "res/type/parent")
-                                                       .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, "res/type/parent");
+        parent = context.create().resource("/goo", properties);
         resourceWithParent = context.create().resource("/goo/bar");
-        grandParent = context.create().resource("/baz",
-                                                ImmutableMap.<String, String>builder()
-                                                            .put(ResourceResolver.PROPERTY_RESOURCE_TYPE,
-                                                                 "res/type/grandparent")
-                                                            .build());
+        properties = new HashMap<>();
+        properties.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, "res/type/grandparent");
+        grandParent = context.create().resource("/baz", properties);
         parentNotAMatch = context.create().resource("/baz/qux");
         resourceWithGrandParent = context.create().resource("/baz/qux/quz");
         resourceWithNoParent = context.create().resource("/no-parent-resource");

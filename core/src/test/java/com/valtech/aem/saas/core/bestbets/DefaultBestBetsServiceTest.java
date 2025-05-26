@@ -1,7 +1,6 @@
 package com.valtech.aem.saas.core.bestbets;
 
 import com.day.cq.i18n.I18n;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.valtech.aem.saas.api.bestbets.BestBetsActionFailedException;
@@ -30,10 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -168,10 +164,9 @@ class DefaultBestBetsServiceTest {
     @Test
     void testUpdateBestBet_missingAction() {
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        testee = context.registerInjectActivateService(new DefaultBestBetsService(),
-                                                       ImmutableMap.<String, Object>builder()
-                                                                   .put("bestBetsService.apiUpdateBestBetAction", "")
-                                                                   .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("bestBetsService.apiUpdateBestBetAction", "");
+        testee = context.registerInjectActivateService(new DefaultBestBetsService(), properties);
         BestBetPayloadDTO payload = new BestBetPayloadDTO("foo", "baz", "de");
         assertThrows(IllegalStateException.class, () -> testee.updateBestBet(searchCAConfigurationModel, 1,
                                                                              payload));
@@ -205,10 +200,9 @@ class DefaultBestBetsServiceTest {
     @Test
     void testDeleteBestBet_missingAction() {
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        testee = context.registerInjectActivateService(new DefaultBestBetsService(),
-                                                       ImmutableMap.<String, Object>builder()
-                                                                   .put("bestBetsService.apiDeleteBestBetAction", "")
-                                                                   .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("bestBetsService.apiDeleteBestBetAction", "");
+        testee = context.registerInjectActivateService(new DefaultBestBetsService(), properties);
         assertThrows(IllegalStateException.class, () -> testee.deleteBestBet(searchCAConfigurationModel, 1));
     }
 
@@ -235,11 +229,9 @@ class DefaultBestBetsServiceTest {
     @Test
     void testPublishBestBetsForProject_wrongConfigForAction() {
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        testee = context.registerInjectActivateService(new DefaultBestBetsService(),
-                                                       ImmutableMap.<String, Object>builder()
-                                                                   .put("bestBetsService.apiPublishProjectBestBetsAction",
-                                                                        "/bestbets")
-                                                                   .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("bestBetsService.apiPublishProjectBestBetsAction", "/bestbets");
+        testee = context.registerInjectActivateService(new DefaultBestBetsService(), properties);
         assertThrows(IllegalArgumentException.class,
                      () -> testee.publishBestBetsForProject(searchCAConfigurationModel, 1));
     }
@@ -270,10 +262,9 @@ class DefaultBestBetsServiceTest {
     @Test
     void testGetBestBets_missingAction() {
         searchCAConfigurationModel = currentResource.adaptTo(SearchCAConfigurationModel.class);
-        testee = context.registerInjectActivateService(new DefaultBestBetsService(),
-                                                       ImmutableMap.<String, Object>builder()
-                                                                   .put("bestBetsService.apiGetAllBestBetsAction", "")
-                                                                   .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("bestBetsService.apiGetAllBestBetsAction", "");
+        testee = context.registerInjectActivateService(new DefaultBestBetsService(), properties);
         assertThrows(IllegalStateException.class, () -> testee.getBestBets(searchCAConfigurationModel));
     }
 
