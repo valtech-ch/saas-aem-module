@@ -63,7 +63,7 @@ export const buildSearch = async (
   searchContainer.classList.add('cmp-saas')
 
   const searchFormElement = buildSearchForm()
-  const searchResetButton = buildSearchClearButton()
+  const searchResetButton = buildSearchClearButton({searchContainer})
   const searchInputWrapper = document.createElement('div')
   searchInputWrapper.classList.add('cmp-saas__search-input-wrapper')
 
