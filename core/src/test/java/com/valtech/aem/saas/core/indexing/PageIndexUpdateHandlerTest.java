@@ -3,7 +3,6 @@ package com.valtech.aem.saas.core.indexing;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
-import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.resource.ResourceResolverProviderService;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -25,6 +24,8 @@ import org.osgi.service.event.Event;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
@@ -75,11 +76,10 @@ class PageIndexUpdateHandlerTest {
     @Test
     void testHandleEvent_eventActionTypeInvalid() {
         testee = context.registerInjectActivateService(new PageIndexUpdateHandler());
-        Event event = new Event(ReplicationAction.EVENT_TOPIC,
-                                ImmutableMap.<String, String>builder()
-                                            .put("type", "Test")
-                                            .put("userId", "foo")
-                                            .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("type", "Test");
+        properties.put("userId", "foo");
+        Event event = new Event(ReplicationAction.EVENT_TOPIC, properties);
         testee.handleEvent(event);
         verify(jobManager, never()).createJob(anyString());
     }
@@ -87,18 +87,14 @@ class PageIndexUpdateHandlerTest {
     @Test
     void testHandleEvent_noResourceResolverRetrieved() throws LoginException {
         testee = context.registerInjectActivateService(new PageIndexUpdateHandler());
-        Event event = new Event(ReplicationEvent.EVENT_TOPIC,
-                                ImmutableMap.<String, Object>builder()
-                                            .put("modifications",
-                                                 Collections.singletonList(ImmutableMap.<String, Object>builder()
-                                                                                       .put("type",
-                                                                                            ReplicationActionType.ACTIVATE)
-                                                                                       .put("userId", "foo")
-                                                                                       .put("time", 0L)
-                                                                                       .put("paths",
-                                                                                            new String[]{"/foo/bar"})
-                                                                                       .build()))
-                                            .build());
+        Map<String, Object> subProperties = new HashMap<>();
+        subProperties.put("type", ReplicationActionType.ACTIVATE);
+        subProperties.put("userId", "foo");
+        subProperties.put("time", 0L);
+        subProperties.put("paths", new String[]{"/foo/bar"});
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("modifications", Collections.singletonList(subProperties));
+        Event event = new Event(ReplicationEvent.EVENT_TOPIC, properties);
         testee.handleEvent(event);
         verify(jobManager, never()).createJob(anyString());
     }
@@ -106,12 +102,11 @@ class PageIndexUpdateHandlerTest {
     @Test
     void testHandleEvent_actionPathNotAPage(AemContext context) throws LoginException {
         testee = context.registerInjectActivateService(new PageIndexUpdateHandler());
-        Event event = new Event(ReplicationAction.EVENT_TOPIC,
-                                ImmutableMap.<String, String>builder()
-                                            .put("type", "Activate")
-                                            .put("userId", "foo")
-                                            .put("path", "/foo/bar")
-                                            .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("type", "Activate");
+        properties.put("userId", "foo");
+        properties.put("path", "/foo/bar");
+        Event event = new Event(ReplicationAction.EVENT_TOPIC, properties);
         testee.handleEvent(event);
         verify(jobManager, never()).createJob(anyString());
     }
@@ -119,12 +114,11 @@ class PageIndexUpdateHandlerTest {
     @Test
     void testHandleEvent() throws LoginException {
         testee = context.registerInjectActivateService(new PageIndexUpdateHandler());
-        Event event = new Event(ReplicationAction.EVENT_TOPIC,
-                                ImmutableMap.<String, String>builder()
-                                            .put("type", "Deactivate")
-                                            .put("userId", "foo")
-                                            .put("path", "/content/foo/bar")
-                                            .build());
+        Map<String, String> properties = new HashMap<>();
+        properties.put("type", "Deactivate");
+        properties.put("userId", "foo");
+        properties.put("path", "/content/foo/bar");
+        Event event = new Event(ReplicationAction.EVENT_TOPIC, properties);
         when(resourceResolverFactory.getServiceResourceResolver(anyMap())).thenReturn(resourceResolver);
         when(jobManager.createJob(anyString())).thenReturn(jobBuilder);
         when(jobBuilder.properties(anyMap())).thenReturn(jobBuilder);
