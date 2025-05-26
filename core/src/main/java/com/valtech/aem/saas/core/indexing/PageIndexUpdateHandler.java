@@ -3,7 +3,6 @@ package com.valtech.aem.saas.core.indexing;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationEvent;
-import com.google.common.collect.ImmutableMap;
 import com.valtech.aem.saas.api.resource.PathTransformer;
 import com.valtech.aem.saas.core.resource.ResourceResolverProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +17,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component(service = {EventHandler.class},
            immediate = true,
@@ -100,12 +96,9 @@ public class PageIndexUpdateHandler implements EventHandler {
             log.info("Not able to resolve IndexUpdateAction from {}", action.getType());
             return;
         }
-        Map<String, Object> properties = ImmutableMap.<String, Object>builder()
-                                                     .put(AbstractIndexUpdateActionJobConsumer.JOB_PROPERTY_REPOSITORY_PATH,
-                                                          action.getPath())
-                                                     .put(AbstractIndexUpdateActionJobConsumer.JOB_PROPERTY_URL,
-                                                          externalizedPath)
-                                                     .build();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(AbstractIndexUpdateActionJobConsumer.JOB_PROPERTY_REPOSITORY_PATH, action.getPath());
+        properties.put(AbstractIndexUpdateActionJobConsumer.JOB_PROPERTY_URL, externalizedPath);
         List<String> errorMessages = new ArrayList<>();
         String jobTopic = indexUpdateActionToJobTopic.get(indexUpdateAction);
         if (StringUtils.isBlank(jobTopic)) {
