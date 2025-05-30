@@ -160,7 +160,8 @@ You can download the crx-package from the [release page](https://github.com/valt
 
 ## Embedding in a maven project
 
-To embed it as part of a deployment you can find the packages and bundles on [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/)
+To embed it as part of a deployment you can find the packages and bundles on [Maven Central](https://repo1.maven.org/maven2/io/github/valtech-ch/saas-aem/) (up to version 1.3.0).
+From version 1.4.0, the releases are not published in Maven Central anymore, and one may use a file based repository instead [Maven - Internal Repositories](https://maven.apache.org/guides/introduction/introduction-to-repositories.html#Internal_Repositories).
 
 If your project has similar structure to an aem archetype generated project, then update the pom.xml of your
 project's **all** module. Whether you choose all modules or partial modules, add the appropriate
