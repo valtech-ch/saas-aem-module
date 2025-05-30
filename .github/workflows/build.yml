@@ -1,18 +1,31 @@
-name: Java CI
+name: Build
 
 on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      releaseVersion:
+        type: string
+        required: false
+        default: ''
   push:
     branches:
-      - main
+      - 'main'
+      - 'release/*'
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    branches:
+      - 'main'
+      - 'release/*'
 
 jobs:
   build:
     name: Build maven
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
 
       - name: Set up Java ENV
         uses: actions/setup-java@v4
@@ -22,11 +35,6 @@ jobs:
             8
           distribution: 'temurin'
           cache: maven
-
-      - name: Build and Test with Maven
-        env:
-          JAVA_HOME: ${{ env.JAVA_HOME_8_X64 }}
-        run: mvn clean install
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
@@ -41,6 +49,22 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+
+      - name: Prepare version
+        if: ${{ inputs.releaseVersion != '' }}
+        run: 'mvn versions:set -DnewVersion=${{ inputs.releaseVersion }}'
+
+      - name: Build and Test with Maven
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_8_X64 }}
+        run: mvn clean install
+
+      - name: Save Package / Artifact
+        if: ${{ inputs.releaseVersion != '' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'saas-aem-${{ inputs.releaseVersion }}'
+          path: all/target/*.zip
 
       - name: Analyze with SonarQube
         if: false
