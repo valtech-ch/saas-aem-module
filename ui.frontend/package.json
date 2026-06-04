@@ -76,7 +76,7 @@
     "webpack": "5.107.2",
     "webpack-cli": "4.9.1",
     "webpack-dev-server": "^5.2.4",
-    "webpack-merge": "5.8.0"
+    "webpack-merge": "6.0.1"
   },
   "browserslist": [
     "last 2 version",
