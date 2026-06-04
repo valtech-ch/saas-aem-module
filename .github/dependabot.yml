@@ -12,6 +12,12 @@ updates:
     labels:
       - "dependencies"
       - "java"
+    # Stay on the current major lines: AEM / Adobe platform pins us to older
+    # major versions, so never propose major-version bumps automatically.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     groups:
       maven-minor-patch:
         update-types:
@@ -30,6 +36,12 @@ updates:
     labels:
       - "dependencies"
       - "javascript"
+    # Major front-end bumps (e.g. TypeScript 6, style-loader 4) break the AEM
+    # clientlib build, so restrict automated updates to minor/patch only.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     groups:
       npm-dev-minor-patch:
         dependency-type: "development"
@@ -53,3 +65,8 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    # Pin to current action majors; review major action upgrades manually.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
