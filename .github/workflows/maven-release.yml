@@ -18,7 +18,7 @@ jobs:
     # Only release from `release/...` branch
     if: startsWith(github.ref, 'refs/heads/release/')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v1
         with:
