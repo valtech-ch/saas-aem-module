@@ -28,7 +28,7 @@ jobs:
           fetch-depth: '0'
 
       - name: Set up Java ENV
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with: # The last version will be used by default and available globally via JAVA_HOME.
           java-version: |
             17
