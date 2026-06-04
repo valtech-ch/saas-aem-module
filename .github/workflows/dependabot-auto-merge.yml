@@ -1,0 +1,43 @@
+name: Dependabot auto-merge
+
+# Automatically enables auto-merge for Dependabot version-update PRs that are
+# safe (minor/patch updates). The PR is only merged once the required
+# "Build maven" status check from build.yml passes.
+#
+# Repository prerequisites (configure once in repo settings):
+#   - Settings > General > "Allow auto-merge" must be enabled.
+#   - Settings > Branches: a branch protection rule on `main` requiring the
+#     "Build maven" status check, otherwise --auto merges immediately.
+#   - Settings > Code security: "Allow GitHub Actions to create and approve
+#     pull requests" should be enabled so this workflow can approve.
+
+on:
+  pull_request_target:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Approve and enable auto-merge for minor/patch updates
+        if: >-
+          steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
