@@ -83,7 +83,7 @@
         <vault.password>admin</vault.password>
         <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
 
-        <bnd.version>6.2.0</bnd.version>
+        <bnd.version>7.3.0</bnd.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aem.sdk.api>2021.9.5852.20210917T073206Z-210800</aem.sdk.api>
