@@ -87,7 +87,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aem.sdk.api>2021.9.5852.20210917T073206Z-210800</aem.sdk.api>
-        <aemanalyser.version>1.6.20</aemanalyser.version>
+        <aemanalyser.version>1.6.24</aemanalyser.version>
         <componentGroupName>Valtech AEM SAAS</componentGroupName>
 
         <sonar.organization>valtech-ch</sonar.organization>
@@ -161,7 +161,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.14</version>
+                <version>0.8.15</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
