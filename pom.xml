@@ -87,7 +87,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aem.sdk.api>2021.9.5852.20210917T073206Z-210800</aem.sdk.api>
-        <aemanalyser.version>1.6.24</aemanalyser.version>
+        <aemanalyser.version>1.7.0</aemanalyser.version>
         <componentGroupName>Valtech AEM SAAS</componentGroupName>
 
         <sonar.organization>valtech-ch</sonar.organization>
@@ -215,7 +215,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.5.0</version>
+                    <version>3.5.1</version>
                 </plugin>
                 <!-- Maven Clean Plugin -->
                 <plugin>
