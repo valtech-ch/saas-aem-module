@@ -87,7 +87,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aem.sdk.api>2021.9.5852.20210917T073206Z-210800</aem.sdk.api>
-        <aemanalyser.version>1.7.0</aemanalyser.version>
+        <aemanalyser.version>1.7.2</aemanalyser.version>
         <componentGroupName>Valtech AEM SAAS</componentGroupName>
 
         <sonar.organization>valtech-ch</sonar.organization>
@@ -869,7 +869,7 @@
             <dependency>
                 <groupId>com.adobe.aem</groupId>
                 <artifactId>uber-jar</artifactId>
-                <version>6.6.2</version>
+                <version>6.6.3</version>
                 <scope>provided</scope>
             </dependency>
 
