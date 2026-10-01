@@ -87,7 +87,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aem.sdk.api>2021.9.5852.20210917T073206Z-210800</aem.sdk.api>
-        <aemanalyser.version>1.7.2</aemanalyser.version>
+        <aemanalyser.version>1.7.6</aemanalyser.version>
         <componentGroupName>Valtech AEM SAAS</componentGroupName>
 
         <sonar.organization>valtech-ch</sonar.organization>
@@ -279,7 +279,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.15.0</version>
+                    <version>3.16.0</version>
                 </plugin>
                 <!-- Maven Installer Plugin -->
                 <plugin>
@@ -387,7 +387,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.1</version>
+                    <version>3.6.2</version>
                 </plugin>
                 <!--This plugin's configuration is used to store Eclipse
                     m2e settings only. It has no influence on the Maven build itself. -->
@@ -850,7 +850,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.46</version>
+                <version>1.18.48</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -965,7 +965,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
+                <version>3.21.0</version>
                 <scope>provided</scope>
             </dependency>
 
